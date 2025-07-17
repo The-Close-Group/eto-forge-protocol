@@ -8,83 +8,77 @@
 
 @layer base {
   :root {
-    /* Core Industrial Theme - Black & White with Technical Precision */
-    --background: 0 0% 3%;
-    --foreground: 0 0% 95%;
+    /* Core Industrial Theme - Pure Black & White */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
     
-    /* Surface Colors - Dark Industrial Palette */
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 95%;
+    /* Surface Colors - Industrial Black Palette */
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
     
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 100%;
     
-    /* Brand Colors - ETO Industrial */
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 5%;
+    /* Brand Colors - High Contrast Industrial */
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
     
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 95%;
     
     /* UI State Colors */
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 70%;
     
     --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 90%;
+    --accent-foreground: 0 0% 100%;
     
     /* Trading Colors */
-    --success: 120 85% 40%;
-    --success-foreground: 0 0% 95%;
+    --success: 120 100% 35%;
+    --success-foreground: 0 0% 0%;
     
-    --destructive: 0 85% 60%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 100%;
     
-    --warning: 45 95% 55%;
-    --warning-foreground: 0 0% 5%;
+    --warning: 45 100% 60%;
+    --warning-foreground: 0 0% 0%;
     
     /* Interface Elements */
-    --border: 0 0% 20%;
-    --input: 0 0% 8%;
-    --ring: 0 0% 40%;
+    --border: 0 0% 25%;
+    --input: 0 0% 5%;
+    --ring: 0 0% 60%;
     
     /* Industrial Design Tokens */
-    --grid-lines: 0 0% 15%;
-    --data-positive: 120 85% 40%;
-    --data-negative: 0 85% 60%;
-    --data-neutral: 0 0% 65%;
+    --grid-lines: 0 0% 20%;
+    --data-positive: 120 100% 35%;
+    --data-negative: 0 100% 60%;
+    --data-neutral: 0 0% 70%;
     
     /* Shadows & Effects */
-    --shadow-panel: 0 0% 0% / 0.5;
-    --glow-accent: 0 0% 95% / 0.1;
+    --shadow-panel: 0 0% 0% / 0.8;
+    --glow-accent: 0 0% 100% / 0.1;
     
     /* Typography Scale */
     --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-sans: 'JetBrains Mono', monospace;
     
-    /* Layout */
-    --radius: 0.25rem;
+    /* Layout - Sharp Industrial */
+    --radius: 0.125rem;
     --panel-border: 1px solid hsl(var(--border));
     
     /* Animation Curves */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 100ms linear;
+    --transition-smooth: 200ms linear;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar - Industrial Black Theme */
+    --sidebar-background: 0 0% 2%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 0% 60%;
   }
 
   .dark {
@@ -132,7 +126,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-mono antialiased;
+    letter-spacing: 0.025em;
   }
 }
 
@@ -181,8 +176,10 @@
   }
   
   .industrial-button {
-    @apply bg-primary text-primary-foreground border border-border px-4 py-2 rounded-sm font-medium text-sm transition-all;
-    @apply hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
+    @apply bg-primary text-primary-foreground border border-border px-4 py-2 font-medium text-sm transition-all uppercase tracking-wider;
+    @apply hover:bg-primary/90 focus:ring-1 focus:ring-ring;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
   }
   
   .industrial-input {

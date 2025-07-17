@@ -20,7 +20,8 @@ export default {
 		extend: {
 			fontFamily: {
 				'mono': ['JetBrains Mono', 'monospace'],
-				'sans': ['Inter', 'system-ui', 'sans-serif'],
+				'sans': ['JetBrains Mono', 'monospace'],
+				'industrial': ['JetBrains Mono', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
