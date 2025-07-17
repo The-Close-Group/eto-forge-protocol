@@ -7,6 +7,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Trade from "./pages/Trade";
 import Portfolio from "./pages/Portfolio";
+import Assets from "./pages/Assets";
 import Staking from "./pages/Staking";
 import Markets from "./pages/Markets";
 import Analytics from "./pages/Analytics";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/trade" element={<Trade />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/assets" element={<Assets />} />
             <Route path="/staking" element={<Staking />} />
             <Route path="/markets" element={<Markets />} />
             <Route path="/analytics" element={<Analytics />} />

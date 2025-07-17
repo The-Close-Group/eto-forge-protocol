@@ -3,6 +3,7 @@ import {
   LayoutDashboard, 
   TrendingUp, 
   Wallet, 
+  Layers,
   Coins, 
   BarChart3, 
   Activity 
@@ -12,6 +13,7 @@ const navigationItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Trade", url: "/trade", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
+  { title: "Assets", url: "/assets", icon: Layers },
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "Markets", url: "/markets", icon: BarChart3 },
 ];
