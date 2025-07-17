@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, TrendingUp, TrendingDown, Star } from "lucide-react";
+import { BlockchainSelector } from "@/components/BlockchainSelector";
 
 export default function Markets() {
   const markets = [
@@ -25,165 +26,171 @@ export default function Markets() {
   ];
 
   return (
-    <div className="p-6 pb-20 md:pb-6 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Markets</h1>
-        <p className="text-muted-foreground">
-          Explore trading opportunities across all supported chains
-        </p>
-      </div>
-
-      {/* Market Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Volume 24h</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$171.6M</div>
-            <p className="text-xs text-green-500">+12.5% from yesterday</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Active Markets</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">Across 5 chains</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Top Gainer</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">ARB/USDC</div>
-            <p className="text-xs text-green-500">+8.7%</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Market Cap</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$2.4T</div>
-            <p className="text-xs text-green-500">+0.8%</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="all" className="w-full">
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <TabsList>
-            <TabsTrigger value="all">All Markets</TabsTrigger>
-            <TabsTrigger value="gainers">Top Gainers</TabsTrigger>
-            <TabsTrigger value="losers">Top Losers</TabsTrigger>
-            <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
-          </TabsList>
-          
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search markets..." className="pl-9" />
-          </div>
+    <div className="flex min-h-screen bg-background">
+      {/* Left Sidebar - Blockchain Selector */}
+      <BlockchainSelector />
+      
+      {/* Main Content */}
+      <div className="flex-1 p-6 pb-20 md:pb-6 space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-foreground">Markets</h1>
+          <p className="text-muted-foreground">
+            Explore trading opportunities across all supported chains
+          </p>
         </div>
 
-        <TabsContent value="all">
+        {/* Market Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
-            <CardHeader>
-              <CardTitle>All Markets</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Total Volume 24h</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <div className="grid grid-cols-5 gap-4 pb-2 text-sm font-medium text-muted-foreground border-b">
-                  <span>Market</span>
-                  <span>Price</span>
-                  <span>24h Change</span>
-                  <span>Volume</span>
-                  <span>Action</span>
+              <div className="text-2xl font-bold">$171.6M</div>
+              <p className="text-xs text-green-500">+12.5% from yesterday</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Active Markets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">24</div>
+              <p className="text-xs text-muted-foreground">Across 5 chains</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Top Gainer</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold">ARB/USDC</div>
+              <p className="text-xs text-green-500">+8.7%</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Market Cap</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$2.4T</div>
+              <p className="text-xs text-green-500">+0.8%</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="all" className="w-full">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <TabsList>
+              <TabsTrigger value="all">All Markets</TabsTrigger>
+              <TabsTrigger value="gainers">Top Gainers</TabsTrigger>
+              <TabsTrigger value="losers">Top Losers</TabsTrigger>
+              <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
+            </TabsList>
+            
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search markets..." className="pl-9" />
+            </div>
+          </div>
+
+          <TabsContent value="all">
+            <Card>
+              <CardHeader>
+                <CardTitle>All Markets</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="grid grid-cols-5 gap-4 pb-2 text-sm font-medium text-muted-foreground border-b">
+                    <span>Market</span>
+                    <span>Price</span>
+                    <span>24h Change</span>
+                    <span>Volume</span>
+                    <span>Action</span>
+                  </div>
+                  {markets.map((market, index) => (
+                    <div key={index} className="grid grid-cols-5 gap-4 py-3 items-center hover:bg-accent/50 rounded-lg px-2">
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" className="p-1">
+                          <Star className="h-4 w-4" />
+                        </Button>
+                        <span className="font-medium">{market.symbol}</span>
+                      </div>
+                      <span className="font-mono">{market.price}</span>
+                      <div className={`flex items-center gap-1 ${market.positive ? 'text-green-500' : 'text-red-500'}`}>
+                        {market.positive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                        <span className="font-medium">{market.change}</span>
+                      </div>
+                      <span className="text-muted-foreground">{market.volume}</span>
+                      <Button size="sm">Trade</Button>
+                    </div>
+                  ))}
                 </div>
-                {markets.map((market, index) => (
-                  <div key={index} className="grid grid-cols-5 gap-4 py-3 items-center hover:bg-accent/50 rounded-lg px-2">
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" className="p-1">
-                        <Star className="h-4 w-4" />
-                      </Button>
-                      <span className="font-medium">{market.symbol}</span>
-                    </div>
-                    <span className="font-mono">{market.price}</span>
-                    <div className={`flex items-center gap-1 ${market.positive ? 'text-green-500' : 'text-red-500'}`}>
-                      {market.positive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                      <span className="font-medium">{market.change}</span>
-                    </div>
-                    <span className="text-muted-foreground">{market.volume}</span>
-                    <Button size="sm">Trade</Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="gainers">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Gainers (24h)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {gainers.map((gainer, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="font-medium">{gainer.symbol}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-500 font-medium">{gainer.change}</span>
-                      <Button size="sm">Trade</Button>
+          <TabsContent value="gainers">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Gainers (24h)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {gainers.map((gainer, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <span className="font-medium">{gainer.symbol}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-500 font-medium">{gainer.change}</span>
+                        <Button size="sm">Trade</Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="losers">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Losers (24h)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {losers.map((loser, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="font-medium">{loser.symbol}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-500 font-medium">{loser.change}</span>
-                      <Button size="sm">Trade</Button>
+          <TabsContent value="losers">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Losers (24h)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {losers.map((loser, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <span className="font-medium">{loser.symbol}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-500 font-medium">{loser.change}</span>
+                        <Button size="sm">Trade</Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="watchlist">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Watchlist</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No markets in your watchlist yet.</p>
-                <p className="text-sm">Click the star icon next to any market to add it here.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="watchlist">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Watchlist</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No markets in your watchlist yet.</p>
+                  <p className="text-sm">Click the star icon next to any market to add it here.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
