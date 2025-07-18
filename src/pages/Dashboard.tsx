@@ -15,113 +15,118 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-lg font-medium">Portfolio Value</CardTitle>
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Wallet className="h-7 w-7 text-primary" />
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Portfolio Value</CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-5xl font-bold">$12,345</div>
-            <p className="text-base text-muted-foreground">+2.5% from yesterday</p>
+          <CardContent>
+            <div className="text-2xl font-bold">$12,345</div>
+            <p className="text-xs text-muted-foreground">+2.5% from yesterday</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-lg font-medium">Active Trades</CardTitle>
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-7 w-7 text-primary" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Trades</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-5xl font-bold">7</div>
-            <p className="text-base text-muted-foreground">Across 3 chains</p>
+          <CardContent>
+            <div className="text-2xl font-bold">7</div>
+            <p className="text-xs text-muted-foreground">Across 3 chains</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-lg font-medium">Staking Rewards</CardTitle>
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Coins className="h-7 w-7 text-primary" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Staking Rewards</CardTitle>
+            <Coins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-5xl font-bold">$456</div>
-            <p className="text-base text-muted-foreground">12.5% APY</p>
+          <CardContent>
+            <div className="text-2xl font-bold">$456</div>
+            <p className="text-xs text-muted-foreground">12.5% APY</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$89.2K</div>
+            <p className="text-xs text-muted-foreground">+15.3% from yesterday</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-lg font-medium">24h Volume</CardTitle>
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Activity className="h-7 w-7 text-primary" />
-            </div>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Trade</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-4xl font-bold">$89.2K</div>
-            <p className="text-base text-muted-foreground">+15.3% from yesterday</p>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Execute trades across multiple chains with our Dynamic Market Maker
+            </p>
+            <Button asChild className="w-full">
+              <Link to="/trade">Start Trading</Link>
+            </Button>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
+        <Card>
+          <CardHeader>
+            <CardTitle>Staking Opportunities</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button asChild className="w-full h-14 text-lg" size="lg">
-              <Link to="/trade">Start Trading</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full h-14 text-lg" size="lg">
+            <p className="text-sm text-muted-foreground">
+              Earn rewards by staking your assets in our protocol
+            </p>
+            <Button asChild variant="outline" className="w-full">
               <Link to="/staking">View Staking</Link>
             </Button>
           </CardContent>
         </Card>
       </div>
 
-
       {/* Recent Activity */}
-      <Card className="shadow-lg">
-        <CardHeader className="pb-6">
-          <CardTitle className="text-2xl">Recent Activity</CardTitle>
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between py-4 border-b border-border">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="font-medium text-lg">Buy ETH</p>
-                <p className="text-base text-muted-foreground">Ethereum • 2 hours ago</p>
+                <p className="font-medium">Buy ETH</p>
+                <p className="text-sm text-muted-foreground">Ethereum • 2 hours ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium text-lg">+0.5 ETH</p>
-                <p className="text-base text-muted-foreground">$1,234</p>
+                <p className="font-medium">+0.5 ETH</p>
+                <p className="text-sm text-muted-foreground">$1,234</p>
               </div>
             </div>
-            <div className="flex items-center justify-between py-4 border-b border-border">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="font-medium text-lg">Stake USDC</p>
-                <p className="text-base text-muted-foreground">Polygon • 5 hours ago</p>
+                <p className="font-medium">Stake USDC</p>
+                <p className="text-sm text-muted-foreground">Polygon • 5 hours ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium text-lg">+1,000 USDC</p>
-                <p className="text-base text-muted-foreground">12.5% APY</p>
+                <p className="font-medium">+1,000 USDC</p>
+                <p className="text-sm text-muted-foreground">12.5% APY</p>
               </div>
             </div>
-            <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="font-medium text-lg">Sell BTC</p>
-                <p className="text-base text-muted-foreground">Arbitrum • 1 day ago</p>
+                <p className="font-medium">Sell BTC</p>
+                <p className="text-sm text-muted-foreground">Arbitrum • 1 day ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium text-lg">-0.02 BTC</p>
-                <p className="text-base text-muted-foreground">$890</p>
+                <p className="font-medium">-0.02 BTC</p>
+                <p className="text-sm text-muted-foreground">$890</p>
               </div>
             </div>
           </div>
