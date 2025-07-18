@@ -10,7 +10,7 @@ export interface WalletOption {
   name: string;
   icon: string;
   description: string;
-  wallet: any;
+  walletId: string;
 }
 
 export const WALLET_OPTIONS: WalletOption[] = [
@@ -19,28 +19,28 @@ export const WALLET_OPTIONS: WalletOption[] = [
     name: 'MetaMask',
     icon: '🦊',
     description: 'Most popular Ethereum wallet',
-    wallet: createWallet("io.metamask")
+    walletId: "io.metamask"
   },
   {
     id: 'coinbase',
     name: 'Coinbase Wallet',
     icon: '🔵',
     description: 'Secure wallet from Coinbase',
-    wallet: createWallet("com.coinbase.wallet")
+    walletId: "com.coinbase.wallet"
   },
   {
     id: 'walletconnect',
     name: 'WalletConnect',
     icon: '🔗',
     description: 'Connect to mobile wallets',
-    wallet: createWallet("walletConnect")
+    walletId: "walletConnect"
   },
   {
     id: 'rainbow',
     name: 'Rainbow',
     icon: '🌈',
     description: 'Fun and simple wallet',
-    wallet: createWallet("me.rainbow")
+    walletId: "me.rainbow"
   }
 ];
 
@@ -77,18 +77,30 @@ export function useWallet() {
         throw new Error('Wallet not found');
       }
 
-      await connect(async () => {
-        const wallet = walletOption.wallet;
+      const wallet = createWallet(walletOption.walletId);
+      
+      const connectedWallet = await connect(async () => {
         await wallet.connect({ client });
         return wallet;
       });
 
-      localStorage.setItem('eto-wallet-type', walletId);
-      setConnectedWalletType(walletId);
+      if (connectedWallet) {
+        localStorage.setItem('eto-wallet-type', walletId);
+        setConnectedWalletType(walletId);
+        setError(null);
+      }
       
     } catch (err: any) {
       console.error('Wallet connection error:', err);
-      setError(err.message || 'Failed to connect wallet');
+      let errorMessage = 'Failed to connect wallet';
+      
+      if (err.message?.includes('User rejected')) {
+        errorMessage = 'Connection cancelled by user';
+      } else if (err.message?.includes('popup')) {
+        errorMessage = 'Please allow popups and try again';
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsConnecting(false);
     }
@@ -101,6 +113,7 @@ export function useWallet() {
       }
       localStorage.removeItem('eto-wallet-type');
       setConnectedWalletType('');
+      setError(null);
     } catch (err: any) {
       console.error('Failed to disconnect wallet:', err);
     }

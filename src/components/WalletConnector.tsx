@@ -101,7 +101,14 @@ export function WalletConnector() {
         {error && (
           <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-sm">
             <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-            <span className="text-sm text-destructive">{error}</span>
+            <div className="flex-1">
+              <span className="text-sm text-destructive">{error}</span>
+              {error.includes('popup') && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Make sure popups are enabled for this site and try again
+                </div>
+              )}
+            </div>
           </div>
         )}
 
