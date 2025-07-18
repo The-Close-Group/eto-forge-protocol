@@ -78,19 +78,13 @@ export function DesktopSidebar() {
       <SidebarContent className="p-0">
         {/* User Info */}
         {!isCollapsed && user && (
-          <div className="p-4 border-b border-border/50 space-y-2">
+          <div className="p-4 border-b border-border/50">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-foreground truncate">{user.email}</span>
+              <Wallet className="h-4 w-4 text-green-400" />
+              <span className="text-xs font-mono text-green-400">
+                {truncateAddress(user.walletAddress)}
+              </span>
             </div>
-            {walletAddress && (
-              <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-green-400" />
-                <span className="text-xs font-mono text-green-400">
-                  {truncateAddress(walletAddress)}
-                </span>
-              </div>
-            )}
           </div>
         )}
 
