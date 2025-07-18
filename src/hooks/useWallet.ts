@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useActiveAccount, useActiveWallet, useConnect, useDisconnect } from "thirdweb/react";
-import { createWallet } from "thirdweb/wallets";
+import { createWallet, inAppWallet, walletConnect } from "thirdweb/wallets";
 import { client } from '../lib/thirdweb';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -72,12 +72,25 @@ export function useWallet() {
     setError(null);
 
     try {
-      const walletOption = WALLET_OPTIONS.find(w => w.id === walletId);
-      if (!walletOption) {
-        throw new Error('Wallet not found');
+      let wallet;
+      
+      // Create wallet based on the selected type
+      switch (walletId) {
+        case 'metamask':
+          wallet = createWallet("io.metamask" as any);
+          break;
+        case 'coinbase':
+          wallet = createWallet("com.coinbase.wallet" as any);
+          break;
+        case 'walletconnect':
+          wallet = walletConnect();
+          break;
+        case 'rainbow':
+          wallet = createWallet("me.rainbow" as any);
+          break;
+        default:
+          throw new Error('Unsupported wallet type');
       }
-
-      const wallet = createWallet(walletOption.walletId);
       
       const connectedWallet = await connect(async () => {
         await wallet.connect({ client });
