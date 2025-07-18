@@ -4,8 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import Welcome from "./pages/Welcome";
+import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import Trade from "./pages/Trade";
 import Portfolio from "./pages/Portfolio";
@@ -23,23 +26,72 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <AppLayout>
+      <AuthProvider>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Welcome />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/trade" element={<Trade />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/assets" element={<Assets />} />
-            <Route path="/staking" element={<Staking />} />
-            <Route path="/markets" element={<Markets />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/system-health" element={<SystemHealth />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/trade" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Trade />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/portfolio" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Portfolio />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/assets" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Assets />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/staking" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Staking />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/markets" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Markets />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Analytics />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/system-health" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <SystemHealth />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </AppLayout>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -1,22 +1,28 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Welcome() {
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Start fade-in animation
     setIsVisible(true);
 
-    // Redirect to dashboard after animation completes
+    // Check authentication and redirect accordingly
     const timer = setTimeout(() => {
-      navigate("/dashboard");
+      if (isAuthenticated) {
+        navigate("/dashboard");
+      } else {
+        navigate("/signin");
+      }
     }, 2500);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, isAuthenticated]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">

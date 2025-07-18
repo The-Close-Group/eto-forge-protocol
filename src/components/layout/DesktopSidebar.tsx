@@ -9,7 +9,9 @@ import {
   BarChart3, 
   Activity,
   Shield,
-  Settings
+  Settings,
+  LogOut,
+  User
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,6 +25,9 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from "@/hooks/useWallet";
+import { Button } from "@/components/ui/button";
 
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -38,11 +43,17 @@ const navigationItems = [
 export function DesktopSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const { walletAddress } = useWallet();
   const isCollapsed = state === "collapsed";
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
     return location.pathname.startsWith(path);
+  };
+
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
@@ -65,6 +76,24 @@ export function DesktopSidebar() {
       </div>
 
       <SidebarContent className="p-0">
+        {/* User Info */}
+        {!isCollapsed && user && (
+          <div className="p-4 border-b border-border/50 space-y-2">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground truncate">{user.email}</span>
+            </div>
+            {walletAddress && (
+              <div className="flex items-center gap-2">
+                <Wallet className="h-4 w-4 text-green-400" />
+                <span className="text-xs font-mono text-green-400">
+                  {truncateAddress(walletAddress)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         <SidebarGroup className={`${isCollapsed ? "px-2 py-4" : "p-4"}`}>
           <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
             Navigation
@@ -94,7 +123,18 @@ export function DesktopSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className={`mt-auto ${isCollapsed ? "p-2" : "p-4"}`}>
+        <div className={`mt-auto space-y-2 ${isCollapsed ? "p-2" : "p-4"}`}>
+          {!isCollapsed && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </Button>
+          )}
           <SidebarTrigger className={`${isCollapsed ? "w-8 h-8 mx-auto flex" : "w-full"}`} />
         </div>
       </SidebarContent>
