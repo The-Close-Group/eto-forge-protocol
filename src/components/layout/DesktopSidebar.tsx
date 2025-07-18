@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -49,7 +50,7 @@ export function DesktopSidebar() {
     >
       <div className="p-4 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+          <div className={`w-8 h-8 bg-primary rounded-md flex items-center justify-center ${isCollapsed ? "mx-auto" : ""}`}>
             <span className="text-primary-foreground font-bold text-sm">E</span>
           </div>
           {!isCollapsed && (
@@ -62,7 +63,7 @@ export function DesktopSidebar() {
       </div>
 
       <SidebarContent className="p-0">
-        <SidebarGroup className="p-4">
+        <SidebarGroup className={`${isCollapsed ? "px-2 py-4" : "p-4"}`}>
           <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
             Navigation
           </SidebarGroupLabel>
@@ -74,14 +75,14 @@ export function DesktopSidebar() {
                     <NavLink
                       to={item.url}
                       className={({ isActive: linkActive }) =>
-                        `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                        `flex items-center ${isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-2"} rounded-md transition-colors ${
                           isActive(item.url) || linkActive
                             ? "bg-primary text-primary-foreground"
                             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         }`
                       }
                     >
-                      <item.icon className="h-4 w-4 shrink-0" />
+                      <item.icon className={`h-5 w-5 shrink-0 ${isCollapsed ? "" : ""}`} />
                       {!isCollapsed && <span className="font-medium">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -91,8 +92,8 @@ export function DesktopSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="mt-auto p-4">
-          <SidebarTrigger className="w-full" />
+        <div className={`mt-auto ${isCollapsed ? "p-2" : "p-4"}`}>
+          <SidebarTrigger className={`${isCollapsed ? "w-8 h-8 mx-auto flex" : "w-full"}`} />
         </div>
       </SidebarContent>
     </Sidebar>
