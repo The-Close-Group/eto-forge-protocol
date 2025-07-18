@@ -42,13 +42,13 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-lg space-y-8">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold font-mono uppercase tracking-wider">
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-bold font-mono uppercase tracking-wider">
             ETO Trading
           </h1>
-          <p className="text-muted-foreground font-mono">
+          <p className="text-muted-foreground font-mono text-lg">
             Cross-chain trading platform
           </p>
         </div>
@@ -56,48 +56,48 @@ export default function SignIn() {
         {/* Sign In Form */}
         {!isAuthenticated ? (
           <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-xl font-medium">Sign In</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-2xl font-medium text-center">Sign In</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+              <form onSubmit={handleSignIn} className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="email" className="text-base">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="industrial-input"
+                    className="industrial-input h-12"
                     placeholder="Enter your email"
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="password" className="text-base">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="industrial-input"
+                    className="industrial-input h-12"
                     placeholder="Enter your password"
                     minLength={6}
                   />
                 </div>
 
                 {error && (
-                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-sm">
-                    <AlertCircle className="h-4 w-4 text-destructive" />
+                  <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-sm">
+                    <AlertCircle className="h-5 w-5 text-destructive" />
                     <span className="text-sm text-destructive">{error}</span>
                   </div>
                 )}
 
                 <Button 
                   type="submit" 
-                  className="w-full industrial-button" 
+                  className="w-full industrial-button h-12 text-base" 
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -111,16 +111,17 @@ export default function SignIn() {
             <WalletConnector />
 
             {/* Continue Button */}
-            <div className="text-center space-y-4">
-              <p className="text-sm text-muted-foreground">
+            <div className="text-center space-y-6">
+              <p className="text-base text-muted-foreground">
                 {walletAddress ? 'Ready to start trading!' : 'Connect your wallet to access all features.'}
               </p>
               <Button 
                 onClick={handleContinue}
-                className="w-full industrial-button"
+                className="w-full industrial-button h-12 text-base"
+                size="lg"
               >
                 Continue to Dashboard
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </div>
           </>

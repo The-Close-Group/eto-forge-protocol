@@ -35,32 +35,33 @@ export function WalletConnector() {
     const connectedWallet = getConnectedWalletInfo();
     
     return (
-      <Card className="border-border bg-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-medium">Wallet Connected</CardTitle>
+      <Card className="border-border bg-card w-full max-w-lg">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <CardTitle className="text-xl font-medium">Wallet Connected</CardTitle>
           <CheckCircle className="h-6 w-6 text-green-400" />
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3 p-3 bg-muted rounded-sm">
-            <div className="text-lg">{connectedWallet.icon}</div>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-4 p-4 bg-muted rounded-sm">
+            <div className="text-2xl">{connectedWallet.icon}</div>
             <div className="flex-1">
-              <div className="font-medium text-sm">{connectedWallet.name}</div>
-              <div className="font-mono text-xs text-muted-foreground">
+              <div className="font-medium text-base">{connectedWallet.name}</div>
+              <div className="font-mono text-sm text-muted-foreground mt-1">
                 {truncateAddress(walletAddress)}
               </div>
             </div>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
+            <Wallet className="h-5 w-5 text-muted-foreground" />
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={disconnectWallet}>
+          <div className="flex gap-3">
+            <Button variant="outline" size="default" onClick={disconnectWallet} className="flex-1">
               Disconnect
             </Button>
             <Button 
               variant="ghost" 
-              size="sm"
+              size="default"
               onClick={() => window.open(`https://etherscan.io/address/${walletAddress}`, '_blank')}
+              className="flex-1"
             >
-              <ExternalLink className="h-4 w-4 mr-1" />
+              <ExternalLink className="h-4 w-4 mr-2" />
               View on Etherscan
             </Button>
           </div>
@@ -70,23 +71,22 @@ export function WalletConnector() {
   }
 
   return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle className="text-lg font-medium">Connect Wallet</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Connect your wallet to access trading features and manage your portfolio.
+    <Card className="border-border bg-card w-full max-w-lg">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-medium text-center">Connect Wallet</CardTitle>
+        <p className="text-sm text-muted-foreground text-center mt-2">
+          Choose your preferred wallet to connect to the ETO Trading platform
         </p>
-
+      </CardHeader>
+      <CardContent className="space-y-6">
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-sm">
-            <AlertCircle className="h-4 w-4 text-destructive" />
+          <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-sm">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
             <span className="text-sm text-destructive">{error}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           {WALLET_OPTIONS.map((wallet) => (
             <WalletOption
               key={wallet.id}
@@ -98,9 +98,11 @@ export function WalletConnector() {
           ))}
         </div>
 
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          This is a demo interface. No actual wallet connection is made.
-        </p>
+        <div className="text-center pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground">
+            This is a demo interface. No actual wallet connection is made.
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
