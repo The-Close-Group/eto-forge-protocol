@@ -1,8 +1,5 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useActiveAccount, useActiveWallet, useConnect, useDisconnect } from "thirdweb/react";
-import { createWallet, walletConnect } from "thirdweb/wallets";
-import { client } from '../lib/thirdweb';
 import { useAuth } from '../contexts/AuthContext';
 
 export interface WalletOption {
@@ -44,36 +41,35 @@ export const WALLET_OPTIONS: WalletOption[] = [
   }
 ];
 
+// Mock wallet addresses for different wallet types
+const MOCK_ADDRESSES = {
+  metamask: '0x742d35Cc1E8D7a4f3c9b9f1B5A5c8e6F4f2B1A3E',
+  coinbase: '0x8Ba1f109551bD432803012645Hac136c22C5c9',
+  walletconnect: '0x123f7890AbCdEf123456789012345678901234567',
+  rainbow: '0x456B1a2C3d4E5f6A7b8C9d0E1f2A3b4C5d6E7f8A'
+};
+
 export function useWallet() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectedWalletType, setConnectedWalletType] = useState<string>('');
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  const account = useActiveAccount();
-  const wallet = useActiveWallet();
-  const { connect } = useConnect();
-  const { disconnect } = useDisconnect();
   const { updateWalletAddress } = useAuth();
 
-  // Update auth context when wallet connection changes
+  // Load saved wallet state on mount
   useEffect(() => {
-    console.log('Wallet connection state changed:', { 
-      accountAddress: account?.address, 
-      walletConnected: !!wallet 
-    });
+    const savedWallet = localStorage.getItem('eto-wallet');
+    const savedWalletType = localStorage.getItem('eto-wallet-type');
     
-    if (account?.address) {
-      updateWalletAddress(account.address);
-      const walletType = localStorage.getItem('eto-wallet-type') || 'metamask';
-      setConnectedWalletType(walletType);
-      console.log('Wallet connected successfully:', { address: account.address, type: walletType });
-    } else {
-      updateWalletAddress('');
-      setConnectedWalletType('');
-      console.log('Wallet disconnected');
+    if (savedWallet && savedWalletType) {
+      console.log('Loading saved wallet connection:', { address: savedWallet, type: savedWalletType });
+      setWalletAddress(savedWallet);
+      setConnectedWalletType(savedWalletType);
+      updateWalletAddress(savedWallet);
     }
-  }, [account?.address, wallet, updateWalletAddress]);
+  }, [updateWalletAddress]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -94,7 +90,7 @@ export function useWallet() {
   }, []);
 
   const connectWallet = useCallback(async (walletId: string) => {
-    console.log('Starting wallet connection for:', walletId);
+    console.log('Starting mock wallet connection for:', walletId);
     
     // Reset any previous state
     resetConnectionState();
@@ -109,51 +105,42 @@ export function useWallet() {
     }, 30000); // 30 second timeout
 
     try {
-      let wallet;
+      console.log('Simulating wallet connection...');
       
-      console.log('Creating wallet instance for:', walletId);
+      // Simulate connection delay
+      await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
       
-      // Create wallet based on the selected type with proper client
-      switch (walletId) {
-        case 'metamask':
-          wallet = createWallet("io.metamask");
-          break;
-        case 'coinbase':
-          wallet = createWallet("com.coinbase.wallet");
-          break;
-        case 'walletconnect':
-          wallet = walletConnect();
-          break;
-        case 'rainbow':
-          wallet = createWallet("me.rainbow");
-          break;
-        default:
-          throw new Error(`Unsupported wallet type: ${walletId}`);
+      // Simulate random connection failures (10% chance)
+      if (Math.random() < 0.1) {
+        throw new Error('Connection failed randomly (simulated)');
       }
       
-      console.log('Wallet instance created, attempting connection...');
+      // Get mock address for this wallet type
+      const mockAddress = MOCK_ADDRESSES[walletId as keyof typeof MOCK_ADDRESSES];
       
-      const connectedWallet = await connect(async () => {
-        console.log('Connecting wallet...');
-        await wallet.connect({ client });
-        console.log('Wallet connected successfully');
-        return wallet;
-      });
-
-      if (connectedWallet) {
-        localStorage.setItem('eto-wallet-type', walletId);
-        setConnectedWalletType(walletId);
-        console.log('Connection completed successfully for:', walletId);
-        
-        // Clear timeout on success
-        if (connectionTimeoutRef.current) {
-          clearTimeout(connectionTimeoutRef.current);
-          connectionTimeoutRef.current = null;
-        }
+      if (!mockAddress) {
+        throw new Error(`Unsupported wallet type: ${walletId}`);
+      }
+      
+      console.log('Mock wallet connected successfully:', { walletId, address: mockAddress });
+      
+      // Update state
+      setWalletAddress(mockAddress);
+      setConnectedWalletType(walletId);
+      updateWalletAddress(mockAddress);
+      
+      // Save to localStorage
+      localStorage.setItem('eto-wallet', mockAddress);
+      localStorage.setItem('eto-wallet-type', walletId);
+      
+      // Clear timeout on success
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+        connectionTimeoutRef.current = null;
       }
       
     } catch (err: any) {
-      console.error('Wallet connection error:', err);
+      console.error('Mock wallet connection error:', err);
       
       let errorMessage = 'Failed to connect wallet';
       
@@ -175,27 +162,30 @@ export function useWallet() {
         connectionTimeoutRef.current = null;
       }
     }
-  }, [connect, resetConnectionState]);
+  }, [resetConnectionState, updateWalletAddress]);
 
   const disconnectWallet = useCallback(async () => {
-    console.log('Disconnecting wallet...');
+    console.log('Disconnecting mock wallet...');
     
     try {
-      if (wallet) {
-        disconnect(wallet);
-      }
-      localStorage.removeItem('eto-wallet-type');
+      setWalletAddress(null);
       setConnectedWalletType('');
+      updateWalletAddress('');
       setError(null);
-      console.log('Wallet disconnected successfully');
+      
+      // Clear localStorage
+      localStorage.removeItem('eto-wallet');
+      localStorage.removeItem('eto-wallet-type');
+      
+      console.log('Mock wallet disconnected successfully');
     } catch (err: any) {
       console.error('Failed to disconnect wallet:', err);
       setError('Failed to disconnect wallet');
     }
-  }, [disconnect, wallet]);
+  }, [updateWalletAddress]);
 
   return {
-    walletAddress: account?.address || null,
+    walletAddress,
     connectedWalletType,
     isConnecting,
     error,

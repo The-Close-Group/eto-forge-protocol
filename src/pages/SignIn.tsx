@@ -39,7 +39,7 @@ export default function SignIn() {
             Connect your wallet to access the ETO Trading platform
           </p>
           <p className="text-xs text-muted-foreground">
-            This is a demo interface. No actual wallet connection is made.
+            This is a demo interface with simulated wallet connections for development purposes.
           </p>
         </div>
       </div>
