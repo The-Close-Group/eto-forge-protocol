@@ -1,64 +1,53 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useActiveAccount, useConnect, useDisconnect } from "thirdweb/react";
+import { createWallet, injectedProvider } from "thirdweb/wallets";
+import { client } from '../lib/thirdweb';
 import { useAuth } from '../contexts/AuthContext';
-
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
 
 export function useWallet() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user, updateWalletAddress } = useAuth();
-
-  const isMetaMaskInstalled = typeof window !== 'undefined' && !!window.ethereum;
+  
+  const account = useActiveAccount();
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
 
   const connectWallet = useCallback(async () => {
-    if (!isMetaMaskInstalled) {
-      setError('MetaMask is not installed. Please install MetaMask to continue.');
-      return;
-    }
-
     setIsConnecting(true);
     setError(null);
 
     try {
-      const accounts = await window.ethereum.request({ 
-        method: 'eth_requestAccounts' 
-      });
+      const wallet = createWallet("io.metamask");
+      const account = await connect(() => wallet);
       
-      if (accounts.length > 0) {
-        const address = accounts[0];
-        updateWalletAddress(address);
-        localStorage.setItem('eto-wallet', address);
+      if (account) {
+        updateWalletAddress(account.address);
+        localStorage.setItem('eto-wallet', account.address);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
     } finally {
       setIsConnecting(false);
     }
-  }, [isMetaMaskInstalled, updateWalletAddress]);
+  }, [connect, updateWalletAddress]);
 
-  const disconnectWallet = useCallback(() => {
-    updateWalletAddress('');
-    localStorage.removeItem('eto-wallet');
-  }, [updateWalletAddress]);
-
-  useEffect(() => {
-    // Check if wallet was previously connected
-    const savedWallet = localStorage.getItem('eto-wallet');
-    if (savedWallet && user && !user.walletAddress) {
-      updateWalletAddress(savedWallet);
+  const disconnectWallet = useCallback(async () => {
+    try {
+      await disconnect();
+      updateWalletAddress('');
+      localStorage.removeItem('eto-wallet');
+    } catch (err: any) {
+      console.error('Failed to disconnect wallet:', err);
     }
-  }, [user, updateWalletAddress]);
+  }, [disconnect, updateWalletAddress]);
 
   return {
-    walletAddress: user?.walletAddress,
+    walletAddress: account?.address || user?.walletAddress,
     isConnecting,
     error,
-    isMetaMaskInstalled,
+    isMetaMaskInstalled: true, // thirdweb handles wallet detection
     connectWallet,
     disconnectWallet
   };

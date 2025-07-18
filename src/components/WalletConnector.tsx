@@ -4,14 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
+import { ConnectButton } from "thirdweb/react";
+import { client } from '@/lib/thirdweb';
+import { createWallet } from "thirdweb/wallets";
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("walletConnect"),
+];
 
 export function WalletConnector() {
   const { 
     walletAddress, 
     isConnecting, 
     error, 
-    isMetaMaskInstalled, 
-    connectWallet, 
     disconnectWallet 
   } = useWallet();
 
@@ -58,15 +65,6 @@ export function WalletConnector() {
         <p className="text-sm text-muted-foreground">
           Connect your wallet to access trading features and manage your portfolio.
         </p>
-        
-        {!isMetaMaskInstalled && (
-          <div className="flex items-center gap-2 p-3 bg-warning/10 border border-warning/20 rounded-sm">
-            <AlertCircle className="h-4 w-4 text-warning" />
-            <span className="text-sm text-warning">
-              MetaMask not detected. Please install MetaMask to continue.
-            </span>
-          </div>
-        )}
 
         {error && (
           <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-sm">
@@ -75,25 +73,34 @@ export function WalletConnector() {
           </div>
         )}
 
-        <Button 
-          onClick={connectWallet}
-          disabled={!isMetaMaskInstalled || isConnecting}
-          className="w-full"
-        >
-          <Wallet className="h-4 w-4 mr-2" />
-          {isConnecting ? 'Connecting...' : 'Connect MetaMask'}
-        </Button>
-
-        {!isMetaMaskInstalled && (
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => window.open('https://metamask.io/download/', '_blank')}
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Install MetaMask
-          </Button>
-        )}
+        <div className="w-full">
+          <ConnectButton
+            client={client}
+            wallets={wallets}
+            theme="dark"
+            connectButton={{
+              style: {
+                backgroundColor: "hsl(var(--primary))",
+                color: "hsl(var(--primary-foreground))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "calc(var(--radius) - 4px)",
+                fontFamily: "var(--font-mono)",
+                fontSize: "14px",
+                fontWeight: "500",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                padding: "8px 16px",
+                width: "100%",
+                minHeight: "40px"
+              }
+            }}
+            connectModal={{
+              size: "compact",
+              title: "Connect Wallet",
+              showThirdwebBranding: false,
+            }}
+          />
+        </div>
       </CardContent>
     </Card>
   );
