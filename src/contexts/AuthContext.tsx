@@ -35,8 +35,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (address) {
       const newUser = { walletAddress: address };
       setUser(newUser);
+      localStorage.setItem('eto-wallet', address);
     } else {
       setUser(null);
+      localStorage.removeItem('eto-wallet');
     }
   };
 

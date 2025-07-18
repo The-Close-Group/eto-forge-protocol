@@ -2,9 +2,9 @@
 import { createThirdwebClient } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
 
-// Create the thirdweb client
+// Create the thirdweb client with your Client ID
 export const client = createThirdwebClient({
-  clientId: import.meta.env.VITE_THIRDWEB_CLIENT_ID || "your-client-id-here"
+  clientId: "274d030c6ddb7171139eb300bc6d7465"
 });
 
 // Define supported chains

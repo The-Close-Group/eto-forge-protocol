@@ -2,16 +2,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wallet, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { Wallet, CheckCircle, AlertCircle, ExternalLink, Globe } from 'lucide-react';
+import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useWallet, WALLET_OPTIONS } from '@/hooks/useWallet';
 import { WalletOption } from './WalletOption';
 import { useAuth } from '@/contexts/AuthContext';
+import { ChainSelector } from './ChainSelector';
 
 export function WalletConnector() {
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
   const { signOut } = useAuth();
+  const account = useActiveAccount();
+  const activeChain = useActiveWalletChain();
   const { 
-    walletAddress, 
     connectedWalletType,
     isConnecting, 
     error, 
@@ -38,7 +41,7 @@ export function WalletConnector() {
     return WALLET_OPTIONS.find(w => w.id === connectedWalletType) || WALLET_OPTIONS[0];
   };
 
-  if (walletAddress) {
+  if (account?.address) {
     const connectedWallet = getConnectedWalletInfo();
     
     return (
@@ -53,11 +56,20 @@ export function WalletConnector() {
             <div className="flex-1">
               <div className="font-medium text-base">{connectedWallet.name}</div>
               <div className="font-mono text-sm text-muted-foreground mt-1">
-                {truncateAddress(walletAddress)}
+                {truncateAddress(account.address)}
               </div>
+              {activeChain && (
+                <div className="flex items-center gap-1 mt-1">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{activeChain.name}</span>
+                </div>
+              )}
             </div>
             <Wallet className="h-5 w-5 text-muted-foreground" />
           </div>
+
+          <ChainSelector />
+
           <div className="flex gap-3">
             <Button variant="outline" size="default" onClick={handleDisconnect} className="flex-1">
               Disconnect
@@ -65,11 +77,11 @@ export function WalletConnector() {
             <Button 
               variant="ghost" 
               size="default"
-              onClick={() => window.open(`https://etherscan.io/address/${walletAddress}`, '_blank')}
+              onClick={() => window.open(`https://etherscan.io/address/${account.address}`, '_blank')}
               className="flex-1"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              View on Etherscan
+              View on Explorer
             </Button>
           </div>
         </CardContent>
@@ -107,7 +119,7 @@ export function WalletConnector() {
 
         <div className="text-center pt-4 border-t border-border">
           <p className="text-xs text-muted-foreground">
-            This is a demo interface. No actual wallet connection is made.
+            Connect your real Web3 wallet to access the ETO Trading platform
           </p>
         </div>
       </CardContent>
