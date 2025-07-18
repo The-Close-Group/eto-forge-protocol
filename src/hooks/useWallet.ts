@@ -122,9 +122,7 @@ export function useWallet() {
           wallet = createWallet("com.coinbase.wallet");
           break;
         case 'walletconnect':
-          wallet = walletConnect({
-            projectId: "274d030c6ddb7171139eb300bc6d7465" // Using the client ID as project ID
-          });
+          wallet = walletConnect();
           break;
         case 'rainbow':
           wallet = createWallet("me.rainbow");
