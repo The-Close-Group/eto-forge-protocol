@@ -16,8 +16,8 @@ export default function Dashboard() {
         <CardContent>
           <div className="text-4xl font-bold">$127,456</div>
           <div className="flex items-center mt-2">
-            <TrendingUp className="h-4 w-4 text-data-positive mr-1" />
-            <span className="text-data-positive font-medium">+5.2%</span>
+            <TrendingUp className="h-4 w-4 text-green-400 mr-1" />
+            <span className="text-green-400 font-medium">+5.2%</span>
             <span className="text-muted-foreground ml-2">+$6,234 this month</span>
           </div>
         </CardContent>
@@ -42,7 +42,7 @@ export default function Dashboard() {
             <Percent className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12.5%</div>
+            <div className="text-2xl font-bold text-green-400">12.5%</div>
             <p className="text-xs text-muted-foreground">Weighted average</p>
           </CardContent>
         </Card>
@@ -53,7 +53,7 @@ export default function Dashboard() {
             <Coins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$456</div>
+            <div className="text-2xl font-bold text-green-400">$456</div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
@@ -114,7 +114,7 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">Ethereum Pool • 2 hours ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium">+2.5 ETH</p>
+                <p className="font-medium text-green-400">+2.5 ETH</p>
                 <p className="text-sm text-muted-foreground">$4,567</p>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">USDC Pool • 5 hours ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium">+45 USDC</p>
+                <p className="font-medium text-green-400">+45 USDC</p>
                 <p className="text-sm text-muted-foreground">Staking rewards</p>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">BTC-ETH Pool • 1 day ago</p>
               </div>
               <div className="text-right">
-                <p className="font-medium">Fee earned</p>
+                <p className="font-medium text-green-400">Fee earned</p>
                 <p className="text-sm text-muted-foreground">$12.30</p>
               </div>
             </div>

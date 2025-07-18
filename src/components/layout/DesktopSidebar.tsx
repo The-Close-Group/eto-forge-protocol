@@ -8,6 +8,7 @@ import {
   Coins, 
   BarChart3, 
   Activity,
+  Shield,
   Settings
 } from "lucide-react";
 import {
@@ -31,6 +32,7 @@ const navigationItems = [
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "Markets", url: "/markets", icon: BarChart3 },
   { title: "Analytics", url: "/analytics", icon: Activity },
+  { title: "System Health", url: "/system-health", icon: Shield },
 ];
 
 export function DesktopSidebar() {
