@@ -7,6 +7,21 @@ import { Link } from "react-router-dom";
 export default function Dashboard() {
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
+      {/* Total Portfolio Value - Prominent Widget */}
+      <Card className="bg-card border-border">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-lg font-medium">Total Portfolio Value</CardTitle>
+          <Wallet className="h-6 w-6 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-4xl font-bold">$127,456</div>
+          <div className="flex items-center mt-2">
+            <TrendingUp className="h-4 w-4 text-data-positive mr-1" />
+            <span className="text-data-positive font-medium">+5.2%</span>
+            <span className="text-muted-foreground ml-2">+$6,234 this month</span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

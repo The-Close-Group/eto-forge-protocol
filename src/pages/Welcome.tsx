@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,10 +25,10 @@ export default function Welcome() {
           ? "opacity-100 translate-y-0" 
           : "opacity-0 translate-y-8"
       }`}>
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-mono text-foreground mb-4 uppercase tracking-wider">
           Welcome to ETO
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
+        <p className="text-lg md:text-xl font-mono text-muted-foreground max-w-2xl mx-auto px-4 uppercase tracking-wide">
           Cross-chain trading powered by Layer Zero with Dynamic Market Making
         </p>
       </div>
