@@ -44,45 +44,45 @@ export function DesktopSidebar() {
 
   return (
     <Sidebar
-      className={`hidden md:flex border-r border-border/50 ${isCollapsed ? "w-14" : "w-64"}`}
+      className={`hidden md:flex border-r border-border/50 ${isCollapsed ? "w-20" : "w-80"}`}
       collapsible="icon"
     >
-      <div className="p-4 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">E</span>
+      <div className="p-6 border-b border-border/50">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-primary-foreground font-bold text-lg">E</span>
           </div>
           {!isCollapsed && (
             <div>
-              <h2 className="font-semibold text-foreground">ETO</h2>
-              <p className="text-xs text-muted-foreground">Trading Platform</p>
+              <h2 className="font-semibold text-foreground text-xl">ETO</h2>
+              <p className="text-base text-muted-foreground">Trading Platform</p>
             </div>
           )}
         </div>
       </div>
 
       <SidebarContent className="p-0">
-        <SidebarGroup className="p-4">
-          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
+        <SidebarGroup className="p-6">
+          <SidebarGroupLabel className={isCollapsed ? "sr-only" : "text-lg font-medium mb-4"}>
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="space-y-3">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
                       className={({ isActive: linkActive }) =>
-                        `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                        `flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
                           isActive(item.url) || linkActive
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            ? "bg-primary text-primary-foreground shadow-lg border border-border"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-md"
                         }`
                       }
                     >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      <item.icon className="h-6 w-6 shrink-0" />
+                      {!isCollapsed && <span className="font-medium text-lg">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -91,8 +91,8 @@ export function DesktopSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="mt-auto p-4">
-          <SidebarTrigger className="w-full" />
+        <div className="mt-auto p-6">
+          <SidebarTrigger className="w-full h-12 text-lg hover:scale-105 transition-transform" />
         </div>
       </SidebarContent>
     </Sidebar>
