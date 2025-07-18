@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wallet, CheckCircle, AlertCircle, ExternalLink, Globe } from 'lucide-react';
+import { Wallet, CheckCircle, AlertCircle, ExternalLink, Globe, RefreshCw } from 'lucide-react';
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useWallet, WALLET_OPTIONS } from '@/hooks/useWallet';
 import { WalletOption } from './WalletOption';
@@ -19,7 +19,8 @@ export function WalletConnector() {
     isConnecting, 
     error, 
     connectWallet,
-    disconnectWallet 
+    disconnectWallet,
+    resetConnectionState
   } = useWallet();
 
   const truncateAddress = (address: string) => {
@@ -27,6 +28,7 @@ export function WalletConnector() {
   };
 
   const handleConnect = async (walletId: string) => {
+    console.log('User clicked connect for wallet:', walletId);
     setConnectingWalletId(walletId);
     await connectWallet(walletId);
     setConnectingWalletId(null);
@@ -35,6 +37,11 @@ export function WalletConnector() {
   const handleDisconnect = async () => {
     await disconnectWallet();
     signOut();
+  };
+
+  const handleRetry = () => {
+    console.log('User clicked retry');
+    resetConnectionState();
   };
 
   const getConnectedWalletInfo = () => {
@@ -108,7 +115,20 @@ export function WalletConnector() {
                   Make sure popups are enabled for this site and try again
                 </div>
               )}
+              {error.includes('timeout') && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  The connection took too long. Please check your wallet and try again.
+                </div>
+              )}
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRetry}
+              className="ml-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </div>
         )}
 
