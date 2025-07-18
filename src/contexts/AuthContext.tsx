@@ -2,14 +2,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
-  email: string;
-  walletAddress?: string;
+  walletAddress: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (email: string, password: string) => Promise<boolean>;
   signOut: () => void;
   updateWalletAddress: (address: string) => void;
 }
@@ -21,42 +19,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Load auth state from localStorage on mount
-    const savedUser = localStorage.getItem('eto-user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const savedWallet = localStorage.getItem('eto-wallet');
+    if (savedWallet) {
+      setUser({ walletAddress: savedWallet });
     }
   }, []);
 
-  const signIn = async (email: string, password: string): Promise<boolean> => {
-    // Simple frontend validation - in real app this would be API call
-    if (email && password.length >= 6) {
-      const newUser = { email };
-      setUser(newUser);
-      localStorage.setItem('eto-user', JSON.stringify(newUser));
-      return true;
-    }
-    return false;
-  };
-
   const signOut = () => {
     setUser(null);
-    localStorage.removeItem('eto-user');
     localStorage.removeItem('eto-wallet');
+    localStorage.removeItem('eto-wallet-type');
   };
 
   const updateWalletAddress = (address: string) => {
-    if (user) {
-      const updatedUser = { ...user, walletAddress: address };
-      setUser(updatedUser);
-      localStorage.setItem('eto-user', JSON.stringify(updatedUser));
+    if (address) {
+      const newUser = { walletAddress: address };
+      setUser(newUser);
+    } else {
+      setUser(null);
     }
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      isAuthenticated: !!user,
-      signIn,
+      isAuthenticated: !!user?.walletAddress,
       signOut,
       updateWalletAddress
     }}>

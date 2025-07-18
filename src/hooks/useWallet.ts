@@ -40,7 +40,7 @@ export function useWallet() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
-  const { user, updateWalletAddress } = useAuth();
+  const { updateWalletAddress } = useAuth();
 
   // Load wallet from localStorage on mount
   useEffect(() => {
@@ -103,7 +103,7 @@ export function useWallet() {
   };
 
   return {
-    walletAddress: connectedWallet || user?.walletAddress,
+    walletAddress: connectedWallet,
     connectedWalletType: getConnectedWalletType(),
     isConnecting,
     error,

@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { useWallet, WALLET_OPTIONS } from '@/hooks/useWallet';
 import { WalletOption } from './WalletOption';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function WalletConnector() {
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
+  const { signOut } = useAuth();
   const { 
     walletAddress, 
     connectedWalletType,
@@ -25,6 +27,11 @@ export function WalletConnector() {
     setConnectingWalletId(walletId);
     await connectWallet(walletId);
     setConnectingWalletId(null);
+  };
+
+  const handleDisconnect = async () => {
+    await disconnectWallet();
+    signOut();
   };
 
   const getConnectedWalletInfo = () => {
@@ -52,7 +59,7 @@ export function WalletConnector() {
             <Wallet className="h-5 w-5 text-muted-foreground" />
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" size="default" onClick={disconnectWallet} className="flex-1">
+            <Button variant="outline" size="default" onClick={handleDisconnect} className="flex-1">
               Disconnect
             </Button>
             <Button 
