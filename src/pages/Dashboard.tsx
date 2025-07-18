@@ -7,33 +7,6 @@ import { Link } from "react-router-dom";
 export default function Dashboard() {
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
-      {/* Hero Section */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Welcome to ETO</h1>
-        <p className="text-muted-foreground">
-          Cross-chain trading powered by Layer Zero with Dynamic Market Making
-        </p>
-      </div>
-
-      {/* Total Portfolio Value Widget */}
-      <Card className="w-full">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-medium">Total Portfolio Value</CardTitle>
-          <Wallet className="h-6 w-6 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="text-4xl font-bold">$123,456.78</div>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center text-green-400">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">+2.4%</span>
-              </div>
-              <span className="text-sm text-muted-foreground">+$2,891.34 (24h)</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

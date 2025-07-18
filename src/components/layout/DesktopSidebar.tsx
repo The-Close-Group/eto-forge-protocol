@@ -1,5 +1,5 @@
 
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   TrendingUp, 
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigationItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Trade", url: "/trade", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Assets", url: "/assets", icon: Layers },
@@ -39,7 +39,7 @@ export function DesktopSidebar() {
   const isCollapsed = state === "collapsed";
 
   const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
+    if (path === "/dashboard") return location.pathname === "/dashboard";
     return location.pathname.startsWith(path);
   };
 
@@ -49,7 +49,7 @@ export function DesktopSidebar() {
       collapsible="icon"
     >
       <div className="p-4 border-b border-border/50">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className={`w-8 h-8 bg-primary rounded-md flex items-center justify-center ${isCollapsed ? "mx-auto" : ""}`}>
             <span className="text-primary-foreground font-bold text-sm">E</span>
           </div>
@@ -59,7 +59,7 @@ export function DesktopSidebar() {
               <p className="text-xs text-muted-foreground">Trading Platform</p>
             </div>
           )}
-        </div>
+        </Link>
       </div>
 
       <SidebarContent className="p-0">

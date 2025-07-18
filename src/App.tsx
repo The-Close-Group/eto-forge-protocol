@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import Trade from "./pages/Trade";
 import Portfolio from "./pages/Portfolio";
@@ -23,7 +24,8 @@ const App = () => (
       <BrowserRouter>
         <AppLayout>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Welcome />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trade" element={<Trade />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/assets" element={<Assets />} />
