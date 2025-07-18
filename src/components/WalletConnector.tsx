@@ -3,22 +3,17 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
-import { useWallet } from '@/hooks/useWallet';
-import { ConnectButton } from "thirdweb/react";
-import { client } from '@/lib/thirdweb';
-import { createWallet } from "thirdweb/wallets";
-
-const wallets = [
-  createWallet("io.metamask"),
-  createWallet("com.coinbase.wallet"),
-  createWallet("walletConnect"),
-];
+import { useWallet, WALLET_OPTIONS } from '@/hooks/useWallet';
+import { WalletOption } from './WalletOption';
 
 export function WalletConnector() {
+  const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
   const { 
     walletAddress, 
+    connectedWalletType,
     isConnecting, 
     error, 
+    connectWallet,
     disconnectWallet 
   } = useWallet();
 
@@ -26,7 +21,19 @@ export function WalletConnector() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleConnect = async (walletId: string) => {
+    setConnectingWalletId(walletId);
+    await connectWallet(walletId);
+    setConnectingWalletId(null);
+  };
+
+  const getConnectedWalletInfo = () => {
+    return WALLET_OPTIONS.find(w => w.id === connectedWalletType) || WALLET_OPTIONS[0];
+  };
+
   if (walletAddress) {
+    const connectedWallet = getConnectedWalletInfo();
+    
     return (
       <Card className="border-border bg-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -34,9 +41,15 @@ export function WalletConnector() {
           <CheckCircle className="h-6 w-6 text-green-400" />
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-2 p-3 bg-muted rounded-sm">
+          <div className="flex items-center gap-3 p-3 bg-muted rounded-sm">
+            <div className="text-lg">{connectedWallet.icon}</div>
+            <div className="flex-1">
+              <div className="font-medium text-sm">{connectedWallet.name}</div>
+              <div className="font-mono text-xs text-muted-foreground">
+                {truncateAddress(walletAddress)}
+              </div>
+            </div>
             <Wallet className="h-4 w-4 text-muted-foreground" />
-            <span className="font-mono text-sm">{truncateAddress(walletAddress)}</span>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={disconnectWallet}>
@@ -73,34 +86,21 @@ export function WalletConnector() {
           </div>
         )}
 
-        <div className="w-full">
-          <ConnectButton
-            client={client}
-            wallets={wallets}
-            theme="dark"
-            connectButton={{
-              style: {
-                backgroundColor: "hsl(var(--primary))",
-                color: "hsl(var(--primary-foreground))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "calc(var(--radius) - 4px)",
-                fontFamily: "var(--font-mono)",
-                fontSize: "14px",
-                fontWeight: "500",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                padding: "8px 16px",
-                width: "100%",
-                minHeight: "40px"
-              }
-            }}
-            connectModal={{
-              size: "compact",
-              title: "Connect Wallet",
-              showThirdwebBranding: false,
-            }}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          {WALLET_OPTIONS.map((wallet) => (
+            <WalletOption
+              key={wallet.id}
+              wallet={wallet}
+              isConnecting={isConnecting}
+              connectingWalletId={connectingWalletId}
+              onConnect={handleConnect}
+            />
+          ))}
         </div>
+
+        <p className="text-xs text-muted-foreground text-center mt-4">
+          This is a demo interface. No actual wallet connection is made.
+        </p>
       </CardContent>
     </Card>
   );
