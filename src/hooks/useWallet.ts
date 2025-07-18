@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { useActiveAccount, useConnect, useDisconnect } from "thirdweb/react";
+import { useActiveAccount, useActiveWallet, useConnect, useDisconnect } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
 import { client } from '../lib/thirdweb';
 import { useAuth } from '../contexts/AuthContext';
@@ -50,6 +50,7 @@ export function useWallet() {
   const [connectedWalletType, setConnectedWalletType] = useState<string>('');
   
   const account = useActiveAccount();
+  const wallet = useActiveWallet();
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { updateWalletAddress } = useAuth();
@@ -95,13 +96,15 @@ export function useWallet() {
 
   const disconnectWallet = useCallback(async () => {
     try {
-      disconnect();
+      if (wallet) {
+        disconnect(wallet);
+      }
       localStorage.removeItem('eto-wallet-type');
       setConnectedWalletType('');
     } catch (err: any) {
       console.error('Failed to disconnect wallet:', err);
     }
-  }, [disconnect]);
+  }, [disconnect, wallet]);
 
   return {
     walletAddress: account?.address || null,
