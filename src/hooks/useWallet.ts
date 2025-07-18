@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useActiveAccount, useActiveWallet, useConnect, useDisconnect } from "thirdweb/react";
-import { createWallet, inAppWallet, walletConnect } from "thirdweb/wallets";
+import { createWallet, walletConnect } from "thirdweb/wallets";
 import { client } from '../lib/thirdweb';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -113,7 +113,7 @@ export function useWallet() {
       
       console.log('Creating wallet instance for:', walletId);
       
-      // Create wallet based on the selected type
+      // Create wallet based on the selected type with proper client
       switch (walletId) {
         case 'metamask':
           wallet = createWallet("io.metamask");
@@ -122,7 +122,9 @@ export function useWallet() {
           wallet = createWallet("com.coinbase.wallet");
           break;
         case 'walletconnect':
-          wallet = walletConnect();
+          wallet = walletConnect({
+            projectId: "274d030c6ddb7171139eb300bc6d7465" // Using the client ID as project ID
+          });
           break;
         case 'rainbow':
           wallet = createWallet("me.rainbow");
