@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,14 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowUpDown, Zap, Shield } from "lucide-react";
+import { ArrowUpDown, Zap, Shield, TrendingUp, Clock, AlertTriangle } from "lucide-react";
+import { ChainSelectionMode } from "@/components/ChainSelectionMode";
 
 export default function Trade() {
   const [tradeType, setTradeType] = useState("buy");
+  const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
   const [selectedChain, setSelectedChain] = useState("ethereum");
   const [fromAsset, setFromAsset] = useState("USDC");
   const [toAsset, setToAsset] = useState("ETH");
   const [amount, setAmount] = useState("");
+
+  const recommendedChain = "Arbitrum";
 
   return (
     <div className="p-6 pb-20 md:pb-6 max-w-4xl mx-auto space-y-6">
@@ -41,22 +46,49 @@ export default function Trade() {
                 </TabsList>
               </Tabs>
 
-              {/* Chain Selection */}
-              <div className="space-y-2">
-                <Label>Select Chain</Label>
-                <Select value={selectedChain} onValueChange={setSelectedChain}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ethereum">Ethereum (ETH)</SelectItem>
-                    <SelectItem value="polygon">Polygon (MATIC)</SelectItem>
-                    <SelectItem value="arbitrum">Arbitrum (ARB)</SelectItem>
-                    <SelectItem value="optimism">Optimism (OP)</SelectItem>
-                    <SelectItem value="bsc">BSC (BNB)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Chain Selection Mode */}
+              <ChainSelectionMode 
+                mode={chainMode}
+                onModeChange={setChainMode}
+                recommendedChain={recommendedChain}
+              />
+
+              {/* Chain Selection - Only shown in manual mode */}
+              {chainMode === "manual" && (
+                <div className="space-y-2">
+                  <Label>Select Chain</Label>
+                  <Select value={selectedChain} onValueChange={setSelectedChain}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ethereum">🔵 Ethereum (ETH)</SelectItem>
+                      <SelectItem value="polygon">🟣 Polygon (MATIC)</SelectItem>
+                      <SelectItem value="arbitrum">🔴 Arbitrum (ARB)</SelectItem>
+                      <SelectItem value="optimism">🔴 Optimism (OP)</SelectItem>
+                      <SelectItem value="bsc">🟡 BSC (BNB)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Auto-select chain display */}
+              {chainMode === "auto" && (
+                <div className="p-4 bg-accent/30 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-3">
+                    <Zap className="h-5 w-5 text-primary" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Using {recommendedChain}</span>
+                        <span className="px-2 py-1 text-xs bg-primary/20 text-primary rounded">OPTIMAL</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Lowest gas fees (~$2.50) • Fastest execution (~15s)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* From Asset */}
               <div className="space-y-2">
@@ -121,25 +153,47 @@ export default function Trade() {
                 <p className="text-sm text-muted-foreground">≈ $1,234.56</p>
               </div>
 
-              {/* Trade Summary */}
-              <div className="space-y-2 p-4 bg-accent/50 rounded-lg">
+              {/* Enhanced Trade Summary */}
+              <div className="space-y-3 p-4 bg-accent/50 rounded-lg">
                 <div className="flex justify-between text-sm">
                   <span>Exchange Rate</span>
-                  <span>1 ETH = 2,000 USDC</span>
+                  <span className="font-mono">1 ETH = 2,000 USDC</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Network Fee</span>
-                  <span>~$5.20</span>
+                  <span className="font-mono">~$2.50</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>ETO Fee</span>
-                  <span>0.3%</span>
+                  <span className="font-mono">0.3%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Price Impact</span>
+                  <span className="font-mono text-data-positive">+0.12%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Est. Time
+                  </span>
+                  <span className="font-mono">~15s</span>
                 </div>
                 <div className="flex justify-between font-medium pt-2 border-t">
-                  <span>Total</span>
-                  <span>≈ $1,239.76</span>
+                  <span>Total Cost</span>
+                  <span className="font-mono">≈ $1,237.26</span>
                 </div>
               </div>
+
+              {/* Price Impact Warning */}
+              {amount && parseFloat(amount) > 10000 && (
+                <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 text-warning mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-warning">High Price Impact</p>
+                    <p className="text-muted-foreground">Large trade may affect market price</p>
+                  </div>
+                </div>
+              )}
 
               <Button className="w-full" size="lg">
                 Connect Wallet to Trade
@@ -173,6 +227,15 @@ export default function Trade() {
                   </p>
                 </div>
               </div>
+              <div className="flex items-start gap-3">
+                <TrendingUp className="h-5 w-5 text-data-positive mt-0.5" />
+                <div>
+                  <p className="font-medium">Auto-Optimization</p>
+                  <p className="text-sm text-muted-foreground">
+                    Best rates across all supported chains
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -183,15 +246,54 @@ export default function Trade() {
             <CardContent className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">ETH Price</span>
-                <span className="text-sm font-medium">$2,000.00</span>
+                <span className="text-sm font-medium font-mono">$2,000.00</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">24h Change</span>
-                <span className="text-sm font-medium text-green-500">+2.5%</span>
+                <span className="text-sm font-medium font-mono text-data-positive">+2.5%</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">24h Volume</span>
-                <span className="text-sm font-medium">$1.2M</span>
+                <span className="text-sm font-medium font-mono">$1.2M</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Market Cap</span>
+                <span className="text-sm font-medium font-mono">$240.5B</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Chain Comparison</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Arbitrum</span>
+                  <span className="text-data-positive font-medium">$2.50</span>
+                </div>
+                <div className="w-full bg-muted h-1 rounded">
+                  <div className="bg-data-positive h-1 rounded w-[20%]"></div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Polygon</span>
+                  <span className="text-data-positive font-medium">$0.05</span>
+                </div>
+                <div className="w-full bg-muted h-1 rounded">
+                  <div className="bg-data-positive h-1 rounded w-[2%]"></div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Ethereum</span>
+                  <span className="text-muted-foreground font-medium">$25.80</span>
+                </div>
+                <div className="w-full bg-muted h-1 rounded">
+                  <div className="bg-muted-foreground h-1 rounded w-full"></div>
+                </div>
               </div>
             </CardContent>
           </Card>
