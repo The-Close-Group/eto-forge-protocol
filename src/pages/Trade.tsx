@@ -2,219 +2,192 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowUpDown, Zap, Shield, TrendingUp, Clock, AlertTriangle } from "lucide-react";
+import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
+import { AssetSelector } from "@/components/AssetSelector";
+import { TradeSummary } from "@/components/TradeSummary";
 
 export default function Trade() {
-  const [tradeType, setTradeType] = useState("buy");
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
   const [selectedChain, setSelectedChain] = useState("ethereum");
   const [fromAsset, setFromAsset] = useState("USDC");
   const [toAsset, setToAsset] = useState("ETH");
-  const [amount, setAmount] = useState("");
+  const [fromAmount, setFromAmount] = useState("");
+  const [toAmount, setToAmount] = useState("");
 
   const recommendedChain = "Arbitrum";
 
+  // Calculate toAmount based on fromAmount (simplified)
+  const calculateToAmount = (amount: string) => {
+    if (!amount) return "";
+    const rate = fromAsset === "USDC" && toAsset === "ETH" ? 0.0005 : 2000;
+    return (parseFloat(amount) * rate).toFixed(6);
+  };
+
+  const handleFromAmountChange = (amount: string) => {
+    setFromAmount(amount);
+    setToAmount(calculateToAmount(amount));
+  };
+
+  const handleSwapAssets = () => {
+    const tempAsset = fromAsset;
+    const tempAmount = fromAmount;
+    
+    setFromAsset(toAsset);
+    setToAsset(tempAsset);
+    setFromAmount(toAmount);
+    setToAmount(tempAmount);
+  };
+
+  const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
+
   return (
-    <div className="p-6 pb-20 md:pb-6 max-w-4xl mx-auto space-y-6">
+    <div className="p-6 pb-20 md:pb-6 max-w-6xl mx-auto space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Trade</h1>
         <p className="text-muted-foreground">
-          Execute cross-chain trades with optimal routing through our Dynamic Market Maker
+          Search and select assets, then execute cross-chain trades with optimal routing
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Trading Interface */}
-        <div className="lg:col-span-2">
+        {/* Main Trading Interface */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Asset Selection & Swap Interface */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5" />
-                Quick Trade
+                Asset Selection & Swap
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Tabs value={tradeType} onValueChange={setTradeType}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="buy">Buy</TabsTrigger>
-                  <TabsTrigger value="sell">Sell</TabsTrigger>
-                </TabsList>
-              </Tabs>
-
-              {/* Chain Selection Mode */}
-              <ChainSelectionMode 
-                mode={chainMode}
-                onModeChange={setChainMode}
-                recommendedChain={recommendedChain}
+              {/* From Asset */}
+              <AssetSelector
+                label="From"
+                selectedAsset={fromAsset}
+                onAssetChange={setFromAsset}
+                amount={fromAmount}
+                onAmountChange={handleFromAmountChange}
+                balance="1,234.56"
+                showBalance={true}
               />
 
-              {/* Chain Selection - Only shown in manual mode */}
-              {chainMode === "manual" && (
-                <div className="space-y-2">
-                  <Label>Select Chain</Label>
-                  <Select value={selectedChain} onValueChange={setSelectedChain}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ethereum">🔵 Ethereum (ETH)</SelectItem>
-                      <SelectItem value="polygon">🟣 Polygon (MATIC)</SelectItem>
-                      <SelectItem value="arbitrum">🔴 Arbitrum (ARB)</SelectItem>
-                      <SelectItem value="optimism">🔴 Optimism (OP)</SelectItem>
-                      <SelectItem value="bsc">🟡 BSC (BNB)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Auto-select chain display */}
-              {chainMode === "auto" && (
-                <div className="p-4 bg-accent/30 rounded-lg border border-primary/20">
-                  <div className="flex items-center gap-3">
-                    <Zap className="h-5 w-5 text-primary" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">Using {recommendedChain}</span>
-                        <span className="px-2 py-1 text-xs bg-primary/20 text-primary rounded">OPTIMAL</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Lowest gas fees (~$2.50) • Fastest execution (~15s)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* From Asset */}
-              <div className="space-y-2">
-                <Label>From</Label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                    />
-                  </div>
-                  <Select value={fromAsset} onValueChange={setFromAsset}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USDC">USDC</SelectItem>
-                      <SelectItem value="USDT">USDT</SelectItem>
-                      <SelectItem value="DAI">DAI</SelectItem>
-                      <SelectItem value="ETH">ETH</SelectItem>
-                      <SelectItem value="BTC">BTC</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-sm text-muted-foreground">Balance: 1,234.56 USDC</p>
-              </div>
-
-              {/* Swap Icon */}
+              {/* Swap Button */}
               <div className="flex justify-center">
-                <Button variant="outline" size="icon">
-                  <ArrowUpDown className="h-4 w-4" />
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleSwapAssets}
+                  className="hover:bg-accent transition-colors"
+                >
+                  <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
 
               {/* To Asset */}
-              <div className="space-y-2">
-                <Label>To</Label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={amount ? (parseFloat(amount) * 0.0005).toFixed(6) : ""}
-                      readOnly
-                    />
+              <AssetSelector
+                label="To"
+                selectedAsset={toAsset}
+                onAssetChange={setToAsset}
+                amount={toAmount}
+                readOnly={true}
+              />
+
+              {/* Smart Chain Selection */}
+              <div className="pt-4 border-t">
+                <ChainSelectionMode 
+                  mode={chainMode}
+                  onModeChange={setChainMode}
+                  recommendedChain={`${recommendedChain} (Best for ${fromAsset}→${toAsset})`}
+                />
+
+                {/* Manual Chain Selection */}
+                {chainMode === "manual" && (
+                  <div className="mt-4 p-4 bg-muted/50 rounded-sm">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {[
+                        { id: "ethereum", name: "Ethereum", icon: "🔵", fee: "$25.80", slow: true },
+                        { id: "arbitrum", name: "Arbitrum", icon: "🔴", fee: "$2.50", recommended: true },
+                        { id: "polygon", name: "Polygon", icon: "🟣", fee: "$0.05", fast: true },
+                        { id: "optimism", name: "Optimism", icon: "🔴", fee: "$3.20" },
+                        { id: "bsc", name: "BSC", icon: "🟡", fee: "$0.20" },
+                      ].map((chain) => (
+                        <Button
+                          key={chain.id}
+                          variant={selectedChain === chain.id ? "default" : "outline"}
+                          className="flex flex-col gap-1 h-auto p-3 text-xs"
+                          onClick={() => setSelectedChain(chain.id)}
+                        >
+                          <span className="text-lg">{chain.icon}</span>
+                          <span className="font-medium">{chain.name}</span>
+                          <span className="font-mono">{chain.fee}</span>
+                          {chain.recommended && (
+                            <span className="bg-data-positive/20 text-data-positive px-1 rounded text-xs">
+                              OPTIMAL
+                            </span>
+                          )}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
-                  <Select value={toAsset} onValueChange={setToAsset}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ETH">ETH</SelectItem>
-                      <SelectItem value="BTC">BTC</SelectItem>
-                      <SelectItem value="USDC">USDC</SelectItem>
-                      <SelectItem value="USDT">USDT</SelectItem>
-                      <SelectItem value="DAI">DAI</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-sm text-muted-foreground">≈ $1,234.56</p>
+                )}
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Enhanced Trade Summary */}
-              <div className="space-y-3 p-4 bg-accent/50 rounded-lg">
-                <div className="flex justify-between text-sm">
-                  <span>Exchange Rate</span>
-                  <span className="font-mono">1 ETH = 2,000 USDC</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Network Fee</span>
-                  <span className="font-mono">~$2.50</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>ETO Fee</span>
-                  <span className="font-mono">0.3%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Price Impact</span>
-                  <span className="font-mono text-data-positive">+0.12%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    Est. Time
-                  </span>
-                  <span className="font-mono">~15s</span>
-                </div>
-                <div className="flex justify-between font-medium pt-2 border-t">
-                  <span>Total Cost</span>
-                  <span className="font-mono">≈ $1,237.26</span>
-                </div>
-              </div>
+          {/* Trade Summary */}
+          {fromAmount && toAmount && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Trade Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TradeSummary
+                  fromAsset={fromAsset}
+                  toAsset={toAsset}
+                  fromAmount={fromAmount}
+                  toAmount={toAmount}
+                  exchangeRate={`1 ${toAsset} = 2,000 ${fromAsset}`}
+                  networkFee="~$2.50"
+                  platformFee="0.3%"
+                  priceImpact={0.12}
+                  estimatedTime="~15s"
+                  totalCost={`≈ $${(parseFloat(fromAmount) * 1.003 + 2.5).toFixed(2)}`}
+                  showWarning={showPriceImpactWarning}
+                />
+              </CardContent>
+            </Card>
+          )}
 
-              {/* Price Impact Warning */}
-              {amount && parseFloat(amount) > 10000 && (
-                <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                  <AlertTriangle className="h-4 w-4 text-warning mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-warning">High Price Impact</p>
-                    <p className="text-muted-foreground">Large trade may affect market price</p>
-                  </div>
-                </div>
-              )}
-
-              <Button className="w-full" size="lg">
-                Connect Wallet to Trade
+          {/* Execute Trade */}
+          <Card>
+            <CardContent className="pt-6">
+              <Button 
+                className="w-full" 
+                size="lg"
+                disabled={!fromAmount || !toAmount}
+              >
+                {fromAmount && toAmount ? `Swap ${fromAmount} ${fromAsset} for ${toAmount} ${toAsset}` : 'Enter amounts to trade'}
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Trading Info */}
+        {/* Information Sidebar */}
         <div className="space-y-4">
+          {/* Trading Benefits */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Cross-Chain Benefits</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-primary mt-0.5" />
+                <Shield className="h-5 w-5 text-data-positive mt-0.5" />
                 <div>
                   <p className="font-medium">Dynamic Market Maker</p>
                   <p className="text-sm text-muted-foreground">
-                    Optimal pricing through our advanced routing system
+                    Optimal pricing through advanced routing
                   </p>
                 </div>
               </div>
@@ -239,30 +212,34 @@ export default function Trade() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Market Info</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">ETH Price</span>
-                <span className="text-sm font-medium font-mono">$2,000.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">24h Change</span>
-                <span className="text-sm font-medium font-mono text-data-positive">+2.5%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">24h Volume</span>
-                <span className="text-sm font-medium font-mono">$1.2M</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Market Cap</span>
-                <span className="text-sm font-medium font-mono">$240.5B</span>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Market Info for Selected Assets */}
+          {fromAsset && toAsset && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{fromAsset}/{toAsset} Market</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Current Rate</span>
+                  <span className="text-sm font-medium font-mono">2,000 {fromAsset}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">24h Change</span>
+                  <span className="text-sm font-medium font-mono text-data-positive">+2.5%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">24h Volume</span>
+                  <span className="text-sm font-medium font-mono">$1.2M</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Liquidity</span>
+                  <span className="text-sm font-medium font-mono text-data-positive">High</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
+          {/* Chain Comparison */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Chain Comparison</CardTitle>
