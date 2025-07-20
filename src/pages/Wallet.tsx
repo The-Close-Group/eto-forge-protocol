@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, Send, Download, Copy, ExternalLink, Circle } from "lucide-react";
+import { Wallet as WalletIcon, Send, Download, Copy, ExternalLink, Circle } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { Link } from "react-router-dom";
 
@@ -34,7 +34,7 @@ export default function Wallet() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
-              <Wallet className="h-5 w-5 text-primary" />
+              <WalletIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
               <CardTitle className="text-lg">Connected Wallet</CardTitle>
@@ -123,7 +123,7 @@ export default function Wallet() {
         <CardContent>
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-muted/30 rounded-sm flex items-center justify-center mx-auto mb-4">
-              <Wallet className="h-8 w-8 text-muted-foreground" />
+              <WalletIcon className="h-8 w-8 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground mb-2">No transactions yet</p>
             <p className="text-sm text-muted-foreground">
