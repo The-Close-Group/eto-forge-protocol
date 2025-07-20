@@ -69,7 +69,7 @@ export function useWallet() {
       setConnectedWalletType(savedWalletType);
       updateWalletAddress(savedWallet);
     }
-  }, [updateWalletAddress]);
+  }, []); // Remove updateWalletAddress from dependencies to prevent infinite loop
 
   // Cleanup timeout on unmount
   useEffect(() => {

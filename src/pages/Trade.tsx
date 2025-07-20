@@ -2,10 +2,14 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw } from "lucide-react";
+import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw, CreditCard, Wallet as WalletIcon } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
 import { AssetSelector } from "@/components/AssetSelector";
 import { TradeSummary } from "@/components/TradeSummary";
+import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
+import { TransactionStatus } from "@/components/TransactionStatus";
+import { useTrade } from "@/hooks/useTrade";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Trade() {
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
@@ -14,6 +18,21 @@ export default function Trade() {
   const [toAsset, setToAsset] = useState("ETH");
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
+  const [slippageTolerance, setSlippageTolerance] = useState("0.5");
+
+  const { isAuthenticated } = useAuth();
+  const {
+    isConfirmationOpen,
+    isTransactionOpen,
+    transactionStatus,
+    currentStep,
+    transactionHash,
+    error,
+    openConfirmation,
+    closeConfirmation,
+    executeTransaction,
+    closeTransaction
+  } = useTrade();
 
   const recommendedChain = "Arbitrum";
 
@@ -39,12 +58,34 @@ export default function Trade() {
     setToAmount(tempAmount);
   };
 
+  const handleQuickBuy = (asset: string, amount: string) => {
+    setFromAsset("USDC");
+    setToAsset(asset);
+    setFromAmount(amount);
+    setToAmount(calculateToAmount(amount));
+  };
+
   const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
+  const canTrade = fromAmount && toAmount && isAuthenticated;
+
+  // Trade summary data
+  const tradeSummaryData = {
+    fromAsset,
+    toAsset,
+    fromAmount,
+    toAmount,
+    exchangeRate: `1 ${toAsset} = 2,000 ${fromAsset}`,
+    networkFee: "~$2.50",
+    platformFee: "0.3%",
+    priceImpact: 0.12,
+    estimatedTime: "~15s",
+    totalCost: `≈ $${(parseFloat(fromAmount || "0") * 1.003 + 2.5).toFixed(2)}`
+  };
 
   return (
-    <div className="p-6 pb-20 md:pb-6 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-7xl mx-auto space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Trade</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Trade</h1>
         <p className="text-muted-foreground">
           Search and select assets, then execute cross-chain trades with optimal routing
         </p>
@@ -53,6 +94,36 @@ export default function Trade() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Trading Interface */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Quick Buy Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Quick Buy
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { asset: "ETH", amount: "1000", label: "$1,000" },
+                  { asset: "BTC", amount: "2500", label: "$2,500" },
+                  { asset: "ETH", amount: "5000", label: "$5,000" },
+                  { asset: "BTC", amount: "10000", label: "$10,000" }
+                ].map((quick, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="flex flex-col gap-1 h-auto p-3"
+                    onClick={() => handleQuickBuy(quick.asset, quick.amount)}
+                  >
+                    <span className="font-medium">{quick.asset}</span>
+                    <span className="text-xs text-muted-foreground">{quick.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Asset Selection & Swap Interface */}
           <Card>
             <CardHeader>
@@ -94,8 +165,26 @@ export default function Trade() {
                 readOnly={true}
               />
 
-              {/* Smart Chain Selection */}
-              <div className="pt-4 border-t">
+              {/* Advanced Settings */}
+              <div className="pt-4 border-t space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Slippage Tolerance</span>
+                  <div className="flex gap-2">
+                    {["0.1", "0.5", "1.0"].map((value) => (
+                      <Button
+                        key={value}
+                        variant={slippageTolerance === value ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSlippageTolerance(value)}
+                        className="text-xs"
+                      >
+                        {value}%
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Smart Chain Selection */}
                 <ChainSelectionMode 
                   mode={chainMode}
                   onModeChange={setChainMode}
@@ -104,7 +193,7 @@ export default function Trade() {
 
                 {/* Manual Chain Selection */}
                 {chainMode === "manual" && (
-                  <div className="mt-4 p-4 bg-muted/50 rounded-sm">
+                  <div className="p-4 bg-muted/50 rounded-sm">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {[
                         { id: "ethereum", name: "Ethereum", icon: "🔵", fee: "$25.80", slow: true },
@@ -144,16 +233,7 @@ export default function Trade() {
               </CardHeader>
               <CardContent>
                 <TradeSummary
-                  fromAsset={fromAsset}
-                  toAsset={toAsset}
-                  fromAmount={fromAmount}
-                  toAmount={toAmount}
-                  exchangeRate={`1 ${toAsset} = 2,000 ${fromAsset}`}
-                  networkFee="~$2.50"
-                  platformFee="0.3%"
-                  priceImpact={0.12}
-                  estimatedTime="~15s"
-                  totalCost={`≈ $${(parseFloat(fromAmount) * 1.003 + 2.5).toFixed(2)}`}
+                  {...tradeSummaryData}
                   showWarning={showPriceImpactWarning}
                 />
               </CardContent>
@@ -163,13 +243,31 @@ export default function Trade() {
           {/* Execute Trade */}
           <Card>
             <CardContent className="pt-6">
-              <Button 
-                className="w-full" 
-                size="lg"
-                disabled={!fromAmount || !toAmount}
-              >
-                {fromAmount && toAmount ? `Swap ${fromAmount} ${fromAsset} for ${toAmount} ${toAsset}` : 'Enter amounts to trade'}
-              </Button>
+              {!isAuthenticated ? (
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 bg-muted/30 rounded-sm flex items-center justify-center mx-auto">
+                    <WalletIcon className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Connect your wallet to start trading</p>
+                    <Button size="lg" className="w-full">
+                      Connect Wallet
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  disabled={!canTrade}
+                  onClick={openConfirmation}
+                >
+                  {canTrade ? 
+                    `Swap ${fromAmount} ${fromAsset} for ${toAmount} ${toAsset}` : 
+                    'Enter amounts to trade'
+                  }
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -276,6 +374,29 @@ export default function Trade() {
           </Card>
         </div>
       </div>
+
+      {/* Order Confirmation Modal */}
+      <OrderConfirmationModal
+        isOpen={isConfirmationOpen}
+        onClose={closeConfirmation}
+        onConfirm={executeTransaction}
+        {...tradeSummaryData}
+        showWarning={showPriceImpactWarning}
+      />
+
+      {/* Transaction Status Modal */}
+      <TransactionStatus
+        isOpen={isTransactionOpen}
+        onClose={closeTransaction}
+        status={transactionStatus}
+        currentStep={currentStep}
+        transactionHash={transactionHash}
+        fromAsset={fromAsset}
+        toAsset={toAsset}
+        fromAmount={fromAmount}
+        toAmount={toAmount}
+        error={error}
+      />
     </div>
   );
 }

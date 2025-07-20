@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 interface User {
   walletAddress: string;
@@ -25,13 +25,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const signOut = () => {
+  const signOut = useCallback(() => {
     setUser(null);
     localStorage.removeItem('eto-wallet');
     localStorage.removeItem('eto-wallet-type');
-  };
+  }, []);
 
-  const updateWalletAddress = (address: string) => {
+  const updateWalletAddress = useCallback((address: string) => {
     if (address) {
       const newUser = { walletAddress: address };
       setUser(newUser);
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       localStorage.removeItem('eto-wallet');
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{

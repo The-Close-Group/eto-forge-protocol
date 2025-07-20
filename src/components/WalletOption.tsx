@@ -19,25 +19,26 @@ export function WalletOption({ wallet, isConnecting, connectingWalletId, onConne
       <CardContent className="p-0">
         <Button
           variant="ghost"
-          className="w-full h-auto p-6 flex items-center justify-start gap-4 hover:bg-transparent group-hover:bg-accent/5 transition-colors"
+          className="w-full h-auto p-4 flex items-center justify-start gap-3 hover:bg-transparent group-hover:bg-accent/5 transition-colors min-h-[4rem]"
           onClick={() => onConnect(wallet.id)}
           disabled={isConnecting}
         >
-          <div className="text-4xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+          <div className="text-2xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0 min-w-[2rem]">
             {wallet.icon}
           </div>
-          <div className="flex-1 text-left space-y-1">
-            <div className="font-medium text-base uppercase tracking-wider text-foreground">
+          <div className="flex-1 text-left space-y-1 min-w-0">
+            <div className="font-medium text-sm uppercase tracking-wider text-foreground truncate">
               {wallet.name}
             </div>
-            <div className="text-sm text-muted-foreground leading-relaxed">
+            <div className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
               {wallet.description}
             </div>
           </div>
           {isThisWalletConnecting && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-shrink-0">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Connecting...</span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0 min-w-0">
+              <Loader2 className="h-3 w-3 animate-spin flex-shrink-0" />
+              <span className="hidden sm:inline">Connecting...</span>
+              <span className="sm:hidden">...</span>
             </div>
           )}
         </Button>
