@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,15 +14,6 @@ export default function Assets() {
       changeType: "up",
       marketCap: "$12.4M",
       volume24h: "$2.1M"
-    },
-    { 
-      symbol: "ETO", 
-      name: "ETO Token", 
-      price: "$12.89", 
-      change: "+2.18%", 
-      changeType: "up",
-      marketCap: "$8.7M",
-      volume24h: "$1.8M"
     },
     { 
       symbol: "USDC", 
@@ -110,8 +102,8 @@ export default function Assets() {
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" className="flex-1">Trade</Button>
-                <Button size="sm" variant="outline" className="flex-1">Stake</Button>
+                <Button size="sm" className="flex-1">Buy</Button>
+                <Button size="sm" variant="outline" className="flex-1">Trade</Button>
               </div>
             </CardContent>
           </Card>

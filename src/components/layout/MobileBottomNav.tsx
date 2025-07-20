@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -10,9 +11,9 @@ import {
 } from "lucide-react";
 
 const navigationItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Wallet", url: "/wallet", icon: Wallet },
   { title: "Trade", url: "/trade", icon: TrendingUp },
-  { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Assets", url: "/assets", icon: Layers },
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "Markets", url: "/markets", icon: BarChart3 },
@@ -22,7 +23,7 @@ export function MobileBottomNav() {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
+    if (path === "/dashboard") return location.pathname === "/dashboard";
     return location.pathname.startsWith(path);
   };
 
