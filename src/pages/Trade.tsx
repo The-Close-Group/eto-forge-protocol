@@ -1,11 +1,12 @@
 
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw, CreditCard, Wallet as WalletIcon, Search } from "lucide-react";
+import { RefreshCw, CreditCard, Wallet as WalletIcon, Search, TrendingUp, Zap, Shield } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
-import { AssetSelector } from "@/components/AssetSelector";
+import { TradeAssetSelector } from "@/components/TradeAssetSelector";
 import { TradeSummary } from "@/components/TradeSummary";
 import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
 import { TransactionStatus } from "@/components/TransactionStatus";
@@ -21,15 +22,28 @@ const ASSET_PRICES = {
   BTC: 45000.00
 };
 
+const ASSET_SUGGESTIONS = [
+  { symbol: "MAANG", name: "Meta AI & Analytics", price: 238.00, icon: "🤖", trending: true },
+  { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐", popular: true },
+  { symbol: "USDC", name: "USD Coin", price: 1.00, icon: "💵", popular: true },
+  { symbol: "AVAX", name: "Avalanche", price: 26.00, icon: "🔺", trending: true },
+  { symbol: "BTC", name: "Bitcoin", price: 45000.00, icon: "₿", popular: true },
+];
+
 export default function Trade() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const preselectedAsset = searchParams.get('asset');
+
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
   const [selectedChain, setSelectedChain] = useState("ethereum");
   const [fromAsset, setFromAsset] = useState("USDC");
-  const [toAsset, setToAsset] = useState("ETH");
+  const [toAsset, setToAsset] = useState(preselectedAsset || "ETH");
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const [slippageTolerance, setSlippageTolerance] = useState("0.5");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { isAuthenticated } = useAuth();
   const {
@@ -58,7 +72,7 @@ export default function Trade() {
   const calculateToAmount = (amount: string) => {
     if (!amount) return "";
     const rate = calculateExchangeRate(fromAsset, toAsset);
-    return (parseFloat(amount) * rate).toFixed(6);
+    return (parseFloat(amount) * rate).toFixed(2);
   };
 
   const handleFromAmountChange = (amount: string) => {
@@ -83,23 +97,17 @@ export default function Trade() {
     setToAmount(calculateToAmount(usdAmount));
   };
 
-  const handleAssetSearch = (asset: string) => {
-    setToAsset(asset);
-    setFromAsset("USDC");
-    if (fromAmount) {
-      setToAmount(calculateToAmount(fromAmount));
-    }
-    setSearchQuery("");
+  const handleAssetClick = (symbol: string) => {
+    navigate(`/asset/${symbol}`);
   };
+
+  const filteredSuggestions = ASSET_SUGGESTIONS.filter(asset => 
+    asset.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    asset.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
   const canTrade = fromAmount && toAmount && isAuthenticated;
-
-  // Popular assets for search suggestions
-  const popularAssets = ["BTC", "ETH", "AVAX", "MAANG", "USDC"];
-  const filteredAssets = popularAssets.filter(asset => 
-    asset.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   // Trade summary data with real pricing
   const exchangeRate = `1 ${toAsset} = ${calculateExchangeRate(toAsset, fromAsset).toFixed(2)} ${fromAsset}`;
@@ -139,22 +147,23 @@ export default function Trade() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { asset: "MAANG", price: ASSET_PRICES.MAANG, amounts: ["100", "500"] },
-                  { asset: "USDC", price: ASSET_PRICES.USDC, amounts: ["1000", "5000"] },
-                  { asset: "ETH", price: ASSET_PRICES.ETH, amounts: ["1000", "2500"] },
-                  { asset: "AVAX", price: ASSET_PRICES.AVAX, amounts: ["500", "1000"] }
-                ].map((quick, index) => (
+                  { asset: "MAANG", price: ASSET_PRICES.MAANG, amounts: ["100", "500"], icon: "🤖" },
+                  { asset: "USDC", price: ASSET_PRICES.USDC, amounts: ["1000", "5000"], icon: "💵" },
+                  { asset: "ETH", price: ASSET_PRICES.ETH, amounts: ["1000", "2500"], icon: "⟐" },
+                  { asset: "AVAX", price: ASSET_PRICES.AVAX, amounts: ["500", "1000"], icon: "🔺" }
+                ].map((quick) => (
                   <div key={quick.asset} className="space-y-2">
                     <div className="text-center p-3 bg-accent/30 rounded-sm border">
-                      <div className="font-medium text-lg">{quick.asset}</div>
-                      <div className="text-sm text-muted-foreground font-mono">
+                      <div className="text-lg mb-1">{quick.icon}</div>
+                      <div className="font-medium text-sm">{quick.asset}</div>
+                      <div className="text-xs text-muted-foreground font-mono">
                         ${quick.price.toFixed(2)}
                       </div>
                     </div>
                     <div className="space-y-1">
-                      {quick.amounts.map((amount, amountIndex) => (
+                      {quick.amounts.map((amount) => (
                         <Button
-                          key={amountIndex}
+                          key={amount}
                           variant="outline"
                           size="sm"
                           className="w-full text-xs"
@@ -182,26 +191,78 @@ export default function Trade() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search for assets to trade..."
+                  placeholder="Search for assets to discover..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   className="pl-10"
                 />
-                {searchQuery && filteredAssets.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-sm mt-1 z-10 shadow-lg">
-                    {filteredAssets.map((asset) => (
+                {(showSuggestions || searchQuery) && (
+                  <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-sm mt-1 z-10 shadow-lg max-h-64 overflow-y-auto">
+                    {searchQuery === "" && (
+                      <>
+                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50">
+                          Popular Assets
+                        </div>
+                        {ASSET_SUGGESTIONS.filter(a => a.popular).map((asset) => (
+                          <button
+                            key={asset.symbol}
+                            className="w-full text-left px-4 py-3 hover:bg-accent/50 flex items-center justify-between border-b last:border-b-0"
+                            onClick={() => handleAssetClick(asset.symbol)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg">{asset.icon}</span>
+                              <div>
+                                <div className="font-medium text-sm">{asset.symbol}</div>
+                                <div className="text-xs text-muted-foreground">{asset.name}</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-mono">${asset.price.toLocaleString()}</div>
+                            </div>
+                          </button>
+                        ))}
+                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50">
+                          Trending
+                        </div>
+                        {ASSET_SUGGESTIONS.filter(a => a.trending && !a.popular).map((asset) => (
+                          <button
+                            key={asset.symbol}
+                            className="w-full text-left px-4 py-3 hover:bg-accent/50 flex items-center justify-between border-b last:border-b-0"
+                            onClick={() => handleAssetClick(asset.symbol)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg">{asset.icon}</span>
+                              <div>
+                                <div className="font-medium text-sm">{asset.symbol}</div>
+                                <div className="text-xs text-muted-foreground">{asset.name}</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-mono">${asset.price.toLocaleString()}</div>
+                              <TrendingUp className="h-3 w-3 text-data-positive ml-auto" />
+                            </div>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                    {searchQuery && filteredSuggestions.map((asset) => (
                       <button
-                        key={asset}
+                        key={asset.symbol}
                         className="w-full text-left px-4 py-3 hover:bg-accent/50 flex items-center justify-between border-b last:border-b-0"
-                        onClick={() => handleAssetSearch(asset)}
+                        onClick={() => handleAssetClick(asset.symbol)}
                       >
-                        <div>
-                          <div className="font-medium">{asset}</div>
-                          <div className="text-sm text-muted-foreground">
-                            ${ASSET_PRICES[asset as keyof typeof ASSET_PRICES]?.toFixed(2) || 'N/A'}
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg">{asset.icon}</span>
+                          <div>
+                            <div className="font-medium text-sm">{asset.symbol}</div>
+                            <div className="text-xs text-muted-foreground">{asset.name}</div>
                           </div>
                         </div>
-                        <Zap className="h-4 w-4 text-muted-foreground" />
+                        <div className="text-right">
+                          <div className="text-sm font-mono">${asset.price.toLocaleString()}</div>
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -220,7 +281,7 @@ export default function Trade() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* From Asset */}
-              <AssetSelector
+              <TradeAssetSelector
                 label="From"
                 selectedAsset={fromAsset}
                 onAssetChange={setFromAsset}
@@ -243,7 +304,7 @@ export default function Trade() {
               </div>
 
               {/* To Asset */}
-              <AssetSelector
+              <TradeAssetSelector
                 label="To"
                 selectedAsset={toAsset}
                 onAssetChange={setToAsset}
@@ -349,7 +410,7 @@ export default function Trade() {
                   onClick={openConfirmation}
                 >
                   {canTrade ? 
-                    `Swap ${fromAmount} ${fromAsset} for ${toAmount} ${toAsset}` : 
+                    `Swap $${fromAmount} for ${toAmount} ${toAsset}` : 
                     'Enter amounts to trade'
                   }
                 </Button>

@@ -12,6 +12,7 @@ import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import Wallet from "./pages/Wallet";
 import Trade from "./pages/Trade";
+import AssetDetails from "./pages/AssetDetails";
 import Portfolio from "./pages/Portfolio";
 import Assets from "./pages/Assets";
 import Staking from "./pages/Staking";
@@ -50,6 +51,13 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <Trade />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/asset/:symbol" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <AssetDetails />
                 </AppLayout>
               </ProtectedRoute>
             } />
