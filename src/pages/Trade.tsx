@@ -381,7 +381,6 @@ export default function Trade() {
         onClose={closeConfirmation}
         onConfirm={executeTransaction}
         {...tradeSummaryData}
-        showWarning={showPriceImpactWarning}
       />
 
       {/* Transaction Status Modal */}

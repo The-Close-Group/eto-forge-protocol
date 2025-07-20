@@ -70,9 +70,15 @@ export function TransactionStatus({
     }
   };
 
+  const handleDialogClose = () => {
+    if (status !== 'pending') {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={status !== 'pending' ? onClose : undefined}>
-      <DialogContent className="max-w-md" hideCloseButton={status === 'pending'}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {status === 'pending' && <Clock className="h-5 w-5 text-primary animate-pulse" />}

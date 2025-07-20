@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, CheckCircle, AlertCircle, ExternalLink, Globe, RefreshCw } from 'lucide-react';
@@ -9,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function WalletConnector() {
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const { signOut } = useAuth();
   const { 
     walletAddress,
@@ -39,6 +41,10 @@ export function WalletConnector() {
   const handleRetry = () => {
     console.log('User clicked retry');
     resetConnectionState();
+  };
+
+  const handleContinueToDashboard = () => {
+    navigate('/dashboard');
   };
 
   const getConnectedWalletInfo = () => {
@@ -84,6 +90,14 @@ export function WalletConnector() {
               View on Explorer
             </Button>
           </div>
+
+          <Button 
+            onClick={handleContinueToDashboard}
+            className="w-full"
+            size="lg"
+          >
+            Continue to Dashboard
+          </Button>
         </CardContent>
       </Card>
     );
