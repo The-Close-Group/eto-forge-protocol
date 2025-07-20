@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +15,6 @@ import { useTrade } from "@/hooks/useTrade";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePortfolio } from "@/contexts/PortfolioContext";
 
-// Asset pricing data
 const ASSET_PRICES = {
   MAANG: 238.00,
   USDC: 1.00,
@@ -62,23 +62,34 @@ export default function Trade() {
 
   const recommendedChain = "Arbitrum";
 
-  // Calculate exchange rates based on real asset prices
   const calculateExchangeRate = (from: string, to: string) => {
     const fromPrice = ASSET_PRICES[from as keyof typeof ASSET_PRICES] || 1;
     const toPrice = ASSET_PRICES[to as keyof typeof ASSET_PRICES] || 1;
     return fromPrice / toPrice;
   };
 
-  // Calculate toAmount based on fromAmount with real pricing
-  const calculateToAmount = (amount: string) => {
-    if (!amount) return "";
-    const rate = calculateExchangeRate(fromAsset, toAsset);
-    return (parseFloat(amount) * rate).toFixed(2);
-  };
-
   const handleFromAmountChange = (amount: string) => {
     setFromAmount(amount);
-    setToAmount(calculateToAmount(amount));
+    if (amount) {
+      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
+      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
+      const toAmountCalculated = ((parseFloat(amount) / fromPrice) * toPrice).toFixed(2);
+      setToAmount(toAmountCalculated);
+    } else {
+      setToAmount("");
+    }
+  };
+
+  const handleToAmountChange = (amount: string) => {
+    setToAmount(amount);
+    if (amount) {
+      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
+      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
+      const fromAmountCalculated = ((parseFloat(amount) / toPrice) * fromPrice).toFixed(2);
+      setFromAmount(fromAmountCalculated);
+    } else {
+      setFromAmount("");
+    }
   };
 
   const handleSwapAssets = () => {
@@ -95,7 +106,10 @@ export default function Trade() {
     setFromAsset("USDC");
     setToAsset(asset);
     setFromAmount(usdAmount);
-    setToAmount(calculateToAmount(usdAmount));
+    
+    const toPrice = ASSET_PRICES[asset as keyof typeof ASSET_PRICES] || 1;
+    const calculatedToAmount = (parseFloat(usdAmount) / toPrice).toFixed(2);
+    setToAmount(calculatedToAmount);
   };
 
   const handleAssetClick = (symbol: string) => {
@@ -110,7 +124,6 @@ export default function Trade() {
   const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
   const canTrade = fromAmount && toAmount && isAuthenticated;
 
-  // Trade summary data with real pricing
   const exchangeRate = `1 ${toAsset} = ${calculateExchangeRate(toAsset, fromAsset).toFixed(2)} ${fromAsset}`;
   const tradeSummaryData = {
     fromAsset,
@@ -128,7 +141,6 @@ export default function Trade() {
   const handleTradeExecution = async () => {
     try {
       await executeTransaction();
-      // Add to portfolio after successful trade
       if (fromAmount && toAmount) {
         addTrade(fromAsset, toAsset, parseFloat(fromAmount), parseFloat(toAmount), calculateExchangeRate(fromAsset, toAsset));
       }
@@ -140,7 +152,7 @@ export default function Trade() {
   return (
     <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-7xl mx-auto space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Trade</h1>
+        <h1 className="text-2xl md:text-3xl font-bold font-mono text-foreground">Trade</h1>
         <p className="text-muted-foreground">
           Discover and trade assets with optimal cross-chain routing
         </p>
@@ -151,7 +163,7 @@ export default function Trade() {
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Buy Banner */}
           <div>
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-semibold font-mono mb-3 flex items-center gap-2">
               <Zap className="h-5 w-5" />
               Quick Buy
             </h2>
@@ -159,9 +171,9 @@ export default function Trade() {
           </div>
 
           {/* Asset Discovery Search */}
-          <Card>
+          <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-mono">
                 <Search className="h-5 w-5" />
                 Discover New Assets
               </CardTitle>
@@ -175,13 +187,13 @@ export default function Trade() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="pl-10"
+                  className="pl-10 font-mono"
                 />
                 {(showSuggestions || searchQuery) && (
                   <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-sm mt-1 z-10 shadow-lg max-h-64 overflow-y-auto">
                     {searchQuery === "" && (
                       <>
-                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50">
+                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50 font-mono">
                           Popular Assets
                         </div>
                         {ASSET_SUGGESTIONS.filter(a => a.popular).map((asset) => (
@@ -193,7 +205,7 @@ export default function Trade() {
                             <div className="flex items-center gap-3">
                               <span className="text-lg">{asset.icon}</span>
                               <div>
-                                <div className="font-medium text-sm">{asset.symbol}</div>
+                                <div className="font-medium text-sm font-mono">{asset.symbol}</div>
                                 <div className="text-xs text-muted-foreground">{asset.name}</div>
                               </div>
                             </div>
@@ -202,7 +214,7 @@ export default function Trade() {
                             </div>
                           </button>
                         ))}
-                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50">
+                        <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/50 font-mono">
                           Trending
                         </div>
                         {ASSET_SUGGESTIONS.filter(a => a.trending && !a.popular).map((asset) => (
@@ -214,7 +226,7 @@ export default function Trade() {
                             <div className="flex items-center gap-3">
                               <span className="text-lg">{asset.icon}</span>
                               <div>
-                                <div className="font-medium text-sm">{asset.symbol}</div>
+                                <div className="font-medium text-sm font-mono">{asset.symbol}</div>
                                 <div className="text-xs text-muted-foreground">{asset.name}</div>
                               </div>
                             </div>
@@ -235,7 +247,7 @@ export default function Trade() {
                         <div className="flex items-center gap-3">
                           <span className="text-lg">{asset.icon}</span>
                           <div>
-                            <div className="font-medium text-sm">{asset.symbol}</div>
+                            <div className="font-medium text-sm font-mono">{asset.symbol}</div>
                             <div className="text-xs text-muted-foreground">{asset.name}</div>
                           </div>
                         </div>
@@ -251,9 +263,9 @@ export default function Trade() {
           </Card>
 
           {/* Asset Selection & Swap Interface */}
-          <Card>
+          <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-mono">
                 <Zap className="h-5 w-5" />
                 Asset Selection & Swap
               </CardTitle>
@@ -268,6 +280,8 @@ export default function Trade() {
                 onAmountChange={handleFromAmountChange}
                 balance="1,234.56"
                 showBalance={true}
+                otherAsset={toAsset}
+                onOtherAmountChange={setToAmount}
               />
 
               {/* Swap Button */}
@@ -288,11 +302,14 @@ export default function Trade() {
                 selectedAsset={toAsset}
                 onAssetChange={setToAsset}
                 amount={toAmount}
-                readOnly={true}
+                onAmountChange={handleToAmountChange}
+                readOnly={false}
+                otherAsset={fromAsset}
+                onOtherAmountChange={setFromAmount}
               />
 
               {/* Smart Chain Selection */}
-              <div className="pt-4 border-t">
+              <div className="pt-4 border-t border-border">
                 <ChainSelectionMode 
                   mode={chainMode}
                   onModeChange={setChainMode}
@@ -313,7 +330,7 @@ export default function Trade() {
                         <Button
                           key={chain.id}
                           variant={selectedChain === chain.id ? "default" : "outline"}
-                          className="flex flex-col gap-1 h-auto p-3 text-xs"
+                          className="flex flex-col gap-1 h-auto p-3 text-xs font-mono"
                           onClick={() => setSelectedChain(chain.id)}
                         >
                           <span className="text-lg">{chain.icon}</span>
@@ -335,9 +352,9 @@ export default function Trade() {
 
           {/* Trade Summary */}
           {fromAmount && toAmount && (
-            <Card>
+            <Card className="border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg">Trade Summary</CardTitle>
+                <CardTitle className="text-lg font-mono">Trade Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <TradeSummary
@@ -349,7 +366,7 @@ export default function Trade() {
           )}
 
           {/* Execute Trade */}
-          <Card>
+          <Card className="border-border bg-card">
             <CardContent className="pt-6">
               {!isAuthenticated ? (
                 <div className="text-center space-y-3">
@@ -358,14 +375,14 @@ export default function Trade() {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Connect your wallet to start trading</p>
-                    <Button size="lg" className="w-full">
+                    <Button size="lg" className="w-full font-mono">
                       Connect Wallet
                     </Button>
                   </div>
                 </div>
               ) : (
                 <Button 
-                  className="w-full" 
+                  className="w-full font-mono" 
                   size="lg"
                   disabled={!canTrade}
                   onClick={openConfirmation}
@@ -383,15 +400,15 @@ export default function Trade() {
         {/* Information Sidebar */}
         <div className="space-y-4">
           {/* Trading Benefits */}
-          <Card>
+          <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-lg">Cross-Chain Benefits</CardTitle>
+              <CardTitle className="text-lg font-mono">Cross-Chain Benefits</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-data-positive mt-0.5" />
                 <div>
-                  <p className="font-medium">Dynamic Market Maker</p>
+                  <p className="font-medium font-mono">Dynamic Market Maker</p>
                   <p className="text-sm text-muted-foreground">
                     Optimal pricing through advanced routing
                   </p>
@@ -400,7 +417,7 @@ export default function Trade() {
               <div className="flex items-start gap-3">
                 <Zap className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="font-medium">Layer Zero Integration</p>
+                  <p className="font-medium font-mono">Layer Zero Integration</p>
                   <p className="text-sm text-muted-foreground">
                     Seamless cross-chain transactions
                   </p>
@@ -409,7 +426,7 @@ export default function Trade() {
               <div className="flex items-start gap-3">
                 <TrendingUp className="h-5 w-5 text-data-positive mt-0.5" />
                 <div>
-                  <p className="font-medium">Auto-Optimization</p>
+                  <p className="font-medium font-mono">Auto-Optimization</p>
                   <p className="text-sm text-muted-foreground">
                     Best rates across all supported chains
                   </p>
@@ -420,9 +437,9 @@ export default function Trade() {
 
           {/* Market Info for Selected Assets */}
           {fromAsset && toAsset && (
-            <Card>
+            <Card className="border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg">{fromAsset}/{toAsset} Market</CardTitle>
+                <CardTitle className="text-lg font-mono">{fromAsset}/{toAsset} Market</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
@@ -446,36 +463,36 @@ export default function Trade() {
           )}
 
           {/* Chain Comparison */}
-          <Card>
+          <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-lg">Chain Comparison</CardTitle>
+              <CardTitle className="text-lg font-mono">Chain Comparison</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Arbitrum</span>
-                  <span className="text-data-positive font-medium">$2.50</span>
+                  <span className="text-data-positive font-medium font-mono">$2.50</span>
                 </div>
-                <div className="w-full bg-muted h-1 rounded">
-                  <div className="bg-data-positive h-1 rounded w-[20%]"></div>
+                <div className="w-full bg-muted h-1 rounded-sm">
+                  <div className="bg-data-positive h-1 rounded-sm w-[20%]"></div>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Polygon</span>
-                  <span className="text-data-positive font-medium">$0.05</span>
+                  <span className="text-data-positive font-medium font-mono">$0.05</span>
                 </div>
-                <div className="w-full bg-muted h-1 rounded">
-                  <div className="bg-data-positive h-1 rounded w-[2%]"></div>
+                <div className="w-full bg-muted h-1 rounded-sm">
+                  <div className="bg-data-positive h-1 rounded-sm w-[2%]"></div>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Ethereum</span>
-                  <span className="text-muted-foreground font-medium">$25.80</span>
+                  <span className="text-muted-foreground font-medium font-mono">$25.80</span>
                 </div>
-                <div className="w-full bg-muted h-1 rounded">
-                  <div className="bg-muted-foreground h-1 rounded w-full"></div>
+                <div className="w-full bg-muted h-1 rounded-sm">
+                  <div className="bg-muted-foreground h-1 rounded-sm w-full"></div>
                 </div>
               </div>
             </CardContent>

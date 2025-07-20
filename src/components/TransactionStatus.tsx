@@ -76,14 +76,13 @@ export function TransactionStatus({
     }
   };
 
-  // Calculate total cost for success display
   const totalCost = `≈ $${(parseFloat(fromAmount || "0") * 1.003 + 2.5).toFixed(2)}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+      <DialogContent className="max-w-md border-border bg-card">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="flex items-center gap-2 font-mono">
             {status === 'pending' && <Clock className="h-5 w-5 text-primary animate-pulse" />}
             {status === 'success' && <CheckCircle className="h-5 w-5 text-data-positive" />}
             {status === 'error' && <XCircle className="h-5 w-5 text-destructive" />}
@@ -95,34 +94,31 @@ export function TransactionStatus({
 
         <div className="space-y-4">
           {/* Trade Summary */}
-          <Card className="border-primary/20">
+          <Card className="border-primary/20 bg-accent/10">
             <CardContent className="p-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="text-center">
-                    <div className="text-lg font-medium font-mono">{fromAmount}</div>
-                    <div className="text-sm text-muted-foreground">{fromAsset}</div>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    <div className="text-xs text-muted-foreground">SWAP</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-medium font-mono">{toAmount}</div>
-                    <div className="text-sm text-muted-foreground">{toAsset}</div>
+              <div className="flex items-center justify-between">
+                <div className="text-center">
+                  <div className="text-lg font-medium font-mono">{fromAmount}</div>
+                  <div className="text-sm text-muted-foreground font-mono">{fromAsset}</div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  <div className="text-xs text-muted-foreground font-mono">SWAP</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-medium font-mono">{toAmount}</div>
+                  <div className="text-sm text-muted-foreground font-mono">{toAsset}</div>
+                </div>
+              </div>
+              
+              {status === 'success' && (
+                <div className="pt-3 border-t border-border mt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground font-mono">Total Cost</span>
+                    <span className="text-sm font-medium font-mono">{totalCost}</span>
                   </div>
                 </div>
-                
-                {/* Show total cost in success state */}
-                {status === 'success' && (
-                  <div className="pt-3 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Total Cost</span>
-                      <span className="text-sm font-medium font-mono">{totalCost}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -132,7 +128,6 @@ export function TransactionStatus({
               {STEPS.map((step, index) => {
                 const isActive = index === currentStepIndex;
                 const isCompleted = index < currentStepIndex;
-                const isPending = index > currentStepIndex;
 
                 return (
                   <div
@@ -143,7 +138,7 @@ export function TransactionStatus({
                       'bg-muted/30 border-border'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    <div className={`w-8 h-8 rounded-sm flex items-center justify-center text-sm font-medium font-mono ${
                       isActive ? 'bg-primary text-primary-foreground' :
                       isCompleted ? 'bg-data-positive text-data-positive-foreground' :
                       'bg-muted text-muted-foreground'
@@ -157,14 +152,14 @@ export function TransactionStatus({
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-sm">{step.label}</div>
+                      <div className="font-medium text-sm font-mono">{step.label}</div>
                       <div className="text-xs text-muted-foreground">{step.description}</div>
                     </div>
                   </div>
                 );
               })}
               
-              <div className="text-center text-sm text-muted-foreground">
+              <div className="text-center text-sm text-muted-foreground font-mono">
                 Elapsed time: {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}
               </div>
             </div>
@@ -174,7 +169,7 @@ export function TransactionStatus({
           {status === 'success' && (
             <div className="space-y-4">
               <div className="text-center p-4 bg-data-positive/10 rounded-sm border border-data-positive/20">
-                <div className="text-sm text-data-positive font-medium">
+                <div className="text-sm text-data-positive font-medium font-mono">
                   Your swap was completed successfully!
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">
@@ -184,8 +179,8 @@ export function TransactionStatus({
 
               {transactionHash && (
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Transaction Hash</div>
-                  <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-sm">
+                  <div className="text-sm font-medium font-mono">Transaction Hash</div>
+                  <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-sm border border-border">
                     <div className="font-mono text-xs text-muted-foreground flex-1 truncate">
                       {transactionHash}
                     </div>
@@ -205,7 +200,7 @@ export function TransactionStatus({
           {status === 'error' && (
             <div className="space-y-4">
               <div className="p-4 bg-destructive/10 rounded-sm border border-destructive/20">
-                <div className="text-sm text-destructive font-medium mb-2">
+                <div className="text-sm text-destructive font-medium font-mono mb-2">
                   Transaction Failed
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -215,8 +210,8 @@ export function TransactionStatus({
 
               {transactionHash && (
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Failed Transaction Hash</div>
-                  <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-sm">
+                  <div className="text-sm font-medium font-mono">Failed Transaction Hash</div>
+                  <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-sm border border-border">
                     <div className="font-mono text-xs text-muted-foreground flex-1 truncate">
                       {transactionHash}
                     </div>
@@ -235,17 +230,17 @@ export function TransactionStatus({
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             {status === 'pending' && (
-              <Button variant="outline" className="flex-1" disabled>
+              <Button variant="outline" className="flex-1 font-mono" disabled>
                 Please wait...
               </Button>
             )}
             {status !== 'pending' && (
               <>
-                <Button variant="outline" onClick={onClose} className="flex-1">
+                <Button variant="outline" onClick={onClose} className="flex-1 font-mono">
                   Close
                 </Button>
                 {status === 'error' && (
-                  <Button onClick={onClose} className="flex-1">
+                  <Button onClick={onClose} className="flex-1 font-mono">
                     Try Again
                   </Button>
                 )}

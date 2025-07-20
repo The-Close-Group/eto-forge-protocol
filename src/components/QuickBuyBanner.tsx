@@ -36,7 +36,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
   }, []);
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border-border bg-card">
       <div className="relative h-32 bg-gradient-to-r from-background via-accent/10 to-background">
         <div 
           className="flex transition-transform duration-1000 ease-in-out h-full"
@@ -54,7 +54,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
                     {asset.trending && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-data-positive/20 rounded-sm">
                         <TrendingUp className="h-3 w-3 text-data-positive" />
-                        <span className="text-xs font-medium text-data-positive">TRENDING</span>
+                        <span className="text-xs font-medium font-mono text-data-positive">TRENDING</span>
                       </div>
                     )}
                   </div>
@@ -76,7 +76,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
                 <Button
                   size="sm"
                   onClick={() => onQuickBuy(asset.symbol, "100")}
-                  className="min-w-20"
+                  className="min-w-20 font-mono"
                 >
                   <Zap className="h-3 w-3 mr-1" />
                   $100
@@ -85,7 +85,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => onQuickBuy(asset.symbol, "500")}
-                  className="min-w-20"
+                  className="min-w-20 font-mono"
                 >
                   <Zap className="h-3 w-3 mr-1" />
                   $500
