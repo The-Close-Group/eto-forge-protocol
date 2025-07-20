@@ -1,20 +1,24 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Eye, ExternalLink } from "lucide-react";
+import { TrendingUp, TrendingDown, Eye, ExternalLink, Plus, Activity } from "lucide-react";
+import { usePortfolio } from "@/contexts/PortfolioContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Portfolio() {
-  const assets = [
-    { symbol: "ETH", name: "Ethereum", amount: "2.5", value: "$5,000", change: "+5.2%", positive: true, chain: "Ethereum" },
-    { symbol: "BTC", name: "Bitcoin", amount: "0.15", value: "$4,200", change: "-1.8%", positive: false, chain: "Bitcoin" },
-    { symbol: "USDC", name: "USD Coin", amount: "1,500", value: "$1,500", change: "0.0%", positive: true, chain: "Polygon" },
-    { symbol: "ARB", name: "Arbitrum", amount: "800", value: "$720", change: "+12.3%", positive: true, chain: "Arbitrum" },
-  ];
+  const { assets, totalValue, totalInvested, totalProfitLoss, totalProfitLossPercent } = usePortfolio();
+  const navigate = useNavigate();
 
+  const handleStartTrading = () => {
+    navigate('/trade');
+  };
+
+  // Mock recent transactions (this would come from actual trade history)
   const transactions = [
-    { type: "Buy", asset: "ETH", amount: "0.5", price: "$2,000", time: "2 hours ago", hash: "0x1234...5678" },
-    { type: "Sell", asset: "BTC", amount: "0.02", price: "$42,000", time: "5 hours ago", hash: "0x5678...9abc" },
-    { type: "Stake", asset: "USDC", amount: "1,000", price: "$1.00", time: "1 day ago", hash: "0x9abc...def0" },
+    { type: "Swap", fromAsset: "USDC", toAsset: "ETH", amount: "500", time: "2 hours ago", hash: "0x1234...5678" },
+    { type: "Swap", fromAsset: "ETH", toAsset: "MAANG", amount: "0.1", time: "5 hours ago", hash: "0x5678...9abc" },
+    { type: "Swap", fromAsset: "USDC", toAsset: "AVAX", amount: "1000", time: "1 day ago", hash: "0x9abc...def0" },
   ];
 
   return (
@@ -33,12 +37,19 @@ export default function Portfolio() {
             <CardTitle className="text-lg">Total Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">$11,420</div>
-            <div className="flex items-center gap-1 text-sm">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="text-green-500">+3.2% ($350)</span>
-              <span className="text-muted-foreground">24h</span>
+            <div className="text-3xl font-bold font-mono">
+              ${totalValue.toFixed(2)}
             </div>
+            {totalValue > 0 ? (
+              <div className={`flex items-center gap-1 text-sm ${
+                totalProfitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
+              }`}>
+                {totalProfitLoss >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                <span>{totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toFixed(2)} ({totalProfitLoss >= 0 ? '+' : ''}{totalProfitLossPercent.toFixed(1)}%)</span>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No positions yet</div>
+            )}
           </CardContent>
         </Card>
 
@@ -47,8 +58,10 @@ export default function Portfolio() {
             <CardTitle className="text-lg">Active Positions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">4</div>
-            <div className="text-sm text-muted-foreground">Across 3 chains</div>
+            <div className="text-3xl font-bold font-mono">{assets.length}</div>
+            <div className="text-sm text-muted-foreground">
+              {assets.length > 0 ? `Across multiple chains` : 'Start trading to build your portfolio'}
+            </div>
           </CardContent>
         </Card>
 
@@ -57,11 +70,29 @@ export default function Portfolio() {
             <CardTitle className="text-lg">Best Performer</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">ARB</div>
-            <div className="flex items-center gap-1 text-sm">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="text-green-500">+12.3%</span>
-            </div>
+            {assets.length > 0 ? (
+              (() => {
+                const bestPerformer = assets.reduce((best, current) => 
+                  current.profitLossPercent > best.profitLossPercent ? current : best
+                );
+                return (
+                  <div>
+                    <div className="text-xl font-bold font-mono">{bestPerformer.symbol}</div>
+                    <div className={`flex items-center gap-1 text-sm ${
+                      bestPerformer.profitLossPercent >= 0 ? 'text-data-positive' : 'text-data-negative'
+                    }`}>
+                      {bestPerformer.profitLossPercent >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                      <span>{bestPerformer.profitLossPercent >= 0 ? '+' : ''}{bestPerformer.profitLossPercent.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : (
+              <div>
+                <div className="text-xl font-bold text-muted-foreground">--</div>
+                <div className="text-sm text-muted-foreground">No trades yet</div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -79,34 +110,63 @@ export default function Portfolio() {
               <CardTitle>Your Assets</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {assets.map((asset, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="font-semibold text-primary">{asset.symbol.slice(0, 2)}</span>
+              {assets.length > 0 ? (
+                <div className="space-y-4">
+                  {assets.map((asset, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
+                          <span className="font-semibold text-primary">{asset.symbol.slice(0, 2)}</span>
+                        </div>
+                        <div>
+                          <p className="font-semibold">{asset.name}</p>
+                          <p className="text-sm text-muted-foreground font-mono">
+                            {asset.amount.toFixed(4)} {asset.symbol}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold">{asset.name}</p>
-                        <p className="text-sm text-muted-foreground">{asset.chain}</p>
+                      <div className="text-right">
+                        <p className="font-semibold font-mono">${asset.currentValue.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground font-mono">
+                          Avg: ${asset.averagePrice.toFixed(2)}
+                        </p>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">{asset.amount} {asset.symbol}</p>
-                      <p className="text-sm text-muted-foreground">{asset.value}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className={`flex items-center gap-1 ${asset.positive ? 'text-green-500' : 'text-red-500'}`}>
-                        {asset.positive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                        <span className="font-medium">{asset.change}</span>
+                      <div className="text-right">
+                        <div className={`flex items-center gap-1 ${
+                          asset.profitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
+                        }`}>
+                          {asset.profitLoss >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                          <span className="font-medium font-mono">
+                            {asset.profitLoss >= 0 ? '+' : ''}${asset.profitLoss.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className={`text-sm font-mono ${
+                          asset.profitLossPercent >= 0 ? 'text-data-positive' : 'text-data-negative'
+                        }`}>
+                          {asset.profitLossPercent >= 0 ? '+' : ''}{asset.profitLossPercent.toFixed(1)}%
+                        </div>
                       </div>
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/30 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <Activity className="h-8 w-8 text-muted-foreground" />
                   </div>
-                ))}
-              </div>
+                  <h3 className="text-lg font-semibold mb-2">No Assets Yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Start trading to build your portfolio and track your assets
+                  </p>
+                  <Button onClick={handleStartTrading}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Start Trading
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -117,32 +177,44 @@ export default function Portfolio() {
               <CardTitle>Recent Transactions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {transactions.map((tx, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className={`px-2 py-1 rounded text-xs font-medium ${
-                        tx.type === 'Buy' ? 'bg-green-100 text-green-700' :
-                        tx.type === 'Sell' ? 'bg-red-100 text-red-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {tx.type}
+              {transactions.length > 0 ? (
+                <div className="space-y-4">
+                  {transactions.map((tx, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                          {tx.type}
+                        </div>
+                        <div>
+                          <p className="font-semibold">{tx.fromAsset} → {tx.toAsset}</p>
+                          <p className="text-sm text-muted-foreground">{tx.amount}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold">{tx.amount} {tx.asset}</p>
-                        <p className="text-sm text-muted-foreground">@ {tx.price}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{tx.time}</p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <span>{tx.hash}</span>
-                        <ExternalLink className="h-3 w-3" />
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{tx.time}</p>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <span>{tx.hash}</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/30 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <Activity className="h-8 w-8 text-muted-foreground" />
                   </div>
-                ))}
-              </div>
+                  <h3 className="text-lg font-semibold mb-2">No Transactions Yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Your trading history will appear here after you execute trades
+                  </p>
+                  <Button onClick={handleStartTrading}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Start Trading
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -153,9 +225,41 @@ export default function Portfolio() {
               <CardTitle>Portfolio Performance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Performance chart will be implemented here
-              </div>
+              {totalValue > 0 ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 border rounded-sm">
+                      <p className="text-2xl font-bold font-mono">${totalInvested.toFixed(2)}</p>
+                      <p className="text-sm text-muted-foreground">Total Invested</p>
+                    </div>
+                    <div className="text-center p-4 border rounded-sm">
+                      <p className={`text-2xl font-bold font-mono ${
+                        totalProfitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
+                      }`}>
+                        {totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toFixed(2)}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Total P&L</p>
+                    </div>
+                  </div>
+                  <div className="h-64 flex items-center justify-center text-muted-foreground border rounded-sm">
+                    Performance chart will be implemented here
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/30 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <Activity className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No Performance Data</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Execute some trades to see your portfolio performance analytics
+                  </p>
+                  <Button onClick={handleStartTrading}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Start Trading
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -4,111 +4,66 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AppLayout } from "./components/layout/AppLayout";
-import Welcome from "./pages/Welcome";
-import SignIn from "./pages/SignIn";
-import Dashboard from "./pages/Dashboard";
-import Wallet from "./pages/Wallet";
-import Trade from "./pages/Trade";
-import AssetDetails from "./pages/AssetDetails";
-import Portfolio from "./pages/Portfolio";
-import Assets from "./pages/Assets";
-import Staking from "./pages/Staking";
-import Markets from "./pages/Markets";
-import Analytics from "./pages/Analytics";
-import SystemHealth from "./pages/SystemHealth";
-import NotFound from "./pages/NotFound";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { PortfolioProvider } from "@/contexts/PortfolioContext";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
+// Pages
+import Welcome from "@/pages/Welcome";
+import SignIn from "@/pages/SignIn";
+import Dashboard from "@/pages/Dashboard";
+import Trade from "@/pages/Trade";
+import AssetDetails from "@/pages/AssetDetails";
+import Portfolio from "@/pages/Portfolio";
+import Markets from "@/pages/Markets";
+import Assets from "@/pages/Assets";
+import Staking from "@/pages/Staking";
+import Analytics from "@/pages/Analytics";
+import Wallet from "@/pages/Wallet";
+import SystemHealth from "@/pages/SystemHealth";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Dashboard />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/wallet" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Wallet />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/trade" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Trade />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/asset/:symbol" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <AssetDetails />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/portfolio" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Portfolio />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/assets" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Assets />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/staking" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Staking />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/markets" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Markets />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Analytics />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/system-health" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <SystemHealth />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
+    <AuthProvider>
+      <PortfolioProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/trade" element={<Trade />} />
+                        <Route path="/asset/:symbol" element={<AssetDetails />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="/markets" element={<Markets />} />
+                        <Route path="/assets" element={<Assets />} />
+                        <Route path="/staking" element={<Staking />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/wallet" element={<Wallet />} />
+                        <Route path="/system" element={<SystemHealth />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </PortfolioProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

@@ -1,17 +1,18 @@
-
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, CreditCard, Wallet as WalletIcon, Search, TrendingUp, Zap, Shield } from "lucide-react";
+import { RefreshCw, WalletIcon, Search, TrendingUp, Zap, Shield } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
 import { TradeAssetSelector } from "@/components/TradeAssetSelector";
 import { TradeSummary } from "@/components/TradeSummary";
 import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
 import { TransactionStatus } from "@/components/TransactionStatus";
+import { QuickBuyBanner } from "@/components/QuickBuyBanner";
 import { useTrade } from "@/hooks/useTrade";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePortfolio } from "@/contexts/PortfolioContext";
 
 // Asset pricing data
 const ASSET_PRICES = {
@@ -41,11 +42,11 @@ export default function Trade() {
   const [toAsset, setToAsset] = useState(preselectedAsset || "ETH");
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
-  const [slippageTolerance, setSlippageTolerance] = useState("0.5");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { isAuthenticated } = useAuth();
+  const { addTrade } = usePortfolio();
   const {
     isConfirmationOpen,
     isTransactionOpen,
@@ -124,6 +125,18 @@ export default function Trade() {
     totalCost: `≈ $${(parseFloat(fromAmount || "0") * 1.003 + 2.5).toFixed(2)}`
   };
 
+  const handleTradeExecution = async () => {
+    try {
+      await executeTransaction();
+      // Add to portfolio after successful trade
+      if (fromAmount && toAmount) {
+        addTrade(fromAsset, toAsset, parseFloat(fromAmount), parseFloat(toAmount), calculateExchangeRate(fromAsset, toAsset));
+      }
+    } catch (error) {
+      console.error('Trade execution failed:', error);
+    }
+  };
+
   return (
     <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-7xl mx-auto space-y-6">
       <div className="space-y-2">
@@ -136,48 +149,14 @@ export default function Trade() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Trading Interface */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Quick Buy Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Quick Buy
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                  { asset: "MAANG", price: ASSET_PRICES.MAANG, amounts: ["100", "500"], icon: "🤖" },
-                  { asset: "USDC", price: ASSET_PRICES.USDC, amounts: ["1000", "5000"], icon: "💵" },
-                  { asset: "ETH", price: ASSET_PRICES.ETH, amounts: ["1000", "2500"], icon: "⟐" },
-                  { asset: "AVAX", price: ASSET_PRICES.AVAX, amounts: ["500", "1000"], icon: "🔺" }
-                ].map((quick) => (
-                  <div key={quick.asset} className="space-y-2">
-                    <div className="text-center p-3 bg-accent/30 rounded-sm border">
-                      <div className="text-lg mb-1">{quick.icon}</div>
-                      <div className="font-medium text-sm">{quick.asset}</div>
-                      <div className="text-xs text-muted-foreground font-mono">
-                        ${quick.price.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      {quick.amounts.map((amount) => (
-                        <Button
-                          key={amount}
-                          variant="outline"
-                          size="sm"
-                          className="w-full text-xs"
-                          onClick={() => handleQuickBuy(quick.asset, amount)}
-                        >
-                          ${amount}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Quick Buy Banner */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              Quick Buy
+            </h2>
+            <QuickBuyBanner onQuickBuy={handleQuickBuy} />
+          </div>
 
           {/* Asset Discovery Search */}
           <Card>
@@ -312,26 +291,8 @@ export default function Trade() {
                 readOnly={true}
               />
 
-              {/* Advanced Settings */}
-              <div className="pt-4 border-t space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Slippage Tolerance</span>
-                  <div className="flex gap-2">
-                    {["0.1", "0.5", "1.0"].map((value) => (
-                      <Button
-                        key={value}
-                        variant={slippageTolerance === value ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSlippageTolerance(value)}
-                        className="text-xs"
-                      >
-                        {value}%
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Smart Chain Selection */}
+              {/* Smart Chain Selection */}
+              <div className="pt-4 border-t">
                 <ChainSelectionMode 
                   mode={chainMode}
                   onModeChange={setChainMode}
@@ -340,7 +301,7 @@ export default function Trade() {
 
                 {/* Manual Chain Selection */}
                 {chainMode === "manual" && (
-                  <div className="p-4 bg-muted/50 rounded-sm">
+                  <div className="p-4 bg-muted/50 rounded-sm mt-4">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {[
                         { id: "ethereum", name: "Ethereum", icon: "🔵", fee: "$25.80", slow: true },
@@ -526,7 +487,7 @@ export default function Trade() {
       <OrderConfirmationModal
         isOpen={isConfirmationOpen}
         onClose={closeConfirmation}
-        onConfirm={executeTransaction}
+        onConfirm={handleTradeExecution}
         {...tradeSummaryData}
       />
 
