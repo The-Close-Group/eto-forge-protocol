@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw, CreditCard, Wallet as WalletIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowUpDown, Zap, Shield, TrendingUp, RefreshCw, CreditCard, Wallet as WalletIcon, Search } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
 import { AssetSelector } from "@/components/AssetSelector";
 import { TradeSummary } from "@/components/TradeSummary";
@@ -10,6 +11,15 @@ import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
 import { TransactionStatus } from "@/components/TransactionStatus";
 import { useTrade } from "@/hooks/useTrade";
 import { useAuth } from "@/contexts/AuthContext";
+
+// Asset pricing data
+const ASSET_PRICES = {
+  MAANG: 238.00,
+  USDC: 1.00,
+  ETH: 3567.00,
+  AVAX: 26.00,
+  BTC: 45000.00
+};
 
 export default function Trade() {
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
@@ -19,6 +29,7 @@ export default function Trade() {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const [slippageTolerance, setSlippageTolerance] = useState("0.5");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { isAuthenticated } = useAuth();
   const {
@@ -36,10 +47,17 @@ export default function Trade() {
 
   const recommendedChain = "Arbitrum";
 
-  // Calculate toAmount based on fromAmount (simplified)
+  // Calculate exchange rates based on real asset prices
+  const calculateExchangeRate = (from: string, to: string) => {
+    const fromPrice = ASSET_PRICES[from as keyof typeof ASSET_PRICES] || 1;
+    const toPrice = ASSET_PRICES[to as keyof typeof ASSET_PRICES] || 1;
+    return fromPrice / toPrice;
+  };
+
+  // Calculate toAmount based on fromAmount with real pricing
   const calculateToAmount = (amount: string) => {
     if (!amount) return "";
-    const rate = fromAsset === "USDC" && toAsset === "ETH" ? 0.0005 : 2000;
+    const rate = calculateExchangeRate(fromAsset, toAsset);
     return (parseFloat(amount) * rate).toFixed(6);
   };
 
@@ -58,23 +76,39 @@ export default function Trade() {
     setToAmount(tempAmount);
   };
 
-  const handleQuickBuy = (asset: string, amount: string) => {
+  const handleQuickBuy = (asset: string, usdAmount: string) => {
     setFromAsset("USDC");
     setToAsset(asset);
-    setFromAmount(amount);
-    setToAmount(calculateToAmount(amount));
+    setFromAmount(usdAmount);
+    setToAmount(calculateToAmount(usdAmount));
+  };
+
+  const handleAssetSearch = (asset: string) => {
+    setToAsset(asset);
+    setFromAsset("USDC");
+    if (fromAmount) {
+      setToAmount(calculateToAmount(fromAmount));
+    }
+    setSearchQuery("");
   };
 
   const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
   const canTrade = fromAmount && toAmount && isAuthenticated;
 
-  // Trade summary data
+  // Popular assets for search suggestions
+  const popularAssets = ["BTC", "ETH", "AVAX", "MAANG", "USDC"];
+  const filteredAssets = popularAssets.filter(asset => 
+    asset.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Trade summary data with real pricing
+  const exchangeRate = `1 ${toAsset} = ${calculateExchangeRate(toAsset, fromAsset).toFixed(2)} ${fromAsset}`;
   const tradeSummaryData = {
     fromAsset,
     toAsset,
     fromAmount,
     toAmount,
-    exchangeRate: `1 ${toAsset} = 2,000 ${fromAsset}`,
+    exchangeRate,
     networkFee: "~$2.50",
     platformFee: "0.3%",
     priceImpact: 0.12,
@@ -87,7 +121,7 @@ export default function Trade() {
       <div className="space-y-2">
         <h1 className="text-2xl md:text-3xl font-bold text-foreground">Trade</h1>
         <p className="text-muted-foreground">
-          Search and select assets, then execute cross-chain trades with optimal routing
+          Discover and trade assets with optimal cross-chain routing
         </p>
       </div>
 
@@ -105,21 +139,73 @@ export default function Trade() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { asset: "ETH", amount: "1000", label: "$1,000" },
-                  { asset: "BTC", amount: "2500", label: "$2,500" },
-                  { asset: "ETH", amount: "5000", label: "$5,000" },
-                  { asset: "BTC", amount: "10000", label: "$10,000" }
+                  { asset: "MAANG", price: ASSET_PRICES.MAANG, amounts: ["100", "500"] },
+                  { asset: "USDC", price: ASSET_PRICES.USDC, amounts: ["1000", "5000"] },
+                  { asset: "ETH", price: ASSET_PRICES.ETH, amounts: ["1000", "2500"] },
+                  { asset: "AVAX", price: ASSET_PRICES.AVAX, amounts: ["500", "1000"] }
                 ].map((quick, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="flex flex-col gap-1 h-auto p-3"
-                    onClick={() => handleQuickBuy(quick.asset, quick.amount)}
-                  >
-                    <span className="font-medium">{quick.asset}</span>
-                    <span className="text-xs text-muted-foreground">{quick.label}</span>
-                  </Button>
+                  <div key={quick.asset} className="space-y-2">
+                    <div className="text-center p-3 bg-accent/30 rounded-sm border">
+                      <div className="font-medium text-lg">{quick.asset}</div>
+                      <div className="text-sm text-muted-foreground font-mono">
+                        ${quick.price.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      {quick.amounts.map((amount, amountIndex) => (
+                        <Button
+                          key={amountIndex}
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-xs"
+                          onClick={() => handleQuickBuy(quick.asset, amount)}
+                        >
+                          ${amount}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Asset Discovery Search */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                Discover New Assets
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search for assets to trade..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                {searchQuery && filteredAssets.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-sm mt-1 z-10 shadow-lg">
+                    {filteredAssets.map((asset) => (
+                      <button
+                        key={asset}
+                        className="w-full text-left px-4 py-3 hover:bg-accent/50 flex items-center justify-between border-b last:border-b-0"
+                        onClick={() => handleAssetSearch(asset)}
+                      >
+                        <div>
+                          <div className="font-medium">{asset}</div>
+                          <div className="text-sm text-muted-foreground">
+                            ${ASSET_PRICES[asset as keyof typeof ASSET_PRICES]?.toFixed(2) || 'N/A'}
+                          </div>
+                        </div>
+                        <Zap className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -319,7 +405,7 @@ export default function Trade() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Current Rate</span>
-                  <span className="text-sm font-medium font-mono">2,000 {fromAsset}</span>
+                  <span className="text-sm font-medium font-mono">{exchangeRate}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">24h Change</span>

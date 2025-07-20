@@ -76,6 +76,9 @@ export function TransactionStatus({
     }
   };
 
+  // Calculate total cost for success display
+  const totalCost = `≈ $${(parseFloat(fromAmount || "0") * 1.003 + 2.5).toFixed(2)}`;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="max-w-md">
@@ -94,16 +97,31 @@ export function TransactionStatus({
           {/* Trade Summary */}
           <Card className="border-primary/20">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-center">
-                  <div className="text-lg font-medium font-mono">{fromAmount}</div>
-                  <div className="text-sm text-muted-foreground">{fromAsset}</div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-center">
+                    <div className="text-lg font-medium font-mono">{fromAmount}</div>
+                    <div className="text-sm text-muted-foreground">{fromAsset}</div>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    <div className="text-xs text-muted-foreground">SWAP</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-medium font-mono">{toAmount}</div>
+                    <div className="text-sm text-muted-foreground">{toAsset}</div>
+                  </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                <div className="text-center">
-                  <div className="text-lg font-medium font-mono">{toAmount}</div>
-                  <div className="text-sm text-muted-foreground">{toAsset}</div>
-                </div>
+                
+                {/* Show total cost in success state */}
+                {status === 'success' && (
+                  <div className="pt-3 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Total Cost</span>
+                      <span className="text-sm font-medium font-mono">{totalCost}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -158,6 +176,9 @@ export function TransactionStatus({
               <div className="text-center p-4 bg-data-positive/10 rounded-sm border border-data-positive/20">
                 <div className="text-sm text-data-positive font-medium">
                   Your swap was completed successfully!
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Transaction confirmed on blockchain
                 </div>
               </div>
 
