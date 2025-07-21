@@ -56,19 +56,20 @@ export function TradeAssetSelector({
   useEffect(() => {
     if (selectedAssetData && amount) {
       const amountNum = parseFloat(amount);
-      if (!isNaN(amountNum)) {
-        const usdAmount = amountNum * selectedAssetData.price;
-        setUsdValue(usdAmount.toFixed(2));
-        
-        const quantity = amountNum;
+      if (!isNaN(amountNum) && amountNum > 0) {
+        // For USD input, calculate token quantity
+        const quantity = amountNum / selectedAssetData.price;
         setTokenQuantity(quantity.toFixed(6));
+        setUsdValue(amountNum.toFixed(2));
         
         // If this is the "from" asset, calculate the "to" amount
         if (otherAssetData && onOtherAmountChange && !readOnly) {
-          const otherQuantity = amountNum * (selectedAssetData.price / otherAssetData.price);
-          const otherUsdAmount = otherQuantity * otherAssetData.price;
+          const otherUsdAmount = quantity * otherAssetData.price;
           onOtherAmountChange(otherUsdAmount.toFixed(2));
         }
+      } else {
+        setUsdValue("");
+        setTokenQuantity("");
       }
     } else {
       setUsdValue("");
@@ -78,7 +79,11 @@ export function TradeAssetSelector({
 
   const handleAmountChange = (value: string) => {
     if (onAmountChange) {
-      onAmountChange(value);
+      // Prevent negative values and infinity
+      const numValue = parseFloat(value);
+      if (value === "" || (!isNaN(numValue) && numValue >= 0 && isFinite(numValue))) {
+        onAmountChange(value);
+      }
     }
   };
 
@@ -101,7 +106,7 @@ export function TradeAssetSelector({
       {/* Asset Selection and Amount Input */}
       <div className="flex gap-2">
         <Select value={selectedAsset} onValueChange={handleAssetChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-32 font-mono">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -128,6 +133,7 @@ export function TradeAssetSelector({
             readOnly={readOnly}
             className="pl-8 font-mono"
             step="0.01"
+            min="0"
           />
         </div>
       </div>
@@ -189,9 +195,13 @@ export function TradeAssetSelector({
                 className="text-xs px-2 py-1 h-6 font-mono"
                 onClick={() => {
                   const balanceNum = parseFloat(balance);
-                  const multiplier = percent === 'MAX' ? 1 : parseInt(percent) / 100;
-                  const usdAmount = (balanceNum * multiplier * selectedAssetData.price).toString();
-                  onAmountChange(usdAmount);
+                  if (!isNaN(balanceNum) && balanceNum > 0) {
+                    const multiplier = percent === 'MAX' ? 1 : parseInt(percent) / 100;
+                    const usdAmount = (balanceNum * multiplier * selectedAssetData.price);
+                    if (isFinite(usdAmount)) {
+                      onAmountChange(usdAmount.toFixed(2));
+                    }
+                  }
                 }}
               >
                 {percent}

@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,13 +33,17 @@ const ASSET_SUGGESTIONS = [
 export default function Trade() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const preselectedAsset = searchParams.get('asset');
+  
+  // Get URL parameters
+  const preselectedFrom = searchParams.get('from');
+  const preselectedTo = searchParams.get('to');
+  const preselectedAmount = searchParams.get('amount');
 
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
   const [selectedChain, setSelectedChain] = useState("ethereum");
-  const [fromAsset, setFromAsset] = useState("USDC");
-  const [toAsset, setToAsset] = useState(preselectedAsset || "ETH");
-  const [fromAmount, setFromAmount] = useState("");
+  const [fromAsset, setFromAsset] = useState(preselectedFrom || "USDC");
+  const [toAsset, setToAsset] = useState(preselectedTo || "ETH");
+  const [fromAmount, setFromAmount] = useState(preselectedAmount || "");
   const [toAmount, setToAmount] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -62,34 +65,22 @@ export default function Trade() {
 
   const recommendedChain = "Arbitrum";
 
-  const calculateExchangeRate = (from: string, to: string) => {
-    const fromPrice = ASSET_PRICES[from as keyof typeof ASSET_PRICES] || 1;
-    const toPrice = ASSET_PRICES[to as keyof typeof ASSET_PRICES] || 1;
-    return fromPrice / toPrice;
-  };
+  // Initialize amounts when URL parameters change
+  useEffect(() => {
+    if (preselectedAmount && fromAsset && toAsset) {
+      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
+      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
+      const calculatedToAmount = ((parseFloat(preselectedAmount) / fromPrice) * toPrice).toFixed(2);
+      setToAmount(calculatedToAmount);
+    }
+  }, [preselectedAmount, fromAsset, toAsset]);
 
   const handleFromAmountChange = (amount: string) => {
     setFromAmount(amount);
-    if (amount) {
-      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
-      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
-      const toAmountCalculated = ((parseFloat(amount) / fromPrice) * toPrice).toFixed(2);
-      setToAmount(toAmountCalculated);
-    } else {
-      setToAmount("");
-    }
   };
 
   const handleToAmountChange = (amount: string) => {
     setToAmount(amount);
-    if (amount) {
-      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
-      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
-      const fromAmountCalculated = ((parseFloat(amount) / toPrice) * fromPrice).toFixed(2);
-      setFromAmount(fromAmountCalculated);
-    } else {
-      setFromAmount("");
-    }
   };
 
   const handleSwapAssets = () => {
@@ -106,10 +97,6 @@ export default function Trade() {
     setFromAsset("USDC");
     setToAsset(asset);
     setFromAmount(usdAmount);
-    
-    const toPrice = ASSET_PRICES[asset as keyof typeof ASSET_PRICES] || 1;
-    const calculatedToAmount = (parseFloat(usdAmount) / toPrice).toFixed(2);
-    setToAmount(calculatedToAmount);
   };
 
   const handleAssetClick = (symbol: string) => {
@@ -123,6 +110,12 @@ export default function Trade() {
 
   const showPriceImpactWarning = fromAmount && parseFloat(fromAmount) > 10000;
   const canTrade = fromAmount && toAmount && isAuthenticated;
+
+  const calculateExchangeRate = (from: string, to: string) => {
+    const fromPrice = ASSET_PRICES[from as keyof typeof ASSET_PRICES] || 1;
+    const toPrice = ASSET_PRICES[to as keyof typeof ASSET_PRICES] || 1;
+    return fromPrice / toPrice;
+  };
 
   const exchangeRate = `1 ${toAsset} = ${calculateExchangeRate(toAsset, fromAsset).toFixed(2)} ${fromAsset}`;
   const tradeSummaryData = {

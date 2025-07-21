@@ -1,10 +1,13 @@
 
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TrendingUp, TrendingDown, Search, Layers } from "lucide-react";
 
 export default function Assets() {
+  const navigate = useNavigate();
+
   const assets = [
     { 
       symbol: "MAANG", 
@@ -44,10 +47,18 @@ export default function Assets() {
     },
   ];
 
+  const handleBuyAsset = (symbol: string) => {
+    navigate(`/trade?from=USDC&to=${symbol}&amount=100`);
+  };
+
+  const handleTradeAsset = (symbol: string) => {
+    navigate(`/asset/${symbol}`);
+  };
+
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Assets</h1>
+        <h1 className="text-3xl font-bold font-mono text-foreground">Assets</h1>
         <p className="text-muted-foreground">
           Available assets for trading and staking
         </p>
@@ -58,14 +69,14 @@ export default function Assets() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input 
           placeholder="Search assets..." 
-          className="pl-9"
+          className="pl-9 font-mono"
         />
       </div>
 
       {/* Assets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {assets.map((asset, index) => (
-          <Card key={index} className="hover:bg-accent/5 transition-colors">
+          <Card key={index} className="hover:bg-accent/5 transition-colors border-border bg-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
@@ -81,8 +92,8 @@ export default function Assets() {
               <div className="flex justify-between items-center">
                 <span className="text-2xl font-mono font-bold">{asset.price}</span>
                 <div className={`flex items-center gap-1 text-sm font-mono ${
-                  asset.changeType === "up" ? "text-green-400" : 
-                  asset.changeType === "down" ? "text-red-400" : "text-muted-foreground"
+                  asset.changeType === "up" ? "text-data-positive" : 
+                  asset.changeType === "down" ? "text-data-negative" : "text-muted-foreground"
                 }`}>
                   {asset.changeType === "up" && <TrendingUp className="h-4 w-4" />}
                   {asset.changeType === "down" && <TrendingDown className="h-4 w-4" />}
@@ -102,8 +113,21 @@ export default function Assets() {
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" className="flex-1">Buy</Button>
-                <Button size="sm" variant="outline" className="flex-1">Trade</Button>
+                <Button 
+                  size="sm" 
+                  className="flex-1 font-mono"
+                  onClick={() => handleBuyAsset(asset.symbol)}
+                >
+                  Buy
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1 font-mono"
+                  onClick={() => handleTradeAsset(asset.symbol)}
+                >
+                  Details
+                </Button>
               </div>
             </CardContent>
           </Card>

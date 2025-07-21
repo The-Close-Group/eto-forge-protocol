@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, Zap } from "lucide-react";
@@ -27,6 +28,7 @@ const QUICK_BUY_ASSETS: QuickBuyAsset[] = [
 
 export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,6 +36,10 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleAssetClick = (asset: QuickBuyAsset) => {
+    navigate(`/asset/${asset.symbol}`);
+  };
 
   return (
     <Card className="overflow-hidden border-border bg-card">
@@ -44,7 +50,10 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
         >
           {QUICK_BUY_ASSETS.map((asset, index) => (
             <div key={asset.symbol} className="min-w-full flex items-center justify-between p-6">
-              <div className="flex items-center gap-4">
+              <div 
+                className="flex items-center gap-4 cursor-pointer flex-1"
+                onClick={() => handleAssetClick(asset)}
+              >
                 <div className="w-16 h-16 bg-primary/10 rounded-sm flex items-center justify-center">
                   <span className="text-2xl">{asset.icon}</span>
                 </div>
@@ -75,7 +84,10 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
               <div className="flex flex-col gap-2">
                 <Button
                   size="sm"
-                  onClick={() => onQuickBuy(asset.symbol, "100")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuickBuy(asset.symbol, "100");
+                  }}
                   className="min-w-20 font-mono"
                 >
                   <Zap className="h-3 w-3 mr-1" />
@@ -84,7 +96,10 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onQuickBuy(asset.symbol, "500")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuickBuy(asset.symbol, "500");
+                  }}
                   className="min-w-20 font-mono"
                 >
                   <Zap className="h-3 w-3 mr-1" />

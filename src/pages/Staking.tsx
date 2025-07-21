@@ -15,7 +15,8 @@ import {
   CheckCircle,
   Clock,
   Zap,
-  BarChart3
+  BarChart3,
+  Plus
 } from "lucide-react";
 import { StakingPoolCard } from "@/components/StakingPoolCard";
 import { StakingCalculator } from "@/components/StakingCalculator";
@@ -98,6 +99,11 @@ export default function Staking() {
     // Handle staking logic here
   };
 
+  const handleStakeYourWay = () => {
+    console.log("Opening custom staking modal");
+    // Handle custom staking modal
+  };
+
   const totalStaked = "$7,500";
   const totalRewards = "$172.70";
   const totalApy = "15.2%";
@@ -112,7 +118,7 @@ export default function Staking() {
       </div>
 
       {/* Portfolio Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-mono flex items-center gap-2">
@@ -152,6 +158,25 @@ export default function Staking() {
           <CardContent>
             <div className="text-2xl font-mono font-bold text-data-positive">{totalApy}</div>
             <div className="text-sm text-muted-foreground">Weighted average</div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-mono flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Custom Staking
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={handleStakeYourWay}
+              className="w-full font-mono bg-primary hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Stake Your Way
+            </Button>
+            <div className="text-xs text-muted-foreground mt-2">Choose your own terms</div>
           </CardContent>
         </Card>
       </div>
@@ -209,10 +234,10 @@ export default function Staking() {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="font-mono">
                         Claim
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="font-mono">
                         Unstake
                       </Button>
                     </div>
