@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { WalletConnector } from '@/components/WalletConnector';
@@ -13,7 +12,7 @@ const sponsors = [
   { name: 'Superteam', logo: '⚡' },
 ];
 
-export default function SignIn() {
+export default function SignUp() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { walletAddress } = useWallet();
@@ -34,7 +33,7 @@ export default function SignIn() {
             ETO Trading
           </h1>
           <p className="text-muted-foreground font-mono text-lg">
-            Cross-chain trading platform
+            Join the cross-chain trading platform
           </p>
         </div>
 
@@ -44,7 +43,7 @@ export default function SignIn() {
         {/* Info Section */}
         <div className="text-center space-y-4">
           <p className="text-base text-muted-foreground">
-            Connect your wallet to access the ETO Trading platform
+            Create your account by connecting your wallet to access the ETO Trading platform
           </p>
           <p className="text-xs text-muted-foreground">
             This is a demo interface with simulated wallet connections for development purposes.
@@ -73,9 +72,9 @@ export default function SignIn() {
         {/* Navigation */}
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
-            Need an account?{' '}
-            <Link to="/signup" className="text-primary hover:underline font-mono">
-              Sign Up
+            Already have an account?{' '}
+            <Link to="/signin" className="text-primary hover:underline font-mono">
+              Sign In
             </Link>
           </p>
         </div>
