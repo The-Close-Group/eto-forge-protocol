@@ -146,7 +146,7 @@ export default function Portfolio() {
                           {asset.profitLossPercent >= 0 ? '+' : ''}{asset.profitLossPercent.toFixed(1)}%
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/assets/${asset.symbol}`)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </div>

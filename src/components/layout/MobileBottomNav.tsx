@@ -37,11 +37,11 @@ export function MobileBottomNav() {
             className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors min-w-0 ${
               isActive(item.url)
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                : "text-soft-foreground hover:bg-accent hover:text-accent-foreground"
             }`}
           >
             <item.icon className="h-5 w-5 mb-1" />
-            <span className="text-xs font-medium truncate">{item.title}</span>
+            <span className="text-xs font-normal truncate">{item.title}</span>
           </NavLink>
         ))}
       </nav>

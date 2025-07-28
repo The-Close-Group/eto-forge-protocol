@@ -5,11 +5,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@/hooks/useWallet';
 import { Card } from '@/components/ui/card';
 
+import layerZeroLogo from '@/assets/layerzero-logo.png';
+import avalancheLogo from '@/assets/avalanche-logo.png';
+import usdcLogo from '@/assets/usdc-logo.png';
+import solanaLogo from '@/assets/solana-logo.png';
+
 const sponsors = [
-  { name: 'Avalanche', logo: '🔺' },
-  { name: 'LayerZero', logo: '🔗' },
-  { name: 'Solana', logo: '🟣' },
-  { name: 'Superteam', logo: '⚡' },
+  { name: 'Avalanche', logo: avalancheLogo },
+  { name: 'LayerZero', logo: layerZeroLogo },
+  { name: 'Solana', logo: solanaLogo },
+  { name: 'USDC', logo: usdcLogo },
 ];
 
 export default function SignUp() {
@@ -59,8 +64,8 @@ export default function SignUp() {
             <div className="flex justify-center items-center gap-6">
               {sponsors.map((sponsor) => (
                 <div key={sponsor.name} className="flex flex-col items-center space-y-2">
-                  <span className="text-2xl">{sponsor.logo}</span>
-                  <span className="text-xs font-mono text-muted-foreground">
+                  <img src={sponsor.logo} alt={`${sponsor.name} logo`} className="w-8 h-8 object-contain" />
+                  <span className="text-xs font-normal text-soft-muted">
                     {sponsor.name}
                   </span>
                 </div>

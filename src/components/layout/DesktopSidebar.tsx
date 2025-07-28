@@ -69,8 +69,8 @@ export function DesktopSidebar() {
           </div>
           {!isCollapsed && (
             <div>
-              <h2 className="font-semibold text-foreground">ETO</h2>
-              <p className="text-xs text-muted-foreground">Trading Platform</p>
+              <h2 className="font-medium text-soft-foreground">ETO</h2>
+              <p className="text-xs text-soft-muted">Trading Platform</p>
             </div>
           )}
         </Link>
@@ -90,7 +90,7 @@ export function DesktopSidebar() {
         )}
 
         <SidebarGroup className={`${isCollapsed ? "px-2 py-4" : "p-4"}`}>
-          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
+          <SidebarGroupLabel className={isCollapsed ? "sr-only" : "text-soft-muted"}>
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -104,12 +104,12 @@ export function DesktopSidebar() {
                         `flex items-center ${isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-2"} rounded-md transition-colors ${
                           isActive(item.url) || linkActive
                             ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            : "text-soft-foreground hover:bg-accent hover:text-accent-foreground"
                         }`
                       }
                     >
                       <item.icon className={`h-5 w-5 shrink-0 ${isCollapsed ? "" : ""}`} />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {!isCollapsed && <span className="font-normal">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

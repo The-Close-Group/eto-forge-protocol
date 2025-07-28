@@ -219,19 +219,19 @@ export default function Analytics() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
+                <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => alert("Trading Summary Report - This feature will generate a comprehensive weekly trading report")}>
                   <span>Trading Summary</span>
                   <span className="text-xs text-muted-foreground">Weekly trading report</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
+                <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => alert("Tax Report - This feature will generate tax documents for filing purposes")}>
                   <span>Tax Report</span>
                   <span className="text-xs text-muted-foreground">For tax filing purposes</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
+                <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => alert("Performance Report - This feature will generate detailed performance analytics")}>
                   <span>Performance Report</span>
                   <span className="text-xs text-muted-foreground">Detailed performance analysis</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
+                <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => alert("Custom Report - This feature allows you to create custom reports with specific metrics")}>
                   <span>Custom Report</span>
                   <span className="text-xs text-muted-foreground">Create custom report</span>
                 </Button>

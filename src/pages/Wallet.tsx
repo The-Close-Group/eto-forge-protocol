@@ -64,11 +64,16 @@ export default function Wallet() {
               <Download className="h-4 w-4" />
               Receive
             </Button>
-            <Button variant="outline" className="flex-1 gap-2" disabled>
+            <Button variant="outline" className="flex-1 gap-2" onClick={() => alert("Send functionality - Connect to your wallet to send tokens")}>
               <Send className="h-4 w-4" />
               Send
             </Button>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={() => {
+              if (walletAddress) {
+                navigator.clipboard.writeText(walletAddress);
+                alert("Address copied to clipboard!");
+              }
+            }}>
               <Copy className="h-4 w-4" />
             </Button>
           </div>
@@ -115,7 +120,7 @@ export default function Wallet() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Transactions</CardTitle>
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2" onClick={() => window.open("https://etherscan.io", "_blank")}>
             View All
             <ExternalLink className="h-3 w-3" />
           </Button>
