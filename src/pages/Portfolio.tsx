@@ -24,7 +24,7 @@ export default function Portfolio() {
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Portfolio</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Portfolio</h1>
         <p className="text-muted-foreground">
           Track your assets across all connected chains
         </p>
@@ -34,7 +34,7 @@ export default function Portfolio() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Value</CardTitle>
+            <CardTitle className="text-lg font-medium tracking-wide">Total Value</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl lg:text-3xl font-bold leading-tight">
@@ -55,7 +55,7 @@ export default function Portfolio() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Active Positions</CardTitle>
+            <CardTitle className="text-lg font-medium tracking-wide">Active Positions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl lg:text-3xl font-bold leading-tight">{assets.length}</div>
@@ -67,7 +67,7 @@ export default function Portfolio() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Best Performer</CardTitle>
+            <CardTitle className="text-lg font-medium tracking-wide">Best Performer</CardTitle>
           </CardHeader>
           <CardContent>
             {assets.length > 0 ? (

@@ -41,7 +41,7 @@ export default function Markets() {
       {/* Main Content */}
       <div className="flex-1 p-6 pb-20 md:pb-6 space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold font-mono text-foreground">Markets</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Markets</h1>
           <p className="text-muted-foreground">
             Explore trading opportunities across all supported chains
           </p>
@@ -51,7 +51,7 @@ export default function Markets() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium font-mono">Total Volume 24h</CardTitle>
+              <CardTitle className="text-sm font-medium tracking-wide">Total Volume 24h</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl lg:text-2xl font-bold leading-tight">$171.6M</div>
@@ -61,7 +61,7 @@ export default function Markets() {
 
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium font-mono">Active Markets</CardTitle>
+              <CardTitle className="text-sm font-medium tracking-wide">Active Markets</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl lg:text-2xl font-bold leading-tight">24</div>
@@ -71,7 +71,7 @@ export default function Markets() {
 
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium font-mono">Top Gainer</CardTitle>
+              <CardTitle className="text-sm font-medium tracking-wide">Top Gainer</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-lg font-bold leading-tight cursor-pointer hover:text-primary transition-colors" onClick={() => handleAssetClick('ARB')}>ARB/USDC</div>
@@ -81,7 +81,7 @@ export default function Markets() {
 
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium font-mono">Market Cap</CardTitle>
+              <CardTitle className="text-sm font-medium tracking-wide">Market Cap</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl lg:text-2xl font-bold leading-tight">$2.4T</div>
@@ -93,15 +93,15 @@ export default function Markets() {
         <Tabs defaultValue="all" className="w-full">
           <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <TabsList>
-              <TabsTrigger value="all" className="font-mono">All Markets</TabsTrigger>
-              <TabsTrigger value="gainers" className="font-mono">Top Gainers</TabsTrigger>
-              <TabsTrigger value="losers" className="font-mono">Top Losers</TabsTrigger>
-              <TabsTrigger value="watchlist" className="font-mono">Watchlist</TabsTrigger>
+              <TabsTrigger value="all" className="tracking-wide">All Markets</TabsTrigger>
+              <TabsTrigger value="gainers" className="tracking-wide">Top Gainers</TabsTrigger>
+              <TabsTrigger value="losers" className="tracking-wide">Top Losers</TabsTrigger>
+              <TabsTrigger value="watchlist" className="tracking-wide">Watchlist</TabsTrigger>
             </TabsList>
             
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search markets..." className="pl-9 font-mono" />
+              <Input placeholder="Search markets..." className="pl-9 tracking-wide" />
             </div>
           </div>
 

@@ -9,29 +9,29 @@
 @layer base {
   :root {
     /* Core Industrial Theme - Warmer & Softer for Better Readability */
-    --background: 20 3% 2%;
-    --foreground: 25 4% 88%;
+    --background: 25 8% 8%;
+    --foreground: 25 8% 82%;
     
     /* Surface Colors - Industrial Black Palette with Subtle Warmth */
-    --card: 20 3% 6%;
-    --card-foreground: 25 4% 88%;
+    --card: 25 8% 9%;
+    --card-foreground: 25 8% 82%;
     
-    --popover: 20 3% 6%;
-    --popover-foreground: 25 4% 88%;
+    --popover: 25 8% 9%;
+    --popover-foreground: 25 8% 82%;
     
     /* Brand Colors - Softened Industrial */
-    --primary: 20 4% 96%;
-    --primary-foreground: 20 3% 8%;
+    --primary: 25 10% 92%;
+    --primary-foreground: 25 8% 12%;
     
-    --secondary: 20 3% 12%;
-    --secondary-foreground: 25 4% 90%;
+    --secondary: 25 8% 16%;
+    --secondary-foreground: 25 8% 88%;
     
     /* UI State Colors - Further Softened */
-    --muted: 20 3% 12%;
-    --muted-foreground: 25 4% 70%;
+    --muted: 25 8% 16%;
+    --muted-foreground: 25 8% 65%;
     
-    --accent: 20 3% 18%;
-    --accent-foreground: 25 4% 94%;
+    --accent: 25 8% 20%;
+    --accent-foreground: 25 8% 90%;
     
     /* Trading Colors */
     --success: 120 100% 35%;
@@ -44,9 +44,9 @@
     --warning-foreground: 0 0% 0%;
     
     /* Interface Elements - Softened Borders */
-    --border: 20 3% 20%;
-    --input: 20 3% 8%;
-    --ring: 25 4% 65%;
+    --border: 25 8% 15%;
+    --input: 25 8% 12%;
+    --ring: 25 8% 65%;
     
     /* Industrial Design Tokens */
     --grid-lines: 0 0% 20%;
@@ -98,20 +98,20 @@
 @layer components {
   /* Trading Platform Components */
   .trading-panel {
-    @apply bg-card border border-border rounded-md shadow-sm;
-    box-shadow: 0 1px 3px hsl(var(--shadow-panel));
+    @apply bg-card border border-border/60 rounded-xl shadow-sm;
+    box-shadow: 0 1px 3px hsl(var(--shadow-panel) / 0.06);
   }
   
   .data-table {
-    @apply bg-card border border-border rounded-md overflow-hidden;
+    @apply bg-card border border-border/60 rounded-xl overflow-hidden;
   }
   
   .data-table th {
-    @apply bg-muted/50 px-4 py-3 text-left text-xs font-medium text-muted-foreground border-b border-border;
+    @apply bg-muted/40 px-6 py-4 text-left text-xs font-medium text-muted-foreground border-b border-border/40 tracking-wider;
   }
   
   .data-table td {
-    @apply px-4 py-3 text-sm border-b border-border/50;
+    @apply px-6 py-4 text-sm border-b border-border/30;
   }
   
   .price-positive {
@@ -140,14 +140,14 @@
   }
   
   .industrial-button {
-    @apply bg-primary text-primary-foreground border border-border px-4 py-2 font-medium text-sm transition-all;
-    @apply hover:bg-primary/90 focus:ring-1 focus:ring-ring;
-    border-radius: var(--radius);
+    @apply bg-primary text-primary-foreground border border-border/60 px-5 py-3 font-medium text-sm transition-all duration-300;
+    @apply hover:bg-primary/85 focus:ring-1 focus:ring-ring shadow-sm hover:shadow-md tracking-wide;
+    border-radius: calc(var(--radius) + 0.125rem);
     font-family: var(--font-sans);
   }
   
   .industrial-input {
-    @apply bg-input border border-border px-3 py-2 rounded-md text-sm placeholder:text-muted-foreground;
-    @apply focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
+    @apply bg-input border border-border/60 px-4 py-3 rounded-lg text-sm placeholder:text-muted-foreground;
+    @apply focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 tracking-wide;
   }
 }
