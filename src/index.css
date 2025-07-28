@@ -9,28 +9,28 @@
 @layer base {
   :root {
     /* Core Industrial Theme - Warmer & Softer for Better Readability */
-    --background: 25 8% 8%;
+    --background: 25 8% 12%;
     --foreground: 25 8% 82%;
     
     /* Surface Colors - Industrial Black Palette with Subtle Warmth */
-    --card: 25 8% 9%;
+    --card: 25 8% 15%;
     --card-foreground: 25 8% 82%;
     
-    --popover: 25 8% 9%;
+    --popover: 25 8% 15%;
     --popover-foreground: 25 8% 82%;
     
     /* Brand Colors - Softened Industrial */
     --primary: 25 10% 92%;
     --primary-foreground: 25 8% 12%;
     
-    --secondary: 25 8% 16%;
+    --secondary: 25 8% 20%;
     --secondary-foreground: 25 8% 88%;
     
     /* UI State Colors - Further Softened */
-    --muted: 25 8% 16%;
+    --muted: 25 8% 20%;
     --muted-foreground: 25 8% 65%;
     
-    --accent: 25 8% 20%;
+    --accent: 25 8% 24%;
     --accent-foreground: 25 8% 90%;
     
     /* Trading Colors */
@@ -44,8 +44,8 @@
     --warning-foreground: 0 0% 0%;
     
     /* Interface Elements - Softened Borders */
-    --border: 25 8% 15%;
-    --input: 25 8% 12%;
+    --border: 25 8% 18%;
+    --input: 25 8% 16%;
     --ring: 25 8% 65%;
     
     /* Industrial Design Tokens */
@@ -71,14 +71,14 @@
     --transition-smooth: 200ms linear;
 
     /* Sidebar - Industrial Black Theme Softened */
-    --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 4%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 0 0% 60%;
+    --sidebar-background: 25 8% 12%;
+    --sidebar-foreground: 25 8% 82%;
+    --sidebar-primary: 25 10% 92%;
+    --sidebar-primary-foreground: 25 8% 12%;
+    --sidebar-accent: 25 8% 15%;
+    --sidebar-accent-foreground: 25 8% 82%;
+    --sidebar-border: 25 8% 18%;
+    --sidebar-ring: 25 8% 65%;
   }
 
 }
