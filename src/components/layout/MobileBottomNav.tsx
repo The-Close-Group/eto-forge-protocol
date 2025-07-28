@@ -41,7 +41,7 @@ export function MobileBottomNav() {
             }`}
           >
             <item.icon className="h-5 w-5 mb-1" />
-            <span className="text-xs font-normal truncate">{item.title}</span>
+            <span className="text-xs font-medium truncate">{item.title}</span>
           </NavLink>
         ))}
       </nav>

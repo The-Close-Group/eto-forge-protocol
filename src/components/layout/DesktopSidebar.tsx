@@ -69,7 +69,7 @@ export function DesktopSidebar() {
           </div>
           {!isCollapsed && (
             <div>
-              <h2 className="font-medium text-soft-foreground">ETO</h2>
+              <h2 className="font-semibold text-soft-foreground">ETO</h2>
               <p className="text-xs text-soft-muted">Trading Platform</p>
             </div>
           )}
@@ -109,7 +109,7 @@ export function DesktopSidebar() {
                       }
                     >
                       <item.icon className={`h-5 w-5 shrink-0 ${isCollapsed ? "" : ""}`} />
-                      {!isCollapsed && <span className="font-normal">{item.title}</span>}
+                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -127,7 +127,7 @@ export function DesktopSidebar() {
               className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
             >
               <LogOut className="h-4 w-4" />
-              Sign Out
+              <span className="font-medium">Sign Out</span>
             </Button>
           )}
           <SidebarTrigger className={`${isCollapsed ? "w-8 h-8 mx-auto flex" : "w-full"}`} />

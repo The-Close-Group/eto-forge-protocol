@@ -9,12 +9,10 @@ import { Card } from '@/components/ui/card';
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';
 import usdcLogo from '@/assets/usdc-logo.png';
-import solanaLogo from '@/assets/solana-logo.png';
 
 const sponsors = [
   { name: 'Avalanche', logo: avalancheLogo },
   { name: 'LayerZero', logo: layerZeroLogo },
-  { name: 'Solana', logo: solanaLogo },
   { name: 'USDC', logo: usdcLogo },
 ];
 
@@ -35,10 +33,10 @@ export default function SignIn() {
       <div className="w-full max-w-lg space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <h1 className="text-4xl font-bold font-mono uppercase tracking-wider">
+          <h1 className="text-4xl font-bold">
             ETO Trading
           </h1>
-          <p className="text-muted-foreground font-mono text-lg">
+          <p className="text-muted-foreground text-lg">
             Cross-chain trading platform
           </p>
         </div>
@@ -59,7 +57,7 @@ export default function SignIn() {
         {/* Sponsors Section */}
         <Card className="p-6 bg-card border border-border">
           <div className="text-center space-y-4">
-            <h3 className="text-sm font-mono text-muted-foreground uppercase tracking-wider">
+            <h3 className="text-sm text-muted-foreground">
               Backed By
             </h3>
             <div className="flex justify-center items-center gap-6">
@@ -79,7 +77,7 @@ export default function SignIn() {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Need an account?{' '}
-            <Link to="/signup" className="text-primary hover:underline font-mono">
+            <Link to="/signup" className="text-primary hover:underline">
               Sign Up
             </Link>
           </p>
