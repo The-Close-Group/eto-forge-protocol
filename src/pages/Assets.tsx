@@ -11,39 +11,75 @@ export default function Assets() {
   const assets = [
     { 
       symbol: "MAANG", 
-      name: "MAANG Token", 
-      price: "$47.32", 
-      change: "+5.24%", 
+      name: "Meta AI & Analytics Next Generation", 
+      price: "$238.00", 
+      change: "+2.5%", 
       changeType: "up",
-      marketCap: "$12.4M",
-      volume24h: "$2.1M"
+      marketCap: "$5.2B",
+      volume24h: "$124M"
     },
     { 
       symbol: "USDC", 
       name: "USD Coin", 
       price: "$1.00", 
-      change: "0.00%", 
-      changeType: "neutral",
-      marketCap: "$28.2B",
-      volume24h: "$4.1B"
+      change: "+0.1%", 
+      changeType: "up",
+      marketCap: "$32.8B",
+      volume24h: "$3.2B"
     },
     { 
       symbol: "BTC", 
       name: "Bitcoin", 
-      price: "$43,521.45", 
-      change: "-1.23%", 
-      changeType: "down",
-      marketCap: "$851.2B",
-      volume24h: "$15.2B"
+      price: "$45,000.00", 
+      change: "+1.2%", 
+      changeType: "up",
+      marketCap: "$880B",
+      volume24h: "$28B"
     },
     { 
       symbol: "ETH", 
       name: "Ethereum", 
-      price: "$2,587.32", 
-      change: "+3.45%", 
+      price: "$3,567.00", 
+      change: "+1.8%", 
       changeType: "up",
-      marketCap: "$310.8B",
-      volume24h: "$8.7B"
+      marketCap: "$429B",
+      volume24h: "$12.8B"
+    },
+    { 
+      symbol: "AVAX", 
+      name: "Avalanche", 
+      price: "$26.00", 
+      change: "+3.2%", 
+      changeType: "up",
+      marketCap: "$10.1B",
+      volume24h: "$284M"
+    },
+    { 
+      symbol: "ARB", 
+      name: "Arbitrum", 
+      price: "$0.90", 
+      change: "+8.7%", 
+      changeType: "up",
+      marketCap: "$3.4B",
+      volume24h: "$458M"
+    },
+    { 
+      symbol: "OP", 
+      name: "Optimism", 
+      price: "$1.85", 
+      change: "+3.1%", 
+      changeType: "up",
+      marketCap: "$2.9B",
+      volume24h: "$312M"
+    },
+    { 
+      symbol: "MATIC", 
+      name: "Polygon", 
+      price: "$0.75", 
+      change: "-0.8%", 
+      changeType: "down",
+      marketCap: "$7.1B",
+      volume24h: "$298M"
     },
   ];
 
@@ -78,37 +114,42 @@ export default function Assets() {
         {assets.map((asset, index) => (
           <Card key={index} className="hover:bg-accent/5 transition-colors border-border bg-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center flex-shrink-0">
                   <Layers className="h-5 w-5 text-primary" />
                 </div>
-                <div>
-                  <CardTitle className="text-lg font-mono">{asset.symbol}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{asset.name}</p>
+                <div className="min-w-0">
+                  <CardTitle 
+                    className="text-lg cursor-pointer hover:text-primary transition-colors truncate"
+                    onClick={() => handleTradeAsset(asset.symbol)}
+                  >
+                    {asset.symbol}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground truncate">{asset.name}</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-2xl font-mono font-bold">{asset.price}</span>
-                <div className={`flex items-center gap-1 text-sm font-mono ${
+                <span className="text-xl lg:text-2xl font-bold leading-tight truncate">{asset.price}</span>
+                <div className={`flex items-center gap-1 text-sm ${
                   asset.changeType === "up" ? "text-data-positive" : 
                   asset.changeType === "down" ? "text-data-negative" : "text-muted-foreground"
                 }`}>
-                  {asset.changeType === "up" && <TrendingUp className="h-4 w-4" />}
-                  {asset.changeType === "down" && <TrendingDown className="h-4 w-4" />}
-                  {asset.change}
+                  {asset.changeType === "up" && <TrendingUp className="h-4 w-4 flex-shrink-0" />}
+                  {asset.changeType === "down" && <TrendingDown className="h-4 w-4 flex-shrink-0" />}
+                  <span className="truncate">{asset.change}</span>
                 </div>
               </div>
               
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Market Cap</span>
-                  <span className="font-mono">{asset.marketCap}</span>
+                  <span className="font-medium text-right truncate">{asset.marketCap}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">24h Volume</span>
-                  <span className="font-mono">{asset.volume24h}</span>
+                  <span className="font-medium text-right truncate">{asset.volume24h}</span>
                 </div>
               </div>
 

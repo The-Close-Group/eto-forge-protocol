@@ -123,6 +123,75 @@ const ASSET_DETAILS = {
     sector: "Store of Value",
     website: "https://bitcoin.org",
     whitepaper: "https://bitcoin.org/bitcoin.pdf"
+  },
+  ARB: {
+    name: "Arbitrum",
+    symbol: "ARB",
+    price: 0.90,
+    change24h: 8.7,
+    marketCap: "3.4B",
+    volume24h: "458M",
+    circulatingSupply: "3.8B",
+    totalSupply: "10B",
+    allTimeHigh: 8.67,
+    allTimeLow: 0.65,
+    week52High: 2.40,
+    week52Low: 0.65,
+    beta: 1.52,
+    volatility: "High",
+    rsi: 78.3,
+    oracleStatus: "Active",
+    description: "Arbitrum is a Layer 2 scaling solution for Ethereum that offers fast, low-cost transactions while maintaining Ethereum-level security through optimistic rollup technology.",
+    icon: "🔷",
+    sector: "Layer 2 Scaling",
+    website: "https://arbitrum.io",
+    whitepaper: "https://arbitrum.io/arb-whitepaper.pdf"
+  },
+  OP: {
+    name: "Optimism",
+    symbol: "OP",
+    price: 1.85,
+    change24h: 3.1,
+    marketCap: "2.9B",
+    volume24h: "312M",
+    circulatingSupply: "1.6B",
+    totalSupply: "4.3B",
+    allTimeHigh: 4.57,
+    allTimeLow: 0.42,
+    week52High: 4.57,
+    week52Low: 0.85,
+    beta: 1.38,
+    volatility: "High",
+    rsi: 64.7,
+    oracleStatus: "Active",
+    description: "Optimism is an Ethereum Layer 2 blockchain powered by optimistic rollups, designed to scale Ethereum while maintaining its security and composability.",
+    icon: "🔴",
+    sector: "Layer 2 Scaling",
+    website: "https://optimism.io",
+    whitepaper: "https://optimism.io/optimism-whitepaper.pdf"
+  },
+  MATIC: {
+    name: "Polygon",
+    symbol: "MATIC",
+    price: 0.75,
+    change24h: -0.8,
+    marketCap: "7.1B",
+    volume24h: "298M",
+    circulatingSupply: "9.5B",
+    totalSupply: "10B",
+    allTimeHigh: 2.92,
+    allTimeLow: 0.0031,
+    week52High: 1.27,
+    week52Low: 0.31,
+    beta: 1.41,
+    volatility: "High",
+    rsi: 45.2,
+    oracleStatus: "Active",
+    description: "Polygon is a decentralized Ethereum scaling platform that enables developers to build scalable user-friendly dApps with low transaction fees.",
+    icon: "🟣",
+    sector: "Layer 2 Scaling",
+    website: "https://polygon.technology",
+    whitepaper: "https://polygon.technology/lightpaper-polygon.pdf"
   }
 };
 
@@ -218,15 +287,15 @@ export default function AssetDetails() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <div className="text-4xl font-bold font-mono">
-                    ${asset.price.toLocaleString()}
-                  </div>
-                  <div className={`flex items-center gap-2 text-xl font-mono ${
-                    asset.change24h >= 0 ? 'text-data-positive' : 'text-data-negative'
-                  }`}>
-                    {asset.change24h >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                    {asset.change24h >= 0 ? '+' : ''}{asset.change24h}% (24h)
-                  </div>
+              <div className="text-3xl lg:text-4xl font-bold leading-tight">
+                ${asset.price.toLocaleString()}
+              </div>
+              <div className={`flex items-center gap-2 text-lg lg:text-xl leading-tight ${
+                asset.change24h >= 0 ? 'text-data-positive' : 'text-data-negative'
+              }`}>
+                {asset.change24h >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                {asset.change24h >= 0 ? '+' : ''}{asset.change24h}% (24h)
+              </div>
                 </div>
                 <Button size="lg" onClick={handleTrade}>
                   Trade {asset.symbol}
@@ -235,21 +304,21 @@ export default function AssetDetails() {
               
               {/* Price Range Indicator */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">24h High</p>
-                  <p className="font-mono font-medium">${(asset.price * 1.05).toFixed(2)}</p>
+                <div className="min-w-0">
+                  <p className="text-muted-foreground truncate">24h High</p>
+                  <p className="font-medium leading-relaxed truncate">${(asset.price * 1.05).toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">24h Low</p>
-                  <p className="font-mono font-medium">${(asset.price * 0.95).toFixed(2)}</p>
+                <div className="min-w-0">
+                  <p className="text-muted-foreground truncate">24h Low</p>
+                  <p className="font-medium leading-relaxed truncate">${(asset.price * 0.95).toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">52W High</p>
-                  <p className="font-mono font-medium">${asset.week52High.toFixed(2)}</p>
+                <div className="min-w-0">
+                  <p className="text-muted-foreground truncate">52W High</p>
+                  <p className="font-medium leading-relaxed truncate">${asset.week52High.toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">52W Low</p>
-                  <p className="font-mono font-medium">${asset.week52Low.toFixed(2)}</p>
+                <div className="min-w-0">
+                  <p className="text-muted-foreground truncate">52W Low</p>
+                  <p className="font-medium leading-relaxed truncate">${asset.week52Low.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
@@ -425,15 +494,15 @@ export default function AssetDetails() {
               <CardTitle className="text-lg">Key Metrics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Market Cap</span>
-                <span className="font-mono">${asset.marketCap}</span>
+                <span className="font-medium leading-relaxed text-right">${asset.marketCap}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">24h Volume</span>
-                <span className="font-mono">${asset.volume24h}</span>
+                <span className="font-medium leading-relaxed text-right">${asset.volume24h}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Circulating Supply</span>
                 <span className="font-mono">{asset.circulatingSupply}</span>
               </div>

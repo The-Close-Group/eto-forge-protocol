@@ -37,18 +37,18 @@ export default function Portfolio() {
             <CardTitle className="text-lg">Total Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono">
+            <div className="text-2xl lg:text-3xl font-bold leading-tight">
               ${totalValue.toFixed(2)}
             </div>
             {totalValue > 0 ? (
-              <div className={`flex items-center gap-1 text-sm ${
+              <div className={`flex items-center gap-1 text-sm leading-relaxed ${
                 totalProfitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
               }`}>
-                {totalProfitLoss >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                <span>{totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toFixed(2)} ({totalProfitLoss >= 0 ? '+' : ''}{totalProfitLossPercent.toFixed(1)}%)</span>
+                {totalProfitLoss >= 0 ? <TrendingUp className="h-4 w-4 flex-shrink-0" /> : <TrendingDown className="h-4 w-4 flex-shrink-0" />}
+                <span className="truncate">{totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toFixed(2)} ({totalProfitLoss >= 0 ? '+' : ''}{totalProfitLossPercent.toFixed(1)}%)</span>
               </div>
             ) : (
-              <div className="text-sm text-muted-foreground">No positions yet</div>
+              <div className="text-sm text-muted-foreground leading-relaxed">No positions yet</div>
             )}
           </CardContent>
         </Card>
@@ -58,8 +58,8 @@ export default function Portfolio() {
             <CardTitle className="text-lg">Active Positions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono">{assets.length}</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-2xl lg:text-3xl font-bold leading-tight">{assets.length}</div>
+            <div className="text-sm text-muted-foreground leading-relaxed">
               {assets.length > 0 ? `Across multiple chains` : 'Start trading to build your portfolio'}
             </div>
           </CardContent>
@@ -77,20 +77,25 @@ export default function Portfolio() {
                 );
                 return (
                   <div>
-                    <div className="text-xl font-bold font-mono">{bestPerformer.symbol}</div>
-                    <div className={`flex items-center gap-1 text-sm ${
+                    <div 
+                      className="text-lg lg:text-xl font-bold leading-tight cursor-pointer hover:text-primary transition-colors truncate"
+                      onClick={() => navigate(`/asset/${bestPerformer.symbol}`)}
+                    >
+                      {bestPerformer.symbol}
+                    </div>
+                    <div className={`flex items-center gap-1 text-sm leading-relaxed ${
                       bestPerformer.profitLossPercent >= 0 ? 'text-data-positive' : 'text-data-negative'
                     }`}>
-                      {bestPerformer.profitLossPercent >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                      <span>{bestPerformer.profitLossPercent >= 0 ? '+' : ''}{bestPerformer.profitLossPercent.toFixed(1)}%</span>
+                      {bestPerformer.profitLossPercent >= 0 ? <TrendingUp className="h-4 w-4 flex-shrink-0" /> : <TrendingDown className="h-4 w-4 flex-shrink-0" />}
+                      <span className="truncate">{bestPerformer.profitLossPercent >= 0 ? '+' : ''}{bestPerformer.profitLossPercent.toFixed(1)}%</span>
                     </div>
                   </div>
                 );
               })()
             ) : (
               <div>
-                <div className="text-xl font-bold text-muted-foreground">--</div>
-                <div className="text-sm text-muted-foreground">No trades yet</div>
+                <div className="text-lg lg:text-xl font-bold text-muted-foreground leading-tight">--</div>
+                <div className="text-sm text-muted-foreground leading-relaxed">No trades yet</div>
               </div>
             )}
           </CardContent>
@@ -114,39 +119,44 @@ export default function Portfolio() {
                 <div className="space-y-4">
                   {assets.map((asset, index) => (
                     <div key={index} className="flex items-center justify-between p-4 border rounded-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center flex-shrink-0">
                           <span className="font-semibold text-primary">{asset.symbol.slice(0, 2)}</span>
                         </div>
-                        <div>
-                          <p className="font-semibold">{asset.name}</p>
-                          <p className="text-sm text-muted-foreground font-mono">
+                        <div className="min-w-0">
+                          <p 
+                            className="font-semibold cursor-pointer hover:text-primary transition-colors truncate"
+                            onClick={() => navigate(`/asset/${asset.symbol}`)}
+                          >
+                            {asset.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground leading-relaxed truncate">
                             {asset.amount.toFixed(4)} {asset.symbol}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold font-mono">${asset.currentValue.toFixed(2)}</p>
-                        <p className="text-sm text-muted-foreground font-mono">
+                      <div className="text-right min-w-0">
+                        <p className="font-semibold leading-relaxed truncate">${asset.currentValue.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed truncate">
                           Avg: ${asset.averagePrice.toFixed(2)}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <div className={`flex items-center gap-1 ${
+                      <div className="text-right min-w-0">
+                        <div className={`flex items-center gap-1 justify-end ${
                           asset.profitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
                         }`}>
-                          {asset.profitLoss >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                          <span className="font-medium font-mono">
+                          {asset.profitLoss >= 0 ? <TrendingUp className="h-4 w-4 flex-shrink-0" /> : <TrendingDown className="h-4 w-4 flex-shrink-0" />}
+                          <span className="font-medium leading-relaxed truncate">
                             {asset.profitLoss >= 0 ? '+' : ''}${asset.profitLoss.toFixed(2)}
                           </span>
                         </div>
-                        <div className={`text-sm font-mono ${
+                        <div className={`text-sm leading-relaxed text-right ${
                           asset.profitLossPercent >= 0 ? 'text-data-positive' : 'text-data-negative'
                         }`}>
                           {asset.profitLossPercent >= 0 ? '+' : ''}{asset.profitLossPercent.toFixed(1)}%
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/assets/${asset.symbol}`)}>
+                      <Button variant="outline" size="sm" className="flex-shrink-0" onClick={() => navigate(`/asset/${asset.symbol}`)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </div>
@@ -229,16 +239,16 @@ export default function Portfolio() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 border rounded-sm">
-                      <p className="text-2xl font-bold font-mono">${totalInvested.toFixed(2)}</p>
-                      <p className="text-sm text-muted-foreground">Total Invested</p>
+                      <p className="text-xl lg:text-2xl font-bold leading-tight">${totalInvested.toFixed(2)}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">Total Invested</p>
                     </div>
                     <div className="text-center p-4 border rounded-sm">
-                      <p className={`text-2xl font-bold font-mono ${
+                      <p className={`text-xl lg:text-2xl font-bold leading-tight ${
                         totalProfitLoss >= 0 ? 'text-data-positive' : 'text-data-negative'
                       }`}>
                         {totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toFixed(2)}
                       </p>
-                      <p className="text-sm text-muted-foreground">Total P&L</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">Total P&L</p>
                     </div>
                   </div>
                   <div className="h-64 flex items-center justify-center text-muted-foreground border rounded-sm">

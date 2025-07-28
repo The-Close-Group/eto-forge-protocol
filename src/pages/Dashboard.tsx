@@ -2,9 +2,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins, Percent, Activity, TrendingUp, Wallet, Plus, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const trendingAssets = [
+    { symbol: "ARB", change: "+8.7%", positive: true },
+    { symbol: "OP", change: "+3.1%", positive: true },
+    { symbol: "AVAX", change: "+3.2%", positive: true },
+  ];
+
+  const handleAssetClick = (symbol: string) => {
+    navigate(`/asset/${symbol}`);
+  };
+
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-12">
       <div className="space-y-8">
@@ -22,9 +34,9 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold font-mono">$0.00</div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <TrendingUp className="h-4 w-4" />
+                  <div className="text-2xl lg:text-3xl font-bold leading-tight">$0.00</div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
+                    <TrendingUp className="h-4 w-4 flex-shrink-0" />
                     <span>No assets yet</span>
                   </div>
                 </div>
@@ -66,15 +78,15 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Total staked</span>
-                  <span className="font-mono font-medium">$0.00</span>
+                  <span className="font-medium leading-relaxed text-right">$0.00</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Current APY</span>
-                  <span className="font-mono font-medium">0.0%</span>
+                  <span className="font-medium leading-relaxed text-right">0.0%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Total rewards</span>
-                  <span className="font-mono font-medium">$0.00</span>
+                  <span className="font-medium leading-relaxed text-right">$0.00</span>
                 </div>
               </div>
             </CardContent>
@@ -88,44 +100,75 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Total trades</span>
-                  <span className="font-mono font-medium">0</span>
+                  <span className="font-medium leading-relaxed text-right">0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">LP trades</span>
-                  <span className="font-mono font-medium">0</span>
+                  <span className="font-medium leading-relaxed text-right">0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Volume</span>
-                  <span className="font-mono font-medium">$0.00</span>
+                  <span className="font-medium leading-relaxed text-right">$0.00</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Recent activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-              <Activity className="h-8 w-8 text-muted-foreground" />
-              <div className="space-y-1">
-                <h3 className="font-medium">No activity yet</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your trading activity will appear here
-                </p>
+        {/* Trending Assets & Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Trending Assets
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {trendingAssets.map((asset, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-border rounded-sm hover:bg-accent/50 transition-colors">
+                    <span 
+                      className="font-medium cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => handleAssetClick(asset.symbol)}
+                    >
+                      {asset.symbol}
+                    </span>
+                    <div className={`flex items-center gap-1 text-sm ${
+                      asset.positive ? 'text-data-positive' : 'text-data-negative'
+                    }`}>
+                      {asset.positive ? <TrendingUp className="h-4 w-4 flex-shrink-0" /> : <TrendingUp className="h-4 w-4 flex-shrink-0 rotate-180" />}
+                      <span className="font-medium">{asset.change}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/wallet">View wallet</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                Recent activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                <Activity className="h-8 w-8 text-muted-foreground" />
+                <div className="space-y-1">
+                  <h3 className="font-medium">No activity yet</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Your trading activity will appear here
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/wallet">View wallet</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
