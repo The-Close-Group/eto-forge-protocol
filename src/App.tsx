@@ -45,8 +45,8 @@ const App = () => (
                   <ProtectedRoute>
                     <AppLayout>
                       <Routes>
-                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/trade" element={<Trade />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/asset/:symbol" element={<AssetDetails />} />
                         <Route path="/portfolio" element={<Portfolio />} />
                         <Route path="/markets" element={<Markets />} />

@@ -30,9 +30,9 @@ import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
+  { title: "Trade", url: "/trade", icon: TrendingUp },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Wallet", url: "/wallet", icon: Wallet },
-  { title: "Trade", url: "/trade", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: User },
   { title: "Assets", url: "/assets", icon: Layers },
   { title: "Staking", url: "/staking", icon: Coins },
