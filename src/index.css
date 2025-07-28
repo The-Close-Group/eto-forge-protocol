@@ -53,7 +53,17 @@
     --data-positive: 120 100% 35%;
     --data-negative: 0 100% 60%;
     --data-neutral: 0 0% 76%;
+
+    /* Electric Blue Accent System */
+    --electric-blue: 199 89% 48%;
+    --electric-blue-foreground: 0 0% 100%;
+    --electric-blue-hover: 199 89% 42%;
     
+    /* System Status Colors */
+    --status-optimal: 142 76% 36%;
+    --status-warning: 48 96% 53%;
+    --status-critical: 0 72% 51%;
+
     /* Shadows & Effects */
     --shadow-panel: 0 0% 0% / 0.8;
     --glow-accent: 0 0% 100% / 0.1;
