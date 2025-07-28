@@ -43,8 +43,8 @@ export function WalletConnector() {
     resetConnectionState();
   };
 
-  const handleContinueToDashboard = () => {
-    navigate('/dashboard');
+  const handleContinueToTrade = () => {
+    navigate('/trade');
   };
 
   const getConnectedWalletInfo = () => {
@@ -92,11 +92,11 @@ export function WalletConnector() {
           </div>
 
           <Button 
-            onClick={handleContinueToDashboard}
+            onClick={handleContinueToTrade}
             className="w-full"
             size="lg"
           >
-            Continue to Dashboard
+            Trade Now
           </Button>
         </CardContent>
       </Card>
