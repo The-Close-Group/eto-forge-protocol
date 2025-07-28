@@ -145,7 +145,7 @@ export default function Trade() {
   return (
     <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-7xl mx-auto space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold font-mono text-foreground">Trade</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Trade</h1>
         <p className="text-muted-foreground">
           Discover and trade assets with optimal cross-chain routing
         </p>
@@ -156,7 +156,7 @@ export default function Trade() {
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Buy Banner */}
           <div>
-            <h2 className="text-lg font-semibold font-mono mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
               <Zap className="h-5 w-5" />
               Quick Buy
             </h2>
@@ -166,7 +166,7 @@ export default function Trade() {
           {/* Asset Discovery Search */}
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-mono">
+              <CardTitle className="flex items-center gap-2">
                 <Search className="h-5 w-5" />
                 Discover New Assets
               </CardTitle>
@@ -258,7 +258,7 @@ export default function Trade() {
           {/* Asset Selection & Swap Interface */}
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-mono">
+              <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5" />
                 Asset Selection & Swap
               </CardTitle>
@@ -347,7 +347,7 @@ export default function Trade() {
           {fromAmount && toAmount && (
             <Card className="border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg font-mono">Trade Summary</CardTitle>
+                <CardTitle className="text-lg">Trade Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <TradeSummary
@@ -395,13 +395,13 @@ export default function Trade() {
           {/* Trading Benefits */}
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-lg font-mono">Cross-Chain Benefits</CardTitle>
+              <CardTitle className="text-lg">Cross-Chain Benefits</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-data-positive mt-0.5" />
                 <div>
-                  <p className="font-medium font-mono">Dynamic Market Maker</p>
+                  <p className="font-medium">Dynamic Market Maker</p>
                   <p className="text-sm text-muted-foreground">
                     Optimal pricing through advanced routing
                   </p>
@@ -410,7 +410,7 @@ export default function Trade() {
               <div className="flex items-start gap-3">
                 <Zap className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="font-medium font-mono">Layer Zero Integration</p>
+                  <p className="font-medium">Layer Zero Integration</p>
                   <p className="text-sm text-muted-foreground">
                     Seamless cross-chain transactions
                   </p>
