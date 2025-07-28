@@ -8,30 +8,30 @@
 
 @layer base {
   :root {
-    /* Core Industrial Theme - Softened for Better Readability */
-    --background: 0 0% 2%;
-    --foreground: 0 0% 94%;
+    /* Core Industrial Theme - Warmer & Softer for Better Readability */
+    --background: 20 3% 2%;
+    --foreground: 25 4% 88%;
     
-    /* Surface Colors - Industrial Black Palette with Warmth */
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 94%;
+    /* Surface Colors - Industrial Black Palette with Subtle Warmth */
+    --card: 20 3% 6%;
+    --card-foreground: 25 4% 88%;
     
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 94%;
+    --popover: 20 3% 6%;
+    --popover-foreground: 25 4% 88%;
     
-    /* Brand Colors - High Contrast Industrial */
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 4%;
+    /* Brand Colors - Softened Industrial */
+    --primary: 20 4% 96%;
+    --primary-foreground: 20 3% 8%;
     
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 92%;
+    --secondary: 20 3% 12%;
+    --secondary-foreground: 25 4% 90%;
     
-    /* UI State Colors - Softened */
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 76%;
+    /* UI State Colors - Further Softened */
+    --muted: 20 3% 12%;
+    --muted-foreground: 25 4% 70%;
     
-    --accent: 0 0% 16%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 20 3% 18%;
+    --accent-foreground: 25 4% 94%;
     
     /* Trading Colors */
     --success: 120 100% 35%;
@@ -44,9 +44,9 @@
     --warning-foreground: 0 0% 0%;
     
     /* Interface Elements - Softened Borders */
-    --border: 0 0% 18%;
-    --input: 0 0% 6%;
-    --ring: 0 0% 60%;
+    --border: 20 3% 20%;
+    --input: 20 3% 8%;
+    --ring: 25 4% 65%;
     
     /* Industrial Design Tokens */
     --grid-lines: 0 0% 20%;
@@ -90,7 +90,8 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    line-height: 1.6;
+    line-height: 1.7;
+    letter-spacing: 0.025em;
   }
 }
 
