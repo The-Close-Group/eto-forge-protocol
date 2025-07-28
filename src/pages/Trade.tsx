@@ -174,54 +174,66 @@ export default function Trade() {
         {/* Featured Asset Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* MAANG Card */}
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group">
+          <Card 
+            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+            onClick={() => navigate("/asset/MAANG")}
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-2xl">
-                    🤖
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-mono">MAANG</h3>
-                    <p className="text-sm text-muted-foreground">Meta AI & Analytics</p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="bg-data-positive/20 text-data-positive border-data-positive/30">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  Trending
-                </Badge>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-end gap-2">
-                  <span className="text-3xl font-bold font-mono">${ASSET_PRICES.MAANG.toFixed(2)}</span>
-                  <div className="flex items-center gap-1 text-data-positive">
-                    <ArrowUpRight className="h-4 w-4" />
-                    <span className="text-sm font-mono">+{getRandomChange()}%</span>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <Button 
-                    onClick={() => handleQuickBuy("MAANG", "100")}
-                    className="bg-data-positive hover:bg-data-positive/90 text-white font-mono"
-                  >
-                    Buy $100
-                  </Button>
-                  <Button 
-                    onClick={() => handleQuickBuy("MAANG", "500")}
-                    variant="outline"
-                    className="font-mono group-hover:border-primary/50"
-                  >
-                    Buy $500
-                  </Button>
-                </div>
-              </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-2xl">
+                     🤖
+                   </div>
+                   <div>
+                     <h3 className="text-xl font-bold font-mono">MAANG</h3>
+                     <p className="text-sm text-muted-foreground">Meta AI & Analytics</p>
+                   </div>
+                 </div>
+                 <Badge variant="secondary" className="bg-data-positive/20 text-data-positive border-data-positive/30">
+                   <TrendingUp className="h-3 w-3 mr-1" />
+                   Trending
+                 </Badge>
+               </div>
+               
+               <div className="space-y-4">
+                 <div className="flex items-end gap-2">
+                   <span className="text-3xl font-bold font-mono">${ASSET_PRICES.MAANG.toFixed(2)}</span>
+                   <div className="flex items-center gap-1 text-data-positive">
+                     <ArrowUpRight className="h-4 w-4" />
+                     <span className="text-sm font-mono">+{getRandomChange()}%</span>
+                   </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-2 gap-4">
+                   <Button 
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       navigate("/order?asset=MAANG&side=buy");
+                     }}
+                     className="bg-data-positive hover:bg-data-positive/90 text-white font-mono"
+                   >
+                     Buy $100
+                   </Button>
+                   <Button 
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       navigate("/order?asset=MAANG&side=buy");
+                     }}
+                     variant="outline"
+                     className="font-mono group-hover:border-primary/50"
+                   >
+                     Buy $500
+                   </Button>
+                 </div>
+               </div>
             </CardContent>
           </Card>
 
           {/* USDC Card */}
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group">
+          <Card 
+            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+            onClick={() => navigate("/asset/USDC")}
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -249,20 +261,23 @@ export default function Trade() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <Button 
-                    onClick={() => {
-                      setFromAsset("USDC");
-                      setToAsset("MAANG");
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/order?asset=USDC&side=buy");
                     }}
-                    className="bg-primary hover:bg-primary/90 font-mono"
+                    className="bg-data-positive hover:bg-data-positive/90 text-white font-mono"
                   >
-                    Trade USDC
+                    Buy USDC
                   </Button>
                   <Button 
-                    onClick={() => navigate("/staking")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/staking");
+                    }}
                     variant="outline"
                     className="font-mono group-hover:border-primary/50"
                   >
-                    Earn 18.5%
+                    Earn 4.5%
                   </Button>
                 </div>
               </div>
@@ -333,8 +348,8 @@ export default function Trade() {
           <Card className="border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-mono">
-                <Zap className="h-5 w-5" />
-                Swap Assets
+                <TrendingUp className="h-5 w-5" />
+                Advanced Trading
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">

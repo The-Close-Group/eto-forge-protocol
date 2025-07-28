@@ -243,7 +243,7 @@ export default function AssetDetails() {
   }
 
   const handleTrade = () => {
-    navigate(`/trade?asset=${symbol}`);
+    navigate(`/order?asset=${symbol}&side=buy`);
   };
 
   const copyAddress = () => {

@@ -15,6 +15,8 @@ import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
+import OrderPage from "@/pages/OrderPage";
+import TransactionComplete from "@/pages/TransactionComplete";
 import AssetDetails from "@/pages/AssetDetails";
 import Portfolio from "@/pages/Portfolio";
 import Markets from "@/pages/Markets";
@@ -46,6 +48,8 @@ const App = () => (
                     <AppLayout>
                       <Routes>
                         <Route path="/trade" element={<Trade />} />
+                        <Route path="/order" element={<OrderPage />} />
+                        <Route path="/transaction-complete" element={<TransactionComplete />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/asset/:symbol" element={<AssetDetails />} />
                         <Route path="/portfolio" element={<Portfolio />} />

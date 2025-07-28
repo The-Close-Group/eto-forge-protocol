@@ -70,6 +70,11 @@ export function useTrade() {
         transactionStatus: 'success'
       }));
 
+      // Navigate to transaction complete page after a brief delay
+      setTimeout(() => {
+        window.location.href = `/transaction-complete?txHash=${txHash}&type=swap&fromAsset=USDC&toAsset=MAANG&fromAmount=1000&toAmount=4.20`;
+      }, 2000);
+
     } catch (error: any) {
       console.error('Transaction failed:', error);
       setState(prev => ({
