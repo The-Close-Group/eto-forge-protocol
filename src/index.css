@@ -8,16 +8,16 @@
 
 @layer base {
   :root {
-    /* Core Industrial Theme - Pure Black & White */
+    /* Core Industrial Theme - Softened Black & White */
     --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --foreground: 0 0% 95%;
     
     /* Surface Colors - Industrial Black Palette */
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 95%;
     
     --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 100%;
+    --popover-foreground: 0 0% 95%;
     
     /* Brand Colors - High Contrast Industrial */
     --primary: 0 0% 100%;
@@ -27,8 +27,8 @@
     --secondary-foreground: 0 0% 95%;
     
     /* UI State Colors */
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 80%;
     
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 100%;
@@ -44,7 +44,7 @@
     --warning-foreground: 0 0% 0%;
     
     /* Interface Elements */
-    --border: 0 0% 25%;
+    --border: 0 0% 15%;
     --input: 0 0% 5%;
     --ring: 0 0% 60%;
     
@@ -60,7 +60,7 @@
     
     /* Typography Scale */
     --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     
     /* Layout - Sharp Industrial */
     --radius: 0.125rem;
@@ -89,8 +89,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-mono antialiased;
-    letter-spacing: 0.025em;
+    @apply bg-background text-foreground font-sans antialiased;
+    line-height: 1.6;
   }
 }
 
