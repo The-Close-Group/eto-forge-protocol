@@ -2,12 +2,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wallet as WalletIcon, Send, Download, Copy, ExternalLink, Circle } from "lucide-react";
+import { Wallet as WalletIcon, Send, Download, Copy, ExternalLink, Circle, LogOut, Loader2 } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Wallet() {
-  const { walletAddress, connectedWalletType } = useWallet();
+  const { walletAddress, connectedWalletType, isConnecting, error, connectWallet, disconnectWallet } = useWallet();
+  const { signOut } = useAuth();
+  const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
 
   const tokens = [
     { symbol: "ETH", name: "Ethereum", balance: "0.00", value: "$0.00", icon: "🔵" },
@@ -20,6 +24,26 @@ export default function Wallet() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleConnect = async (walletId: string) => {
+    try {
+      setConnectingWalletId(walletId);
+      await connectWallet(walletId);
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    } finally {
+      setConnectingWalletId(null);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnectWallet();
+      await signOut();
+    } catch (error) {
+      console.error("Failed to disconnect wallet:", error);
+    }
+  };
+
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
       <div className="space-y-2">
@@ -28,6 +52,51 @@ export default function Wallet() {
           Manage your digital assets and transactions
         </p>
       </div>
+
+      {/* Wallet Connection Section */}
+      <Card className="bg-card border-border">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center">
+                <WalletIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Wallet Connection</h3>
+                <p className="text-sm text-muted-foreground">
+                  {walletAddress ? "Wallet connected" : "Connect your wallet to get started"}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {walletAddress ? (
+                <Button variant="outline" onClick={handleDisconnect} className="gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Disconnect
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => handleConnect("metamask")} 
+                  disabled={isConnecting}
+                  className="gap-2"
+                >
+                  {isConnecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <WalletIcon className="h-4 w-4" />
+                  )}
+                  {isConnecting ? "Connecting..." : "Connect Wallet"}
+                </Button>
+              )}
+            </div>
+          </div>
+          {error && (
+            <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Wallet Overview */}
       <Card className="bg-card border-border">
