@@ -8,30 +8,30 @@
 
 @layer base {
   :root {
-    /* Core Industrial Theme - Softened Black & White */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 95%;
+    /* Core Industrial Theme - Softened for Better Readability */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 94%;
     
-    /* Surface Colors - Industrial Black Palette */
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 95%;
+    /* Surface Colors - Industrial Black Palette with Warmth */
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 94%;
     
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 94%;
     
     /* Brand Colors - High Contrast Industrial */
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
     
-    --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 92%;
     
-    /* UI State Colors */
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 80%;
+    /* UI State Colors - Softened */
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 76%;
     
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 0% 16%;
+    --accent-foreground: 0 0% 96%;
     
     /* Trading Colors */
     --success: 120 100% 35%;
@@ -43,16 +43,16 @@
     --warning: 45 100% 60%;
     --warning-foreground: 0 0% 0%;
     
-    /* Interface Elements */
-    --border: 0 0% 15%;
-    --input: 0 0% 5%;
+    /* Interface Elements - Softened Borders */
+    --border: 0 0% 18%;
+    --input: 0 0% 6%;
     --ring: 0 0% 60%;
     
     /* Industrial Design Tokens */
     --grid-lines: 0 0% 20%;
     --data-positive: 120 100% 35%;
     --data-negative: 0 100% 60%;
-    --data-neutral: 0 0% 70%;
+    --data-neutral: 0 0% 76%;
     
     /* Shadows & Effects */
     --shadow-panel: 0 0% 0% / 0.8;
@@ -62,22 +62,22 @@
     --font-mono: 'JetBrains Mono', monospace;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     
-    /* Layout - Sharp Industrial */
-    --radius: 0.125rem;
+    /* Layout - AAVE-inspired Softened Corners */
+    --radius: 0.375rem;
     --panel-border: 1px solid hsl(var(--border));
     
     /* Animation Curves */
     --transition-fast: 100ms linear;
     --transition-smooth: 200ms linear;
 
-    /* Sidebar - Industrial Black Theme */
-    --sidebar-background: 0 0% 2%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 8%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
+    /* Sidebar - Industrial Black Theme Softened */
+    --sidebar-background: 0 0% 3%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 18%;
     --sidebar-ring: 0 0% 60%;
   }
 
@@ -97,16 +97,16 @@
 @layer components {
   /* Trading Platform Components */
   .trading-panel {
-    @apply bg-card border border-border rounded-sm shadow-sm;
+    @apply bg-card border border-border rounded-md shadow-sm;
     box-shadow: 0 1px 3px hsl(var(--shadow-panel));
   }
   
   .data-table {
-    @apply bg-card border border-border rounded-sm overflow-hidden;
+    @apply bg-card border border-border rounded-md overflow-hidden;
   }
   
   .data-table th {
-    @apply bg-muted/50 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground border-b border-border;
+    @apply bg-muted/50 px-4 py-3 text-left text-xs font-medium text-muted-foreground border-b border-border;
   }
   
   .data-table td {
@@ -139,14 +139,14 @@
   }
   
   .industrial-button {
-    @apply bg-primary text-primary-foreground border border-border px-4 py-2 font-medium text-sm transition-all uppercase tracking-wider;
+    @apply bg-primary text-primary-foreground border border-border px-4 py-2 font-medium text-sm transition-all;
     @apply hover:bg-primary/90 focus:ring-1 focus:ring-ring;
     border-radius: var(--radius);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
   }
   
   .industrial-input {
-    @apply bg-input border border-border px-3 py-2 rounded-sm text-sm placeholder:text-muted-foreground;
+    @apply bg-input border border-border px-3 py-2 rounded-md text-sm placeholder:text-muted-foreground;
     @apply focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
   }
 }
