@@ -299,7 +299,7 @@ export default function Trade() {
                   </div>
                   
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-[hsl(var(--electric-blue))] font-mono">
+                    <div className="text-3xl font-bold text-data-positive font-mono">
                       {pool.apr}%
                     </div>
                     <div className="text-sm text-muted-foreground">APR</div>
@@ -316,11 +316,7 @@ export default function Trade() {
                     </div>
                   </div>
                   
-                  <Button 
-                    size="sm" 
-                    className="w-full font-mono bg-[hsl(var(--electric-blue))] hover:bg-[hsl(var(--electric-blue-hover))] text-white border-[hsl(var(--electric-blue))]" 
-                    onClick={() => navigate("/staking")}
-                  >
+                  <Button size="sm" className="w-full font-mono" onClick={() => navigate("/staking")}>
                     Stake Now
                   </Button>
                 </div>
@@ -453,7 +449,7 @@ export default function Trade() {
                 </div>
               ) : (
                 <Button 
-                  className="w-full font-mono bg-[hsl(var(--electric-blue))] hover:bg-[hsl(var(--electric-blue-hover))] text-white border-[hsl(var(--electric-blue))]" 
+                  className="w-full font-mono" 
                   size="lg"
                   disabled={!canTrade}
                   onClick={openConfirmation}
