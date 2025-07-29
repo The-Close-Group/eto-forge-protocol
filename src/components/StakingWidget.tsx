@@ -68,10 +68,19 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
 
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-300">
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Card className="w-[400px] bg-card border border-border/60 shadow-lg">
+    <div 
+      className="fixed inset-0 z-[100] bg-background/90 backdrop-blur-lg animate-in fade-in-0 duration-300"
+      onClick={handleBackdropClick}
+    >
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 duration-300">
+        <Card className="w-[400px] max-w-[90vw] bg-card border border-border/60 shadow-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <h3 className="text-lg font-medium">Stake</h3>
             <Button
