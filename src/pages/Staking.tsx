@@ -21,6 +21,8 @@ import {
 import { StakingPoolCard } from "@/components/StakingPoolCard";
 import { StakingCalculator } from "@/components/StakingCalculator";
 import { StakingWidget } from "@/components/StakingWidget";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const STAKING_POOLS = [
   {
@@ -96,16 +98,38 @@ export default function Staking() {
   const [selectedPool, setSelectedPool] = useState<string>("maang-usdc");
   const [isStakingWidgetOpen, setIsStakingWidgetOpen] = useState(false);
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
+  const [isWidgetExpanded, setIsWidgetExpanded] = useState(false);
+  const [isIsolated, setIsIsolated] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleStakePool = (poolId: string) => {
     const pool = STAKING_POOLS.find(p => p.id === poolId);
     setSelectedStakingPool(pool);
     setIsStakingWidgetOpen(true);
+    setIsWidgetExpanded(true);
   };
 
   const handleStakeYourWay = () => {
-    console.log("Opening custom staking modal");
-    // Handle custom staking modal
+    setSelectedStakingPool(null);
+    setIsStakingWidgetOpen(true);
+    setIsWidgetExpanded(true);
+  };
+
+  const handleToggleWidget = () => {
+    if (!isStakingWidgetOpen) {
+      setIsStakingWidgetOpen(true);
+    }
+    setIsWidgetExpanded(!isWidgetExpanded);
+  };
+
+  const handleStakeNow = () => {
+    setIsIsolated(true);
+  };
+
+  const handleCloseWidget = () => {
+    setIsStakingWidgetOpen(false);
+    setIsWidgetExpanded(false);
+    setIsIsolated(false);
   };
 
   const totalStaked = "$7,500";
@@ -121,8 +145,22 @@ export default function Staking() {
         </p>
       </div>
 
+      {/* Staking Widget - Embedded at top */}
+      <StakingWidget
+        isOpen={isStakingWidgetOpen}
+        onClose={handleCloseWidget}
+        selectedPool={selectedStakingPool}
+        isExpanded={isWidgetExpanded}
+        onToggleExpanded={handleToggleWidget}
+        isIsolated={isIsolated}
+        onStakeNow={handleStakeNow}
+      />
+
       {/* Portfolio Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className={cn(
+        "grid grid-cols-1 md:grid-cols-4 gap-4 transition-opacity duration-300",
+        isIsolated && "hidden"
+      )}>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-mono flex items-center gap-2">
@@ -178,14 +216,17 @@ export default function Staking() {
               className="w-full font-mono bg-primary hover:bg-primary/90"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Stake Your Way
+              {isMobile ? "Stake" : "Stake Your Way"}
             </Button>
             <div className="text-xs text-muted-foreground mt-2">Choose your own terms</div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="pools" className="w-full">
+      <Tabs defaultValue="pools" className={cn(
+        "w-full transition-opacity duration-300",
+        isIsolated && "hidden"
+      )}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="pools" className="font-mono">Pools</TabsTrigger>
           <TabsTrigger value="positions" className="font-mono">My Positions</TabsTrigger>
@@ -313,12 +354,6 @@ export default function Staking() {
           </div>
         </TabsContent>
       </Tabs>
-      
-      <StakingWidget
-        isOpen={isStakingWidgetOpen}
-        onClose={() => setIsStakingWidgetOpen(false)}
-        selectedPool={selectedStakingPool}
-      />
     </div>
   );
 }

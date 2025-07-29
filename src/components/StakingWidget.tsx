@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { X, ArrowUpDown } from "lucide-react";
+import { X, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AssetDropdown, Asset } from "./AssetDropdown";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StakingPool {
   id: string;
@@ -19,6 +20,10 @@ interface StakingWidgetProps {
   isOpen: boolean;
   onClose: () => void;
   selectedPool?: StakingPool;
+  isExpanded: boolean;
+  onToggleExpanded: () => void;
+  isIsolated: boolean;
+  onStakeNow: () => void;
 }
 
 const MOCK_ASSETS: Asset[] = [
@@ -28,11 +33,12 @@ const MOCK_ASSETS: Asset[] = [
   { id: "btc", symbol: "BTC", name: "Bitcoin", balance: 0.1 },
 ];
 
-export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetProps) {
+export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onToggleExpanded, isIsolated, onStakeNow }: StakingWidgetProps) {
   const [payAsset, setPayAsset] = useState<Asset | null>(MOCK_ASSETS[0]);
   const [receiveAsset, setReceiveAsset] = useState<Asset | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (selectedPool && payAsset) {
@@ -68,21 +74,73 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
 
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
+  const handleStakeNow = () => {
+    if (canStake) {
+      onStakeNow();
     }
   };
 
-  return (
-    <div 
-      className="fixed inset-0 z-[100] bg-background/90 backdrop-blur-lg animate-in fade-in-0 duration-300"
-      onClick={handleBackdropClick}
-    >
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 duration-300">
-        <Card className="w-[400px] max-w-[90vw] bg-card border border-border/60 shadow-2xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+  // Collapsed state
+  if (!isExpanded) {
+    return (
+      <Card className="w-full bg-card border border-border/60 shadow-sm mb-6">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleExpanded}
+              className="h-8 w-8 hover:bg-accent/60"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
             <h3 className="text-lg font-medium">Stake</h3>
+            {selectedPool && (
+              <div className="text-sm text-muted-foreground">
+                {selectedPool.name} • {selectedPool.apy} APY
+              </div>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onToggleExpanded}
+            className="font-mono"
+          >
+            {isMobile ? "Stake" : "Stake Your Way"}
+          </Button>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <div className={cn(
+      "w-full transition-all duration-300",
+      isIsolated && "fixed inset-0 z-[100] bg-background/95 backdrop-blur-lg p-4 flex items-center justify-center"
+    )}>
+      <Card className={cn(
+        "bg-card border border-border/60 shadow-lg",
+        isIsolated ? "w-full max-w-2xl" : "w-full mb-6"
+      )}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleExpanded}
+              className="h-8 w-8 hover:bg-accent/60"
+            >
+              <ChevronUp className="h-4 w-4" />
+            </Button>
+            <h3 className="text-lg font-medium">Stake</h3>
+            {selectedPool && (
+              <div className="text-sm text-muted-foreground">
+                {selectedPool.name} • {selectedPool.apy} APY
+              </div>
+            )}
+          </div>
+          {isIsolated && (
             <Button
               variant="ghost"
               size="icon"
@@ -91,8 +149,10 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
             >
               <X className="h-4 w-4" />
             </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          )}
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* You pay section */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -136,17 +196,6 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
               </div>
             </div>
 
-            {/* Swap button */}
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                size="icon"
-                className="w-10 h-10 rounded-full bg-accent hover:bg-accent/80 border-border/60"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </div>
-
             {/* You receive section */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -188,22 +237,34 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Action button */}
+          {/* Swap indicator - centered between sections */}
+          <div className="flex justify-center lg:hidden">
             <Button
-              className={cn(
-                "w-full h-12 rounded-lg font-medium tracking-wide transition-all duration-300",
-                canStake
-                  ? "bg-data-positive text-white hover:bg-data-positive/90"
-                  : "bg-muted text-muted-foreground cursor-not-allowed"
-              )}
-              disabled={!canStake}
+              variant="outline"
+              size="icon"
+              className="w-10 h-10 rounded-full bg-accent hover:bg-accent/80 border-border/60"
             >
-              {!payAmount ? "Enter an amount" : "Stake Now"}
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+
+          {/* Action button */}
+          <Button
+            className={cn(
+              "w-full h-12 rounded-lg font-medium tracking-wide transition-all duration-300",
+              canStake
+                ? "bg-data-positive text-white hover:bg-data-positive/90"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            )}
+            disabled={!canStake}
+            onClick={handleStakeNow}
+          >
+            {!payAmount ? "Enter an amount" : "Stake Now"}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
