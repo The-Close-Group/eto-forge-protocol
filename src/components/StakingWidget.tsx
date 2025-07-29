@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 interface StakingPool {
   id: string;
   name: string;
-  apy: number;
+  apy: string;
   lockPeriod: string;
-  minStake: number;
+  minStake: string;
   autoCompound: boolean;
 }
 
@@ -69,7 +69,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-300">
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <Card className="w-[400px] bg-card border border-border/60 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -142,11 +142,11 @@ export function StakingWidget({ isOpen, onClose, selectedPool }: StakingWidgetPr
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm text-muted-foreground">You receive</label>
-                {selectedPool && (
-                  <div className="text-xs text-data-positive font-mono">
-                    {selectedPool.apy}% APY
-                  </div>
-                )}
+                 {selectedPool && (
+                   <div className="text-xs text-data-positive font-mono">
+                     {selectedPool.apy} APY
+                   </div>
+                 )}
               </div>
               <div className="bg-input/30 border border-border/60 rounded-lg p-4">
                 <div className="flex items-center gap-3">
