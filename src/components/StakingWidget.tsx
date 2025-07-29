@@ -83,32 +83,39 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   // Collapsed state
   if (!isExpanded) {
     return (
-      <Card className="w-full bg-card border border-border/60 shadow-sm mb-6">
+      <Card className="w-full bg-card border border-border/60 shadow-sm mb-6 transition-all duration-300">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleExpanded}
-              className="h-8 w-8 hover:bg-accent/60"
+              className="h-8 w-8 hover:bg-accent/60 transition-colors"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
-            <h3 className="text-lg font-medium">Stake</h3>
-            {selectedPool && (
-              <div className="text-sm text-muted-foreground">
-                {selectedPool.name} • {selectedPool.apy} APY
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-medium">Staking Widget</h3>
+              {selectedPool && (
+                <div className="text-sm text-muted-foreground">
+                  {selectedPool.name} • {selectedPool.apy} APY
+                </div>
+              )}
+            </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onToggleExpanded}
-            className="font-mono"
-          >
-            {isMobile ? "Stake" : "Stake Your Way"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground hidden md:block">
+              Click to expand staking interface
+            </div>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onToggleExpanded}
+              className="font-mono bg-primary hover:bg-primary/90"
+            >
+              {isMobile ? "Stake" : "Stake Your Way"}
+            </Button>
+          </div>
         </CardHeader>
       </Card>
     );

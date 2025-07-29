@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -96,11 +96,32 @@ const USER_POSITIONS = [
 
 export default function Staking() {
   const [selectedPool, setSelectedPool] = useState<string>("maang-usdc");
-  const [isStakingWidgetOpen, setIsStakingWidgetOpen] = useState(false);
+  const [isStakingWidgetOpen, setIsStakingWidgetOpen] = useState(true); // Always visible by default
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
   const [isWidgetExpanded, setIsWidgetExpanded] = useState(false);
   const [isIsolated, setIsIsolated] = useState(false);
   const isMobile = useIsMobile();
+
+  // Handle URL parameters for deep linking
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const openWidget = urlParams.get('openWidget');
+    const expand = urlParams.get('expand');
+    const poolId = urlParams.get('pool');
+
+    if (openWidget === 'true') {
+      setIsStakingWidgetOpen(true);
+      if (expand === 'true') {
+        setIsWidgetExpanded(true);
+      }
+      if (poolId) {
+        const pool = STAKING_POOLS.find(p => p.id === poolId);
+        if (pool) {
+          setSelectedStakingPool(pool);
+        }
+      }
+    }
+  }, []);
 
   const handleStakePool = (poolId: string) => {
     const pool = STAKING_POOLS.find(p => p.id === poolId);

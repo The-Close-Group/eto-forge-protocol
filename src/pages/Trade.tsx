@@ -331,9 +331,13 @@ export default function Trade() {
                     </div>
                   </div>
                   
-                   <Button size="sm" className="w-full font-mono bg-data-positive hover:bg-data-positive/90 text-white" onClick={() => navigate("/staking")}>
-                     Stake Now
-                   </Button>
+                    <Button 
+                      size="sm" 
+                      className="w-full font-mono bg-data-positive hover:bg-data-positive/90 text-white" 
+                      onClick={() => navigate(`/staking?openWidget=true&expand=true&pool=${pool.pair.toLowerCase().replace('/', '-')}`)}
+                    >
+                      Stake Now
+                    </Button>
                 </div>
               </CardContent>
             </Card>
