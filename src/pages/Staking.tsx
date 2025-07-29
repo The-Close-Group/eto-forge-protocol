@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { StakingPoolCard } from "@/components/StakingPoolCard";
 import { StakingCalculator } from "@/components/StakingCalculator";
+import { StakingWidget } from "@/components/StakingWidget";
 
 const STAKING_POOLS = [
   {
@@ -93,10 +94,13 @@ const USER_POSITIONS = [
 
 export default function Staking() {
   const [selectedPool, setSelectedPool] = useState<string>("maang-usdc");
+  const [isStakingWidgetOpen, setIsStakingWidgetOpen] = useState(false);
+  const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
 
   const handleStakePool = (poolId: string) => {
-    console.log(`Staking in pool: ${poolId}`);
-    // Handle staking logic here
+    const pool = STAKING_POOLS.find(p => p.id === poolId);
+    setSelectedStakingPool(pool);
+    setIsStakingWidgetOpen(true);
   };
 
   const handleStakeYourWay = () => {
@@ -309,6 +313,12 @@ export default function Staking() {
           </div>
         </TabsContent>
       </Tabs>
+      
+      <StakingWidget
+        isOpen={isStakingWidgetOpen}
+        onClose={() => setIsStakingWidgetOpen(false)}
+        selectedPool={selectedStakingPool}
+      />
     </div>
   );
 }
