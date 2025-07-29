@@ -130,11 +130,6 @@ export default function Staking() {
     setIsWidgetExpanded(true);
   };
 
-  const handleStakeYourWay = () => {
-    setSelectedStakingPool(null);
-    setIsStakingWidgetOpen(true);
-    setIsWidgetExpanded(true);
-  };
 
   const handleToggleWidget = () => {
     if (!isStakingWidgetOpen) {
@@ -227,19 +222,13 @@ export default function Staking() {
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-mono flex items-center gap-2">
-              <Plus className="h-5 w-5" />
-              Custom Staking
+              <Users className="h-5 w-5" />
+              Active Pools
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={handleStakeYourWay}
-              className="w-full font-mono bg-primary hover:bg-primary/90"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {isMobile ? "Stake" : "Stake Your Way"}
-            </Button>
-            <div className="text-xs text-muted-foreground mt-2">Choose your own terms</div>
+            <div className="text-2xl font-mono font-bold">{STAKING_POOLS.length}</div>
+            <div className="text-sm text-muted-foreground">Available staking options</div>
           </CardContent>
         </Card>
       </div>

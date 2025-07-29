@@ -83,39 +83,34 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   // Collapsed state
   if (!isExpanded) {
     return (
-      <Card className="w-full bg-card border border-border/60 shadow-sm mb-6 transition-all duration-300">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="flex items-center gap-3">
+      <Card className="w-full bg-background/50 backdrop-blur-sm border border-border/40 shadow-lg mb-6 transition-all duration-300 hover:bg-background/60">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4">
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleExpanded}
-              className="h-8 w-8 hover:bg-accent/60 transition-colors"
+              className="h-10 w-10 hover:bg-accent/60 transition-all duration-200 rounded-lg"
             >
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-medium">Staking Widget</h3>
+            <div>
+              <h3 className="text-lg font-semibold font-mono">Stake Assets</h3>
               {selectedPool && (
-                <div className="text-sm text-muted-foreground">
-                  {selectedPool.name} • {selectedPool.apy} APY
+                <div className="text-sm text-muted-foreground font-mono">
+                  {selectedPool.name} • <span className="text-data-positive">{selectedPool.apy} APY</span>
                 </div>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground hidden md:block">
-              Click to expand staking interface
-            </div>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={onToggleExpanded}
-              className="font-mono bg-primary hover:bg-primary/90"
-            >
-              {isMobile ? "Stake" : "Stake Your Way"}
-            </Button>
-          </div>
+          <Button
+            variant="default"
+            size="lg"
+            onClick={onToggleExpanded}
+            className="font-mono bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg px-8"
+          >
+            Stake
+          </Button>
         </CardHeader>
       </Card>
     );
@@ -124,151 +119,143 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   return (
     <div className={cn(
       "w-full transition-all duration-300",
-      isIsolated && "fixed inset-0 z-[100] bg-background/95 backdrop-blur-lg p-4 flex items-center justify-center"
+      isIsolated && "fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl p-4 flex items-center justify-center"
     )}>
       <Card className={cn(
-        "bg-card border border-border/60 shadow-lg",
-        isIsolated ? "w-full max-w-2xl" : "w-full mb-6"
+        "bg-background/95 backdrop-blur-sm border border-border/40 shadow-2xl",
+        isIsolated ? "w-full max-w-lg" : "w-full max-w-lg mx-auto mb-6"
       )}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleExpanded}
-              className="h-8 w-8 hover:bg-accent/60"
+              className="h-10 w-10 hover:bg-accent/60 transition-all duration-200 rounded-lg"
             >
-              <ChevronUp className="h-4 w-4" />
+              <ChevronUp className="h-5 w-5" />
             </Button>
-            <h3 className="text-lg font-medium">Stake</h3>
-            {selectedPool && (
-              <div className="text-sm text-muted-foreground">
-                {selectedPool.name} • {selectedPool.apy} APY
-              </div>
-            )}
+            <div>
+              <h3 className="text-xl font-bold font-mono">Stake Assets</h3>
+              {selectedPool && (
+                <div className="text-sm text-muted-foreground font-mono">
+                  {selectedPool.name} • <span className="text-data-positive">{selectedPool.apy} APY</span>
+                </div>
+              )}
+            </div>
           </div>
           {isIsolated && (
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8 hover:bg-accent/60"
+              className="h-10 w-10 hover:bg-accent/60 transition-all duration-200 rounded-lg"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           )}
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* You pay section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm text-muted-foreground">You pay</label>
-                {payAsset && (
-                  <div className="text-xs text-muted-foreground">
-                    Balance: {payAsset.balance.toFixed(2)} {payAsset.symbol}
-                  </div>
-                )}
-              </div>
-              <div className="bg-input/30 border border-border/60 rounded-lg p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={payAmount}
-                      onChange={(e) => setPayAmount(e.target.value)}
-                      className="h-16 text-2xl font-mono bg-transparent border-0 px-0 focus-visible:ring-0"
-                    />
-                    <div className="text-sm text-muted-foreground font-mono mt-1">
-                      {getUsdValue(payAmount, payAsset)}
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <AssetDropdown
-                      assets={MOCK_ASSETS}
-                      selectedAsset={payAsset}
-                      onSelectAsset={setPayAsset}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleMaxClick}
-                      className="text-xs h-7"
-                    >
-                      MAX
-                    </Button>
+        <CardContent className="space-y-6">
+          {/* You pay section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">You pay</label>
+              {payAsset && (
+                <div className="text-xs text-muted-foreground font-mono">
+                  Balance: {payAsset.balance.toFixed(2)} {payAsset.symbol}
+                </div>
+              )}
+            </div>
+            <div className="bg-background/50 border border-border/60 rounded-2xl p-6 shadow-inner">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex-1">
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={payAmount}
+                    onChange={(e) => setPayAmount(e.target.value)}
+                    className="text-4xl font-bold font-mono bg-transparent border-0 px-0 focus-visible:ring-0 h-auto placeholder:text-muted-foreground/30"
+                  />
+                  <div className="text-lg text-muted-foreground font-mono mt-1">
+                    {getUsdValue(payAmount, payAsset)}
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* You receive section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm text-muted-foreground">You receive</label>
-                 {selectedPool && (
-                   <div className="text-xs text-data-positive font-mono">
-                     {selectedPool.apy} APY
-                   </div>
-                 )}
-              </div>
-              <div className="bg-input/30 border border-border/60 rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={receiveAmount}
-                      readOnly
-                      className="h-16 text-2xl font-mono bg-transparent border-0 px-0 focus-visible:ring-0"
-                    />
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {selectedPool && (
-                        <>
-                          Lock Period: {selectedPool.lockPeriod}
-                          {selectedPool.autoCompound && (
-                            <span className="ml-2 text-data-positive">• Auto-Compound</span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="min-w-[120px]">
-                    {receiveAsset && (
-                      <div className="bg-background border border-border/60 rounded-lg px-3 py-2 h-12 flex items-center">
-                        <span className="font-medium text-sm">{receiveAsset.symbol}</span>
-                      </div>
-                    )}
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleMaxClick}
+                    className="text-xs h-8 px-3 font-mono hover:bg-primary/10 hover:text-primary border-border/40"
+                  >
+                    MAX
+                  </Button>
+                  <AssetDropdown
+                    assets={MOCK_ASSETS}
+                    selectedAsset={payAsset}
+                    onSelectAsset={setPayAsset}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Swap indicator - centered between sections */}
-          <div className="flex justify-center lg:hidden">
-            <Button
-              variant="outline"
-              size="icon"
-              className="w-10 h-10 rounded-full bg-accent hover:bg-accent/80 border-border/60"
-            >
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
+          {/* Arrow indicator */}
+          <div className="flex justify-center">
+            <div className="bg-background/80 border border-border/40 rounded-full p-3 shadow-lg">
+              <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+
+          {/* You receive section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">You receive</label>
+              {selectedPool && (
+                <div className="text-xs text-data-positive font-mono font-semibold">
+                  {selectedPool.apy} APY
+                </div>
+              )}
+            </div>
+            <div className="bg-background/50 border border-border/60 rounded-2xl p-6 shadow-inner">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex-1">
+                  <div className="text-4xl font-bold font-mono text-muted-foreground">
+                    {receiveAmount || "0"}
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-2 space-y-1">
+                    {selectedPool && (
+                      <>
+                        <div className="font-mono">Lock Period: <span className="text-foreground">{selectedPool.lockPeriod}</span></div>
+                        {selectedPool.autoCompound && (
+                          <div className="text-data-positive font-mono">• Auto-Compound Enabled</div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  {receiveAsset && (
+                    <div className="bg-accent/20 border border-border/40 rounded-xl px-4 py-3">
+                      <span className="font-semibold text-sm font-mono">{receiveAsset.symbol}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Action button */}
           <Button
             className={cn(
-              "w-full h-12 rounded-lg font-medium tracking-wide transition-all duration-300",
+              "w-full h-14 rounded-2xl font-bold text-lg font-mono tracking-wide transition-all duration-300 shadow-lg",
               canStake
-                ? "bg-data-positive text-white hover:bg-data-positive/90"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
+                ? "bg-gradient-to-r from-data-positive to-data-positive/80 hover:from-data-positive/90 hover:to-data-positive/70 text-white hover:shadow-xl hover:shadow-data-positive/20"
+                : "bg-muted/50 text-muted-foreground cursor-not-allowed"
             )}
             disabled={!canStake}
             onClick={handleStakeNow}
           >
-            {!payAmount ? "Enter an amount" : "Stake Now"}
+            {!payAmount ? "Enter Amount to Stake" : "Stake Now"}
           </Button>
         </CardContent>
       </Card>
