@@ -58,7 +58,7 @@ const App = () => (
                         <Route path="/staking" element={<Staking />} />
                         <Route path="/analytics" element={<Analytics />} />
                         <Route path="/wallet" element={<Wallet />} />
-                        <Route path="/system" element={<SystemHealth />} />
+                        <Route path="/system-health" element={<SystemHealth />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppLayout>
