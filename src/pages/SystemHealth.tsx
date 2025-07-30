@@ -173,15 +173,15 @@ export default function SystemHealth() {
         </div>
 
         <div className="trading-panel text-center p-6 h-36 flex flex-col justify-center">
-          <Shield className="h-6 w-6 text-data-positive mx-auto mb-3" />
-          <div className="text-3xl font-mono font-bold text-data-positive mb-2">
-            $45.7M
+          <Shield className="h-6 w-6 text-muted-foreground mx-auto mb-3" />
+          <div className="text-3xl font-mono font-bold text-muted-foreground mb-2">
+            $0.00
           </div>
           <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
             Total Liquidity
           </div>
-          <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
-            +12.3% today
+          <div className="text-xs font-mono text-muted-foreground uppercase tracking-wide">
+            0.0% today
           </div>
         </div>
       </div>
@@ -190,14 +190,14 @@ export default function SystemHealth() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <TrendingUp className="h-5 w-5 text-accent" />
+            <TrendingUp className="h-5 w-5 text-muted-foreground" />
             <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Order Inflows</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
-            1,247
+          <div className="text-2xl font-mono font-bold text-muted-foreground mb-1">
+            0
           </div>
-          <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
-            +23% last hour
+          <div className="text-xs font-mono text-muted-foreground uppercase tracking-wide">
+            0.0% last hour
           </div>
         </div>
 
@@ -229,14 +229,14 @@ export default function SystemHealth() {
 
         <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <Users className="h-5 w-5 text-accent" />
+            <Users className="h-5 w-5 text-muted-foreground" />
             <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Active Sessions</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
-            342
+          <div className="text-2xl font-mono font-bold text-muted-foreground mb-1">
+            0
           </div>
-          <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
-            Trading now
+          <div className="text-xs font-mono text-muted-foreground uppercase tracking-wide">
+            No activity
           </div>
         </div>
       </div>
@@ -357,8 +357,8 @@ export default function SystemHealth() {
           <div className="space-y-6">
             <div className="p-4 bg-background/30 rounded-xl border border-border/40 text-center">
               <p className="text-sm font-mono uppercase tracking-wide text-muted-foreground mb-2">Utilization Rate</p>
-              <p className="text-3xl font-mono font-bold text-data-positive mb-1">67%</p>
-              <p className="text-sm font-mono text-muted-foreground uppercase tracking-wide">Optimal range</p>
+              <p className="text-3xl font-mono font-bold text-muted-foreground mb-1">0%</p>
+              <p className="text-sm font-mono text-muted-foreground uppercase tracking-wide">Minimal activity</p>
             </div>
 
             <div className="space-y-3">
@@ -480,8 +480,8 @@ export default function SystemHealth() {
 
             <div className="p-4 bg-background/30 rounded-xl border border-border/40 text-center">
               <p className="text-sm font-mono uppercase tracking-wide text-muted-foreground mb-2">Bridge Volume (24h)</p>
-              <p className="text-3xl font-mono font-bold text-data-positive mb-1">$2.3M</p>
-              <p className="text-xs font-mono text-data-positive uppercase tracking-wide">+8.4% vs yesterday</p>
+              <p className="text-3xl font-mono font-bold text-muted-foreground mb-1">$0.00</p>
+              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide">0.0% vs yesterday</p>
             </div>
           </div>
         </div>
