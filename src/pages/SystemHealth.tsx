@@ -46,50 +46,49 @@ export default function SystemHealth() {
   const strokeDashoffset = circumference - (healthPercentage / 100) * circumference;
 
   return (
-    <div className="container max-w-7xl mx-auto p-6 pb-20 md:pb-6 space-y-12">
+    <div className="container max-w-7xl mx-auto p-6 pb-20 md:pb-6 space-y-8">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold font-mono uppercase tracking-wider text-foreground mb-3">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider mb-2">
           System Health
         </h1>
-        <p className="text-muted-foreground font-mono text-base tracking-wide">
+        <p className="text-muted-foreground font-mono tracking-wide">
           Real-time monitoring of ETO platform metrics
         </p>
       </div>
 
       {/* Central Speedometer */}
-      <div className="flex justify-center mb-16">
-        <div className="trading-panel w-[420px] h-80 flex flex-col items-center justify-center relative">
+      <div className="flex justify-center mb-8">
+        <div className="trading-panel w-96 h-72 flex flex-col items-center justify-center relative">
           {/* Half Circle Speedometer SVG */}
-          <div className="relative">
-            <svg width="320" height="200" viewBox="0 0 320 200" className="overflow-visible">
+          <div className="relative w-80 h-48">
+            <svg width="320" height="180" viewBox="0 0 320 180" className="overflow-visible">
               {/* Background arc - half circle */}
               <path
-                d="M 40 160 A 120 120 0 0 1 280 160"
-                stroke="currentColor"
-                strokeWidth="12"
+                d="M 40 140 A 120 120 0 0 1 280 140"
+                stroke="hsl(var(--border))"
+                strokeWidth="8"
                 fill="transparent"
-                className="text-border/20"
+                opacity="0.3"
               />
-              {/* Progress arc - half circle */}
+              {/* Progress arc - half circle (98.7% of 180 degrees = 177.66 degrees) */}
               <path
-                d="M 40 160 A 120 120 0 0 1 280 160"
+                d="M 40 140 A 120 120 0 0 1 280 140"
                 stroke="url(#healthGradient)"
-                strokeWidth="12"
+                strokeWidth="8"
                 fill="transparent"
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
+                strokeDasharray="377.0"
+                strokeDashoffset="4.9"
                 strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
-                style={{ transformOrigin: '160px 160px' }}
+                className="transition-all duration-2000 ease-out"
               />
               {/* Scale marks */}
-              {[0, 25, 50, 75, 100].map((value, index) => {
-                const angle = (value / 100) * Math.PI; // 0 to PI for half circle
-                const x1 = 160 + (105) * Math.cos(Math.PI - angle);
-                const y1 = 160 - (105) * Math.sin(Math.PI - angle);
-                const x2 = 160 + (115) * Math.cos(Math.PI - angle);
-                const y2 = 160 - (115) * Math.sin(Math.PI - angle);
+              {[0, 25, 50, 75, 100].map((value) => {
+                const angle = (value / 100) * Math.PI;
+                const x1 = 160 + 105 * Math.cos(Math.PI - angle);
+                const y1 = 140 - 105 * Math.sin(Math.PI - angle);
+                const x2 = 160 + 115 * Math.cos(Math.PI - angle);
+                const y2 = 140 - 115 * Math.sin(Math.PI - angle);
                 return (
                   <line
                     key={value}
@@ -97,10 +96,28 @@ export default function SystemHealth() {
                     y1={y1}
                     x2={x2}
                     y2={y2}
-                    stroke="currentColor"
+                    stroke="hsl(var(--muted-foreground))"
                     strokeWidth="2"
-                    className="text-muted-foreground/60"
+                    opacity="0.6"
                   />
+                );
+              })}
+              {/* Scale labels */}
+              {[0, 50, 100].map((value) => {
+                const angle = (value / 100) * Math.PI;
+                const x = 160 + 130 * Math.cos(Math.PI - angle);
+                const y = 140 - 130 * Math.sin(Math.PI - angle);
+                return (
+                  <text
+                    key={value}
+                    x={x}
+                    y={y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="fill-muted-foreground font-mono text-xs"
+                  >
+                    {value}
+                  </text>
                 );
               })}
               {/* Gradient definition */}
@@ -114,14 +131,14 @@ export default function SystemHealth() {
             </svg>
             
             {/* Center content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center mt-8">
-              <div className="text-6xl font-mono font-bold text-data-positive tracking-tight mb-2">
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-5xl font-mono font-bold text-data-positive mb-1">
                 {healthPercentage}%
               </div>
-              <div className="text-lg font-mono uppercase tracking-wider text-muted-foreground mb-1">
+              <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
                 System Health
               </div>
-              <div className="text-sm font-mono text-data-positive uppercase tracking-wide">
+              <div className="text-xs font-mono text-accent uppercase tracking-wide">
                 ETO Platform • Operational
               </div>
             </div>
@@ -130,12 +147,10 @@ export default function SystemHealth() {
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="trading-panel text-center p-6 h-40 flex flex-col justify-center">
-          <div className="flex justify-center mb-3">
-            <Network className="h-7 w-7 text-accent" />
-          </div>
-          <div className="text-3xl font-mono font-bold tracking-wide mb-2">12</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="trading-panel text-center p-6 h-36 flex flex-col justify-center">
+          <Network className="h-6 w-6 text-accent mx-auto mb-3" />
+          <div className="text-3xl font-mono font-bold mb-2">12</div>
           <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
             Active Protocols
           </div>
@@ -144,11 +159,9 @@ export default function SystemHealth() {
           </div>
         </div>
 
-        <div className="trading-panel text-center p-6 h-40 flex flex-col justify-center">
-          <div className="flex justify-center mb-3">
-            <Activity className="h-7 w-7 text-data-positive" />
-          </div>
-          <div className="text-3xl font-mono font-bold text-data-positive tracking-wide mb-2">
+        <div className="trading-panel text-center p-6 h-36 flex flex-col justify-center">
+          <Activity className="h-6 w-6 text-data-positive mx-auto mb-3" />
+          <div className="text-3xl font-mono font-bold text-data-positive mb-2">
             99.97%
           </div>
           <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
@@ -159,11 +172,9 @@ export default function SystemHealth() {
           </div>
         </div>
 
-        <div className="trading-panel text-center p-6 h-40 flex flex-col justify-center">
-          <div className="flex justify-center mb-3">
-            <Shield className="h-7 w-7 text-data-positive" />
-          </div>
-          <div className="text-3xl font-mono font-bold text-data-positive tracking-wide mb-2">
+        <div className="trading-panel text-center p-6 h-36 flex flex-col justify-center">
+          <Shield className="h-6 w-6 text-data-positive mx-auto mb-3" />
+          <div className="text-3xl font-mono font-bold text-data-positive mb-2">
             $45.7M
           </div>
           <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
@@ -175,14 +186,14 @@ export default function SystemHealth() {
         </div>
       </div>
 
-      {/* New Critical Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="trading-panel p-6 h-40 flex flex-col justify-center">
+      {/* Critical Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <TrendingUp className="h-6 w-6 text-accent flex-shrink-0" />
-            <span className="text-base font-mono uppercase tracking-wider text-muted-foreground">Order Inflows</span>
+            <TrendingUp className="h-5 w-5 text-accent" />
+            <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Order Inflows</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive tracking-wide mb-1">
+          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
             1,247
           </div>
           <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
@@ -190,12 +201,12 @@ export default function SystemHealth() {
           </div>
         </div>
 
-        <div className="trading-panel p-6 h-40 flex flex-col justify-center">
+        <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <Clock className="h-6 w-6 text-accent flex-shrink-0" />
-            <span className="text-base font-mono uppercase tracking-wider text-muted-foreground">Price Reports</span>
+            <Clock className="h-5 w-5 text-accent" />
+            <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Price Reports</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive tracking-wide mb-1">
+          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
             12/12
           </div>
           <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
@@ -203,12 +214,12 @@ export default function SystemHealth() {
           </div>
         </div>
 
-        <div className="trading-panel p-6 h-40 flex flex-col justify-center">
+        <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <MemoryStick className="h-6 w-6 text-accent flex-shrink-0" />
-            <span className="text-base font-mono uppercase tracking-wider text-muted-foreground">Memory Usage</span>
+            <MemoryStick className="h-5 w-5 text-accent" />
+            <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Memory Usage</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive tracking-wide mb-1">
+          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
             67%
           </div>
           <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
@@ -216,12 +227,12 @@ export default function SystemHealth() {
           </div>
         </div>
 
-        <div className="trading-panel p-6 h-40 flex flex-col justify-center">
+        <div className="trading-panel p-6 h-36 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <Users className="h-6 w-6 text-accent flex-shrink-0" />
-            <span className="text-base font-mono uppercase tracking-wider text-muted-foreground">Active Sessions</span>
+            <Users className="h-5 w-5 text-accent" />
+            <span className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Active Sessions</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-data-positive tracking-wide mb-1">
+          <div className="text-2xl font-mono font-bold text-data-positive mb-1">
             342
           </div>
           <div className="text-xs font-mono text-data-positive uppercase tracking-wide">
