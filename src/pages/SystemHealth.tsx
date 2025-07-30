@@ -57,74 +57,37 @@ export default function SystemHealth() {
         </p>
       </div>
 
-      {/* Central Speedometer */}
+      {/* Central Progress Arc */}
       <div className="flex justify-center mb-8">
         <div className="trading-panel w-96 h-72 flex flex-col items-center justify-center relative">
-          {/* Half Circle Speedometer SVG */}
+          {/* Clean Half Circle Progress Bar */}
           <div className="relative w-80 h-48">
             <svg width="320" height="180" viewBox="0 0 320 180" className="overflow-visible">
               {/* Background arc - half circle */}
               <path
                 d="M 40 140 A 120 120 0 0 1 280 140"
                 stroke="hsl(var(--border))"
-                strokeWidth="8"
+                strokeWidth="12"
                 fill="transparent"
-                opacity="0.3"
+                opacity="0.2"
               />
-              {/* Progress arc - half circle (98.7% of 180 degrees = 177.66 degrees) */}
+              {/* Progress arc - 98.7% of half circle */}
               <path
                 d="M 40 140 A 120 120 0 0 1 280 140"
                 stroke="url(#healthGradient)"
-                strokeWidth="8"
+                strokeWidth="12"
                 fill="transparent"
-                strokeDasharray="377.0"
-                strokeDashoffset="4.9"
+                strokeDasharray={`${Math.PI * 120}`}
+                strokeDashoffset={`${Math.PI * 120 * (1 - healthPercentage / 100)}`}
                 strokeLinecap="round"
                 className="transition-all duration-2000 ease-out"
               />
-              {/* Scale marks */}
-              {[0, 25, 50, 75, 100].map((value) => {
-                const angle = (value / 100) * Math.PI;
-                const x1 = 160 + 105 * Math.cos(Math.PI - angle);
-                const y1 = 140 - 105 * Math.sin(Math.PI - angle);
-                const x2 = 160 + 115 * Math.cos(Math.PI - angle);
-                const y2 = 140 - 115 * Math.sin(Math.PI - angle);
-                return (
-                  <line
-                    key={value}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    stroke="hsl(var(--muted-foreground))"
-                    strokeWidth="2"
-                    opacity="0.6"
-                  />
-                );
-              })}
-              {/* Scale labels */}
-              {[0, 50, 100].map((value) => {
-                const angle = (value / 100) * Math.PI;
-                const x = 160 + 130 * Math.cos(Math.PI - angle);
-                const y = 140 - 130 * Math.sin(Math.PI - angle);
-                return (
-                  <text
-                    key={value}
-                    x={x}
-                    y={y}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="fill-muted-foreground font-mono text-xs"
-                  >
-                    {value}
-                  </text>
-                );
-              })}
-              {/* Gradient definition */}
+              {/* Gradient definition for concentrated color near 99% */}
               <defs>
                 <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 1}} />
-                  <stop offset="50%" style={{stopColor: 'hsl(var(--accent))', stopOpacity: 1}} />
+                  <stop offset="0%" style={{stopColor: 'hsl(var(--accent))', stopOpacity: 0.6}} />
+                  <stop offset="85%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 0.8}} />
+                  <stop offset="95%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 1}} />
                   <stop offset="100%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 1}} />
                 </linearGradient>
               </defs>
@@ -150,12 +113,12 @@ export default function SystemHealth() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="trading-panel text-center p-6 h-36 flex flex-col justify-center">
           <Network className="h-6 w-6 text-accent mx-auto mb-3" />
-          <div className="text-3xl font-mono font-bold mb-2">12</div>
+          <div className="text-3xl font-mono font-bold mb-2">3</div>
           <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
             Active Protocols
           </div>
           <div className="text-xs font-mono text-accent uppercase tracking-wide">
-            Cross-chain networks
+            Ready for launch
           </div>
         </div>
 
