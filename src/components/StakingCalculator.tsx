@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { simpleInterestReward, compoundDailyReward, dailyFromTotal } from "@/lib/calc";
 import { Calculator, TrendingUp } from "lucide-react";
 
 interface StakingCalculatorProps {
@@ -21,14 +23,17 @@ const POOLS = [
 export function StakingCalculator({ selectedPool, onPoolChange }: StakingCalculatorProps) {
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("365");
+  const [compound, setCompound] = useState(false);
 
-  const selectedPoolData = POOLS.find(p => p.id === selectedPool);
+  const selectedPoolData = POOLS.find((p) => p.id === selectedPool);
   const stakingAmount = parseFloat(amount) || 0;
   const days = parseInt(duration) || 365;
   const apy = selectedPoolData?.apy || 0;
 
-  const dailyReward = (stakingAmount * (apy / 100)) / 365;
-  const totalReward = dailyReward * days;
+  const totalReward = compound
+    ? compoundDailyReward(stakingAmount, apy, days)
+    : simpleInterestReward(stakingAmount, apy, days);
+  const dailyReward = dailyFromTotal(totalReward, days);
   const finalAmount = stakingAmount + totalReward;
 
   return (
@@ -56,7 +61,7 @@ export function StakingCalculator({ selectedPool, onPoolChange }: StakingCalcula
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="space-y-2">
             <Label className="text-sm font-medium">Amount to Stake</Label>
             <Input
@@ -69,19 +74,29 @@ export function StakingCalculator({ selectedPool, onPoolChange }: StakingCalcula
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Staking Duration</Label>
-          <Select value={duration} onValueChange={setDuration}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="30">30 Days</SelectItem>
-              <SelectItem value="90">90 Days</SelectItem>
-              <SelectItem value="180">180 Days</SelectItem>
-              <SelectItem value="365">1 Year</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Staking Duration</Label>
+            <Select value={duration} onValueChange={setDuration}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="30">30 Days</SelectItem>
+                <SelectItem value="90">90 Days</SelectItem>
+                <SelectItem value="180">180 Days</SelectItem>
+                <SelectItem value="365">1 Year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center justify-between md:items-end">
+            <div>
+              <Label className="text-sm font-medium">Compounding</Label>
+              <p className="text-xs text-muted-foreground">Use APY with daily compounding</p>
+            </div>
+            <Switch checked={compound} onCheckedChange={setCompound} />
+          </div>
         </div>
 
         {stakingAmount > 0 && selectedPoolData && (
@@ -100,11 +115,11 @@ export function StakingCalculator({ selectedPool, onPoolChange }: StakingCalcula
                 </p>
               </div>
             </div>
-            
+
             <div className="text-center p-4 bg-primary/10 rounded-sm border border-primary/20">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingUp className="h-4 w-4 text-data-positive" />
-                <p className="text-sm text-muted-foreground">Final Amount</p>
+                <p className="text-sm text-muted-foreground">Final Amount ({compound ? "Compound" : "Simple"})</p>
               </div>
               <p className="text-2xl font-mono font-bold text-data-positive">
                 ${finalAmount.toFixed(2)}

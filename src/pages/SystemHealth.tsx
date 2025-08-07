@@ -18,12 +18,13 @@ import {
   MemoryStick,
   Users
 } from "lucide-react";
+import { DialGauge } from "@/components/ui/dial-gauge";
 
 export default function SystemHealth() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "optimal": return "text-data-positive";
-      case "warning": return "text-yellow-400";
+      case "warning": return "text-warning";
       case "critical": return "text-data-negative";
       default: return "text-muted-foreground";
     }
@@ -57,55 +58,11 @@ export default function SystemHealth() {
         </p>
       </div>
 
-      {/* Central Progress Arc */}
+      {/* Peg Accuracy Dial */}
       <div className="flex justify-center mb-8">
-        <div className="trading-panel w-96 h-72 flex flex-col items-center justify-center relative">
-          {/* Clean Half Circle Progress Bar */}
-          <div className="relative w-80 h-48">
-            <svg width="320" height="180" viewBox="0 0 320 180" className="overflow-visible">
-              {/* Background arc - half circle */}
-              <path
-                d="M 40 140 A 120 120 0 0 1 280 140"
-                stroke="hsl(var(--border))"
-                strokeWidth="12"
-                fill="transparent"
-                opacity="0.2"
-              />
-              {/* Progress arc - 98.7% of half circle */}
-              <path
-                d="M 40 140 A 120 120 0 0 1 280 140"
-                stroke="url(#healthGradient)"
-                strokeWidth="12"
-                fill="transparent"
-                strokeDasharray={`${Math.PI * 120}`}
-                strokeDashoffset={`${Math.PI * 120 * (1 - healthPercentage / 100)}`}
-                strokeLinecap="round"
-                className="transition-all duration-2000 ease-out"
-              />
-              {/* Gradient definition for concentrated color near 99% */}
-              <defs>
-                <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{stopColor: 'hsl(var(--accent))', stopOpacity: 0.6}} />
-                  <stop offset="85%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 0.8}} />
-                  <stop offset="95%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 1}} />
-                  <stop offset="100%" style={{stopColor: 'hsl(var(--data-positive))', stopOpacity: 1}} />
-                </linearGradient>
-              </defs>
-            </svg>
-            
-            {/* Center content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-5xl font-mono font-bold text-data-positive mb-1">
-                {healthPercentage}%
-              </div>
-              <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-1">
-                System Health
-              </div>
-              <div className="text-xs font-mono text-accent uppercase tracking-wide">
-                ETO Platform • Operational
-              </div>
-            </div>
-          </div>
+        <div className="trading-panel p-8 flex flex-col items-center justify-center">
+          <DialGauge value={99.9} label="Peg Accuracy" subLabel="Last 12 blocks" />
+          <p className="mt-4 text-xs font-mono uppercase tracking-wide text-muted-foreground">All price feeds synchronized</p>
         </div>
       </div>
 
@@ -246,14 +203,49 @@ export default function SystemHealth() {
           <div className="space-y-4 p-6 bg-background/30 rounded-xl border border-border/40 h-32 flex flex-col justify-between">
             <div className="flex justify-between items-center">
               <span className="text-lg font-mono font-medium tracking-wide">BTC/USD</span>
-              <Badge variant="outline" className="font-mono text-xs bg-yellow-400/10 text-yellow-400 border-yellow-400/30 px-3 py-1">
+              <Badge variant="outline" className="font-mono text-xs bg-warning/10 text-warning border-warning/30 px-3 py-1">
                 WATCH
               </Badge>
             </div>
-            <div className="text-3xl font-mono font-bold text-yellow-400 tracking-wide">0.12%</div>
+            <div className="text-3xl font-mono font-bold text-warning tracking-wide">0.12%</div>
             <p className="text-sm text-muted-foreground font-mono uppercase tracking-wide">
               Deviation from peg
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Transparency */}
+      <div className="trading-panel p-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-mono font-bold uppercase tracking-wider flex items-center gap-3 mb-2">
+            <Shield className="h-7 w-7 text-accent flex-shrink-0" />
+            Transparency
+          </h2>
+          <p className="text-muted-foreground font-mono tracking-wide">
+            Clear status of data freshness, risk controls, and incidents
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2 p-6 bg-background/30 rounded-xl border border-border/40">
+            <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Data Freshness</p>
+            <p className="text-xl font-mono font-bold">~3s</p>
+            <p className="text-xs font-mono text-accent-foreground/80">Time since last oracle update</p>
+          </div>
+          <div className="space-y-2 p-6 bg-background/30 rounded-xl border border-border/40">
+            <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Risk Controls</p>
+            <p className="text-xl font-mono font-bold text-data-positive">All clear</p>
+            <p className="text-xs font-mono text-accent-foreground/80">Circuit breakers idle</p>
+          </div>
+          <div className="space-y-2 p-6 bg-background/30 rounded-xl border border-border/40">
+            <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Liquidity Safety</p>
+            <p className="text-xl font-mono font-bold text-data-positive">100%+</p>
+            <p className="text-xs font-mono text-accent-foreground/80">Backed and solvent</p>
+          </div>
+          <div className="space-y-2 p-6 bg-background/30 rounded-xl border border-border/40">
+            <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Incidents</p>
+            <p className="text-xl font-mono font-bold">0</p>
+            <p className="text-xs font-mono text-accent-foreground/80">Past 30 days</p>
           </div>
         </div>
       </div>
@@ -342,8 +334,8 @@ export default function SystemHealth() {
               <div className="flex justify-between items-center py-2">
                 <span className="text-base font-mono tracking-wide">BTC Pool</span>
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-yellow-400 flex-shrink-0" />
-                  <span className="text-yellow-400 font-mono font-medium">Monitor</span>
+                  <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
+                  <span className="text-warning font-mono font-medium">Monitor</span>
                 </div>
               </div>
             </div>
