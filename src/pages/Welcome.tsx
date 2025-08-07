@@ -26,11 +26,11 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
-      <div className={`text-center transition-all duration-1000 ease-out ${
-        isVisible 
-          ? "opacity-100 translate-y-0" 
-          : "opacity-0 translate-y-8"
-      }`}>
+      <div
+        className={`text-center transition-all duration-1000 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        } animate-enter`}
+      >
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-mono text-foreground mb-4 uppercase tracking-wider bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
           Welcome to ETO
         </h1>

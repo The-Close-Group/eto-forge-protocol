@@ -8,6 +8,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import TopLoadingBar from "@/components/TopLoadingBar";
+import CommandPalette from "@/components/CommandPalette";
 
 // Pages
 import Welcome from "@/pages/Welcome";
@@ -37,6 +39,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            {/* Global UX helpers */}
+            <TopLoadingBar />
+            <CommandPalette />
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/signin" element={<SignIn />} />

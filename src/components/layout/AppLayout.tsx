@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DesktopSidebar } from "./DesktopSidebar";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { RouteTransition } from "@/components/RouteTransition";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -13,7 +14,9 @@ export function AppLayout({ children }: AppLayoutProps) {
         <DesktopSidebar />
         
         <main className="flex-1 overflow-auto">
-          {children}
+          <RouteTransition>
+            {children}
+          </RouteTransition>
         </main>
         
         <MobileBottomNav />
