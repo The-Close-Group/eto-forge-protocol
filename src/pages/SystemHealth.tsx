@@ -1,6 +1,6 @@
 import SEO from "@/components/SEO";
 import IncidentTimeline from "@/components/IncidentTimeline";
-import { DialGauge } from "@/components/ui/dial-gauge";
+import ResponsiveDialGauge from "@/components/ResponsiveDialGauge";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -34,19 +34,16 @@ export default function SystemHealth() {
           </p>
         </header>
 
-        {/* Hero: Peg Accuracy */}
-        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 animate-fade-in">
+        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div className="flex items-center justify-center">
-              <DialGauge
+            <div className="flex items-center justify-center mx-auto w-full max-w-[380px] overflow-hidden">
+              <ResponsiveDialGauge
                 value={99.9}
                 label="Peg Accuracy"
                 subLabel="Last 12 blocks"
                 variant="semi"
                 showTicks
                 showNeedle
-                size={340}
-                thickness={16}
               />
             </div>
 
@@ -61,19 +58,19 @@ export default function SystemHealth() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl border border-border/40 bg-background/40">
+                <div className="metric-tile">
                   <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Median Deviation</p>
                   <p className="text-2xl font-mono font-bold text-data-positive">0.03%</p>
                 </div>
-                <div className="p-4 rounded-xl border border-border/40 bg-background/40">
+                <div className="metric-tile">
                   <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Worst Deviation</p>
                   <p className="text-2xl font-mono font-bold text-warning">0.12%</p>
                 </div>
-                <div className="p-4 rounded-xl border border-border/40 bg-background/40">
+                <div className="metric-tile">
                   <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Freshness</p>
                   <p className="text-2xl font-mono font-bold">~3s</p>
                 </div>
-                <div className="p-4 rounded-xl border border-border/40 bg-background/40">
+                <div className="metric-tile">
                   <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Tracked Assets</p>
                   <p className="text-2xl font-mono font-bold">12</p>
                 </div>
@@ -95,22 +92,22 @@ export default function SystemHealth() {
               <Shield className="h-5 w-5 text-accent" /> Transparency
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30">
+              <div className="metric-tile">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Oracle Freshness</p>
                 <p className="text-xl font-mono font-bold">~3s</p>
                 <p className="text-[11px] font-mono text-accent-foreground/80">Avg time since last update</p>
               </div>
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30">
+              <div className="metric-tile">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Reserve Ratio</p>
                 <p className="text-xl font-mono font-bold text-data-positive">100%+</p>
                 <p className="text-[11px] font-mono text-accent-foreground/80">Backed & solvent</p>
               </div>
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30">
+              <div className="metric-tile">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Risk Controls</p>
                 <p className="text-xl font-mono font-bold text-data-positive">All clear</p>
                 <p className="text-[11px] font-mono text-accent-foreground/80">No triggers</p>
               </div>
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30">
+              <div className="metric-tile">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Incidents</p>
                 <p className="text-xl font-mono font-bold">0</p>
                 <p className="text-[11px] font-mono text-accent-foreground/80">Past 90 days</p>
@@ -204,12 +201,12 @@ export default function SystemHealth() {
               <Network className="h-5 w-5 text-accent" /> Network Metrics
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30 text-center">
+              <div className="metric-tile text-center">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Block Time</p>
                 <p className="text-2xl font-mono font-bold">12.1s</p>
                 <p className="text-xs font-mono text-data-positive uppercase tracking-wide">Normal</p>
               </div>
-              <div className="p-4 rounded-xl border border-border/40 bg-background/30 text-center">
+              <div className="metric-tile text-center">
                 <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Gas Price</p>
                 <p className="text-2xl font-mono font-bold">23 gwei</p>
                 <p className="text-xs font-mono text-data-positive uppercase tracking-wide">Low</p>

@@ -92,6 +92,7 @@ export function DialGauge({
         width={size}
         height={isSemi ? size * 0.7 : size}
         viewBox={`0 0 ${size} ${isSemi ? size * 0.7 : size}`}
+        preserveAspectRatio="xMidYMid meet"
         className="block"
       >
         {isSemi ? (
