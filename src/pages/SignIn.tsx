@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@/hooks/useWallet';
 import { Card } from '@/components/ui/card';
 import SEO from '@/components/SEO';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';
@@ -56,13 +57,19 @@ export default function SignIn() {
 
           {/* Info Section */}
           <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-soft-muted mb-3">Quick tips</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Use MetaMask or WalletConnect to get started quickly</li>
-              <li>• Your funds remain in your wallet; ETO executes on-chain</li>
-              <li>• This is a pre‑launch environment – metrics are zeroed</li>
-            </ul>
-            <div className="mt-5 text-xs text-soft-muted">Press ⌘K / Ctrl+K to quickly navigate</div>
+            <Accordion type="single" collapsible defaultValue="tips">
+              <AccordionItem value="tips" className="border-b-0">
+                <AccordionTrigger className="text-sm font-medium">Quick tips</AccordionTrigger>
+                <AccordionContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Use MetaMask or WalletConnect to get started quickly</li>
+                    <li>• Your funds remain in your wallet; ETO executes on-chain</li>
+                    <li>• This is a pre‑launch environment – metrics are zeroed</li>
+                  </ul>
+                  <div className="mt-5 text-xs text-muted-foreground">Press ⌘K / Ctrl+K to quickly navigate</div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
 

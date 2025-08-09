@@ -34,7 +34,7 @@ export default function SystemHealth() {
           </p>
         </header>
 
-        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in">
+        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-gradient-to-b from-card to-card/60 grid-lines">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="flex items-center justify-center mx-auto w-full max-w-[380px] overflow-hidden">
               <ResponsiveDialGauge
