@@ -60,7 +60,7 @@ export function WalletConnector() {
     const connectedWallet = getConnectedWalletInfo();
     
     return (
-      <Card className="border-border bg-card w-full max-w-lg">
+      <Card className="border-border bg-card w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-xl font-medium">Wallet Connected</CardTitle>
           <CheckCircle className="h-6 w-6 text-green-400" />
@@ -109,7 +109,7 @@ export function WalletConnector() {
   }
 
   return (
-    <Card className="border-border bg-card w-full max-w-lg">
+    <Card className="border-border bg-card w-full">
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-medium text-center">Connect Wallet</CardTitle>
         <p className="text-sm text-muted-foreground text-center mt-2">

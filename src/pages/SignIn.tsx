@@ -84,11 +84,11 @@ const onSubmit = async (values: { email: string; password: string }) => {
             size="sm"
             onClick={() => {
               localStorage.setItem('eto-bypass-auth', 'true');
-              toast.success('Bypass enabled. Redirecting to Dashboard.');
-              navigate('/dashboard');
+              toast.success('Bypass enabled. Redirecting to Platform.');
+              navigate('/trade');
             }}
           >
-            Skip to Dashboard (temporary)
+            Skip to Platform
           </Button>
         </div>
 
