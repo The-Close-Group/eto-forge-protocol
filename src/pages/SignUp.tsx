@@ -1,9 +1,18 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/integrations/supabase/client';
 import { WalletConnector } from '@/components/WalletConnector';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@/hooks/useWallet';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import SEO from '@/components/SEO';
+import { toast } from 'sonner';
 
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';

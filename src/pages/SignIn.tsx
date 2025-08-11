@@ -1,12 +1,20 @@
 
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/integrations/supabase/client';
 import { WalletConnector } from '@/components/WalletConnector';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@/hooks/useWallet';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import SEO from '@/components/SEO';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { toast } from 'sonner';
 
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';
@@ -23,12 +31,33 @@ export default function SignIn() {
   const { isAuthenticated } = useAuth();
   const { walletAddress } = useWallet();
 
-  // Redirect to dashboard when wallet is connected
-  useEffect(() => {
-    if (isAuthenticated && walletAddress) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, walletAddress, navigate]);
+// Form schema
+const SignInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+const form = useForm<{ email: string; password: string }>({
+  resolver: zodResolver(SignInSchema),
+  defaultValues: { email: '', password: '' },
+});
+
+// Redirect to dashboard when authenticated
+useEffect(() => {
+  if (isAuthenticated) {
+    navigate('/dashboard');
+  }
+}, [isAuthenticated, navigate]);
+
+const onSubmit = async (values: { email: string; password: string }) => {
+  const { error } = await supabase.auth.signInWithPassword(values);
+  if (error) {
+    toast.error(error.message || 'Sign in failed');
+  } else {
+    toast.success('Signed in successfully');
+    navigate('/dashboard');
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
@@ -49,10 +78,49 @@ export default function SignIn() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 items-start">
-          {/* Wallet Connection */}
-          <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-lg font-semibold mb-4">Connect your wallet</h2>
-            <WalletConnector />
+          <div className="space-y-6">
+            {/* Email Sign in */}
+            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold mb-4">Sign in with email</h2>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
+                  </Button>
+                </form>
+              </Form>
+            </div>
+            {/* Wallet Connection */}
+            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold mb-4">Connect your wallet</h2>
+              <WalletConnector />
+            </div>
           </div>
 
           {/* Info Section */}
