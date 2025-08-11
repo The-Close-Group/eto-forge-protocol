@@ -91,20 +91,37 @@ export function useWallet() {
             throw new Error(`Unsupported wallet type: ${walletId}`);
         }
 
-        await connect(async () => {
+        // Pre-flight checks for browser injected wallets
+        if (walletId === 'metamask') {
+          const hasEthereum = typeof window !== 'undefined' && (window as any).ethereum?.isMetaMask;
+          if (!hasEthereum) {
+            throw new Error('MetaMask not detected');
+          }
+        }
+
+        // Add a connection timeout to avoid infinite loading loops
+        const connectOp = connect(async () => {
           const wallet = createWallet(walletIdentifier);
           await wallet.connect({ client });
           return wallet;
         });
+        const timeoutOp = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Connection timed out')), 30_000)
+        );
+
+        await Promise.race([connectOp, timeoutOp]);
+
         setConnectedWalletType(walletId);
         localStorage.setItem('eto-wallet-type', walletId);
       } catch (err: any) {
         const raw = String(err?.message || err || 'Failed to connect wallet');
         let message = 'Failed to connect wallet';
         const lower = raw.toLowerCase();
-        if (lower.includes('rejected')) message = 'Connection cancelled by user';
+        if (lower.includes('rejected') || lower.includes('user closed') || lower.includes('user rejected')) message = 'Connection cancelled by user';
         else if (lower.includes('popup')) message = 'Please allow popups and try again';
         else if (lower.includes('configured')) message = raw;
+        else if (lower.includes('timed out') || lower.includes('timeout')) message = 'Connection timed out. Please try again';
+        else if (lower.includes('not detected') || lower.includes('metamask')) message = 'MetaMask not detected. Please install it and try again';
         setError(message);
       } finally {
         setIsConnecting(false);

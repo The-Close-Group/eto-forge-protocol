@@ -29,8 +29,13 @@ export function WalletConnector() {
   const handleConnect = async (walletId: string) => {
     console.log('User clicked connect for wallet:', walletId);
     setConnectingWalletId(walletId);
-    await connectWallet(walletId);
-    setConnectingWalletId(null);
+    try {
+      await connectWallet(walletId);
+    } catch (e) {
+      console.error('Wallet connect failed:', e);
+    } finally {
+      setConnectingWalletId(null);
+    }
   };
 
   const handleDisconnect = async () => {
