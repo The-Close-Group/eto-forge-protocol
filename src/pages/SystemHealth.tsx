@@ -15,10 +15,11 @@ import {
   Target,
 } from "lucide-react";
 
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock } from "lucide-react";
-
+import { addDays, subMonths, subYears, startOfYear, isAfter } from "date-fns";
+import TimeRangeSelector, { RangeKey } from "@/components/TimeRangeSelector";
 const PegStabilityChart = lazy(() => import("@/components/charts/PegStabilityChart"));
 const OracleFreshnessChart = lazy(() => import("@/components/charts/OracleFreshnessChart"));
 const ServiceUptimeRadials = lazy(() => import("@/components/charts/ServiceUptimeRadials"));
@@ -45,12 +46,74 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, { hasEr
 export default function SystemHealth() {
   const canonical = typeof window !== "undefined" ? window.location.href : "";
 
-  // Demo data for charts (replace with live data when available)
-  const pegData = Array.from({ length: 60 }).map((_, i) => ({
-    t: i,
-    dev: (Math.sin(i / 8) * 0.06 + (Math.random() - 0.5) * 0.02), // -0.08..0.08
-  }));
+  // Time-series data for Peg Stability (timestamp in ms)
+  type PegPoint = { t: number; dev: number };
 
+  const [range, setRange] = useState<RangeKey>("1M");
+  const [pegSeries, setPegSeries] = useState<PegPoint[]>(() => {
+    const now = new Date();
+    const start = subYears(now, 5);
+    const points: PegPoint[] = [];
+    let cur = start;
+    let dev = 0; // centered around 0
+    while (isAfter(now, cur) || cur.getTime() === now.getTime()) {
+      // random walk with gentle mean reversion
+      const shock = (Math.random() - 0.5) * 0.02; // +/- 1%
+      dev = Math.max(-0.2, Math.min(0.2, dev * 0.9 + shock));
+      points.push({ t: cur.getTime(), dev: Number(dev.toFixed(4)) });
+      cur = addDays(cur, 1);
+    }
+    return points;
+  });
+
+  // Live updates: append a new point every 10s with minor movement
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPegSeries((prev) => {
+        const last = prev[prev.length - 1];
+        const now = Date.now();
+        let dev = last?.dev ?? 0;
+        const shock = (Math.random() - 0.5) * 0.01; // +/- 0.5%
+        dev = Math.max(-0.2, Math.min(0.2, dev * 0.98 + shock));
+        return [...prev, { t: now, dev: Number(dev.toFixed(4)) }];
+      });
+    }, 10000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Filter data by selected range
+  const filteredPeg = useMemo(() => {
+    const now = new Date();
+    let from: Date;
+    switch (range) {
+      case "1M":
+        from = subMonths(now, 1);
+        break;
+      case "3M":
+        from = subMonths(now, 3);
+        break;
+      case "6M":
+        from = subMonths(now, 6);
+        break;
+      case "YTD":
+        from = startOfYear(now);
+        break;
+      case "1Y":
+        from = subYears(now, 1);
+        break;
+      case "3Y":
+        from = subYears(now, 3);
+        break;
+      case "5Y":
+        from = subYears(now, 5);
+        break;
+      case "ALL":
+      default:
+        from = new Date(0);
+    }
+    const fromTs = from.getTime();
+    return pegSeries.filter((p) => p.t >= fromTs);
+  }, [pegSeries, range]);
   const freshnessData = [
     { asset: "ETH", seconds: 3.1 },
     { asset: "BTC", seconds: 2.7 },
@@ -92,13 +155,19 @@ export default function SystemHealth() {
         </header>
 
         <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-gradient-to-b from-card to-card/60 grid-lines">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-base font-mono uppercase tracking-wider">Peg Stability</h2>
+              <p className="text-[11px] font-mono text-muted-foreground">Live deviation vs peg — defaulting to August view</p>
+            </div>
+            <TimeRangeSelector value={range} onChange={setRange} />
+          </div>
           <Suspense fallback={<div className="p-2"><Skeleton className="h-[220px] w-full" /></div>}>
             <ErrorBoundary>
-              <PegStabilityChart data={pegData} />
+              <PegStabilityChart data={filteredPeg} />
             </ErrorBoundary>
           </Suspense>
         </section>
-
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="mb-2">
             <TabsTrigger value="overview">Overview</TabsTrigger>
