@@ -25,7 +25,7 @@ export default function PegStabilityChart({ data, height = 220 }: PegStabilityCh
       </div>
       <div className="h-[220px]">
         <ResponsiveContainer width="100%" height={height}>
-          <AreaChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+          <AreaChart data={data} margin={{ left: 10, right: 0, top: 10, bottom: 24 }}>
             <defs>
               <linearGradient id="pegGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={stroke} stopOpacity={0.35} />
@@ -33,13 +33,26 @@ export default function PegStabilityChart({ data, height = 220 }: PegStabilityCh
               </linearGradient>
             </defs>
             <ReferenceArea y1={-0.1} y2={0.1} fill={`hsl(var(--ring) / 0.12)`} stroke={"none"} />
-            <XAxis dataKey="t" hide tickLine={false} axisLine={false} />
-            <YAxis hide domain={[-0.2, 0.2]} />
+            <XAxis 
+              dataKey="t" 
+              tickLine={false} 
+              axisLine={{ stroke: "hsl(var(--border))" }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+              label={{ value: "Time", position: "insideBottomRight", offset: -5, fill: "hsl(var(--muted-foreground))" }}
+            />
+            <YAxis 
+              domain={[-0.2, 0.2]} 
+              tickLine={false} 
+              axisLine={{ stroke: "hsl(var(--border))" }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+              tickFormatter={(v: number) => `${v.toFixed(2)}%`}
+              label={{ value: "Deviation (%)", angle: -90, position: "insideLeft", offset: 10, fill: "hsl(var(--muted-foreground))" }}
+            />
             <Tooltip
               cursor={{ stroke: `hsl(var(--ring) / 0.4)`, strokeWidth: 1 }}
               contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
               formatter={(v: number) => [`${v.toFixed(3)}%`, "Deviation"]}
-              labelFormatter={(l) => `t=${l}`}
+              labelFormatter={(l) => `Time: ${l}`}
             />
             <Area type="monotone" dataKey="dev" stroke={stroke} fill="url(#pegGradient)" strokeWidth={2} dot={false} />
           </AreaChart>

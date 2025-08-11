@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, TrendingUp } from "lucide-react";
+import CoinIcon from "@/components/CoinIcon";
 
 interface Asset {
   symbol: string;
@@ -61,7 +62,7 @@ export function AssetSelector({
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium">{label}</Label>
+      <Label className="text-sm font-medium font-mono">{label}</Label>
       
       {/* Popular Assets Quick Select */}
       {!showSearch && (
@@ -74,7 +75,7 @@ export function AssetSelector({
               onClick={() => onAssetChange(asset.symbol)}
               className="text-xs"
             >
-              {asset.icon} {asset.symbol}
+              <span className="flex items-center gap-2"><CoinIcon symbol={asset.symbol} size={14} /> {asset.symbol}</span>
             </Button>
           ))}
           <Button
@@ -117,7 +118,7 @@ export function AssetSelector({
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">{asset.icon}</span>
+                  <CoinIcon symbol={asset.symbol} size={20} />
                   <div>
                     <div className="font-medium text-sm">{asset.symbol}</div>
                     <div className="text-xs text-muted-foreground">{asset.name}</div>
@@ -164,7 +165,10 @@ export function AssetSelector({
           <SelectContent>
             {allAssets.map((asset) => (
               <SelectItem key={asset.symbol} value={asset.symbol}>
-                {asset.icon} {asset.symbol}
+                <div className="flex items-center gap-2">
+                  <CoinIcon symbol={asset.symbol} size={16} />
+                  <span>{asset.symbol}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -201,7 +205,7 @@ export function AssetSelector({
       {selectedAssetData && (
         <div className="flex items-center justify-between p-3 bg-accent/30 rounded-sm border border-primary/20">
           <div className="flex items-center gap-3">
-            <span className="text-lg">{selectedAssetData.icon}</span>
+            <CoinIcon symbol={selectedAssetData.symbol} size={20} />
             <div>
               <div className="font-medium text-sm">{selectedAssetData.name}</div>
               <div className="text-xs text-muted-foreground">${selectedAssetData.price.toLocaleString()}</div>

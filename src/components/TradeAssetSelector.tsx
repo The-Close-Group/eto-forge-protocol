@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle } from "lucide-react";
+import CoinIcon from "@/components/CoinIcon";
 
 interface Asset {
   symbol: string;
@@ -113,7 +114,7 @@ export function TradeAssetSelector({
             {assets.map((asset) => (
               <SelectItem key={asset.symbol} value={asset.symbol}>
                 <div className="flex items-center gap-2">
-                  <span>{asset.icon}</span>
+                  <CoinIcon symbol={asset.symbol} size={16} />
                   <span className="font-mono">{asset.symbol}</span>
                 </div>
               </SelectItem>
@@ -169,7 +170,7 @@ export function TradeAssetSelector({
       {selectedAssetData && (
         <div className="flex items-center justify-between p-3 bg-accent/30 rounded-sm border border-primary/20">
           <div className="flex items-center gap-3">
-            <span className="text-lg">{selectedAssetData.icon}</span>
+            <CoinIcon symbol={selectedAssetData.symbol} size={20} />
             <div>
               <div className="font-medium text-sm font-mono">{selectedAssetData.name}</div>
               <div className="text-xs text-muted-foreground font-mono">
