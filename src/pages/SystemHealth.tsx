@@ -1,10 +1,10 @@
 import SEO from "@/components/SEO";
 import IncidentTimeline from "@/components/IncidentTimeline";
-import ResponsiveDialGauge from "@/components/ResponsiveDialGauge";
+
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import Sparkline from "@/components/Sparkline";
+
 import {
   Activity,
   AlertTriangle,
@@ -92,57 +92,11 @@ export default function SystemHealth() {
         </header>
 
         <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-gradient-to-b from-card to-card/60 grid-lines">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div className="flex flex-col items-center justify-center mx-auto w-full max-w-[420px] overflow-hidden">
-              <ResponsiveDialGauge
-                value={99.9}
-                label="Peg Accuracy"
-                subLabel="Last 12 blocks"
-                variant="semi"
-                showTicks
-                showNeedle
-              />
-              <div className="mt-4 w-full px-4">
-                <Sparkline data={[98.9, 99.1, 99.3, 99.6, 99.7, 99.9, 99.8, 99.9, 100, 99.9]} />
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <h2 id="peg-accuracy" className="text-xl font-mono font-bold uppercase tracking-wider flex items-center gap-2">
-                  <Target className="h-6 w-6 text-accent" /> Peg Integrity Snapshot
-                </h2>
-                <p className="text-sm text-muted-foreground font-mono mt-1">
-                  Deviation is within optimal range. Feeds synchronized and circuit breakers idle.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="metric-tile">
-                  <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Median Deviation</p>
-                  <p className="text-2xl font-mono font-bold text-data-positive">0.03%</p>
-                </div>
-                <div className="metric-tile">
-                  <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Worst Deviation</p>
-                  <p className="text-2xl font-mono font-bold text-warning">0.12%</p>
-                </div>
-                <div className="metric-tile">
-                  <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Freshness</p>
-                  <p className="text-2xl font-mono font-bold">~3s</p>
-                </div>
-                <div className="metric-tile">
-                  <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Tracked Assets</p>
-                  <p className="text-2xl font-mono font-bold">12</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30 font-mono">Feeds Healthy</Badge>
-                <Badge variant="outline" className="font-mono">Circuit Breakers Idle</Badge>
-                <Badge variant="outline" className="font-mono">DR Constraints Stable</Badge>
-              </div>
-            </div>
-          </div>
+          <Suspense fallback={<div className="p-2"><Skeleton className="h-[220px] w-full" /></div>}>
+            <ErrorBoundary>
+              <PegStabilityChart data={pegData} />
+            </ErrorBoundary>
+          </Suspense>
         </section>
 
         <Tabs defaultValue="overview" className="space-y-6">
@@ -157,7 +111,37 @@ export default function SystemHealth() {
             <Suspense fallback={<div className="trading-panel p-6"><Skeleton className="h-[220px] w-full" /></div>}>
               <ErrorBoundary>
                 <section className="grid grid-cols-1 gap-6">
-                  <PegStabilityChart data={pegData} />
+                  <div className="trading-panel p-6 space-y-6">
+                    <h2 id="peg-accuracy" className="text-xl font-mono font-bold uppercase tracking-wider flex items-center gap-2">
+                      <Target className="h-6 w-6 text-accent" /> Peg Integrity Snapshot
+                    </h2>
+                    <p className="text-sm text-muted-foreground font-mono mt-1">
+                      Deviation is within optimal range. Feeds synchronized and circuit breakers idle.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="metric-tile">
+                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Median Deviation</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">0.03%</p>
+                      </div>
+                      <div className="metric-tile">
+                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Worst Deviation</p>
+                        <p className="text-2xl font-mono font-bold text-warning">0.12%</p>
+                      </div>
+                      <div className="metric-tile">
+                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Freshness</p>
+                        <p className="text-2xl font-mono font-bold">~3s</p>
+                      </div>
+                      <div className="metric-tile">
+                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Tracked Assets</p>
+                        <p className="text-2xl font-mono font-bold">12</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30 font-mono">Feeds Healthy</Badge>
+                      <Badge variant="outline" className="font-mono">Circuit Breakers Idle</Badge>
+                      <Badge variant="outline" className="font-mono">DR Constraints Stable</Badge>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <ServiceUptimeRadials data={uptimeData} />
                     <ReservesDonut data={reservesData} />
