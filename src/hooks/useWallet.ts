@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { client } from '@/lib/thirdweb';
 import { useActiveAccount, useActiveWallet, useConnect } from 'thirdweb/react';
-import { createWallet, type WalletId } from 'thirdweb/wallets';
+import { createWallet, type WalletId, injectedProvider } from 'thirdweb/wallets';
 
 export interface WalletOption {
   id: string;
@@ -33,6 +33,34 @@ export const WALLET_OPTIONS: WalletOption[] = [
     icon: '🌈',
     description: 'Fun and simple wallet',
     walletId: 'me.rainbow',
+  },
+  {
+    id: 'trust',
+    name: 'Trust Wallet',
+    icon: '🛡️',
+    description: 'Trusted multi-chain wallet',
+    walletId: 'com.trustwallet.app',
+  },
+  {
+    id: 'zerion',
+    name: 'Zerion',
+    icon: '💠',
+    description: 'Portfolio and wallet in one',
+    walletId: 'io.zerion.wallet',
+  },
+  {
+    id: 'phantom',
+    name: 'Phantom',
+    icon: '👻',
+    description: 'Popular wallet (EVM extension supported)',
+    walletId: 'app.phantom',
+  },
+  {
+    id: 'walletconnect',
+    name: 'WalletConnect',
+    icon: '🔗',
+    description: 'Scan a QR to connect any wallet',
+    walletId: 'walletConnect',
   },
 ];
 
@@ -85,24 +113,42 @@ export function useWallet() {
           case 'rainbow':
             walletIdentifier = 'me.rainbow';
             break;
+          case 'trust':
+            walletIdentifier = 'com.trustwallet.app';
+            break;
+          case 'zerion':
+            walletIdentifier = 'io.zerion.wallet';
+            break;
+          case 'phantom':
+            walletIdentifier = 'app.phantom';
+            break;
           case 'walletconnect':
-            throw new Error('WalletConnect is not configured for this app');
+            walletIdentifier = 'walletConnect';
+            break;
           default:
             throw new Error(`Unsupported wallet type: ${walletId}`);
-        }
-
-        // Pre-flight checks for browser injected wallets
-        if (walletId === 'metamask') {
-          const hasEthereum = typeof window !== 'undefined' && (window as any).ethereum?.isMetaMask;
-          if (!hasEthereum) {
-            throw new Error('MetaMask not detected');
-          }
         }
 
         // Add a connection timeout to avoid infinite loading loops
         const connectOp = connect(async () => {
           const wallet = createWallet(walletIdentifier);
-          await wallet.connect({ client });
+
+          // Prefer injected provider if available
+          if (walletIdentifier !== 'walletConnect' && injectedProvider(walletIdentifier)) {
+            await wallet.connect({ client });
+            return wallet;
+          }
+
+          // Special handling for Phantom: require extension
+          if (walletIdentifier === 'app.phantom' && !injectedProvider('app.phantom')) {
+            throw new Error('Phantom not detected. Please install it and try again');
+          }
+
+          // Fallback to WalletConnect QR modal when supported
+          await wallet.connect({
+            client,
+            walletConnect: { showQrModal: true },
+          });
           return wallet;
         });
         const timeoutOp = new Promise((_, reject) =>
@@ -121,7 +167,7 @@ export function useWallet() {
         else if (lower.includes('popup')) message = 'Please allow popups and try again';
         else if (lower.includes('configured')) message = raw;
         else if (lower.includes('timed out') || lower.includes('timeout')) message = 'Connection timed out. Please try again';
-        else if (lower.includes('not detected') || lower.includes('metamask')) message = 'MetaMask not detected. Please install it and try again';
+        else if (lower.includes('not detected') || lower.includes('install')) message = raw;
         setError(message);
       } finally {
         setIsConnecting(false);

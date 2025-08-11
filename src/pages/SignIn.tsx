@@ -14,8 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import SEO from '@/components/SEO';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';
 import usdcLogo from '@/assets/usdc-logo.png';
@@ -77,68 +77,93 @@ const onSubmit = async (values: { email: string; password: string }) => {
           </p>
         </div>
 
+        {/* Temporary production shortcut */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              localStorage.setItem('eto-bypass-auth', 'true');
+              toast.success('Bypass enabled. Redirecting to Dashboard.');
+              navigate('/dashboard');
+            }}
+          >
+            Skip to Dashboard (temporary)
+          </Button>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-6 items-start">
           <div className="space-y-6">
-            {/* Email Sign in */}
-            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h2 className="text-lg font-semibold mb-4">Sign in with email</h2>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
-                  </Button>
-                </form>
-              </Form>
+            {/* Wallet + Email Tabs */}
+            <div>
+              <Tabs defaultValue="wallets" className="w-full">
+                <TabsList className="grid grid-cols-2 w-full">
+                  <TabsTrigger value="wallets">Wallets</TabsTrigger>
+                  <TabsTrigger value="email">Email</TabsTrigger>
+                </TabsList>
+                <TabsContent value="wallets" className="mt-4">
+                  <WalletConnector />
+                </TabsContent>
+                <TabsContent value="email" className="mt-4">
+                  <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <h2 className="text-lg font-semibold mb-4">Sign in with email</h2>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                          {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
+                        </Button>
+                      </form>
+                    </Form>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
-            {/* Wallet Connection */}
-            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h2 className="text-lg font-semibold mb-4">Connect your wallet</h2>
-              <WalletConnector />
+
+            {/* Quick tips moved under connector */}
+            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm">
+              <Accordion type="single" collapsible defaultValue="tips">
+                <AccordionItem value="tips" className="border-b-0">
+                  <AccordionTrigger className="text-sm font-medium">Quick tips</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Use MetaMask or WalletConnect to get started quickly</li>
+                      <li>• Your funds remain in your wallet; ETO executes on-chain</li>
+                      <li>• This is a pre‑launch environment – metrics are zeroed</li>
+                    </ul>
+                    <div className="mt-5 text-xs text-muted-foreground">Press ⌘K / Ctrl+K to quickly navigate</div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
 
-          {/* Info Section */}
-          <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm">
-            <Accordion type="single" collapsible defaultValue="tips">
-              <AccordionItem value="tips" className="border-b-0">
-                <AccordionTrigger className="text-sm font-medium">Quick tips</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Use MetaMask or WalletConnect to get started quickly</li>
-                    <li>• Your funds remain in your wallet; ETO executes on-chain</li>
-                    <li>• This is a pre‑launch environment – metrics are zeroed</li>
-                  </ul>
-                  <div className="mt-5 text-xs text-muted-foreground">Press ⌘K / Ctrl+K to quickly navigate</div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
+          {/* Right column intentionally left empty for now */}
         </div>
 
         {/* Sponsors Section */}
