@@ -151,11 +151,6 @@ export function WalletConnector() {
           ))}
         </div>
 
-        <div className="text-center pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">
-            This is a demo interface with simulated wallet connections
-          </p>
-        </div>
       </CardContent>
     </Card>
   );

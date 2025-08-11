@@ -24,8 +24,8 @@ const OracleFreshnessChart = lazy(() => import("@/components/charts/OracleFreshn
 const ServiceUptimeRadials = lazy(() => import("@/components/charts/ServiceUptimeRadials"));
 const ReservesDonut = lazy(() => import("@/components/charts/ReservesDonut"));
 
-class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
-  constructor(props: {}) {
+class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, { hasError: boolean }> {
+  constructor(props: React.PropsWithChildren<{}>) {
     super(props);
     this.state = { hasError: false };
   }
@@ -40,6 +40,7 @@ class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
     return this.props.children as React.ReactNode;
   }
 }
+
 
 export default function SystemHealth() {
   const canonical = typeof window !== "undefined" ? window.location.href : "";

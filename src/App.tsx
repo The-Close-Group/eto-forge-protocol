@@ -11,6 +11,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
+import { ThirdwebProvider } from "thirdweb/react";
+
 
 // Pages
 import Welcome from "@/pages/Welcome";
@@ -35,48 +37,50 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <PortfolioProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            {/* Global UX helpers */}
-            <TopLoadingBar />
-            <CommandPalette />
-            <Routes>
-              <Route path="/" element={<Welcome />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <RouteTransition>
-                        <Routes>
-                          <Route path="/trade" element={<Trade />} />
-                          <Route path="/order" element={<OrderPage />} />
-                          <Route path="/transaction-complete" element={<TransactionComplete />} />
-                          <Route path="/dashboard" element={<Dashboard />} />
-                          <Route path="/asset/:symbol" element={<AssetDetails />} />
-                          <Route path="/portfolio" element={<Portfolio />} />
-                          <Route path="/markets" element={<Markets />} />
-                          <Route path="/assets" element={<Assets />} />
-                          <Route path="/staking" element={<Staking />} />
-                          <Route path="/analytics" element={<Analytics />} />
-                          <Route path="/wallet" element={<Wallet />} />
-                          <Route path="/system-health" element={<SystemHealth />} />
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </RouteTransition>
-                    </AppLayout>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </PortfolioProvider>
+      <ThirdwebProvider>
+        <PortfolioProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              {/* Global UX helpers */}
+              <TopLoadingBar />
+              <CommandPalette />
+              <Routes>
+                <Route path="/" element={<Welcome />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <RouteTransition>
+                          <Routes>
+                            <Route path="/trade" element={<Trade />} />
+                            <Route path="/order" element={<OrderPage />} />
+                            <Route path="/transaction-complete" element={<TransactionComplete />} />
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/asset/:symbol" element={<AssetDetails />} />
+                            <Route path="/portfolio" element={<Portfolio />} />
+                            <Route path="/markets" element={<Markets />} />
+                            <Route path="/assets" element={<Assets />} />
+                            <Route path="/staking" element={<Staking />} />
+                            <Route path="/analytics" element={<Analytics />} />
+                            <Route path="/wallet" element={<Wallet />} />
+                            <Route path="/system-health" element={<SystemHealth />} />
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </RouteTransition>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </PortfolioProvider>
+      </ThirdwebProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
