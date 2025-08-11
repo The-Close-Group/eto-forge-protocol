@@ -78,7 +78,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
         </div>
 
         {/* Temporary production shortcut */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-center mb-6">
           <Button
             variant="secondary"
             size="sm"
@@ -92,8 +92,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-6">
+          <div className="max-w-xl mx-auto space-y-6">
             {/* Wallet + Email Tabs */}
             <div>
               <Tabs defaultValue="wallets" className="w-full">
@@ -144,7 +143,6 @@ const onSubmit = async (values: { email: string; password: string }) => {
                 </TabsContent>
               </Tabs>
             </div>
-
             {/* Quick tips moved under connector */}
             <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm">
               <Accordion type="single" collapsible defaultValue="tips">
@@ -163,11 +161,8 @@ const onSubmit = async (values: { email: string; password: string }) => {
             </div>
           </div>
 
-          {/* Right column intentionally left empty for now */}
-        </div>
-
         {/* Sponsors Section */}
-        <Card className="p-6 bg-card/90 border border-border mt-6">
+        <Card className="p-6 bg-card/90 border border-border mt-6 max-w-xl mx-auto">
           <div className="text-center space-y-4">
             <h3 className="text-sm text-soft-muted">Backed By</h3>
             <div className="flex justify-center items-center gap-6">
