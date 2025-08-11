@@ -10,6 +10,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
+import { RouteTransition } from "@/components/RouteTransition";
 
 // Pages
 import Welcome from "@/pages/Welcome";
@@ -51,21 +52,23 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <AppLayout>
-                      <Routes>
-                        <Route path="/trade" element={<Trade />} />
-                        <Route path="/order" element={<OrderPage />} />
-                        <Route path="/transaction-complete" element={<TransactionComplete />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/asset/:symbol" element={<AssetDetails />} />
-                        <Route path="/portfolio" element={<Portfolio />} />
-                        <Route path="/markets" element={<Markets />} />
-                        <Route path="/assets" element={<Assets />} />
-                        <Route path="/staking" element={<Staking />} />
-                        <Route path="/analytics" element={<Analytics />} />
-                        <Route path="/wallet" element={<Wallet />} />
-                        <Route path="/system-health" element={<SystemHealth />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
+                      <RouteTransition>
+                        <Routes>
+                          <Route path="/trade" element={<Trade />} />
+                          <Route path="/order" element={<OrderPage />} />
+                          <Route path="/transaction-complete" element={<TransactionComplete />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/asset/:symbol" element={<AssetDetails />} />
+                          <Route path="/portfolio" element={<Portfolio />} />
+                          <Route path="/markets" element={<Markets />} />
+                          <Route path="/assets" element={<Assets />} />
+                          <Route path="/staking" element={<Staking />} />
+                          <Route path="/analytics" element={<Analytics />} />
+                          <Route path="/wallet" element={<Wallet />} />
+                          <Route path="/system-health" element={<SystemHealth />} />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </RouteTransition>
                     </AppLayout>
                   </ProtectedRoute>
                 }

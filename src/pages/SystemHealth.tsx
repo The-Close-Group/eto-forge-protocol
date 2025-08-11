@@ -15,8 +15,62 @@ import {
   Target,
 } from "lucide-react";
 
+import React, { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Clock } from "lucide-react";
+
+const PegStabilityChart = lazy(() => import("@/components/charts/PegStabilityChart"));
+const OracleFreshnessChart = lazy(() => import("@/components/charts/OracleFreshnessChart"));
+const ServiceUptimeRadials = lazy(() => import("@/components/charts/ServiceUptimeRadials"));
+const ReservesDonut = lazy(() => import("@/components/charts/ReservesDonut"));
+
+class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+  constructor(props: {}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch() {}
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="trading-panel p-6 text-sm font-mono text-muted-foreground">Data temporarily unavailable.</div>
+      );
+    }
+    return this.props.children as React.ReactNode;
+  }
+}
+
 export default function SystemHealth() {
   const canonical = typeof window !== "undefined" ? window.location.href : "";
+
+  // Demo data for charts (replace with live data when available)
+  const pegData = Array.from({ length: 60 }).map((_, i) => ({
+    t: i,
+    dev: (Math.sin(i / 8) * 0.06 + (Math.random() - 0.5) * 0.02), // -0.08..0.08
+  }));
+
+  const freshnessData = [
+    { asset: "ETH", seconds: 3.1 },
+    { asset: "BTC", seconds: 2.7 },
+    { asset: "SOL", seconds: 5.8 },
+    { asset: "USDC", seconds: 1.9 },
+    { asset: "AVAX", seconds: 6.3 },
+  ];
+
+  const uptimeData = [
+    { name: "DMM", uptime: 99.997 },
+    { name: "LayerZero Bridge", uptime: 99.992 },
+    { name: "Price Oracles", uptime: 99.999 },
+    { name: "API Gateway", uptime: 99.980 },
+  ];
+
+  const reservesData = [
+    { name: "USDC", value: 62 },
+    { name: "USDT", value: 21 },
+    { name: "ETH", value: 11 },
+    { name: "Other", value: 6 },
+  ];
 
   return (
     <>
@@ -99,6 +153,17 @@ export default function SystemHealth() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <Suspense fallback={<div className="trading-panel p-6"><Skeleton className="h-[220px] w-full" /></div>}>
+              <ErrorBoundary>
+                <section className="grid grid-cols-1 gap-6">
+                  <PegStabilityChart data={pegData} />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <ServiceUptimeRadials data={uptimeData} />
+                    <ReservesDonut data={reservesData} />
+                  </div>
+                </section>
+              </ErrorBoundary>
+            </Suspense>
             {/* Transparency Grid */}
             <section aria-labelledby="transparency" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="trading-panel p-6 space-y-4">
@@ -193,6 +258,28 @@ export default function SystemHealth() {
           </TabsContent>
 
           <TabsContent value="oracles" className="space-y-6">
+            <Suspense fallback={<div className="trading-panel p-6"><Skeleton className="h-[260px] w-full" /></div>}>
+              <ErrorBoundary>
+                <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <OracleFreshnessChart data={freshnessData} />
+                  </div>
+                  <div className="trading-panel p-6 space-y-4">
+                    <h2 className="text-base font-mono uppercase tracking-wider">Oracles Status</h2>
+                    <div className="space-y-3">
+                      {freshnessData.map((f) => (
+                        <div key={f.asset} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                          <span className="font-mono flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-data-positive" /> {f.asset}
+                          </span>
+                          <span className="text-sm font-mono text-muted-foreground flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {f.seconds.toFixed(1)}s</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              </ErrorBoundary>
+            </Suspense>
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="trading-panel p-6 space-y-4">
                 <h2 className="text-base font-mono uppercase tracking-wider flex items-center gap-2">
@@ -310,3 +397,4 @@ export default function SystemHealth() {
     </>
   );
 }
+
