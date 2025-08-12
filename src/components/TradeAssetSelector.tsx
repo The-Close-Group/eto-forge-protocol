@@ -105,7 +105,7 @@ export function TradeAssetSelector({
       <Label className="text-sm font-medium font-mono">{label}</Label>
       
       {/* Asset Selection and Amount Input */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Select value={selectedAsset} onValueChange={handleAssetChange}>
           <SelectTrigger className="w-32 font-mono">
             <SelectValue />
@@ -140,7 +140,7 @@ export function TradeAssetSelector({
       </div>
 
       {/* Quantity and USD Value Display */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-muted-foreground">Quantity</p>
           <p className="font-mono font-medium">

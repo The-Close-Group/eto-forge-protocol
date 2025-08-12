@@ -115,7 +115,7 @@ export function BlockchainSelector() {
   };
 
   return (
-    <div className="w-80 space-y-4 border-r border-border bg-background p-4">
+    <div className="w-full md:w-80 space-y-4 bg-background p-4 border-b md:border-b-0 md:border-r border-border">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold text-foreground">Transaction Setup</h2>
         <p className="text-sm text-muted-foreground">
@@ -129,7 +129,7 @@ export function BlockchainSelector() {
           <CardTitle className="text-sm">Transaction Amount</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               type="number"
               placeholder="0.00"

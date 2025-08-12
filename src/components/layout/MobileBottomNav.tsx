@@ -28,8 +28,8 @@ export function MobileBottomNav() {
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 z-50">
-      <nav className="flex justify-around items-center px-2 py-2">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 z-50 pb-[env(safe-area-inset-bottom)] h-16">
+      <nav className="max-w-7xl mx-auto h-full flex justify-around items-center px-2">
         {navigationItems.map((item) => (
           <NavLink
             key={item.title}

@@ -13,7 +13,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="min-h-screen flex w-full bg-background">
         <DesktopSidebar />
         
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pb-20 md:pb-0">
           <RouteTransition>
             {children}
           </RouteTransition>

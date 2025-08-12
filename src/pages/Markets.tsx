@@ -34,7 +34,7 @@ export default function Markets() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background">
       {/* Left Sidebar - Blockchain Selector */}
       <BlockchainSelector />
       
@@ -110,7 +110,7 @@ export default function Markets() {
               <CardHeader>
                 <CardTitle className="font-mono">All Markets</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <div className="space-y-2">
                   <div className="grid grid-cols-5 gap-4 pb-2 text-sm font-medium text-muted-foreground border-b font-mono">
                     <span>Market</span>
