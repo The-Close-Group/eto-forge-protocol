@@ -2,7 +2,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DesktopSidebar } from "./DesktopSidebar";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { RouteTransition } from "@/components/RouteTransition";
-
+import ConnectingOverlay from "@/components/ConnectingOverlay";
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -18,6 +18,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             {children}
           </RouteTransition>
         </main>
+        <ConnectingOverlay />
         
         <MobileBottomNav />
       </div>

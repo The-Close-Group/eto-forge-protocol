@@ -42,12 +42,12 @@ const form = useForm<{ email: string; password: string }>({
   defaultValues: { email: '', password: '' },
 });
 
-// Redirect to dashboard when authenticated
+// Redirect to dashboard when authenticated or wallet is connected
 useEffect(() => {
-  if (isAuthenticated) {
+  if (isAuthenticated || walletAddress) {
     navigate('/dashboard');
   }
-}, [isAuthenticated, navigate]);
+}, [isAuthenticated, walletAddress, navigate]);
 
 const onSubmit = async (values: { email: string; password: string }) => {
   const { error } = await supabase.auth.signInWithPassword(values);

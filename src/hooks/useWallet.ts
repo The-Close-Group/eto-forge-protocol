@@ -66,6 +66,7 @@ export const WALLET_OPTIONS: WalletOption[] = [
 
 export function useWallet() {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isAutoConnecting, setIsAutoConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectedWalletType, setConnectedWalletType] = useState<string>(
     localStorage.getItem('eto-wallet-type') || ''
@@ -91,6 +92,56 @@ export function useWallet() {
       localStorage.removeItem('eto-wallet');
     }
   }, [account?.address, updateWalletAddress]);
+
+  // Silent auto-reconnect on load when a previous wallet type exists
+  useEffect(() => {
+    const prev = localStorage.getItem('eto-wallet-type');
+    if (!prev || walletAddress) return;
+
+    const mapToWalletId = (id: string): WalletId | null => {
+      switch (id) {
+        case 'metamask':
+          return 'io.metamask';
+        case 'coinbase':
+          return 'com.coinbase.wallet';
+        case 'rainbow':
+          return 'me.rainbow';
+        case 'trust':
+          return 'com.trustwallet.app';
+        case 'zerion':
+          return 'io.zerion.wallet';
+        case 'phantom':
+          return 'app.phantom';
+        case 'walletconnect':
+          return 'walletConnect';
+        default:
+          return null;
+      }
+    };
+
+    let cancelled = false;
+    (async () => {
+      setIsAutoConnecting(true);
+      try {
+        const walletIdentifier = mapToWalletId(prev);
+        if (!walletIdentifier) return;
+        const wallet = createWallet(walletIdentifier);
+        if (walletIdentifier !== 'walletConnect' && injectedProvider(walletIdentifier)) {
+          if (!cancelled) await wallet.connect({ client });
+        } else if (walletIdentifier === 'walletConnect') {
+          if (!cancelled) await wallet.connect({ client, walletConnect: { showQrModal: false } });
+        }
+      } catch {
+        // silent
+      } finally {
+        setIsAutoConnecting(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [walletAddress]);
 
   const resetConnectionState = useCallback(() => {
     setIsConnecting(false);
@@ -133,7 +184,7 @@ export function useWallet() {
         const connectOp = connect(async () => {
           const wallet = createWallet(walletIdentifier);
 
-          // Prefer injected provider if available
+          // Prefer injected provider if available (fast path)
           if (walletIdentifier !== 'walletConnect' && injectedProvider(walletIdentifier)) {
             await wallet.connect({ client });
             return wallet;
@@ -144,7 +195,16 @@ export function useWallet() {
             throw new Error('Phantom not detected. Please install it and try again');
           }
 
-          // Fallback to WalletConnect QR modal when supported
+          // Mobile fallback: if user selected MetaMask (or other injected) but no provider, use WalletConnect
+          if (walletIdentifier !== 'walletConnect' && !injectedProvider(walletIdentifier)) {
+            await wallet.connect({
+              client,
+              walletConnect: { showQrModal: true },
+            });
+            return wallet;
+          }
+
+          // Default fallback
           await wallet.connect({
             client,
             walletConnect: { showQrModal: true },
@@ -152,7 +212,7 @@ export function useWallet() {
           return wallet;
         });
         const timeoutOp = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Connection timed out')), 30_000)
+          setTimeout(() => reject(new Error('Connection timed out')), 15_000)
         );
 
         await Promise.race([connectOp, timeoutOp]);

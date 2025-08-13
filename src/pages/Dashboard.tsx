@@ -1,9 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, Percent, Activity, TrendingUp, Wallet, Plus, ArrowRight } from "lucide-react";
+import { Coins, Activity, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useBalances } from "@/hooks/useBalances";
+import { Skeleton } from "@/components/ui/skeleton";
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -34,11 +35,35 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <div className="text-2xl lg:text-3xl font-bold leading-tight">$0.00</div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
-                    <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                    <span>No assets yet</span>
-                  </div>
+                  {(() => {
+                    const { balances, isLoading } = useBalances();
+                    if (isLoading) return (
+                      <div className="space-y-2">
+                        <Skeleton className="h-8 w-40" />
+                        <Skeleton className="h-4 w-64" />
+                      </div>
+                    );
+                    const hasTokens = balances && balances.tokens && balances.tokens.length > 0;
+                    return (
+                      <>
+                        <div className="text-2xl lg:text-3xl font-bold leading-tight">{hasTokens ? '$—' : '$0.00'}</div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
+                          <TrendingUp className="h-4 w-4 flex-shrink-0" />
+                          <span>{hasTokens ? 'Connected wallet detected' : 'No assets yet'}</span>
+                        </div>
+                        {hasTokens && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+                            {balances.tokens.map((t) => (
+                              <div key={t.symbol} className="p-3 border border-border rounded-sm">
+                                <div className="text-xs text-muted-foreground">{t.symbol}</div>
+                                <div className="font-mono text-sm">{t.balance}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
                 <Button asChild size="sm">
                   <Link to="/wallet">Get started</Link>

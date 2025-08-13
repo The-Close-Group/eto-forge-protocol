@@ -7,6 +7,7 @@ import { Wallet, CheckCircle, AlertCircle, ExternalLink, Globe, RefreshCw } from
 import { useWallet, WALLET_OPTIONS } from '@/hooks/useWallet';
 import { WalletOption } from './WalletOption';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export function WalletConnector() {
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
@@ -31,6 +32,8 @@ export function WalletConnector() {
     setConnectingWalletId(walletId);
     try {
       await connectWallet(walletId);
+      toast.success('Wallet connected');
+      navigate('/dashboard');
     } catch (e) {
       console.error('Wallet connect failed:', e);
     } finally {
