@@ -263,6 +263,7 @@ export function useWallet() {
     walletAddress,
     connectedWalletType,
     isConnecting,
+    isAutoConnecting,
     error,
     isMetaMaskInstalled,
     connectWallet,
