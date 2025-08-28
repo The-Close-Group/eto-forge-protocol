@@ -17,7 +17,7 @@ export default function TimeRangeSelector({ value, onChange, className }: TimeRa
       <ToggleGroup type="single" value={value} onValueChange={(v) => v && onChange(v as RangeKey)} className="flex flex-nowrap md:flex-wrap gap-1 overflow-x-auto md:overflow-visible">
         {ranges.map((r) => (
           <ToggleGroupItem key={r} value={r} aria-label={`Select ${r}`}>
-            <span className="font-mono text-xs">{r}</span>
+            <span className="text-xs">{r}</span>
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

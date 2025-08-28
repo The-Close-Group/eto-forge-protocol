@@ -69,7 +69,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
       <div className="w-full max-w-5xl px-6 py-10 animate-enter">
         {/* Header */}
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-wider uppercase bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             ETO Trading
           </h1>
           <p className="text-muted-foreground text-lg">

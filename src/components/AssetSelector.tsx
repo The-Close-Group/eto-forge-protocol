@@ -62,7 +62,7 @@ export function AssetSelector({
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium font-mono">{label}</Label>
+      <Label className="text-sm font-medium">{label}</Label>
       
       {/* Popular Assets Quick Select */}
       {!showSearch && (

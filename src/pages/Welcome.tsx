@@ -31,10 +31,10 @@ export default function Welcome() {
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         } animate-enter`}
       >
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-mono text-foreground mb-4 uppercase tracking-wider bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4">
           Welcome to ETO
         </h1>
-        <p className="text-lg md:text-xl font-mono text-muted-foreground max-w-2xl mx-auto px-4 uppercase tracking-wide">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
           Cross-chain trading powered by Layer Zero with Dynamic Market Making
         </p>
       </div>

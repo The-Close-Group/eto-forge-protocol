@@ -95,9 +95,9 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
               <ChevronDown className="h-5 w-5" />
             </Button>
             <div>
-              <h3 className="text-lg font-semibold font-mono">Stake Assets</h3>
+              <h3 className="text-lg font-semibold">Stake Assets</h3>
               {selectedPool && (
-                <div className="text-sm text-muted-foreground font-mono">
+                <div className="text-sm text-muted-foreground">
                   {selectedPool.name} • <span className="text-data-positive">{selectedPool.apy} APY</span>
                 </div>
               )}
@@ -107,7 +107,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
             variant="default"
             size="lg"
             onClick={onToggleExpanded}
-            className="font-mono bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg px-8"
+            className="shadow-lg px-8"
           >
             Stake
           </Button>
@@ -136,9 +136,9 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
               <ChevronUp className="h-5 w-5" />
             </Button>
             <div>
-              <h3 className="text-xl font-bold font-mono">Stake Assets</h3>
+              <h3 className="text-xl font-bold">Stake Assets</h3>
               {selectedPool && (
-                <div className="text-sm text-muted-foreground font-mono">
+                <div className="text-sm text-muted-foreground">
                   {selectedPool.name} • <span className="text-data-positive">{selectedPool.apy} APY</span>
                 </div>
               )}
@@ -159,7 +159,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           {/* You pay section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">You pay</label>
+              <label className="text-sm font-medium text-muted-foreground">You pay</label>
               {payAsset && (
                 <div className="text-xs text-muted-foreground font-mono">
                   Balance: {payAsset.balance.toFixed(2)} {payAsset.symbol}
@@ -185,7 +185,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
                     variant="outline"
                     size="sm"
                     onClick={handleMaxClick}
-                    className="text-xs h-8 px-3 font-mono hover:bg-primary/10 hover:text-primary border-border/40"
+                    className="text-xs h-8 px-3 hover:bg-primary/10 hover:text-primary border-border/40"
                   >
                     MAX
                   </Button>
@@ -209,9 +209,9 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           {/* You receive section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">You receive</label>
+              <label className="text-sm font-medium text-muted-foreground">You receive</label>
               {selectedPool && (
-                <div className="text-xs text-data-positive font-mono font-semibold">
+                <div className="text-xs text-data-positive font-semibold">
                   {selectedPool.apy} APY
                 </div>
               )}
@@ -225,9 +225,9 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
                   <div className="text-sm text-muted-foreground mt-2 space-y-1">
                     {selectedPool && (
                       <>
-                        <div className="font-mono">Lock Period: <span className="text-foreground">{selectedPool.lockPeriod}</span></div>
+                        <div>Lock Period: <span className="text-foreground">{selectedPool.lockPeriod}</span></div>
                         {selectedPool.autoCompound && (
-                          <div className="text-data-positive font-mono">• Auto-Compound Enabled</div>
+                          <div className="text-data-positive">• Auto-Compound Enabled</div>
                         )}
                       </>
                     )}
@@ -236,7 +236,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
                 <div>
                   {receiveAsset && (
                     <div className="bg-accent/20 border border-border/40 rounded-xl px-4 py-3">
-                      <span className="font-semibold text-sm font-mono">{receiveAsset.symbol}</span>
+                      <span className="font-semibold text-sm">{receiveAsset.symbol}</span>
                     </div>
                   )}
                 </div>
@@ -247,9 +247,9 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           {/* Action button */}
           <Button
             className={cn(
-              "w-full h-14 rounded-2xl font-bold text-lg font-mono tracking-wide transition-all duration-300 shadow-lg",
+              "w-full h-14 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg",
               canStake
-                ? "bg-gradient-to-r from-data-positive to-data-positive/80 hover:from-data-positive/90 hover:to-data-positive/70 text-white hover:shadow-xl hover:shadow-data-positive/20"
+                ? "bg-data-positive hover:bg-data-positive/90 text-white"
                 : "bg-muted/50 text-muted-foreground cursor-not-allowed"
             )}
             disabled={!canStake}
