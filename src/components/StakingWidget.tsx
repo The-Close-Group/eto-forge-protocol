@@ -247,7 +247,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           {/* Action button */}
           <Button
             className={cn(
-              "w-full h-14 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg",
+              "w-full h-14 rounded-2xl font-bold text-lg transition-all duration-200 shadow-sm",
               canStake
                 ? "bg-data-positive hover:bg-data-positive/90 text-white"
                 : "bg-muted/50 text-muted-foreground cursor-not-allowed"

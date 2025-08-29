@@ -35,7 +35,7 @@ export default function TopLoadingBar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] pointer-events-none">
       <div
-        className="h-0.5 bg-primary transition-[width] duration-300 shadow-[0_0_12px_hsl(var(--primary)_/_0.6)]"
+        className="h-0.5 bg-primary transition-[width] duration-300 shadow-sm"
         style={{ width: `${progress}%` }}
         aria-hidden
       />

@@ -141,15 +141,15 @@
   }
   
   .industrial-button {
-    @apply bg-primary text-primary-foreground border border-border/60 px-5 py-3 font-medium text-sm transition-all duration-300;
-    @apply hover:bg-primary/85 focus:ring-1 focus:ring-ring shadow-sm hover:shadow-md tracking-wide;
+    @apply bg-primary text-primary-foreground border border-border/60 px-5 py-3 font-medium text-sm transition-all duration-200;
+    @apply hover:bg-primary/85 focus:ring-1 focus:ring-ring shadow-sm hover:shadow-md;
     border-radius: calc(var(--radius) + 0.125rem);
     font-family: var(--font-sans);
   }
   
   .industrial-input {
     @apply bg-input border border-border/60 px-4 py-3 rounded-lg text-sm placeholder:text-muted-foreground;
-    @apply focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 tracking-wide;
+    @apply focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-200;
   }
 
   /* Metric tiles utility to normalize small info blocks */

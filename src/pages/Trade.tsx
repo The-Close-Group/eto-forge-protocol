@@ -175,7 +175,7 @@ export default function Trade() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* MAANG Card */}
           <Card 
-            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-200 group cursor-pointer"
             onClick={() => navigate("/asset/MAANG")}
           >
             <CardContent className="p-6">
@@ -231,7 +231,7 @@ export default function Trade() {
 
           {/* USDC Card */}
           <Card 
-            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-200 group cursor-pointer"
             onClick={() => navigate("/asset/USDC")}
           >
             <CardContent className="p-6">
@@ -303,7 +303,7 @@ export default function Trade() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {STAKING_POOLS.map((pool, index) => (
-            <Card key={index} className="bg-card border-border/60 hover:border-primary/50 transition-all duration-300">
+            <Card key={index} className="bg-card border-border/60 hover:border-primary/50 transition-all duration-200">
               <CardContent className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
