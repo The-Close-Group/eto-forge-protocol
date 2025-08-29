@@ -2,9 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, BarChart3, PieChart, Activity } from "lucide-react";
+import { TrendingUp, BarChart3, PieChart, Activity, AlertTriangle, Shield } from "lucide-react";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
+import PerformanceChart from "@/components/charts/PerformanceChart";
+import { useState } from "react";
 
 export default function Analytics() {
+  const [timeframe, setTimeframe] = useState<'7D' | '30D' | '90D' | '1Y'>('30D');
+  const analytics = useAnalytics({ timeframe, includeRealizedPnL: true, includeUnrealizedPnL: true });
+  const performance = usePerformanceMetrics(timeframe === '7D' ? '1M' : timeframe === '30D' ? '1M' : timeframe === '90D' ? '3M' : '1Y');
+
   return (
     <div className="p-6 pb-20 md:pb-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -16,16 +24,15 @@ export default function Analytics() {
         </div>
         
         <div className="flex gap-2">
-          <Select defaultValue="7d">
+          <Select value={timeframe} onValueChange={(value: any) => setTimeframe(value)}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1d">1 Day</SelectItem>
-              <SelectItem value="7d">7 Days</SelectItem>
-              <SelectItem value="30d">30 Days</SelectItem>
-              <SelectItem value="90d">90 Days</SelectItem>
-              <SelectItem value="1y">1 Year</SelectItem>
+              <SelectItem value="7D">7 Days</SelectItem>
+              <SelectItem value="30D">30 Days</SelectItem>
+              <SelectItem value="90D">90 Days</SelectItem>
+              <SelectItem value="1Y">1 Year</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -39,8 +46,12 @@ export default function Analytics() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">+15.2%</div>
-            <p className="text-xs text-muted-foreground">+$1,742 this week</p>
+            <div className={`text-2xl font-bold ${analytics.performance.totalReturnPercent >= 0 ? 'text-data-positive' : 'text-data-negative'}`}>
+              {analytics.performance.totalReturnPercent >= 0 ? '+' : ''}{analytics.performance.totalReturnPercent.toFixed(1)}%
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {analytics.performance.totalReturnPercent >= 0 ? '+' : ''}${analytics.performance.totalReturn.toFixed(0)} {timeframe}
+            </p>
           </CardContent>
         </Card>
 
@@ -93,9 +104,7 @@ export default function Analytics() {
                 <CardTitle>Portfolio Value Over Time</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-64 flex items-center justify-center text-muted-foreground">
-                  Performance chart will be implemented here
-                </div>
+                <PerformanceChart data={performance.chartData} height={260} />
               </CardContent>
             </Card>
 
