@@ -154,7 +154,7 @@ export default function SystemHealth() {
           </p>
         </header>
 
-        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-gradient-to-b from-card to-card/60 grid-lines">
+        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-card grid-lines">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-mono uppercase tracking-wider">Peg Stability</h2>

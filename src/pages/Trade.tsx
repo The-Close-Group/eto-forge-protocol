@@ -175,7 +175,7 @@ export default function Trade() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* MAANG Card */}
           <Card 
-            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-200 group cursor-pointer"
+            className="bg-card border-border hover:border-primary/50 transition-colors group cursor-pointer"
             onClick={() => navigate("/asset/MAANG")}
           >
             <CardContent className="p-6">
@@ -231,7 +231,7 @@ export default function Trade() {
 
           {/* USDC Card */}
           <Card 
-            className="bg-gradient-to-br from-card to-card/80 border-border/60 hover:border-primary/50 transition-all duration-200 group cursor-pointer"
+            className="bg-card border-border hover:border-primary/50 transition-colors group cursor-pointer"
             onClick={() => navigate("/asset/USDC")}
           >
             <CardContent className="p-6">

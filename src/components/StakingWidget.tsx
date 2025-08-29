@@ -83,7 +83,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   // Collapsed state
   if (!isExpanded) {
     return (
-      <Card className="w-full bg-background/50 backdrop-blur-sm border border-border/40 shadow-lg mb-6 transition-colors duration-200 hover:bg-background/60">
+      <Card className="w-full bg-card border border-border shadow-lg mb-6 transition-colors hover:bg-accent/5">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4">
           <div className="flex items-center gap-4">
             <Button

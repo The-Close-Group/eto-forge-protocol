@@ -43,7 +43,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
 
   return (
     <Card className="overflow-hidden border-border bg-card">
-      <div className="relative h-32 bg-gradient-to-r from-background via-accent/10 to-background">
+      <div className="relative h-32 bg-accent/5">
         <div 
           className="flex transition-transform duration-500 ease-in-out h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}

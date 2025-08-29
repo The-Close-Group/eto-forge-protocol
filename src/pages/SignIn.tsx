@@ -60,7 +60,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
 };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <SEO
         title="Sign In – ETO Trading"
         description="Connect your wallet to access ETO Trading. Secure, fast, and multi‑chain ready."
@@ -104,7 +104,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
                   <WalletConnector />
                 </TabsContent>
                 <TabsContent value="email" className="mt-4">
-                  <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="border border-border rounded-xl bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
                     <h2 className="text-lg font-semibold mb-4">Sign in with email</h2>
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -144,7 +144,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
               </Tabs>
             </div>
             {/* Quick tips moved under connector */}
-            <div className="border border-border/60 rounded-xl bg-card/80 backdrop-blur p-6 shadow-sm">
+            <div className="border border-border rounded-xl bg-card p-6 shadow-sm">
               <Accordion type="single" collapsible defaultValue="tips">
                 <AccordionItem value="tips" className="border-b-0">
                   <AccordionTrigger className="text-sm font-medium">Quick tips</AccordionTrigger>
@@ -162,7 +162,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
           </div>
 
         {/* Sponsors Section */}
-        <Card className="p-6 bg-card/90 border border-border mt-6 max-w-xl mx-auto">
+        <Card className="p-6 bg-card border border-border mt-6 max-w-xl mx-auto">
           <div className="text-center space-y-4">
             <h3 className="text-sm text-soft-muted">Backed By</h3>
             <div className="flex justify-center items-center gap-6">

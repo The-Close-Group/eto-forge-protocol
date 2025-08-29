@@ -15,7 +15,7 @@ export function WalletOption({ wallet, isConnecting, connectingWalletId, onConne
   const isThisWalletConnecting = isConnecting && connectingWalletId === wallet.id;
 
   return (
-    <Card className="border-border bg-card hover:bg-accent/10 transition-colors duration-200 cursor-pointer group w-full">
+    <Card className="border-border bg-card hover:bg-accent/10 transition-colors cursor-pointer group w-full">
       <CardContent className="p-0">
         <Button
           variant="ghost"

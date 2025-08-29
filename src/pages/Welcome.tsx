@@ -25,7 +25,7 @@ export default function Welcome() {
   }, [navigate, isAuthenticated]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div
         className={`text-center transition-all duration-300 ease-out ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
