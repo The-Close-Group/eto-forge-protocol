@@ -2,12 +2,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Eye, ExternalLink, Plus, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, Eye, ExternalLink, Plus, Activity, Wallet } from "lucide-react";
 import { usePortfolio } from "@/contexts/PortfolioContext";
+import { useBalances } from "@/hooks/useBalances";
 import { useNavigate } from "react-router-dom";
 
 export default function Portfolio() {
-  const { assets, totalValue, totalInvested, totalProfitLoss, totalProfitLossPercent } = usePortfolio();
+  const { 
+    assets, 
+    totalValue, 
+    totalInvested, 
+    totalProfitLoss, 
+    totalProfitLossPercent,
+    totalRealizedPnL,
+    totalUnrealizedPnL 
+  } = usePortfolio();
+  const { balances, getTotalPortfolioValue, isLoading } = useBalances();
   const navigate = useNavigate();
 
   const handleStartTrading = () => {
@@ -31,10 +41,25 @@ export default function Portfolio() {
       </div>
 
       {/* Portfolio Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium tracking-wide">Total Value</CardTitle>
+            <CardTitle className="text-lg font-medium tracking-wide">Total Balance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl lg:text-3xl font-bold leading-tight">
+              ${getTotalPortfolioValue().toFixed(2)}
+            </div>
+            <div className="text-sm text-muted-foreground leading-relaxed flex items-center gap-1">
+              <Wallet className="h-4 w-4" />
+              Available funds
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-medium tracking-wide">Portfolio Value</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl lg:text-3xl font-bold leading-tight">
@@ -61,6 +86,22 @@ export default function Portfolio() {
             <div className="text-2xl lg:text-3xl font-bold leading-tight">{assets.length}</div>
             <div className="text-sm text-muted-foreground leading-relaxed">
               {assets.length > 0 ? `Across multiple chains` : 'Start trading to build your portfolio'}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-medium tracking-wide">Realized P&L</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl lg:text-3xl font-bold leading-tight ${
+              totalRealizedPnL >= 0 ? 'text-data-positive' : 'text-data-negative'
+            }`}>
+              {totalRealizedPnL >= 0 ? '+' : ''}${totalRealizedPnL.toFixed(2)}
+            </div>
+            <div className="text-sm text-muted-foreground leading-relaxed">
+              Locked in profits
             </div>
           </CardContent>
         </Card>
@@ -104,7 +145,8 @@ export default function Portfolio() {
 
       <Tabs defaultValue="assets" className="w-full">
         <TabsList>
-          <TabsTrigger value="assets">Assets</TabsTrigger>
+          <TabsTrigger value="assets">Positions</TabsTrigger>
+          <TabsTrigger value="balances">Balances</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
@@ -112,7 +154,7 @@ export default function Portfolio() {
         <TabsContent value="assets" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Your Assets</CardTitle>
+              <CardTitle>Active Positions</CardTitle>
             </CardHeader>
             <CardContent>
               {assets.length > 0 ? (
@@ -133,13 +175,17 @@ export default function Portfolio() {
                           <p className="text-sm text-muted-foreground leading-relaxed truncate">
                             {asset.amount.toFixed(4)} {asset.symbol}
                           </p>
+                          <p className="text-xs text-muted-foreground/70 leading-relaxed truncate">
+                            Avg: ${asset.averagePrice.toFixed(2)} | Value: ${asset.currentValue.toFixed(2)}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right min-w-0">
                         <p className="font-semibold leading-relaxed truncate">${asset.currentValue.toFixed(2)}</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed truncate">
-                          Avg: ${asset.averagePrice.toFixed(2)}
-                        </p>
+                        <div className="text-xs text-muted-foreground leading-relaxed">
+                          <p className="truncate">Realized: ${(asset.realizedPnL || 0).toFixed(2)}</p>
+                          <p className="truncate">Unrealized: ${(asset.unrealizedPnL || 0).toFixed(2)}</p>
+                        </div>
                       </div>
                       <div className="text-right min-w-0">
                         <div className={`flex items-center gap-1 justify-end ${
@@ -175,6 +221,62 @@ export default function Portfolio() {
                     <Plus className="h-4 w-4 mr-2" />
                     Start Trading
                   </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="balances" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Available Balances</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-pulse text-muted-foreground">Loading balances...</div>
+                </div>
+              ) : balances.length > 0 ? (
+                <div className="space-y-4">
+                  {balances.map((balance, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-sm">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-10 h-10 bg-primary/10 rounded-sm flex items-center justify-center flex-shrink-0">
+                          <span className="font-semibold text-primary">{balance.symbol.slice(0, 2)}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold truncate">{balance.name}</p>
+                          <p className="text-sm text-muted-foreground leading-relaxed truncate">
+                            Available: {balance.availableBalance.toFixed(4)} {balance.symbol}
+                          </p>
+                          {balance.reservedAmount > 0 && (
+                            <p className="text-xs text-orange-600 leading-relaxed truncate">
+                              Reserved: {balance.reservedAmount.toFixed(4)} {balance.symbol}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right min-w-0">
+                        <p className="font-semibold leading-relaxed truncate">
+                          {balance.balance.toFixed(4)} {balance.symbol}
+                        </p>
+                        <p className="text-sm text-muted-foreground leading-relaxed truncate">
+                          ${balance.usdValue.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/30 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <Wallet className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No Balances</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Connect your wallet or add funds to get started
+                  </p>
                 </div>
               )}
             </CardContent>

@@ -35,28 +35,31 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  {(() => {
-                    const { balances, isLoading } = useBalances();
-                    if (isLoading) return (
-                      <div className="space-y-2">
-                        <Skeleton className="h-8 w-40" />
-                        <Skeleton className="h-4 w-64" />
-                      </div>
-                    );
-                    const hasTokens = balances && balances.tokens && balances.tokens.length > 0;
+                   {(() => {
+                     const { balances, isLoading, getTotalPortfolioValue } = useBalances();
+                     if (isLoading) return (
+                       <div className="space-y-2">
+                         <Skeleton className="h-8 w-40" />
+                         <Skeleton className="h-4 w-64" />
+                       </div>
+                     );
+                     const hasBalances = balances && balances.length > 0;
+                     const totalValue = getTotalPortfolioValue();
                     return (
                       <>
-                        <div className="text-2xl lg:text-3xl font-bold leading-tight">{hasTokens ? '$—' : '$0.00'}</div>
+                        <div className="text-2xl lg:text-3xl font-bold leading-tight">
+                          ${hasBalances ? totalValue.toFixed(2) : '0.00'}
+                        </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
                           <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                          <span>{hasTokens ? 'Connected wallet detected' : 'No assets yet'}</span>
+                          <span>{hasBalances ? 'Portfolio active' : 'No assets yet'}</span>
                         </div>
-                        {hasTokens && (
+                        {hasBalances && (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                            {balances.tokens.map((t) => (
-                              <div key={t.symbol} className="p-3 border border-border rounded-sm">
-                                <div className="text-xs text-muted-foreground">{t.symbol}</div>
-                                <div className="font-mono text-sm">{t.balance}</div>
+                            {balances.slice(0, 3).map((balance) => (
+                              <div key={balance.symbol} className="p-3 border border-border rounded-sm">
+                                <div className="text-xs text-muted-foreground">{balance.symbol}</div>
+                                <div className="font-mono text-sm">{balance.balance.toFixed(4)}</div>
                               </div>
                             ))}
                           </div>

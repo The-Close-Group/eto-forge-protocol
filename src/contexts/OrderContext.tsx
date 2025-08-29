@@ -37,7 +37,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderBooks, setOrderBooks] = useState<Record<string, OrderBook>>({});
   const { addTrade } = usePortfolio();
-  const { balances } = useBalances();
+  const { balances, getAvailableBalance } = useBalances();
 
   // Initialize order books for all assets
   useEffect(() => {
@@ -148,12 +148,11 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       params.side
     );
     
-    // Balance validation
-    const availableBalance = balances?.tokens.find(t => t.symbol === fromAsset)?.balance || '0';
-    const available = parseFloat(availableBalance);
+    // Balance validation using balance manager
+    const availableBalance = getAvailableBalance(fromAsset);
     
-    if (available < requiredBalance) {
-      errors.push(`Insufficient balance. Required: ${requiredBalance.toFixed(4)} ${fromAsset}, Available: ${available.toFixed(4)} ${fromAsset}`);
+    if (availableBalance < requiredBalance) {
+      errors.push(`Insufficient balance. Required: ${requiredBalance.toFixed(4)} ${fromAsset}, Available: ${availableBalance.toFixed(4)} ${fromAsset}`);
     }
     
     // Risk warnings
