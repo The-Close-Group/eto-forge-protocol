@@ -19,15 +19,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6 pb-20 md:pb-6 space-y-12">
-      <div className="space-y-8">
+    <div className="p-6 pb-20 md:pb-6 space-y-6">
+      <div className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground leading-relaxed">Overview of your portfolio and trading activity</p>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Overview of your portfolio and trading activity</p>
         </div>
 
         {/* Total Value & Quick Action */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader className="pb-4">

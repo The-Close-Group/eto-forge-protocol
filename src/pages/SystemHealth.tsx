@@ -145,20 +145,20 @@ export default function SystemHealth() {
       />
 
       <main className="container max-w-7xl mx-auto p-6 pb-24 md:pb-10 space-y-10">
-        <header className="text-center">
-          <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+        <header className="text-center space-y-2">
+          <h1 className="text-3xl font-bold">
             System Health
           </h1>
-          <p className="mt-2 text-muted-foreground font-mono tracking-wide">
+          <p className="text-muted-foreground">
             Transparent, real-time view into protocol stability and operations
           </p>
         </header>
 
-        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 md:p-10 overflow-hidden animate-fade-in bg-card grid-lines">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-base font-mono uppercase tracking-wider">Peg Stability</h2>
-              <p className="text-[11px] font-mono text-muted-foreground">Live deviation vs peg — defaulting to August view</p>
+        <section aria-labelledby="peg-accuracy" className="trading-panel p-6 overflow-hidden animate-fade-in bg-card">
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold">Peg Stability</h2>
+              <p className="text-sm text-muted-foreground">Live deviation vs peg — defaulting to August view</p>
             </div>
             <TimeRangeSelector value={range} onChange={setRange} />
           </div>
@@ -181,34 +181,36 @@ export default function SystemHealth() {
               <ErrorBoundary>
                 <section className="grid grid-cols-1 gap-6">
                   <div className="trading-panel p-6 space-y-6">
-                    <h2 id="peg-accuracy" className="text-xl font-mono font-bold uppercase tracking-wider flex items-center gap-2">
-                      <Target className="h-6 w-6 text-accent" /> Peg Integrity Snapshot
-                    </h2>
-                    <p className="text-sm text-muted-foreground font-mono mt-1">
-                      Deviation is within optimal range. Feeds synchronized and circuit breakers idle.
-                    </p>
+                    <div className="space-y-2">
+                      <h2 id="peg-accuracy" className="text-xl font-semibold flex items-center gap-2">
+                        <Target className="h-5 w-5 text-accent" /> Peg Integrity Snapshot
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Deviation is within optimal range. Feeds synchronized and circuit breakers idle.
+                      </p>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="metric-tile">
-                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Median Deviation</p>
+                        <p className="text-sm text-muted-foreground">Median Deviation</p>
                         <p className="text-2xl font-mono font-bold text-data-positive">0.03%</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Worst Deviation</p>
+                        <p className="text-sm text-muted-foreground">Worst Deviation</p>
                         <p className="text-2xl font-mono font-bold text-warning">0.12%</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Freshness</p>
+                        <p className="text-sm text-muted-foreground">Freshness</p>
                         <p className="text-2xl font-mono font-bold">~3s</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-xs font-mono uppercase tracking-wide text-muted-foreground">Tracked Assets</p>
+                        <p className="text-sm text-muted-foreground">Tracked Assets</p>
                         <p className="text-2xl font-mono font-bold">12</p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30 font-mono">Feeds Healthy</Badge>
-                      <Badge variant="outline" className="font-mono">Circuit Breakers Idle</Badge>
-                      <Badge variant="outline" className="font-mono">DR Constraints Stable</Badge>
+                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">Feeds Healthy</Badge>
+                      <Badge variant="outline">Circuit Breakers Idle</Badge>
+                      <Badge variant="outline">DR Constraints Stable</Badge>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -21,8 +21,8 @@ export default function ServiceUptimeRadials({ data }: ServiceUptimeRadialsProps
   };
 
   return (
-    <div className="trading-panel p-4">
-      <h3 className="text-sm font-mono uppercase tracking-wider mb-2">Service Uptime</h3>
+    <div className="trading-panel p-6">
+      <h3 className="text-base font-semibold mb-4">Service Uptime</h3>
       <div className="grid grid-cols-2 gap-4">
         {data.map((s, idx) => (
           <div key={idx} className="relative h-[160px]">
@@ -44,7 +44,7 @@ export default function ServiceUptimeRadials({ data }: ServiceUptimeRadialsProps
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-lg font-mono font-bold">{s.uptime.toFixed(2)}%</span>
-              <span className="text-[11px] font-mono text-muted-foreground text-center px-2">{s.name}</span>
+              <span className="text-xs text-muted-foreground text-center px-2">{s.name}</span>
             </div>
           </div>
         ))}

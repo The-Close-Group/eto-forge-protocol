@@ -21,10 +21,10 @@ export default function OracleFreshnessChart({ data, height = 260 }: OracleFresh
   };
 
   return (
-    <div className="trading-panel p-4">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-mono uppercase tracking-wider">Oracle Freshness</h3>
-        <span className="text-xs font-mono text-muted-foreground">Seconds since last update</span>
+    <div className="trading-panel p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-semibold">Oracle Freshness</h3>
+        <span className="text-sm text-muted-foreground">Seconds since last update</span>
       </div>
       <div className="h-[260px]">
         <ResponsiveContainer width="100%" height={height}>

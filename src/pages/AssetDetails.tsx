@@ -260,11 +260,11 @@ export default function AssetDetails() {
           </Button>
           <div className="flex items-center gap-3">
             <span className="text-4xl">{asset.icon}</span>
-            <div>
-              <h1 className="text-3xl font-bold font-mono">{asset.name}</h1>
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold">{asset.name}</h1>
               <div className="flex items-center gap-2">
                 <p className="text-muted-foreground font-mono">{asset.symbol}</p>
-                <span className="px-2 py-1 bg-accent/50 text-xs rounded-sm">{asset.sector}</span>
+                <span className="px-2 py-1 bg-accent/10 text-xs rounded-sm">{asset.sector}</span>
               </div>
             </div>
           </div>
@@ -287,14 +287,16 @@ export default function AssetDetails() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-              <div className="text-3xl lg:text-4xl font-bold leading-tight">
-                ${asset.price.toLocaleString()}
-              </div>
-              <div className={`flex items-center gap-2 text-lg lg:text-xl leading-tight ${
-                asset.change24h >= 0 ? 'text-data-positive' : 'text-data-negative'
-              }`}>
-                {asset.change24h >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                {asset.change24h >= 0 ? '+' : ''}{asset.change24h}% (24h)
+              <div className="space-y-1">
+                <div className="text-3xl lg:text-4xl font-bold font-mono">
+                  ${asset.price.toLocaleString()}
+                </div>
+                <div className={`flex items-center gap-2 text-lg ${
+                  asset.change24h >= 0 ? 'text-data-positive' : 'text-data-negative'
+                }`}>
+                  {asset.change24h >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                  {asset.change24h >= 0 ? '+' : ''}{asset.change24h}% (24h)
+                </div>
               </div>
                 </div>
                 <Button size="lg" onClick={handleTrade}>

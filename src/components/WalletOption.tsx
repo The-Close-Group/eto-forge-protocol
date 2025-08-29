@@ -27,10 +27,10 @@ export function WalletOption({ wallet, isConnecting, connectingWalletId, onConne
             {wallet.icon}
           </div>
           <div className="flex-1 text-left space-y-1 min-w-0">
-            <div className="font-medium text-sm uppercase tracking-wider text-foreground truncate">
+            <div className="font-medium text-sm text-foreground truncate">
               {wallet.name}
             </div>
-            <div className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+            <div className="text-xs text-muted-foreground line-clamp-2">
               {wallet.description}
             </div>
           </div>

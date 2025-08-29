@@ -32,13 +32,13 @@ export function StakingPoolCard({ pool, onStake }: StakingPoolCardProps) {
 
   return (
     <Card className="border-border bg-card">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg font-mono font-bold">{pool.name}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{pool.description}</p>
+          <div className="space-y-1">
+            <CardTitle className="text-lg font-semibold">{pool.name}</CardTitle>
+            <p className="text-sm text-muted-foreground">{pool.description}</p>
           </div>
-          <Badge className={`${getRiskColor(pool.risk)} font-mono text-xs px-2 py-1`}>
+          <Badge className={`${getRiskColor(pool.risk)} text-xs px-2 py-1`}>
             {pool.risk}
           </Badge>
         </div>
@@ -85,7 +85,7 @@ export function StakingPoolCard({ pool, onStake }: StakingPoolCardProps) {
 
         <Button 
           onClick={() => onStake(pool.id)}
-          className="w-full font-mono font-medium"
+          className="w-full font-medium"
         >
           Stake Now
         </Button>

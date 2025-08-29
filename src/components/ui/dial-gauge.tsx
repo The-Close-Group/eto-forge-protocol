@@ -202,12 +202,12 @@ export function DialGauge({
           {clamped.toFixed(1)}%
         </div>
         {label && (
-          <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground font-mono">
+          <div className="mt-1 text-sm text-muted-foreground">
             {label}
           </div>
         )}
         {subLabel && (
-          <div className="mt-1 text-[10px] uppercase tracking-wide text-accent-foreground/80 font-mono">
+          <div className="mt-1 text-xs text-muted-foreground/70">
             {subLabel}
           </div>
         )}

@@ -22,8 +22,8 @@ export default function ReservesDonut({ data }: ReservesDonutProps) {
   ];
 
   return (
-    <div className="trading-panel p-4">
-      <h3 className="text-sm font-mono uppercase tracking-wider mb-2">Reserves Composition</h3>
+    <div className="trading-panel p-6">
+      <h3 className="text-base font-semibold mb-4">Reserves Composition</h3>
       <div className="h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
