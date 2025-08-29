@@ -83,7 +83,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   // Collapsed state
   if (!isExpanded) {
     return (
-      <Card className="w-full bg-background/50 backdrop-blur-sm border border-border/40 shadow-lg mb-6 transition-all duration-300 hover:bg-background/60">
+      <Card className="w-full bg-background/50 backdrop-blur-sm border border-border/40 shadow-lg mb-6 transition-colors duration-200 hover:bg-background/60">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4">
           <div className="flex items-center gap-4">
             <Button
@@ -118,7 +118,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
 
   return (
     <div className={cn(
-      "w-full transition-all duration-300",
+      "w-full transition-opacity duration-200",
       isIsolated && "fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl p-4 flex items-center justify-center"
     )}>
       <Card className={cn(
@@ -247,7 +247,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           {/* Action button */}
           <Button
             className={cn(
-              "w-full h-14 rounded-2xl font-bold text-lg transition-all duration-200 shadow-sm",
+              "w-full h-14 rounded-2xl font-bold text-lg transition-colors duration-200 shadow-sm",
               canStake
                 ? "bg-data-positive hover:bg-data-positive/90 text-white"
                 : "bg-muted/50 text-muted-foreground cursor-not-allowed"

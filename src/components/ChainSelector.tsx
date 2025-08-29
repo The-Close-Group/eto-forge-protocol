@@ -50,7 +50,7 @@ export function ChainSelector() {
         {supportedChains.map((chain) => (
           <Card 
             key={chain.id}
-            className={`cursor-pointer transition-all duration-200 ${
+            className={`cursor-pointer transition-colors duration-200 ${
               activeChain?.id === chain.id 
                 ? 'border-primary bg-primary/10' 
                 : 'border-border hover:bg-accent/50'

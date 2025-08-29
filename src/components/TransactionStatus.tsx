@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, XCircle, Clock, ExternalLink, Copy, ArrowRight } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, ExternalLink, Copy, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export type TransactionStep = 'approve' | 'swap' | 'confirm';
@@ -146,7 +146,7 @@ export function TransactionStatus({
                       {isCompleted ? (
                         <CheckCircle className="h-4 w-4" />
                       ) : isActive ? (
-                        <div className="w-3 h-3 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                        <Loader2 className="h-3 w-3 animate-spin" />
                       ) : (
                         index + 1
                       )}

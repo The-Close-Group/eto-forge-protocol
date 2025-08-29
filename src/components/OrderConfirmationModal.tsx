@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowDown, AlertTriangle, Clock, Zap, Shield } from 'lucide-react';
+import { ArrowDown, AlertTriangle, Clock, Zap, Shield, Loader2 } from 'lucide-react';
 
 interface OrderConfirmationModalProps {
   isOpen: boolean;
@@ -162,7 +162,7 @@ export function OrderConfirmationModal({
             >
               {isConfirming ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Confirming...
                 </div>
               ) : (

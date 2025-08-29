@@ -45,7 +45,7 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
     <Card className="overflow-hidden border-border bg-card">
       <div className="relative h-32 bg-gradient-to-r from-background via-accent/10 to-background">
         <div 
-          className="flex transition-transform duration-1000 ease-in-out h-full"
+          className="flex transition-transform duration-500 ease-in-out h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {QUICK_BUY_ASSETS.map((asset, index) => (

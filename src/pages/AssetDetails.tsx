@@ -523,7 +523,7 @@ export default function AssetDetails() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-data-positive rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-data-positive rounded-full"></div>
                 <span className="font-medium text-data-positive">{asset.oracleStatus}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">

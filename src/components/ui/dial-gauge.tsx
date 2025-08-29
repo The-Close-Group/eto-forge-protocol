@@ -112,7 +112,7 @@ export function DialGauge({
               d={describeArc(center, isSemi ? size * 0.7 - 10 : center, radius, startAngle, valueAngle)}
               fill="none"
               stroke="currentColor"
-              className={cn(colorClass, "transition-all duration-700 ease-out")}
+              className={cn(colorClass, "transition-all duration-500 ease-out")}
               strokeWidth={thickness}
               strokeLinecap="round"
             />
@@ -145,7 +145,7 @@ export function DialGauge({
 
             {/* Needle */}
             {showNeedle && (
-              <g className="transition-transform duration-700 ease-out">
+              <g className="transition-transform duration-500 ease-out">
                 {(() => {
                   const p = polarToCartesian(center, isSemi ? size * 0.7 - 10 : center, radius - thickness * 0.1, valueAngle);
                   return (
@@ -185,7 +185,7 @@ export function DialGauge({
               r={radius}
               fill="transparent"
               stroke="currentColor"
-              className={cn(colorClass, "transition-[stroke-dashoffset] duration-700 ease-out")}
+              className={cn(colorClass, "transition-[stroke-dashoffset] duration-500 ease-out")}
               strokeWidth={thickness}
               strokeLinecap="round"
               strokeDasharray={2 * Math.PI * radius}
