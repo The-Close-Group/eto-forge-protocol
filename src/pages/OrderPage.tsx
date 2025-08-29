@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, TrendingUp, AlertTriangle, Clock, DollarSign } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useTrade } from "@/hooks/useTrade";
+import { useOrderManagement } from "@/hooks/useOrders";
 import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
 import { TransactionStatus } from "@/components/TransactionStatus";
 
@@ -47,18 +47,13 @@ export default function OrderPage() {
   const currentPrice = ASSET_PRICES[selectedAsset as keyof typeof ASSET_PRICES];
   const asset = ASSETS.find(a => a.symbol === selectedAsset);
   
-  const {
-    isConfirmationOpen,
-    isTransactionOpen,
-    transactionStatus,
-    currentStep,
-    transactionHash,
-    error,
-    openConfirmation,
-    closeConfirmation,
-    executeTransaction,
-    closeTransaction
-  } = useTrade();
+  const { validateOrder, placeOrder } = useOrderManagement();
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isTransactionOpen, setIsTransactionOpen] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState<'pending' | 'success' | 'error'>('pending');
+  const [currentStep, setCurrentStep] = useState<'approve' | 'swap' | 'confirm'>('approve');
+  const [transactionHash, setTransactionHash] = useState<string>();
+  const [error, setError] = useState<string>();
 
   const calculateTotal = () => {
     if (!amount) return 0;
@@ -72,11 +67,69 @@ export default function OrderPage() {
   };
 
   const handlePlaceOrder = () => {
-    openConfirmation();
+    // Validate order first
+    const validation = validateOrder({
+      type: orderType as any,
+      side: orderSide as any,
+      asset: selectedAsset,
+      amount: parseFloat(amount),
+      price: orderType === "limit" ? parseFloat(limitPrice) : undefined,
+      stopPrice: orderType === "stop" ? parseFloat(limitPrice) : undefined,
+      timeInForce: timeInForce as any,
+      fromAsset: "USDC"
+    });
+
+    if (!validation.isValid) {
+      setError(validation.errors.join(', '));
+      return;
+    }
+
+    setIsConfirmationOpen(true);
   };
 
-  const handleConfirmOrder = () => {
-    executeTransaction();
+  const handleConfirmOrder = async () => {
+    setIsConfirmationOpen(false);
+    setIsTransactionOpen(true);
+    setTransactionStatus('pending');
+    setCurrentStep('approve');
+    setError(undefined);
+
+    try {
+      // Simulate transaction steps
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setCurrentStep('swap');
+      
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setCurrentStep('confirm');
+
+      const result = await placeOrder({
+        type: orderType as any,
+        side: orderSide as any,
+        asset: selectedAsset,
+        amount: parseFloat(amount),
+        price: orderType === "limit" ? parseFloat(limitPrice) : undefined,
+        stopPrice: orderType === "stop" ? parseFloat(limitPrice) : undefined,
+        timeInForce: timeInForce as any,
+        fromAsset: "USDC"
+      });
+
+      if (result.success) {
+        const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
+        setTransactionHash(mockTxHash);
+        setTransactionStatus('success');
+        
+        // Navigate to completion page
+        setTimeout(() => {
+          navigate(`/transaction-complete?txHash=${mockTxHash}&type=order&fromAsset=USDC&toAsset=${selectedAsset}&fromAmount=${calculateTotal()}&toAmount=${amount}`);
+        }, 2000);
+      } else {
+        setError(result.error);
+        setTransactionStatus('error');
+      }
+    } catch (err: any) {
+      setError(err.message);
+      setTransactionStatus('error');
+    }
   };
 
   return (
@@ -326,7 +379,7 @@ export default function OrderPage() {
       {/* Order Confirmation Modal */}
       <OrderConfirmationModal
         isOpen={isConfirmationOpen}
-        onClose={closeConfirmation}
+        onClose={() => setIsConfirmationOpen(false)}
         onConfirm={handleConfirmOrder}
         fromAsset="USDC"
         toAsset={selectedAsset}
@@ -344,7 +397,7 @@ export default function OrderPage() {
       {/* Transaction Status */}
       <TransactionStatus
         isOpen={isTransactionOpen}
-        onClose={closeTransaction}
+        onClose={() => setIsTransactionOpen(false)}
         status={transactionStatus}
         currentStep={currentStep}
         transactionHash={transactionHash}
