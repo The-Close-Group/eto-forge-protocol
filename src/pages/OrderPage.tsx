@@ -43,6 +43,10 @@ export default function OrderPage() {
   const [amount, setAmount] = useState("");
   const [limitPrice, setLimitPrice] = useState("");
   const [timeInForce, setTimeInForce] = useState("GTC");
+  const [stopPrice, setStopPrice] = useState("");
+  const [trailPercent, setTrailPercent] = useState("");
+  const [trailAmount, setTrailAmount] = useState("");
+  const [displaySize, setDisplaySize] = useState("");
   
   const currentPrice = ASSET_PRICES[selectedAsset as keyof typeof ASSET_PRICES];
   const asset = ASSETS.find(a => a.symbol === selectedAsset);
@@ -200,10 +204,13 @@ export default function OrderPage() {
 
               {/* Order Type */}
               <Tabs value={orderType} onValueChange={setOrderType}>
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="market">Market</TabsTrigger>
                   <TabsTrigger value="limit">Limit</TabsTrigger>
                   <TabsTrigger value="stop">Stop</TabsTrigger>
+                  <TabsTrigger value="oco">OCO</TabsTrigger>
+                  <TabsTrigger value="trailing_stop">Trail</TabsTrigger>
+                  <TabsTrigger value="iceberg">Iceberg</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="market" className="space-y-4">
@@ -265,6 +272,106 @@ export default function OrderPage() {
                     />
                   </div>
                 </TabsContent>
+
+                <TabsContent value="oco" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Amount ({selectedAsset})</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Take Profit Price (USD)</Label>
+                    <Input
+                      type="number"
+                      placeholder={(currentPrice * 1.05).toString()}
+                      value={limitPrice}
+                      onChange={(e) => setLimitPrice(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Stop Loss Price (USD)</Label>
+                    <Input
+                      type="number"
+                      placeholder={(currentPrice * 0.95).toString()}
+                      value={stopPrice || ""}
+                      onChange={(e) => setStopPrice(e.target.value)}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="trailing_stop" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Amount ({selectedAsset})</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Trail Distance</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Percentage (%)</Label>
+                        <Input
+                          type="number"
+                          placeholder="5.0"
+                          value={trailPercent || ""}
+                          onChange={(e) => setTrailPercent(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Fixed Amount ($)</Label>
+                        <Input
+                          type="number"
+                          placeholder="10.00"
+                          value={trailAmount || ""}
+                          onChange={(e) => setTrailAmount(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="iceberg" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Total Amount ({selectedAsset})</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Display Size ({selectedAsset})</Label>
+                    <Input
+                      type="number"
+                      placeholder={amount ? (parseFloat(amount) * 0.1).toString() : "0.00"}
+                      value={displaySize || ""}
+                      onChange={(e) => setDisplaySize(e.target.value)}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Amount visible in order book
+                    </p>
+                  </div>
+                  {orderSide !== "market" && (
+                    <div className="space-y-2">
+                      <Label>Limit Price (USD)</Label>
+                      <Input
+                        type="number"
+                        placeholder={currentPrice.toString()}
+                        value={limitPrice}
+                        onChange={(e) => setLimitPrice(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </TabsContent>
               </Tabs>
 
               {/* Time in Force */}
@@ -289,9 +396,9 @@ export default function OrderPage() {
                 className="w-full"
                 size="lg"
                 onClick={handlePlaceOrder}
-                disabled={!amount || (orderType !== "market" && !limitPrice)}
+                disabled={!amount || (orderType === "limit" && !limitPrice) || (orderType === "oco" && (!limitPrice || !stopPrice)) || (orderType === "trailing_stop" && !trailPercent && !trailAmount) || (orderType === "iceberg" && !displaySize)}
               >
-                Place {orderSide.charAt(0).toUpperCase() + orderSide.slice(1)} Order
+                Place {orderType === "oco" ? "OCO" : orderType === "trailing_stop" ? "Trailing Stop" : orderType === "iceberg" ? "Iceberg" : orderSide.charAt(0).toUpperCase() + orderSide.slice(1)} Order
               </Button>
             </CardContent>
           </Card>

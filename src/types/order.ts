@@ -1,7 +1,7 @@
 // Order Management Type Definitions
 // Comprehensive order system interfaces
 
-export type OrderType = 'market' | 'limit' | 'stop' | 'stop_limit' | 'take_profit';
+export type OrderType = 'market' | 'limit' | 'stop' | 'stop_limit' | 'take_profit' | 'oco' | 'trailing_stop' | 'iceberg' | 'twap' | 'vwap';
 export type OrderSide = 'buy' | 'sell';
 export type OrderStatus = 'pending' | 'open' | 'partially_filled' | 'filled' | 'cancelled' | 'rejected' | 'expired';
 export type TimeInForce = 'GTC' | 'IOC' | 'FOK' | 'DAY';
@@ -46,6 +46,23 @@ export interface Order {
     estimatedGas?: number;
     priceImpact?: number;
     marketImpact?: number;
+    // OCO specific
+    linkedOrderId?: string;
+    // Trailing stop specific
+    trailAmount?: number;
+    trailPercent?: number;
+    peakPrice?: number;
+    // Iceberg specific
+    displaySize?: number;
+    totalSize?: number;
+    executedSize?: number;
+    // TWAP/VWAP specific
+    executionPeriod?: number;
+    intervalDuration?: number;
+    startTime?: Date;
+    endTime?: Date;
+    participationRate?: number;
+    volumeProfile?: number[];
   };
 }
 
