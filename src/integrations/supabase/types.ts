@@ -86,6 +86,36 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          profit_loss: number
+          snapshot_date: string
+          total_invested: number
+          total_value: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profit_loss: number
+          snapshot_date: string
+          total_invested: number
+          total_value: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profit_loss?: number
+          snapshot_date?: string
+          total_invested?: number
+          total_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -193,6 +223,81 @@ export type Database = {
           metadata?: Json | null
           risk_level?: string
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trade_history: {
+        Row: {
+          created_at: string
+          execution_price: number
+          fees: number | null
+          from_amount: number
+          from_asset: string
+          id: string
+          status: string
+          to_amount: number
+          to_asset: string
+          transaction_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          execution_price: number
+          fees?: number | null
+          from_amount: number
+          from_asset: string
+          id?: string
+          status?: string
+          to_amount: number
+          to_asset: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          execution_price?: number
+          fees?: number | null
+          from_amount?: number
+          from_asset?: string
+          id?: string
+          status?: string
+          to_amount?: number
+          to_asset?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_balances: {
+        Row: {
+          asset_symbol: string
+          balance: number
+          created_at: string
+          id: string
+          reserved_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_symbol: string
+          balance?: number
+          created_at?: string
+          id?: string
+          reserved_amount?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_symbol?: string
+          balance?: number
+          created_at?: string
+          id?: string
+          reserved_amount?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

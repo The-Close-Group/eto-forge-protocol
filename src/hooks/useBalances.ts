@@ -3,7 +3,7 @@ import { client, ethereum } from "@/lib/thirdweb";
 import { getContract } from "thirdweb";
 import { balanceOf } from "thirdweb/extensions/erc20";
 import { useActiveAccount } from "thirdweb/react";
-import { balanceManager, AssetBalance } from "@/lib/balanceManager";
+import { useUserState } from "@/contexts/UserStateContext";
 import { useCallback } from "react";
 
 const BLOCKCHAIN_TOKENS = [
@@ -16,6 +16,9 @@ const BLOCKCHAIN_TOKENS = [
 export function useBalances() {
   const account = useActiveAccount();
   const address = account?.address;
+  
+  // Use the new user state system
+  const userState = useUserState();
 
   // Blockchain balance query (for real tokens)
   const { data: blockchainBalances, isLoading: isLoadingBlockchain } = useQuery({
@@ -41,38 +44,61 @@ export function useBalances() {
     },
   });
 
-  // Enhanced balance management with reservations
-  const getAllBalances = useCallback((): AssetBalance[] => {
-    return balanceManager.getAllBalances();
-  }, []);
+  // Enhanced balance management with reservations - now redirects to user state
+  const getAllBalances = useCallback(() => {
+    return userState.balances.map(balance => ({
+      symbol: balance.asset_symbol,
+      name: getAssetName(balance.asset_symbol),
+      balance: balance.balance,
+      decimals: getAssetDecimals(balance.asset_symbol),
+      reservedAmount: balance.reserved_amount,
+      availableBalance: balance.available_balance,
+      usdValue: balance.usd_value,
+      price: balance.price
+    }));
+  }, [userState.balances]);
 
-  const getBalance = useCallback((asset: string): AssetBalance | null => {
-    return balanceManager.getBalance(asset);
-  }, []);
+  const getBalance = useCallback((asset: string) => {
+    const balance = userState.getBalance(asset);
+    if (!balance) return null;
+    
+    return {
+      symbol: balance.asset_symbol,
+      name: getAssetName(balance.asset_symbol),
+      balance: balance.balance,
+      decimals: getAssetDecimals(balance.asset_symbol),
+      reservedAmount: balance.reserved_amount,
+      availableBalance: balance.available_balance,
+      usdValue: balance.usd_value,
+      price: balance.price
+    };
+  }, [userState.getBalance]);
 
   const getAvailableBalance = useCallback((asset: string): number => {
-    return balanceManager.getAvailableBalance(asset);
-  }, []);
+    return userState.getAvailableBalance(asset);
+  }, [userState.getAvailableBalance]);
 
   const getTotalPortfolioValue = useCallback((): number => {
-    return balanceManager.getTotalPortfolioValue();
-  }, []);
+    return userState.getTotalPortfolioValue();
+  }, [userState.getTotalPortfolioValue]);
 
   const validateAmount = useCallback((asset: string, amount: number) => {
-    return balanceManager.validateAmount(asset, amount);
-  }, []);
+    return userState.validateAmount(asset, amount);
+  }, [userState.validateAmount]);
 
   const formatAmount = useCallback((amount: number, asset: string): string => {
-    return balanceManager.formatAmount(amount, asset);
-  }, []);
+    return userState.formatAmount(amount, asset);
+  }, [userState.formatAmount]);
 
   const parseAmount = useCallback((amountStr: string): number => {
-    return balanceManager.parseAmount(amountStr);
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount)) throw new Error("Invalid amount format");
+    return amount;
   }, []);
 
   const updateBalance = useCallback((asset: string, change: number): void => {
-    balanceManager.updateBalance(asset, change);
-  }, []);
+    userState.updateBalance(asset, change);
+  }, [userState.updateBalance]);
 
   // Legacy format for compatibility
   const legacyBalances = {
@@ -104,7 +130,32 @@ export function useBalances() {
     blockchainBalances,
     isLoadingBlockchain,
     
-    // Loading state
-    isLoading: isLoadingBlockchain
+    // Loading state - use user state loading
+    isLoading: userState.isLoading || isLoadingBlockchain
   } as const;
+}
+
+// Helper functions for asset metadata
+function getAssetName(symbol: string): string {
+  const names: Record<string, string> = {
+    USDC: "USD Coin",
+    ETH: "Ethereum", 
+    WETH: "Wrapped Ethereum",
+    MAANG: "Meta AI & Analytics",
+    AVAX: "Avalanche",
+    BTC: "Bitcoin"
+  };
+  return names[symbol] || symbol;
+}
+
+function getAssetDecimals(symbol: string): number {
+  const decimals: Record<string, number> = {
+    USDC: 6,
+    ETH: 18,
+    WETH: 18, 
+    MAANG: 18,
+    AVAX: 18,
+    BTC: 8
+  };
+  return decimals[symbol] || 18;
 }

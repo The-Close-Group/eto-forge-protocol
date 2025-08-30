@@ -3,10 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins, Activity, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useBalances } from "@/hooks/useBalances";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUserState } from "@/contexts/UserStateContext";
+import { useAuth } from "@/contexts/AuthContext";
+
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { 
+    balances, 
+    isLoading, 
+    getTotalPortfolioValue, 
+    isNewUser 
+  } = useUserState();
 
   const trendingAssets = [
     { symbol: "ARB", change: "+8.7%", positive: true },
@@ -23,7 +32,9 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your portfolio and trading activity</p>
+          <p className="text-muted-foreground">
+            {isNewUser ? 'Welcome! Connect your wallet to get started' : 'Overview of your portfolio and trading activity'}
+          </p>
         </div>
 
         {/* Total Value & Quick Action */}
@@ -36,15 +47,16 @@ export default function Dashboard() {
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                    {(() => {
-                     const { balances, isLoading, getTotalPortfolioValue } = useBalances();
                      if (isLoading) return (
                        <div className="space-y-2">
                          <Skeleton className="h-8 w-40" />
                          <Skeleton className="h-4 w-64" />
                        </div>
                      );
-                     const hasBalances = balances && balances.length > 0;
+                     
+                     const hasBalances = balances && balances.length > 0 && !isNewUser;
                      const totalValue = getTotalPortfolioValue();
+                     
                     return (
                       <>
                         <div className="text-2xl lg:text-3xl font-bold leading-tight">
@@ -52,13 +64,20 @@ export default function Dashboard() {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
                           <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                          <span>{hasBalances ? 'Portfolio active' : 'No assets yet'}</span>
+                          <span>
+                            {isNewUser 
+                              ? 'Connect wallet to start trading'
+                              : hasBalances 
+                                ? 'Portfolio active' 
+                                : 'No assets yet'
+                            }
+                          </span>
                         </div>
                         {hasBalances && (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
                             {balances.slice(0, 3).map((balance) => (
-                              <div key={balance.symbol} className="p-3 border border-border rounded-sm">
-                                <div className="text-xs text-muted-foreground">{balance.symbol}</div>
+                              <div key={balance.asset_symbol} className="p-3 border border-border rounded-sm">
+                                <div className="text-xs text-muted-foreground">{balance.asset_symbol}</div>
                                 <div className="font-mono text-sm">{balance.balance.toFixed(4)}</div>
                               </div>
                             ))}
@@ -69,7 +88,7 @@ export default function Dashboard() {
                   })()}
                 </div>
                 <Button asChild size="sm">
-                  <Link to="/wallet">Get started</Link>
+                  <Link to="/wallet">{isNewUser ? 'Connect Wallet' : 'Manage Wallet'}</Link>
                 </Button>
               </CardContent>
             </Card>

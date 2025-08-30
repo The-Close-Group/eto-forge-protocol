@@ -12,6 +12,7 @@ import { TransactionStatus } from "@/components/TransactionStatus";
 import { useTrade } from "@/hooks/useTrade";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePortfolio } from "@/contexts/PortfolioContext";
+import { TradeParams } from "@/hooks/useTradeExecution";
 
 const ASSET_PRICES = {
   MAANG: 238.00,
@@ -146,10 +147,20 @@ export default function Trade() {
 
   const handleTradeExecution = async () => {
     try {
-      await executeTransaction();
-      if (fromAmount && toAmount) {
-        addTrade(fromAsset, toAsset, parseFloat(fromAmount), parseFloat(toAmount), calculateExchangeRate(fromAsset, toAsset));
-      }
+      // Prepare trade parameters for real execution
+      const tradeParams: TradeParams = {
+        fromAsset,
+        toAsset,
+        fromAmount: parseFloat(fromAmount),
+        toAmount: parseFloat(toAmount),
+        executionPrice: calculateExchangeRate(fromAsset, toAsset),
+        orderId: `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
+      
+      await executeTransaction(tradeParams);
+      
+      // Portfolio update will be handled by the executeTransaction function
+      // through the useTradeExecution hook which updates balances in the database
     } catch (error) {
       console.error('Trade execution failed:', error);
     }

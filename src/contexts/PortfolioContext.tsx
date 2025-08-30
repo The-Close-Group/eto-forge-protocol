@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { balanceManager } from '@/lib/balanceManager';
+import { useUserState } from './UserStateContext';
 
 export interface PortfolioAsset {
   symbol: string;
@@ -43,19 +43,20 @@ interface PortfolioContextType {
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
-// Get real-time prices from balance manager
-const getCurrentPrice = (symbol: string): number => {
-  const balance = balanceManager.getBalance(symbol);
+// Get real-time prices from user state
+const getCurrentPrice = (symbol: string, userState: any): number => {
+  const balance = userState.getBalance(symbol);
   return balance?.price || 0;
 };
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [assets, setAssets] = useState<PortfolioAsset[]>([]);
+  const userState = useUserState();
 
   const executeTradeWithBalanceUpdate = useCallback((trade: TradeExecution) => {
-    // Update balances first
-    balanceManager.updateBalance(trade.fromAsset, -trade.fromAmount);
-    balanceManager.updateBalance(trade.toAsset, trade.toAmount);
+    // Update balances through user state
+    userState.updateBalance(trade.fromAsset, -trade.fromAmount);
+    userState.updateBalance(trade.toAsset, trade.toAmount);
 
     // Update portfolio positions
     setAssets(prev => {
@@ -65,7 +66,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       const fromIndex = updated.findIndex(a => a.symbol === trade.fromAsset);
       if (fromIndex >= 0) {
         const fromAssetData = updated[fromIndex];
-        const currentPrice = getCurrentPrice(trade.fromAsset);
+        const currentPrice = getCurrentPrice(trade.fromAsset, userState);
         const soldQuantity = trade.fromAmount / currentPrice;
         const newAmount = Math.max(0, fromAssetData.amount - soldQuantity);
         
@@ -94,7 +95,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       
       // Handle buying asset (increasing position)
       const toIndex = updated.findIndex(a => a.symbol === trade.toAsset);
-      const toPrice = getCurrentPrice(trade.toAsset);
+      const toPrice = getCurrentPrice(trade.toAsset, userState);
       const boughtQuantity = trade.toAmount / toPrice;
       const investmentAmount = trade.fromAmount;
       
@@ -135,7 +136,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       
       return updated;
     });
-  }, []);
+  }, [userState]);
 
   // Legacy addTrade for backward compatibility
   const addTrade = useCallback((fromAsset: string, toAsset: string, fromAmount: number, toAmount: number, rate: number) => {
