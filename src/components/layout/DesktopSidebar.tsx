@@ -11,7 +11,8 @@ import {
   Shield,
   Settings,
   LogOut,
-  User
+  User,
+  Droplets
 } from "lucide-react";
 import {
   Sidebar,
@@ -39,6 +40,7 @@ const navigationItems = [
   { title: "Markets", url: "/markets", icon: BarChart3 },
   { title: "Analytics", url: "/analytics", icon: Activity },
   { title: "System Health", url: "/system-health", icon: Shield },
+  { title: "Faucet", url: "/faucet", icon: Droplets },
 ];
 
 export function DesktopSidebar() {

@@ -12,6 +12,7 @@ import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
 import { ThirdwebProvider } from "thirdweb/react";
+import { client } from "@/lib/thirdweb";
 
 
 // Pages
@@ -31,13 +32,14 @@ import Analytics from "@/pages/Analytics";
 import Wallet from "@/pages/Wallet";
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
+import Faucet from "@/pages/Faucet";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ThirdwebProvider>
+      <ThirdwebProvider client={client}>
         <PortfolioProvider>
           <TooltipProvider>
             <Toaster />
@@ -69,6 +71,7 @@ const App = () => (
                             <Route path="/analytics" element={<Analytics />} />
                             <Route path="/wallet" element={<Wallet />} />
                             <Route path="/system-health" element={<SystemHealth />} />
+                            <Route path="/faucet" element={<Faucet />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </RouteTransition>

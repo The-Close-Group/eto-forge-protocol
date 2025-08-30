@@ -16,21 +16,25 @@ export interface UserBalance {
 // Market prices for assets
 const ASSET_PRICES: Record<string, number> = {
   USDC: 1.00,
+  mUSDC: 1.00,  // Mock USDC on ETO testnet
   ETH: 3567.00,
   WETH: 3567.00,
   MAANG: 238.00,
   AVAX: 26.00,
-  BTC: 45000.00
+  BTC: 45000.00,
+  GOVDRI: 0.10  // Native token on ETO testnet
 };
 
 // Asset metadata
 const ASSET_INFO: Record<string, { name: string; decimals: number }> = {
   USDC: { name: "USD Coin", decimals: 6 },
+  mUSDC: { name: "Mock USD Coin", decimals: 6 },
   ETH: { name: "Ethereum", decimals: 18 },
   WETH: { name: "Wrapped Ethereum", decimals: 18 },
   MAANG: { name: "Meta AI & Analytics", decimals: 18 },
   AVAX: { name: "Avalanche", decimals: 18 },
-  BTC: { name: "Bitcoin", decimals: 8 }
+  BTC: { name: "Bitcoin", decimals: 8 },
+  GOVDRI: { name: "GOVDRI Token", decimals: 18 }
 };
 
 export function useUserBalances() {

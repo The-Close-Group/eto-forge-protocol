@@ -93,55 +93,8 @@ export function useWallet() {
     }
   }, [account?.address, updateWalletAddress]);
 
-  // Silent auto-reconnect on load when a previous wallet type exists
-  useEffect(() => {
-    const prev = localStorage.getItem('eto-wallet-type');
-    if (!prev || walletAddress) return;
-
-    const mapToWalletId = (id: string): WalletId | null => {
-      switch (id) {
-        case 'metamask':
-          return 'io.metamask';
-        case 'coinbase':
-          return 'com.coinbase.wallet';
-        case 'rainbow':
-          return 'me.rainbow';
-        case 'trust':
-          return 'com.trustwallet.app';
-        case 'zerion':
-          return 'io.zerion.wallet';
-        case 'phantom':
-          return 'app.phantom';
-        case 'walletconnect':
-          return 'walletConnect';
-        default:
-          return null;
-      }
-    };
-
-    let cancelled = false;
-    (async () => {
-      setIsAutoConnecting(true);
-      try {
-        const walletIdentifier = mapToWalletId(prev);
-        if (!walletIdentifier) return;
-        const wallet = createWallet(walletIdentifier);
-        if (walletIdentifier !== 'walletConnect' && injectedProvider(walletIdentifier)) {
-          if (!cancelled) await wallet.connect({ client });
-        } else if (walletIdentifier === 'walletConnect') {
-          if (!cancelled) await wallet.connect({ client, walletConnect: { showQrModal: false } });
-        }
-      } catch {
-        // silent
-      } finally {
-        setIsAutoConnecting(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [walletAddress]);
+  // Disabled auto-reconnect to prevent 401 errors
+  // Users must manually connect wallet each time
 
   const resetConnectionState = useCallback(() => {
     setIsConnecting(false);

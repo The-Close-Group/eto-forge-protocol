@@ -10,13 +10,14 @@ import { SecurityProvider } from "@/contexts/SecurityContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThirdwebProvider } from "thirdweb/react";
+import { client } from "@/lib/thirdweb";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThirdwebProvider>
+      <ThirdwebProvider client={client}>
         <AuthProvider>
           <UserStateProvider>
             <SecurityProvider>

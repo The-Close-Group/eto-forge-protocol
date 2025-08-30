@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserState } from "@/contexts/UserStateContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { USDCFaucet } from "@/components/USDCFaucet";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -36,6 +37,13 @@ export default function Dashboard() {
             {isNewUser ? 'Welcome! Connect your wallet to get started' : 'Overview of your portfolio and trading activity'}
           </p>
         </div>
+
+        {/* mUSDC Faucet - Show when wallet is connected */}
+        {!isNewUser && (
+          <div className="mb-6">
+            <USDCFaucet />
+          </div>
+        )}
 
         {/* Total Value & Quick Action */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

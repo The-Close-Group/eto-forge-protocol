@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { client, ethereum } from "@/lib/thirdweb";
+import { client, etoTestnet } from "@/lib/thirdweb";
 import { getContract } from "thirdweb";
 import { balanceOf } from "thirdweb/extensions/erc20";
 import { useActiveAccount } from "thirdweb/react";
@@ -7,10 +7,9 @@ import { useUserState } from "@/contexts/UserStateContext";
 import { useCallback } from "react";
 
 const BLOCKCHAIN_TOKENS = [
-  // USDC mainnet
-  { symbol: "USDC", address: "0xA0b86991c6218B36c1d19D4a2e9Eb0cE3606eb48", decimals: 6 },
-  // WETH mainnet
-  { symbol: "WETH", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", decimals: 18 },
+  // Mock USDC on ETO testnet
+  { symbol: "mUSDC", address: "0x2FbBC1d01dE254a72da2e573b057f123e3d9914F", decimals: 6 },
+  // Add more ETO testnet tokens here as needed
 ];
 
 export function useBalances() {
@@ -23,7 +22,7 @@ export function useBalances() {
   // Blockchain balance query (for real tokens)
   const { data: blockchainBalances, isLoading: isLoadingBlockchain } = useQuery({
     queryKey: ["blockchain-balances", address],
-    enabled: !!address,
+    enabled: !!address, // Enable when wallet is connected
     refetchInterval: 30_000,
     queryFn: async () => {
       if (!address) return [];
@@ -31,7 +30,7 @@ export function useBalances() {
       const results: Array<{ symbol: string; balance: string; decimals: number }> = [];
       for (const t of BLOCKCHAIN_TOKENS) {
         try {
-          const contract = getContract({ client, chain: ethereum, address: t.address });
+          const contract = getContract({ client, chain: etoTestnet, address: t.address });
           const bal = await balanceOf({ contract, address });
           const formatted = Number(bal) / 10 ** t.decimals;
           results.push({ symbol: t.symbol, balance: formatted.toFixed(4), decimals: t.decimals });
@@ -139,11 +138,13 @@ export function useBalances() {
 function getAssetName(symbol: string): string {
   const names: Record<string, string> = {
     USDC: "USD Coin",
+    mUSDC: "Mock USD Coin",
     ETH: "Ethereum", 
     WETH: "Wrapped Ethereum",
     MAANG: "Meta AI & Analytics",
     AVAX: "Avalanche",
-    BTC: "Bitcoin"
+    BTC: "Bitcoin",
+    GOVDRI: "GOVDRI Token"
   };
   return names[symbol] || symbol;
 }
@@ -151,11 +152,13 @@ function getAssetName(symbol: string): string {
 function getAssetDecimals(symbol: string): number {
   const decimals: Record<string, number> = {
     USDC: 6,
+    mUSDC: 6,
     ETH: 18,
     WETH: 18, 
     MAANG: 18,
     AVAX: 18,
-    BTC: 8
+    BTC: 8,
+    GOVDRI: 18
   };
   return decimals[symbol] || 18;
 }

@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated } = useAuth();
   const { walletAddress } = useWallet();
-  const bypass = typeof window !== 'undefined' && localStorage.getItem('eto-bypass-auth') === 'true';
+  const bypass = false; // Disabled bypass to prevent unauthorized access
 
   const hasWallet = Boolean(walletAddress);
 
