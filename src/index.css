@@ -44,6 +44,10 @@
     --warning: 45 100% 60%;
     --warning-foreground: 0 0% 0%;
     
+    /* Positive Button Colors - Enhanced Contrast */
+    --positive-button: 142 70% 45%;
+    --positive-button-foreground: 0 0% 100%;
+    
     /* Interface Elements */
     --border: 220 12% 22%;
     --input: 220 12% 18%;

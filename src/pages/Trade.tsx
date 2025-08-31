@@ -215,27 +215,28 @@ export default function Trade() {
                    </div>
                  </div>
                  
-                 <div className="grid grid-cols-2 gap-4">
-                   <Button 
-                     onClick={(e) => {
-                       e.stopPropagation();
-                       navigate("/order?asset=MAANG&side=buy");
-                     }}
-                     className="bg-data-positive hover:bg-data-positive/90 text-white font-mono"
-                   >
-                     Buy $100
-                   </Button>
-                   <Button 
-                     onClick={(e) => {
-                       e.stopPropagation();
-                       navigate("/order?asset=MAANG&side=buy");
-                     }}
-                     variant="outline"
-                     className="font-mono group-hover:border-primary/50"
-                   >
-                     Buy $500
-                   </Button>
-                 </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/order?asset=MAANG&side=buy");
+                      }}
+                      variant="positive"
+                      className="font-mono"
+                    >
+                      Buy $100
+                    </Button>
+                    <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/order?asset=MAANG&side=buy");
+                      }}
+                      variant="outline"
+                      className="font-mono group-hover:border-primary/50"
+                    >
+                      Buy $500
+                    </Button>
+                  </div>
                </div>
             </CardContent>
           </Card>
@@ -270,27 +271,28 @@ export default function Trade() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <Button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate("/order?asset=USDC&side=buy");
-                    }}
-                    className="bg-data-positive hover:bg-data-positive/90 text-white font-mono"
-                  >
-                    Buy USDC
-                  </Button>
-                  <Button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate("/staking");
-                    }}
-                    variant="outline"
-                    className="font-mono group-hover:border-primary/50"
-                  >
-                    Earn 4.5%
-                  </Button>
-                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <Button 
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       navigate("/order?asset=USDC&side=buy");
+                     }}
+                     variant="positive"
+                     className="font-mono"
+                   >
+                     Buy USDC
+                   </Button>
+                   <Button 
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       navigate("/staking");
+                     }}
+                     variant="outline"
+                     className="font-mono group-hover:border-primary/50"
+                   >
+                     Earn 4.5%
+                   </Button>
+                 </div>
               </div>
             </CardContent>
           </Card>
@@ -342,13 +344,14 @@ export default function Trade() {
                     </div>
                   </div>
                   
-                    <Button 
-                      size="sm" 
-                      className="w-full font-mono bg-data-positive hover:bg-data-positive/90 text-white" 
-                      onClick={() => navigate(`/staking?openWidget=true&expand=true&pool=${pool.pair.toLowerCase().replace('/', '-')}`)}
-                    >
-                      Stake Now
-                    </Button>
+                     <Button 
+                       size="sm" 
+                       variant="positive"
+                       className="w-full font-mono" 
+                       onClick={() => navigate(`/staking?openWidget=true&expand=true&pool=${pool.pair.toLowerCase().replace('/', '-')}`)}
+                     >
+                       Stake Now
+                     </Button>
                 </div>
               </CardContent>
             </Card>
