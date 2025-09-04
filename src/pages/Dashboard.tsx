@@ -7,16 +7,43 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUserState } from "@/contexts/UserStateContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { USDCFaucet } from "@/components/USDCFaucet";
+import { useBalances } from "@/hooks/useBalances";
+import { useActiveAccount } from "thirdweb/react";
+import { usePrices } from "@/hooks/usePrices";
+import { PriceComparison } from "@/components/PriceComparison";
+import { OracleDMMChart } from "@/components/charts/OracleDMMChart";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const account = useActiveAccount();
+  
+  // Get blockchain balances
   const { 
-    balances, 
-    isLoading, 
-    getTotalPortfolioValue, 
+    blockchainBalances, 
+    isLoadingBlockchain, 
+    getTotalPortfolioValueWithBlockchain 
+  } = useBalances();
+  
+  // Get user state (for database balances)
+  const { 
+    balances: userBalances, 
+    isLoading: isLoadingUser, 
     isNewUser 
   } = useUserState();
+  
+  // Get price data
+  const { getTokenPrice } = usePrices();
+  
+  // Combine loading states
+  const isLoading = isLoadingBlockchain || isLoadingUser;
+  
+  // Use blockchain balances if wallet is connected, otherwise show user balances
+  const hasWallet = !!account?.address;
+  const balances = hasWallet ? blockchainBalances : userBalances;
+  const getTotalPortfolioValue = hasWallet ? getTotalPortfolioValueWithBlockchain : () => {
+    return userBalances?.reduce((total, balance) => total + balance.usd_value, 0) || 0;
+  };
 
   const trendingAssets = [
     { symbol: "ARB", change: "+8.7%", positive: true },
@@ -25,7 +52,8 @@ export default function Dashboard() {
   ];
 
   const handleAssetClick = (symbol: string) => {
-    navigate(`/asset/${symbol}`);
+    // Asset details page removed - redirect to trade instead
+    navigate("/trade");
   };
 
   return (
@@ -62,7 +90,7 @@ export default function Dashboard() {
                        </div>
                      );
                      
-                     const hasBalances = balances && balances.length > 0 && !isNewUser;
+                     const hasBalances = balances && balances.length > 0;
                      const totalValue = getTotalPortfolioValue();
                      
                     return (
@@ -73,7 +101,7 @@ export default function Dashboard() {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground leading-relaxed">
                           <TrendingUp className="h-4 w-4 flex-shrink-0" />
                           <span>
-                            {isNewUser 
+                            {!hasWallet 
                               ? 'Connect wallet to start trading'
                               : hasBalances 
                                 ? 'Portfolio active' 
@@ -83,10 +111,20 @@ export default function Dashboard() {
                         </div>
                         {hasBalances && (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                            {balances.slice(0, 3).map((balance) => (
-                              <div key={balance.asset_symbol} className="p-3 border border-border rounded-sm">
-                                <div className="text-xs text-muted-foreground">{balance.asset_symbol}</div>
-                                <div className="font-mono text-sm">{balance.balance.toFixed(4)}</div>
+                            {balances.slice(0, 3).map((balance, index) => (
+                              <div key={hasWallet ? balance.symbol : balance.asset_symbol} className="p-3 border border-border rounded-sm">
+                                <div className="text-xs text-muted-foreground">
+                                  {hasWallet ? balance.symbol : balance.asset_symbol}
+                                </div>
+                                <div className="font-mono text-sm">
+                                  {hasWallet 
+                                    ? parseFloat(balance.balance).toFixed(4)
+                                    : balance.balance.toFixed(4)
+                                  }
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  ${hasWallet ? balance.usdValue : balance.usd_value.toFixed(2)}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -96,7 +134,7 @@ export default function Dashboard() {
                   })()}
                 </div>
                 <Button asChild size="sm">
-                  <Link to="/wallet">{isNewUser ? 'Connect Wallet' : 'Manage Wallet'}</Link>
+                  <Link to="/trade">{hasWallet ? 'Start Trading' : 'Connect Wallet'}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -114,9 +152,9 @@ export default function Dashboard() {
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
-                <Link to="/assets">
+                <Link to="/staking">
                   <Coins className="h-4 w-4" />
-                  View assets
+                  View staking
                 </Link>
               </Button>
             </CardContent>
@@ -170,8 +208,10 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Trending Assets & Recent Activity */}
+        {/* DeFi Price Analytics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <PriceComparison />
+          
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2">
@@ -200,30 +240,34 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Recent activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-                <Activity className="h-8 w-8 text-muted-foreground" />
-                <div className="space-y-1">
-                  <h3 className="font-medium">No activity yet</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Your trading activity will appear here
-                  </p>
-                </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/wallet">View wallet</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
+
+        {/* Price History Chart */}
+        <OracleDMMChart />
+
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Recent activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+              <Activity className="h-8 w-8 text-muted-foreground" />
+              <div className="space-y-1">
+                <h3 className="font-medium">No activity yet</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Your trading activity will appear here
+                </p>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/dashboard">View dashboard</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

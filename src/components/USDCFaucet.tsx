@@ -6,9 +6,10 @@ import { useActiveAccount } from 'thirdweb/react';
 import { getContract, prepareContractCall, sendTransaction } from 'thirdweb';
 import { client, etoTestnet } from '@/lib/thirdweb';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 // MockUSDC contract deployed on ETO Testnet
-const MOCK_USDC_ADDRESS = "0x2FbBC1d01dE254a72da2e573b057f123e3d9914F";
+const MOCK_USDC_ADDRESS = "0xBDd8A29859C96EB305A012C2ae286782B063238c";
 
 const mockUSDCABI = [
   {
@@ -43,6 +44,7 @@ const mockUSDCABI = [
 
 export function USDCFaucet() {
   const account = useActiveAccount();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
 
@@ -74,6 +76,10 @@ export function USDCFaucet() {
 
       toast.success("Successfully claimed 1000 mUSDC from faucet!");
       console.log("Faucet transaction:", result);
+      
+      // Invalidate balance queries to force refresh
+      queryClient.invalidateQueries({ queryKey: ["multi-chain-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["user-balances"] });
     } catch (error: any) {
       console.error("Faucet error:", error);
       if (error.message?.includes("Cooldown")) {
@@ -117,6 +123,10 @@ export function USDCFaucet() {
 
       toast.success("Successfully minted 5000 mUSDC!");
       console.log("Mint transaction:", result);
+      
+      // Invalidate balance queries to force refresh
+      queryClient.invalidateQueries({ queryKey: ["multi-chain-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["user-balances"] });
     } catch (error: any) {
       console.error("Mint error:", error);
       toast.error("Failed to mint mUSDC");

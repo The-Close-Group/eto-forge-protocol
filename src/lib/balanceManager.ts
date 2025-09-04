@@ -28,15 +28,8 @@ const SUPPORTED_ASSETS = {
   BTC: { name: "Bitcoin", decimals: 8, demoBalance: 0.5, address: "0x" }
 };
 
-// Market prices for demo
-const ASSET_PRICES = {
-  USDC: 1.00,
-  ETH: 3567.00,
-  WETH: 3567.00,
-  MAANG: 238.00,
-  AVAX: 26.00,
-  BTC: 45000.00
-};
+// Note: Asset prices are now handled by the usePrices hook for real-time data
+// This class provides balance management but relies on external price sources
 
 export class BalanceManager {
   private reservations: Map<string, BalanceReservation> = new Map();
@@ -46,9 +39,9 @@ export class BalanceManager {
     this.initializeBalances();
   }
 
-  private initializeBalances() {
+  private initializeBalances(prices: Record<string, number> = {}) {
     Object.entries(SUPPORTED_ASSETS).forEach(([symbol, asset]) => {
-      const price = ASSET_PRICES[symbol as keyof typeof ASSET_PRICES];
+      const price = prices[symbol] || 0; // Use provided prices or default to 0
       const balance: AssetBalance = {
         symbol,
         name: asset.name,

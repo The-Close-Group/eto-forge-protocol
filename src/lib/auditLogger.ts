@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { generateUUID } from '@/lib/utils';
 
 export interface AuditLogEntry {
   action: string;
@@ -19,7 +20,7 @@ class AuditLogger {
   private sessionId: string;
 
   constructor() {
-    this.sessionId = crypto.randomUUID();
+    this.sessionId = generateUUID();
   }
 
   async log(entry: Omit<AuditLogEntry, 'metadata'> & { metadata?: Partial<AuditLogEntry['metadata']> }) {

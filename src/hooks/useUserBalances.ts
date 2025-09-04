@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useCallback } from "react";
+import { usePrices } from "./usePrices";
+import { getTokenBySymbol, CHAIN_CONFIGS } from "@/config/tokens";
 
 export interface UserBalance {
   id: string;
@@ -13,33 +15,38 @@ export interface UserBalance {
   price: number;
 }
 
-// Market prices for assets
-const ASSET_PRICES: Record<string, number> = {
-  USDC: 1.00,
-  mUSDC: 1.00,  // Mock USDC on ETO testnet
-  ETH: 3567.00,
-  WETH: 3567.00,
-  MAANG: 238.00,
-  AVAX: 26.00,
-  BTC: 45000.00,
-  GOVDRI: 0.10  // Native token on ETO testnet
-};
-
-// Asset metadata
-const ASSET_INFO: Record<string, { name: string; decimals: number }> = {
-  USDC: { name: "USD Coin", decimals: 6 },
-  mUSDC: { name: "Mock USD Coin", decimals: 6 },
-  ETH: { name: "Ethereum", decimals: 18 },
-  WETH: { name: "Wrapped Ethereum", decimals: 18 },
-  MAANG: { name: "Meta AI & Analytics", decimals: 18 },
-  AVAX: { name: "Avalanche", decimals: 18 },
-  BTC: { name: "Bitcoin", decimals: 8 },
-  GOVDRI: { name: "GOVDRI Token", decimals: 18 }
-};
+// Helper function to get asset metadata from token registry
+function getAssetInfo(symbol: string): { name: string; decimals: number } {
+  // Search through all chain configs for the token
+  for (const chainConfig of Object.values(CHAIN_CONFIGS)) {
+    // Check native token
+    if (chainConfig.nativeToken.symbol === symbol) {
+      return {
+        name: chainConfig.nativeToken.name,
+        decimals: chainConfig.nativeToken.decimals
+      };
+    }
+    
+    // Check ERC20 tokens
+    const token = chainConfig.tokens.find(t => t.symbol === symbol);
+    if (token) {
+      return {
+        name: token.name,
+        decimals: token.decimals
+      };
+    }
+  }
+  
+  // Fallback for unknown tokens
+  return { name: symbol, decimals: 18 };
+}
 
 export function useUserBalances() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  
+  // Get dynamic prices
+  const { getTokenPrice } = usePrices();
 
   // Fetch user balances from database
   const { data: balances = [], isLoading, error } = useQuery({
@@ -53,9 +60,9 @@ export function useUserBalances() {
 
       if (error) throw error;
 
-      // Transform database balances to include calculated fields
+      // Transform database balances to include calculated fields with dynamic prices
       return data.map((balance): UserBalance => {
-        const price = ASSET_PRICES[balance.asset_symbol] || 0;
+        const price = getTokenPrice(balance.asset_symbol);
         const balanceNum = Number(balance.balance);
         const reservedNum = Number(balance.reserved_amount);
         
@@ -184,8 +191,8 @@ export function useUserBalances() {
   }, [getAvailableBalance]);
 
   const formatAmount = useCallback((amount: number, asset_symbol: string): string => {
-    const info = ASSET_INFO[asset_symbol];
-    const decimals = info?.decimals || 18;
+    const info = getAssetInfo(asset_symbol);
+    const decimals = info.decimals;
     const displayDecimals = decimals > 6 ? 6 : decimals;
     return amount.toFixed(displayDecimals);
   }, []);

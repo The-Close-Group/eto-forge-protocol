@@ -3,16 +3,15 @@ import { NavLink, useLocation, Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   TrendingUp, 
-  Wallet, 
   Layers,
   Coins, 
   BarChart3, 
-  Activity,
   Shield,
   Settings,
   LogOut,
   User,
-  Droplets
+  Droplets,
+  ArrowDownUp
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,18 +26,24 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
+import { ConnectButton } from "thirdweb/react";
+import { createWallet } from "thirdweb/wallets";
+import { client, etoTestnet } from "@/lib/thirdweb";
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+  createWallet("app.phantom"),
+  createWallet("walletConnect"),
+];
 
 const navigationItems = [
   { title: "Trade", url: "/trade", icon: TrendingUp },
+  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Wallet", url: "/wallet", icon: Wallet },
-  { title: "Portfolio", url: "/portfolio", icon: User },
-  { title: "Assets", url: "/assets", icon: Layers },
   { title: "Staking", url: "/staking", icon: Coins },
-  { title: "Markets", url: "/markets", icon: BarChart3 },
-  { title: "Analytics", url: "/analytics", icon: Activity },
   { title: "System Health", url: "/system-health", icon: Shield },
   { title: "Faucet", url: "/faucet", icon: Droplets },
 ];
@@ -46,17 +51,12 @@ const navigationItems = [
 export function DesktopSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { user, signOut } = useAuth();
-  const { walletAddress } = useWallet();
+  const { signOut } = useAuth();
   const isCollapsed = state === "collapsed";
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
     return location.pathname.startsWith(path);
-  };
-
-  const truncateAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
@@ -66,8 +66,8 @@ export function DesktopSidebar() {
     >
       <div className="p-4 border-b border-border/50">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className={`w-8 h-8 bg-primary rounded-md flex items-center justify-center ${isCollapsed ? "mx-auto" : ""}`}>
-            <span className="text-primary-foreground font-bold text-sm">E</span>
+          <div className={`w-8 h-8 flex items-center justify-center ${isCollapsed ? "mx-auto" : ""}`}>
+            <img src="/bro.svg" alt="ETO" className="w-8 h-8" />
           </div>
           {!isCollapsed && (
             <div>
@@ -79,15 +79,38 @@ export function DesktopSidebar() {
       </div>
 
       <SidebarContent className="p-0">
-        {/* User Info */}
-        {!isCollapsed && user && (
+        {/* Wallet Connection */}
+        {!isCollapsed && (
           <div className="p-4 border-b border-border/50">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-4 w-4 text-green-400" />
-              <span className="text-xs font-mono text-green-400">
-                {truncateAddress(user.walletAddress)}
-              </span>
-            </div>
+            <ConnectButton
+              client={client}
+              wallets={wallets}
+              chain={etoTestnet}
+              connectModal={{ size: "compact" }}
+              connectButton={{
+                style: {
+                  width: "100%",
+                  backgroundColor: "hsl(var(--primary))",
+                  color: "hsl(var(--primary-foreground))",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "8px 12px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                },
+              }}
+              detailsButton={{
+                style: {
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "6px",
+                  padding: "8px 12px",
+                  fontSize: "12px",
+                },
+              }}
+            />
           </div>
         )}
 

@@ -30,10 +30,21 @@
 - **Mint with Permission**: Users can mint up to 10,000 mUSDC per transaction
 - **Owner Mint**: Contract owner can mint unlimited tokens
 
-## Deployed Contract
-- **MockUSDC Address**: `0x2FbBC1d01dE254a72da2e573b057f123e3d9914F`
+## Deployed Contracts
+
+### Core Tokens
+- **MockUSDC Address**: `0xBDd8A29859C96EB305A012C2ae286782B063238c`
+- **DRI Token**: `0xd84d467b36e38ea5fb488298ac24dd926cf17f92`
+- **GOVDRI Token**: `0x20321616839be8e25ef651ead40df7b3783cf705`
+
+### DeFi Protocol Contracts
+- **MAANG Token (DMM)**: `0xda60301ab3ffd71cc044f0b93d63745de7c815a3`
+- **Oracle**: `0xa4e02339c313BF7Fc9e70D5E0C5c2BfEdF1B5327`
+- **Bootstrap DRI Controller**: `0xe34f0dad64e6591416abdd31e9fca86222e2a4dc`
+- **Peg Stability Module**: `0x08550550bbb3f4c154ecd1b54e537109ed9d3ffe`
+
 - **Network**: ETO Testnet
-- **Explorer**: https://subnets-test.avax.network/eto/address/0x2FbBC1d01dE254a72da2e573b057f123e3d9914F
+- **Explorer**: https://subnets-test.avax.network/eto/
 
 ## Wallet Info
 - Address: 0xa4e02339c313BF7Fc9e70D5E0C5c2BfEdF1B5327

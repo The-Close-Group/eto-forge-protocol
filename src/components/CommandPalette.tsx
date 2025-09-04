@@ -12,13 +12,12 @@ import type { LucideIcon } from "lucide-react";
 import {
   TrendingUp,
   LayoutDashboard,
-  Wallet as WalletIcon,
   User,
   Layers,
   Coins,
   BarChart3,
-  Activity,
   Shield,
+  ArrowDownUp,
 } from "lucide-react";
 
 interface Item {
@@ -29,13 +28,9 @@ interface Item {
 
 const items: Item[] = [
   { title: "Trade", url: "/trade", icon: TrendingUp },
+  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Wallet", url: "/wallet", icon: WalletIcon },
-  { title: "Portfolio", url: "/portfolio", icon: User },
-  { title: "Assets", url: "/assets", icon: Layers },
   { title: "Staking", url: "/staking", icon: Coins },
-  { title: "Markets", url: "/markets", icon: BarChart3 },
-  { title: "Analytics", url: "/analytics", icon: Activity },
   { title: "System Health", url: "/system-health", icon: Shield },
 ];
 

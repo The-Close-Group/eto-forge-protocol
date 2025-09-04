@@ -1,7 +1,7 @@
 
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useWallet } from '@/hooks/useWallet';
+import { useActiveAccount } from 'thirdweb/react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,10 +9,10 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated } = useAuth();
-  const { walletAddress } = useWallet();
+  const account = useActiveAccount();
   const bypass = false; // Disabled bypass to prevent unauthorized access
 
-  const hasWallet = Boolean(walletAddress);
+  const hasWallet = Boolean(account?.address);
 
   if (!isAuthenticated && !hasWallet && !bypass) {
     return <Navigate to="/signin" replace />;

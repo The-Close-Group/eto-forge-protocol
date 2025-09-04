@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { generateUUID } from '@/lib/utils';
 
 interface SecurityEvent {
   id: string;
@@ -46,7 +47,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     try {
       const securityEvent: SecurityEvent = {
         ...event,
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         userId: user.id,
         timestamp: new Date(),
         ipAddress: await fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => 'unknown'),
@@ -69,7 +70,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       // Check for suspicious patterns
       if (securityEvent.riskLevel === 'high' || securityEvent.riskLevel === 'critical') {
         const alert: SecurityAlert = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           type: 'suspicious_activity',
           message: `High-risk activity detected: ${securityEvent.description}`,
           timestamp: new Date(),

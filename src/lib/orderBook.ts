@@ -2,13 +2,13 @@
 // Realistic market behavior simulation
 
 import { Order, OrderBook, OrderBookEntry, OrderFill, OrderType, OrderSide } from '@/types/order';
-import { ASSET_PRICES, ASSET_LIQUIDITY, calculateMarketImpact } from './orderMath';
+import { ASSET_LIQUIDITY, calculateMarketImpact } from './orderMath';
 
 /**
  * Generate realistic order book depth for an asset
  */
-export function generateOrderBook(asset: string, basePrice?: number): OrderBook {
-  const price = basePrice || ASSET_PRICES[asset] || 100;
+export function generateOrderBook(asset: string, basePrice: number = 100): OrderBook {
+  const price = basePrice;
   const liquidity = ASSET_LIQUIDITY[asset] || ASSET_LIQUIDITY.MAANG;
   
   const spread = liquidity.spread;

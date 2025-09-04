@@ -16,9 +16,16 @@ import {
   CreateVWAPParams
 } from '@/types/advancedOrder';
 import { Order, OrderFill, CreateOrderParams } from '@/types/order';
-import { ASSET_PRICES } from '@/lib/orderMath';
-
 export class AdvancedOrderEngine {
+  private prices: Record<string, number> = {};
+
+  constructor(prices?: Record<string, number>) {
+    this.prices = prices || {};
+  }
+
+  updatePrices(prices: Record<string, number>) {
+    this.prices = prices;
+  }
   private ocoOrders: Map<string, OCOOrder> = new Map();
   private trailingStops: Map<string, TrailingStopOrder> = new Map();
   private icebergOrders: Map<string, IcebergOrder> = new Map();
@@ -118,7 +125,7 @@ export class AdvancedOrderEngine {
 
   // Trailing Stop Order Management
   createTrailingStopOrder(params: CreateTrailingStopParams): TrailingStopOrder {
-    const currentPrice = ASSET_PRICES[params.asset];
+    const currentPrice = this.prices[params.asset] || 0;
     const initialStopPrice = params.trailAmount 
       ? currentPrice - params.trailAmount
       : currentPrice * (1 - (params.trailPercent || 0.05));
@@ -200,8 +207,8 @@ export class AdvancedOrderEngine {
       totalFees: 0,
       averageFillPrice: 0,
       slippageTolerance: 0.005,
-      estimatedCost: params.totalAmount * (params.price || ASSET_PRICES[params.asset]),
-      requiredBalance: params.totalAmount * (params.price || ASSET_PRICES[params.asset]),
+      estimatedCost: params.totalAmount * (params.price || this.prices[params.asset] || 0),
+      requiredBalance: params.totalAmount * (params.price || this.prices[params.asset] || 0),
       displaySize: params.displaySize,
       totalSize: params.totalAmount,
       executedSize: 0,
@@ -266,8 +273,8 @@ export class AdvancedOrderEngine {
       totalFees: 0,
       averageFillPrice: 0,
       slippageTolerance: 0.005,
-      estimatedCost: params.amount * ASSET_PRICES[params.asset],
-      requiredBalance: params.amount * ASSET_PRICES[params.asset],
+      estimatedCost: params.amount * (this.prices[params.asset] || 0),
+      requiredBalance: params.amount * (this.prices[params.asset] || 0),
       executionPeriod: params.executionPeriod,
       intervalDuration,
       startTime,
@@ -329,8 +336,8 @@ export class AdvancedOrderEngine {
       totalFees: 0,
       averageFillPrice: 0,
       slippageTolerance: 0.005,
-      estimatedCost: params.amount * ASSET_PRICES[params.asset],
-      requiredBalance: params.amount * ASSET_PRICES[params.asset],
+      estimatedCost: params.amount * (this.prices[params.asset] || 0),
+      requiredBalance: params.amount * (this.prices[params.asset] || 0),
       participationRate: params.participationRate,
       executionPeriod: params.executionPeriod,
       volumeProfile,

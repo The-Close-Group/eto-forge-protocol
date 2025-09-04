@@ -19,7 +19,7 @@ const wallets = [
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const { updateWalletAddress } = useAuth();
+
   const switchChain = useSwitchActiveWalletChain();
   const activeWallet = useActiveWallet();
   const currentChain = useActiveWalletChain();
@@ -36,8 +36,6 @@ export default function SignIn() {
           console.log('Wallet connected:', wallet);
           const address = wallet.getAccount()?.address;
           if (address) {
-            updateWalletAddress(address);
-            
             // Switch to ETO testnet
             try {
               await switchChain(etoTestnet);

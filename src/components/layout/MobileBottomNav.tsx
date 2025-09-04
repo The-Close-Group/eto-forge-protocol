@@ -7,16 +7,15 @@ import {
   Layers,
   Coins, 
   BarChart3, 
-  Activity 
+  Activity,
+  ArrowDownUp
 } from "lucide-react";
 
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Wallet", url: "/wallet", icon: Wallet },
   { title: "Trade", url: "/trade", icon: TrendingUp },
-  { title: "Assets", url: "/assets", icon: Layers },
+  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
   { title: "Staking", url: "/staking", icon: Coins },
-  { title: "Markets", url: "/markets", icon: BarChart3 },
 ];
 
 export function MobileBottomNav() {
