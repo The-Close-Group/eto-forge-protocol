@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserBalances } from "./useUserBalances";
-import { useWallet } from "./useWallet";
+import { useActiveAccount } from "thirdweb/react";
 
 export interface TradeParams {
   fromAsset: string;
@@ -16,13 +16,13 @@ export interface TradeParams {
 export function useTradeExecution() {
   const { user } = useAuth();
   const { updateBalance } = useUserBalances();
-  const { walletAddress } = useWallet();
+  const account = useActiveAccount();
   const queryClient = useQueryClient();
 
   const executeTradeTransaction = useMutation({
     mutationFn: async (params: TradeParams) => {
       if (!user?.id) throw new Error("User not authenticated");
-      if (!walletAddress) throw new Error("Wallet not connected");
+      if (!account?.address) throw new Error("Wallet not connected");
 
       const { fromAsset, toAsset, fromAmount, toAmount, executionPrice, orderId } = params;
 

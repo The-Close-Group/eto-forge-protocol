@@ -123,17 +123,18 @@ export default function SystemHealth() {
   ];
 
   const uptimeData = [
-    { name: "DMM", uptime: 99.997 },
-    { name: "LayerZero Bridge", uptime: 99.992 },
-    { name: "Price Oracles", uptime: 99.999 },
-    { name: "API Gateway", uptime: 99.980 },
+    { name: "DMM Core", uptime: 99.997 },
+    { name: "DRI Controller", uptime: 99.995 },
+    { name: "Oracle Aggregator", uptime: 99.999 },
+    { name: "PSM Module", uptime: 99.992 },
+    { name: "Circuit Breakers", uptime: 100.000 },
   ];
 
   const reservesData = [
-    { name: "USDC", value: 62 },
-    { name: "USDT", value: 21 },
-    { name: "ETH", value: 11 },
-    { name: "Other", value: 6 },
+    { name: "mUSDC", value: 45 },
+    { name: "DRI", value: 35 },
+    { name: "MAANG", value: 15 },
+    { name: "GOVDRI", value: 5 },
   ];
 
   return (
@@ -183,34 +184,51 @@ export default function SystemHealth() {
                   <div className="trading-panel p-6 space-y-6">
                     <div className="space-y-2">
                       <h2 id="peg-accuracy" className="text-xl font-semibold flex items-center gap-2">
-                        <Target className="h-5 w-5 text-accent" /> Peg Integrity Snapshot
+                        <Target className="h-5 w-5 text-accent" /> DRI Protocol Health
                       </h2>
                       <p className="text-sm text-muted-foreground">
-                        Deviation is within optimal range. Feeds synchronized and circuit breakers idle.
+                        Reflective price mechanism active. DMM liquidity concentrated. All systems operational.
                       </p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Median Deviation</p>
-                        <p className="text-2xl font-mono font-bold text-data-positive">0.03%</p>
+                        <p className="text-sm text-muted-foreground">Reflective Price</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">$2.34</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Worst Deviation</p>
-                        <p className="text-2xl font-mono font-bold text-warning">0.12%</p>
+                        <p className="text-sm text-muted-foreground">Oracle Price</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">$2.35</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Freshness</p>
-                        <p className="text-2xl font-mono font-bold">~3s</p>
+                        <p className="text-sm text-muted-foreground">Price Deviation</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">0.43%</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Tracked Assets</p>
-                        <p className="text-2xl font-mono font-bold">12</p>
+                        <p className="text-sm text-muted-foreground">DMM Liquidity</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">$2.4M</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="metric-tile">
+                        <p className="text-sm text-muted-foreground">Capital Efficiency</p>
+                        <p className="text-xl font-mono font-bold text-accent">200x</p>
+                      </div>
+                      <div className="metric-tile">
+                        <p className="text-sm text-muted-foreground">PSM Reserves</p>
+                        <p className="text-xl font-mono font-bold text-data-positive">89%</p>
+                      </div>
+                      <div className="metric-tile">
+                        <p className="text-sm text-muted-foreground">Sync Interval</p>
+                        <p className="text-xl font-mono font-bold">30s</p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">Feeds Healthy</Badge>
-                      <Badge variant="outline">Circuit Breakers Idle</Badge>
-                      <Badge variant="outline">DR Constraints Stable</Badge>
+                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">Reflective Sync Active</Badge>
+                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">DMM Operational</Badge>
+                      <Badge variant="outline">Circuit Breakers Normal</Badge>
+                      <Badge variant="outline">PSM Reserves Healthy</Badge>
+                      <Badge variant="outline">Oracle Consensus 100%</Badge>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -453,4 +471,5 @@ export default function SystemHealth() {
     </>
   );
 }
+
 

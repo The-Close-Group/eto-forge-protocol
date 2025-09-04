@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, WalletIcon, TrendingUp, Zap, Shield, Star, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { RefreshCw, WalletIcon, TrendingUp, Zap, Shield, Star, ArrowUpRight, ArrowDownRight, Loader2 } from "lucide-react";
 import { ChainSelectionMode } from "@/components/ChainSelectionMode";
 import { TradeAssetSelector } from "@/components/TradeAssetSelector";
 import { TradeSummary } from "@/components/TradeSummary";
@@ -13,14 +13,10 @@ import { useTrade } from "@/hooks/useTrade";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePortfolio } from "@/contexts/PortfolioContext";
 import { TradeParams } from "@/hooks/useTradeExecution";
+import { useDMMSwap } from "@/hooks/useDMMSwap";
+import { usePrices } from "@/hooks/usePrices";
 
-const ASSET_PRICES = {
-  MAANG: 238.00,
-  USDC: 1.00,
-  ETH: 3567.00,
-  AVAX: 26.00,
-  BTC: 45000.00
-};
+// Asset prices now fetched live via usePrices hook
 
 const STAKING_POOLS = [
   { 
@@ -60,13 +56,21 @@ export default function Trade() {
 
   const [chainMode, setChainMode] = useState<"auto" | "manual">("auto");
   const [selectedChain, setSelectedChain] = useState("ethereum");
-  const [fromAsset, setFromAsset] = useState(preselectedFrom || "USDC");
+  const [fromAsset, setFromAsset] = useState(preselectedFrom || "mUSDC");
   const [toAsset, setToAsset] = useState(preselectedTo || "MAANG");
   const [fromAmount, setFromAmount] = useState(preselectedAmount || "");
   const [toAmount, setToAmount] = useState("");
 
   const { isAuthenticated } = useAuth();
   const { addTrade } = usePortfolio();
+  const { getTokenPrice } = usePrices();
+  const { 
+    getBuyQuote, 
+    buyTokens, 
+    approveMUSDC, 
+    checkAllowance,
+    isLoading: isDMMLoading 
+  } = useDMMSwap();
   const {
     isConfirmationOpen,
     isTransactionOpen,
@@ -85,20 +89,29 @@ export default function Trade() {
   // Initialize amounts when URL parameters change
   useEffect(() => {
     if (preselectedAmount && fromAsset && toAsset) {
-      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
-      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
+      const fromPrice = getTokenPrice(fromAsset) || 1;
+      const toPrice = getTokenPrice(toAsset) || 1;
       const calculatedToAmount = ((parseFloat(preselectedAmount) / fromPrice) * toPrice).toFixed(2);
       setToAmount(calculatedToAmount);
     }
-  }, [preselectedAmount, fromAsset, toAsset]);
+  }, [preselectedAmount, fromAsset, toAsset, getTokenPrice]);
 
-  const handleFromAmountChange = (amount: string) => {
+  const handleFromAmountChange = async (amount: string) => {
     setFromAmount(amount);
     if (amount && fromAsset && toAsset) {
-      const fromPrice = ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES] || 1;
-      const toPrice = ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES] || 1;
-      const calculatedToAmount = ((parseFloat(amount) / fromPrice) * toPrice).toFixed(2);
-      setToAmount(calculatedToAmount);
+      // Use DMM for mUSDC -> MAANG trades
+      if (fromAsset === 'mUSDC' && toAsset === 'MAANG') {
+        const quote = await getBuyQuote(amount);
+        if (quote) {
+          setToAmount(quote.outputAmount);
+        }
+      } else {
+        // Use regular price calculation for other trades
+        const fromPrice = getTokenPrice(fromAsset) || 1;
+        const toPrice = getTokenPrice(toAsset) || 1;
+        const calculatedToAmount = ((parseFloat(amount) / fromPrice) * toPrice).toFixed(2);
+        setToAmount(calculatedToAmount);
+      }
     }
   };
 
@@ -117,7 +130,7 @@ export default function Trade() {
   };
 
   const handleQuickBuy = (asset: string, amount: string) => {
-    setFromAsset("USDC");
+    setFromAsset("mUSDC");
     setToAsset(asset);
     setFromAmount(amount);
     handleFromAmountChange(amount);
@@ -126,8 +139,8 @@ export default function Trade() {
   const canTrade = fromAmount && toAmount && isAuthenticated;
 
   const calculateExchangeRate = (from: string, to: string) => {
-    const fromPrice = ASSET_PRICES[from as keyof typeof ASSET_PRICES] || 1;
-    const toPrice = ASSET_PRICES[to as keyof typeof ASSET_PRICES] || 1;
+    const fromPrice = getTokenPrice(from) || 1;
+    const toPrice = getTokenPrice(to) || 1;
     return fromPrice / toPrice;
   };
 
@@ -147,20 +160,46 @@ export default function Trade() {
 
   const handleTradeExecution = async () => {
     try {
-      // Prepare trade parameters for real execution
-      const tradeParams: TradeParams = {
-        fromAsset,
-        toAsset,
-        fromAmount: parseFloat(fromAmount),
-        toAmount: parseFloat(toAmount),
-        executionPrice: calculateExchangeRate(fromAsset, toAsset),
-        orderId: `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      };
-      
-      await executeTransaction(tradeParams);
-      
-      // Portfolio update will be handled by the executeTransaction function
-      // through the useTradeExecution hook which updates balances in the database
+      // Check if this is a DMM trade (mUSDC -> MAANG)
+      if (fromAsset === 'mUSDC' && toAsset === 'MAANG') {
+        // Execute DMM trade
+        const allowance = await checkAllowance();
+        if (parseFloat(allowance) < parseFloat(fromAmount)) {
+          // Need approval first
+          const approved = await approveMUSDC(fromAmount);
+          if (!approved) return;
+        }
+        
+        const success = await buyTokens(fromAmount);
+        if (success) {
+          // Add trade to portfolio
+          const tradeParams: TradeParams = {
+            fromAsset,
+            toAsset,
+            fromAmount: parseFloat(fromAmount),
+            toAmount: parseFloat(toAmount),
+            executionPrice: parseFloat(fromAmount) / parseFloat(toAmount),
+            orderId: `dmm_trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+          };
+          addTrade(tradeParams.fromAsset, tradeParams.toAsset, tradeParams.fromAmount, tradeParams.toAmount, tradeParams.executionPrice as number );
+          
+          // Reset form
+          setFromAmount('');
+          setToAmount('');
+        }
+      } else {
+        // Regular trade execution
+        const tradeParams: TradeParams = {
+          fromAsset,
+          toAsset,
+          fromAmount: parseFloat(fromAmount),
+          toAmount: parseFloat(toAmount),
+          executionPrice: calculateExchangeRate(fromAsset, toAsset),
+          orderId: `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        };
+        
+        await executeTransaction(tradeParams);
+      }
     } catch (error) {
       console.error('Trade execution failed:', error);
     }
@@ -187,7 +226,7 @@ export default function Trade() {
           {/* MAANG Card */}
           <Card 
             className="bg-card border-border hover:border-primary/50 transition-colors group cursor-pointer"
-            onClick={() => navigate("/asset/MAANG")}
+            onClick={() => {/* Asset details removed - card is now view-only */}}
           >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -208,7 +247,7 @@ export default function Trade() {
                
                <div className="space-y-4">
                  <div className="flex items-end gap-2">
-                   <span className="text-3xl font-bold font-mono">${ASSET_PRICES.MAANG.toFixed(2)}</span>
+                   <span className="text-3xl font-bold font-mono">${(getTokenPrice('MAANG') || 0).toFixed(2)}</span>
                    <div className="flex items-center gap-1 text-data-positive">
                      <ArrowUpRight className="h-4 w-4" />
                      <span className="text-sm font-mono">+{getRandomChange()}%</span>
@@ -244,7 +283,7 @@ export default function Trade() {
           {/* USDC Card */}
           <Card 
             className="bg-card border-border hover:border-primary/50 transition-colors group cursor-pointer"
-            onClick={() => navigate("/asset/USDC")}
+            onClick={() => {/* Asset details removed - card is now view-only */}}
           >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -265,7 +304,7 @@ export default function Trade() {
               
               <div className="space-y-4">
                 <div className="flex items-end gap-2">
-                  <span className="text-3xl font-bold font-mono">${ASSET_PRICES.USDC.toFixed(2)}</span>
+                  <span className="text-3xl font-bold font-mono">${(getTokenPrice('mUSDC') || 1).toFixed(2)}</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <span className="text-sm font-mono">±0.00%</span>
                   </div>
@@ -484,11 +523,18 @@ export default function Trade() {
                 <Button 
                   className="w-full font-mono" 
                   size="lg"
-                  disabled={!canTrade}
-                  onClick={openConfirmation}
+                  disabled={!canTrade || isDMMLoading}
+                  onClick={fromAsset === 'mUSDC' && toAsset === 'MAANG' ? handleTradeExecution : openConfirmation}
                 >
-                  {canTrade ? 
-                    `Swap $${fromAmount} for ${toAmount} ${toAsset}` : 
+                  {isDMMLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing DMM Trade...
+                    </>
+                  ) : canTrade ? 
+                    fromAsset === 'mUSDC' && toAsset === 'MAANG' ?
+                      `Buy ${toAmount} MAANG with ${fromAmount} mUSDC (DMM)` :
+                      `Swap $${fromAmount} for ${toAmount} ${toAsset}` : 
                     'Enter amounts to trade'
                   }
                 </Button>
@@ -546,13 +592,13 @@ export default function Trade() {
                   <div>
                     <div className="text-muted-foreground">{fromAsset} Price</div>
                     <div className="font-mono font-medium">
-                      ${ASSET_PRICES[fromAsset as keyof typeof ASSET_PRICES]?.toFixed(2)}
+                      ${(getTokenPrice(fromAsset) || 0).toFixed(2)}
                     </div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">{toAsset} Price</div>
                     <div className="font-mono font-medium">
-                      ${ASSET_PRICES[toAsset as keyof typeof ASSET_PRICES]?.toFixed(2)}
+                      ${(getTokenPrice(toAsset) || 0).toFixed(2)}
                     </div>
                   </div>
                 </div>

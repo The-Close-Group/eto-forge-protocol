@@ -4,15 +4,25 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/integrations/supabase/client';
-import { WalletConnector } from '@/components/WalletConnector';
 import { useAuth } from '@/contexts/AuthContext';
-import { useWallet } from '@/hooks/useWallet';
+import { ConnectButton } from "thirdweb/react";
+import { createWallet } from "thirdweb/wallets";
+import { client, etoTestnet } from '@/lib/thirdweb';
+import { useActiveAccount } from 'thirdweb/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import SEO from '@/components/SEO';
 import { toast } from 'sonner';
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+  createWallet("app.phantom"),
+  createWallet("walletConnect"),
+];
 
 import layerZeroLogo from '@/assets/layerzero-logo.png';
 import avalancheLogo from '@/assets/avalanche-logo.png';
@@ -27,14 +37,14 @@ const sponsors = [
 export default function SignUp() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { walletAddress } = useWallet();
+  const account = useActiveAccount();
 
   // Redirect to dashboard when wallet is connected
   useEffect(() => {
-    if (isAuthenticated && walletAddress) {
+    if (isAuthenticated && account?.address) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, walletAddress, navigate]);
+  }, [isAuthenticated, account?.address, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -50,7 +60,22 @@ export default function SignUp() {
         </div>
 
         {/* Wallet Connection */}
-        <WalletConnector />
+        <div className="flex justify-center">
+          <ConnectButton
+            client={client}
+            wallets={wallets}
+            chain={etoTestnet}
+            connectModal={{ size: "wide" }}
+            onConnect={async (wallet) => {
+              console.log('Wallet connected:', wallet);
+              const address = wallet.getAccount()?.address;
+              if (address) {
+                toast.success('Wallet connected successfully!');
+                navigate('/dashboard');
+              }
+            }}
+          />
+        </div>
 
         {/* Info Section */}
         <div className="text-center space-y-4">

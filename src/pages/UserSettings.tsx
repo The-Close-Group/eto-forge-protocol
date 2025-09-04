@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { generateUUID } from '@/lib/utils';
 import { User, Shield, Bell, FileText, Key, Webhook, Upload } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSecurity } from '@/contexts/SecurityContext';
@@ -242,7 +243,7 @@ export default function UserSettings() {
     if (!keyName) return;
 
     try {
-      const keyHash = crypto.randomUUID() + crypto.randomUUID();
+      const keyHash = generateUUID() + generateUUID();
       
       await supabase
         .from('api_keys')

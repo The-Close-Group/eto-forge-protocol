@@ -134,9 +134,9 @@ export default function TransactionComplete() {
         <Button 
           className="w-full" 
           size="lg"
-          onClick={() => navigate("/portfolio")}
+          onClick={() => navigate("/dashboard")}
         >
-          View Portfolio
+          View Dashboard
         </Button>
         
         <div className="grid grid-cols-2 gap-3">

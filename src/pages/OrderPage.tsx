@@ -11,20 +11,19 @@ import { Badge } from "@/components/ui/badge";
 import { useOrderManagement } from "@/hooks/useOrders";
 import { OrderConfirmationModal } from "@/components/OrderConfirmationModal";
 import { TransactionStatus } from "@/components/TransactionStatus";
+import { useDMMSwap } from "@/hooks/useDMMSwap";
+import { usePrices } from "@/hooks/usePrices";
+import { useActiveAccount } from "thirdweb/react";
+import { DMM_ADDRESS } from "@/config/contracts";
 
-const ASSET_PRICES = {
-  MAANG: 238.00,
-  ETH: 3567.00,
-  USDC: 1.00,
-  AVAX: 26.00,
-  BTC: 45000.00,
-  ARB: 0.90,
-  OP: 1.85,
-  MATIC: 0.75
+// Remove fallback prices - fetch live values from chain
+const FALLBACK_ASSET_PRICES = {
+  mUSDC: 1.00, // Only keep mUSDC as it's pegged to $1
 };
 
 const ASSETS = [
   { symbol: "MAANG", name: "Meta AI & Analytics", icon: "🤖" },
+  { symbol: "mUSDC", name: "Mock USD Coin", icon: "💵" },
   { symbol: "ETH", name: "Ethereum", icon: "⟐" },
   { symbol: "USDC", name: "USD Coin", icon: "💵" },
   { symbol: "AVAX", name: "Avalanche", icon: "🔺" },
@@ -37,6 +36,18 @@ const ASSETS = [
 export default function OrderPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const account = useActiveAccount();
+  const { getTokenPrice } = usePrices();
+  const { 
+    getBuyQuote, 
+    getSellQuote, 
+    buyTokens, 
+    sellTokens, 
+    approveMUSDC, 
+    checkAllowance,
+    isLoading: isDMMLoading 
+  } = useDMMSwap();
+  
   const [selectedAsset, setSelectedAsset] = useState(searchParams.get("asset") || "MAANG");
   const [orderType, setOrderType] = useState("market");
   const [orderSide, setOrderSide] = useState(searchParams.get("side") || "buy");
@@ -48,7 +59,7 @@ export default function OrderPage() {
   const [trailAmount, setTrailAmount] = useState("");
   const [displaySize, setDisplaySize] = useState("");
   
-  const currentPrice = ASSET_PRICES[selectedAsset as keyof typeof ASSET_PRICES];
+  const currentPrice = getTokenPrice(selectedAsset) || FALLBACK_ASSET_PRICES[selectedAsset as keyof typeof FALLBACK_ASSET_PRICES] || 0;
   const asset = ASSETS.find(a => a.symbol === selectedAsset);
   
   const { validateOrder, placeOrder } = useOrderManagement();
@@ -80,7 +91,7 @@ export default function OrderPage() {
       price: orderType === "limit" ? parseFloat(limitPrice) : undefined,
       stopPrice: orderType === "stop" ? parseFloat(limitPrice) : undefined,
       timeInForce: timeInForce as any,
-      fromAsset: "USDC"
+      fromAsset: "mUSDC"
     });
 
     if (!validation.isValid) {
@@ -88,7 +99,13 @@ export default function OrderPage() {
       return;
     }
 
-    setIsConfirmationOpen(true);
+    // For MAANG trades, execute DMM swap directly
+    if (selectedAsset === 'MAANG' && orderType === 'market') {
+      handleConfirmOrder();
+    } else {
+      // For other assets, show confirmation dialog
+      setIsConfirmationOpen(true);
+    }
   };
 
   const handleConfirmOrder = async () => {
@@ -99,39 +116,86 @@ export default function OrderPage() {
     setError(undefined);
 
     try {
-      // Simulate transaction steps
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setCurrentStep('swap');
-      
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setCurrentStep('confirm');
-
-      const result = await placeOrder({
-        type: orderType as any,
-        side: orderSide as any,
-        asset: selectedAsset,
-        amount: parseFloat(amount),
-        price: orderType === "limit" ? parseFloat(limitPrice) : undefined,
-        stopPrice: orderType === "stop" ? parseFloat(limitPrice) : undefined,
-        timeInForce: timeInForce as any,
-        fromAsset: "USDC"
-      });
-
-      if (result.success) {
-        const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
-        setTransactionHash(mockTxHash);
-        setTransactionStatus('success');
-        
-        // Navigate to completion page
-        setTimeout(() => {
-          navigate(`/transaction-complete?txHash=${mockTxHash}&type=order&fromAsset=USDC&toAsset=${selectedAsset}&fromAmount=${calculateTotal()}&toAmount=${amount}`);
-        }, 2000);
+      // Special handling for MAANG trades via DMM
+      if (selectedAsset === 'MAANG' && account) {
+        if (orderSide === 'buy') {
+          // Buy MAANG with mUSDC via DMM
+          setCurrentStep('approve');
+          const usdcAmount = calculateTotal().toString();
+          
+          // Check if approval is needed  
+          const allowance = await checkAllowance();
+          const amountWei = BigInt(Math.floor(parseFloat(usdcAmount) * 1e6)); // mUSDC has 6 decimals
+          
+          if (BigInt(allowance) < amountWei) {
+            await approveMUSDC(usdcAmount);
+          }
+          
+          setCurrentStep('swap');
+          const success = await buyTokens(usdcAmount);
+          
+          if (success) {
+            setCurrentStep('confirm');
+            setTransactionStatus('success');
+            setTransactionHash(`0x${Math.random().toString(16).substr(2, 64)}`);
+            
+            setTimeout(() => {
+              navigate(`/transaction-complete?type=dmm-buy&fromAsset=mUSDC&toAsset=MAANG&fromAmount=${usdcAmount}&toAmount=${amount}`);
+            }, 2000);
+          } else {
+            throw new Error('DMM buy failed');
+          }
+        } else if (orderSide === 'sell') {
+          // Sell MAANG for mUSDC via DMM
+          setCurrentStep('swap');
+          const success = await sellTokens(amount);
+          
+          if (success) {
+            setCurrentStep('confirm');
+            setTransactionStatus('success');
+            setTransactionHash(`0x${Math.random().toString(16).substr(2, 64)}`);
+            
+            setTimeout(() => {
+              navigate(`/transaction-complete?type=dmm-sell&fromAsset=MAANG&toAsset=mUSDC&fromAmount=${amount}&toAmount=${calculateTotal()}`);
+            }, 2000);
+          } else {
+            throw new Error('DMM sell failed');
+          }
+        }
       } else {
-        setError(result.error);
-        setTransactionStatus('error');
+        // Regular order flow for non-MAANG assets
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setCurrentStep('swap');
+        
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        setCurrentStep('confirm');
+
+        const result = await placeOrder({
+          type: orderType as any,
+          side: orderSide as any,
+          asset: selectedAsset,
+          amount: parseFloat(amount),
+          price: orderType === "limit" ? parseFloat(limitPrice) : undefined,
+          stopPrice: orderType === "stop" ? parseFloat(limitPrice) : undefined,
+          timeInForce: timeInForce as any,
+          fromAsset: "USDC"
+        });
+
+        if (result.success) {
+          const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
+          setTransactionHash(mockTxHash);
+          setTransactionStatus('success');
+          
+          setTimeout(() => {
+            navigate(`/transaction-complete?txHash=${mockTxHash}&type=order&fromAsset=USDC&toAsset=${selectedAsset}&fromAmount=${calculateTotal()}&toAmount=${amount}`);
+          }, 2000);
+        } else {
+          setError(result.error);
+          setTransactionStatus('error');
+        }
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Transaction failed');
       setTransactionStatus('error');
     }
   };
@@ -431,6 +495,14 @@ export default function OrderPage() {
                   ${orderType === "market" ? currentPrice.toLocaleString() : (limitPrice || currentPrice).toLocaleString()}
                 </span>
               </div>
+              {selectedAsset === 'MAANG' && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Execution</span>
+                  <span className="font-mono text-blue-600">
+                    🤖 DMM (Dynamic Market Maker)
+                  </span>
+                </div>
+              )}
               <div className="border-t pt-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Estimated Total</span>

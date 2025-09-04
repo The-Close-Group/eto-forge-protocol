@@ -29,15 +29,8 @@ export const ASSET_LIQUIDITY: Record<string, AssetLiquidity> = {
   AVAX: { symbol: "AVAX", dailyVolume: 75000000, spread: 0.0015, depthBPS: 75 },
 };
 
-// Current market prices
-export const ASSET_PRICES: Record<string, number> = {
-  USDC: 1.0,
-  WETH: 2450.85,
-  BTC: 67890.12,
-  MAANG: 145.67,
-  SOL: 89.34,
-  AVAX: 32.18,
-};
+// Note: Asset prices are now handled by the usePrices hook for real-time data
+// This file provides mathematical calculations but relies on external price sources
 
 /**
  * Calculate slippage based on order size relative to daily volume
@@ -105,7 +98,8 @@ export function calculatePlatformFee(
 export function estimateNetworkFee(
   asset: string,
   gasPrice: number = 20, // gwei
-  priority: 'slow' | 'standard' | 'fast' = 'standard'
+  priority: 'slow' | 'standard' | 'fast' = 'standard',
+  ethPrice: number = 2450 // ETH price in USD - passed as parameter
 ): number {
   const gasPriceMultipliers = {
     slow: 1.0,
@@ -117,7 +111,6 @@ export function estimateNetworkFee(
   const adjustedGasPrice = gasPrice * gasPriceMultipliers[priority];
   
   // Convert to USD (approximate gas price in USD)
-  const ethPrice = ASSET_PRICES.WETH || 2450;
   const gasCostETH = (baseGasLimit * adjustedGasPrice) / 1e9; // Convert gwei to ETH
   
   return gasCostETH * ethPrice;
@@ -130,10 +123,11 @@ export function calculateExchangeRate(
   fromAsset: string,
   toAsset: string,
   orderSize: number,
-  side: 'buy' | 'sell'
+  side: 'buy' | 'sell',
+  assetPrices: Record<string, number> = {} // Accept prices as parameter
 ): number {
-  const fromPrice = ASSET_PRICES[fromAsset] || 0;
-  const toPrice = ASSET_PRICES[toAsset] || 0;
+  const fromPrice = assetPrices[fromAsset] || 0;
+  const toPrice = assetPrices[toAsset] || 0;
   
   if (fromPrice === 0 || toPrice === 0) return 0;
   
@@ -174,12 +168,13 @@ export function calculateOrderExecution(
   toAsset: string,
   fromAmount: number,
   side: 'buy' | 'sell',
+  prices: Record<string, number>, // Now accepts prices as parameter
   userTier: 'basic' | 'premium' | 'pro' = 'basic',
   gasPrice: number = 20,
   priority: 'slow' | 'standard' | 'fast' = 'standard'
 ): OrderCalculation {
-  const fromPrice = ASSET_PRICES[fromAsset] || 0;
-  const toPrice = ASSET_PRICES[toAsset] || 0;
+  const fromPrice = prices[fromAsset] || 0;
+  const toPrice = prices[toAsset] || 0;
   const orderValue = fromAmount * fromPrice;
   
   // Calculate execution price with market impact
@@ -188,7 +183,8 @@ export function calculateOrderExecution(
   
   // Calculate fees
   const platformFee = calculatePlatformFee(orderValue, userTier);
-  const networkFee = estimateNetworkFee(fromAsset, gasPrice, priority);
+  const ethPrice = prices['ETH'] || prices['WETH'] || 2450; // Get ETH price from prices
+  const networkFee = estimateNetworkFee(fromAsset, gasPrice, priority, ethPrice);
   
   // Calculate slippage and price impact
   const slippage = calculateSlippage(toAsset, fromAmount, toPrice);
@@ -252,9 +248,10 @@ export function calculateRequiredBalance(
   toAsset: string,
   fromAmount: number,
   side: 'buy' | 'sell',
+  prices: Record<string, number>, // Add prices parameter
   slippageBuffer: number = 0.005 // 0.5% buffer
 ): number {
-  const calculation = calculateOrderExecution(fromAsset, toAsset, fromAmount, side);
+  const calculation = calculateOrderExecution(fromAsset, toAsset, fromAmount, side, prices);
   const buffer = calculation.totalCost * slippageBuffer;
   
   return calculation.totalCost + buffer;

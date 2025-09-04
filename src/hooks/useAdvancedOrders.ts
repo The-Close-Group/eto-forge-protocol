@@ -18,7 +18,7 @@ import {
   AdvancedOrderStats
 } from '@/types/advancedOrder';
 import { useOrders } from '@/contexts/OrderContext';
-import { ASSET_PRICES } from '@/lib/orderMath';
+import { usePrices } from '@/hooks/usePrices';
 
 export function useAdvancedOrders() {
   const [ocoOrders, setOCOOrders] = useState<OCOOrder[]>([]);
@@ -28,6 +28,7 @@ export function useAdvancedOrders() {
   const [vwapOrders, setVWAPOrders] = useState<VWAPOrder[]>([]);
   
   const { createOrder, executeOrder } = useOrders();
+  const { getTokenPrices } = usePrices();
 
   // Update trailing stops based on current prices
   useEffect(() => {
@@ -36,7 +37,8 @@ export function useAdvancedOrders() {
         .filter(order => order.status === 'open');
       
       activeTrailingStops.forEach(order => {
-        const currentPrice = ASSET_PRICES[order.asset];
+        const prices = getTokenPrices([order.asset]);
+        const currentPrice = prices[order.asset] || 0;
         advancedOrderEngine.updateTrailingStop(order.id, currentPrice);
         
         // Check if stop should trigger
@@ -252,7 +254,8 @@ export function useAdvancedOrders() {
     ];
 
     const totalVolume = allOrdersWithVolume.reduce((sum, order) => {
-      return sum + order.filled * (order.averageFillPrice || ASSET_PRICES[order.asset] || 0);
+      const prices = getTokenPrices([order.asset]);
+      return sum + order.filled * (order.averageFillPrice || prices[order.asset] || 0);
     }, 0);
 
     return {

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Globe, Check, Loader2 } from 'lucide-react';
 import { useSwitchActiveWalletChain, useActiveWalletChain } from "thirdweb/react";
-import { supportedChains, ethereum, polygon, arbitrum } from '@/lib/thirdweb';
+import { supportedChains, etoTestnet } from '@/lib/thirdweb';
 
 const chainIcons: Record<number, string> = {
   1: '🔵', // Ethereum

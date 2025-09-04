@@ -5,7 +5,8 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { Order, OrderBook, OrderFill, CreateOrderParams, OrderValidation, OrderExecutionResult, OrderStats } from '@/types/order';
 import { usePortfolio } from './PortfolioContext';
 import { useBalances } from '@/hooks/useBalances';
-import { calculateOrderExecution, calculateRequiredBalance, ASSET_PRICES } from '@/lib/orderMath';
+import { calculateOrderExecution, calculateRequiredBalance } from '@/lib/orderMath';
+import { usePrices } from '@/hooks/usePrices';
 import { 
   generateOrderBook, 
   simulateMarketOrderExecution, 
@@ -38,14 +39,16 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [orderBooks, setOrderBooks] = useState<Record<string, OrderBook>>({});
   const { addTrade } = usePortfolio();
   const { balances, getAvailableBalance } = useBalances();
+  const { getTokenPrices } = usePrices();
 
   // Initialize order books for all assets
   useEffect(() => {
-    const assets = Object.keys(ASSET_PRICES);
+    const prices = getTokenPrices(['USDC', 'mUSDC', 'ETH', 'WETH', 'MAANG', 'AVAX', 'BTC', 'GOVDRI']);
+    const assets = Object.keys(prices);
     const initialOrderBooks: Record<string, OrderBook> = {};
     
     assets.forEach(asset => {
-      initialOrderBooks[asset] = generateOrderBook(asset);
+      initialOrderBooks[asset] = generateOrderBook(asset, prices[asset]);
     });
     
     setOrderBooks(initialOrderBooks);
@@ -80,7 +83,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           
           // Update portfolio if order is filled
           if (order.metadata?.fromAsset) {
-            const fromAmount = totalFilled * (order.price || ASSET_PRICES[order.asset]);
+            const prices = getTokenPrices([order.asset]);
+            const fromAmount = totalFilled * (order.price || prices[order.asset] || 0);
             addTrade(order.metadata.fromAsset, order.asset, fromAmount, totalFilled * (order.price || 0), order.price || 0);
           }
           
@@ -113,7 +117,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     const warnings: string[] = [];
     
     // Basic validation
-    if (!params.asset || !ASSET_PRICES[params.asset]) {
+    const prices = getTokenPrices([params.asset]);
+    if (!params.asset || !prices[params.asset]) {
       errors.push('Invalid asset selected');
     }
     
@@ -136,6 +141,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       params.asset,
       params.amount,
       params.side,
+      prices, // Pass current prices
       'basic',
       20,
       params.priority || 'standard'
@@ -145,7 +151,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       fromAsset,
       params.asset,
       params.amount,
-      params.side
+      params.side,
+      getTokenPrices([fromAsset, params.asset]) // Pass prices for both assets
     );
     
     // Balance validation using balance manager
@@ -165,7 +172,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
     
     if (params.type === 'limit') {
-      const currentPrice = ASSET_PRICES[params.asset];
+      const currentPrice = prices[params.asset];
       const priceDeviation = Math.abs((params.price! - currentPrice) / currentPrice) * 100;
       
       if (priceDeviation > 10) {
@@ -286,6 +293,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       params.asset,
       params.amount,
       params.side,
+      getTokenPrices([params.asset]), // Pass as string[] to fix type error
       'basic',
       20,
       params.priority || 'standard'
@@ -385,11 +393,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, [orders]);
 
   const refreshOrderBooks = useCallback(() => {
-    const assets = Object.keys(ASSET_PRICES);
+    const prices = getTokenPrices(['USDC', 'mUSDC', 'ETH', 'WETH', 'MAANG', 'AVAX', 'BTC', 'GOVDRI']);
+    const assets = Object.keys(prices);
     const updatedOrderBooks: Record<string, OrderBook> = {};
     
     assets.forEach(asset => {
-      updatedOrderBooks[asset] = generateOrderBook(asset);
+      updatedOrderBooks[asset] = generateOrderBook(asset, prices[asset]);
     });
     
     setOrderBooks(updatedOrderBooks);
