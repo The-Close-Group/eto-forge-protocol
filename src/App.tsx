@@ -30,6 +30,7 @@ import Staking from "@/pages/Staking";
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
+import SidebarDemoPage from "@/pages/SidebarDemoPage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
 
                           <Route path="/system-health" element={<SystemHealth />} />
                           <Route path="/faucet" element={<Faucet />} />
+                          <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </RouteTransition>

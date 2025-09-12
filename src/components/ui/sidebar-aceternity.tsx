@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 
 interface Links {
   label: string;
@@ -72,16 +72,17 @@ export const AceternitySidebar = ({
 export const SidebarBody = ({
   className,
   children,
+  ...props
 }: {
   className?: string;
   children: React.ReactNode;
 }) => {
   return (
     <>
-      <DesktopSidebar className={className}>
+      <DesktopSidebar className={className} {...props}>
         {children}
       </DesktopSidebar>
-      <MobileSidebar className={className}>
+      <MobileSidebar className={className} {...props}>
         {children}
       </MobileSidebar>
     </>
@@ -91,6 +92,7 @@ export const SidebarBody = ({
 export const DesktopSidebar = ({
   className,
   children,
+  ...props
 }: {
   className?: string;
   children: React.ReactNode;
@@ -108,6 +110,7 @@ export const DesktopSidebar = ({
         }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
+        {...props}
       >
         {children}
       </motion.div>
@@ -118,10 +121,8 @@ export const DesktopSidebar = ({
 export const MobileSidebar = ({
   className,
   children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) => {
+  ...props
+}: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebarAceternity();
   return (
     <>
@@ -129,9 +130,10 @@ export const MobileSidebar = ({
         className={cn(
           "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-card border-b border-border w-full"
         )}
+        {...props}
       >
         <div className="flex justify-end z-20 w-full">
-          <Menu
+          <IconMenu2
             className="text-foreground cursor-pointer"
             onClick={() => setOpen(!open)}
           />
@@ -155,7 +157,7 @@ export const MobileSidebar = ({
                 className="absolute right-10 top-10 z-50 text-foreground cursor-pointer"
                 onClick={() => setOpen(!open)}
               >
-                <X />
+                <IconX />
               </div>
               {children}
             </motion.div>
