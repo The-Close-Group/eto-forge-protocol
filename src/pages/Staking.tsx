@@ -1,28 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Coins, 
-  TrendingUp, 
-  Shield, 
-  Activity, 
-  Users, 
-  DollarSign,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Zap,
-  BarChart3,
-  Plus
-} from "lucide-react";
-import { StakingPoolCard } from "@/components/StakingPoolCard";
-import { StakingCalculator } from "@/components/StakingCalculator";
 import { StakingWidget } from "@/components/StakingWidget";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 
 const STAKING_POOLS = [
   {
