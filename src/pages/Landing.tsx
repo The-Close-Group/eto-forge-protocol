@@ -57,7 +57,7 @@ export default function Landing() {
                 The Future
               </span>
               <span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse">
-                Of Finance
+                of Finance
               </span>
             </h1>
             <div className="flex items-center justify-center gap-4 text-2xl md:text-4xl font-bold text-muted-foreground">
