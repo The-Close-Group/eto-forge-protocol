@@ -1,9 +1,26 @@
 import { USDCFaucet } from '@/components/USDCFaucet';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 
 export default function Faucet() {
   const navigate = useNavigate();
+  const [sideNote, setSideNote] = useState<string>('');
+
+  useEffect(() => {
+    const fetchSideNote = async () => {
+      try {
+        const { data } = await supabase.functions.invoke('generate-side-note');
+        if (data?.sideNote) {
+          setSideNote(data.sideNote);
+        }
+      } catch (error) {
+        console.error('Error fetching side note:', error);
+      }
+    };
+    fetchSideNote();
+  }, []);
 
   const handleContinue = () => {
     localStorage.setItem('eto-user-onboarded', 'true');
@@ -26,6 +43,14 @@ export default function Faucet() {
               — Sam Bankman-Fried
             </div>
           </h1>
+          
+          {sideNote && (
+            <div className="inline-block mt-4 px-4 py-3 bg-muted/50 border border-border rounded-lg backdrop-blur-sm">
+              <p className="text-sm text-muted-foreground italic max-w-2xl">
+                {sideNote}
+              </p>
+            </div>
+          )}
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
             Claim <span className="font-mono font-medium text-foreground">free mUSDC</span> tokens for testing on{" "}
