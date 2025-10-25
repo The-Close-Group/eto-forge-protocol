@@ -48,30 +48,35 @@ export default function Bridge() {
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
 
-  // Get quote from Stargate Finance API
+  // Get quote with demo $0.10 fee
   const getStargateQuote = async () => {
     if (!amount || !account?.address) return;
 
     setIsLoadingQuote(true);
     try {
-      const response = await fetch('https://stargate.finance/api/v1/quotes', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        // Note: This will likely have CORS issues in development
-        // In production, you'd proxy this through your backend
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuote(data);
-      } else {
-        throw new Error('Failed to get quote');
-      }
+      // Demo quote calculation with $0.10 fee
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      const bridgeFee = 0.10;
+      const amountNum = parseFloat(amount);
+      const receivedAmount = amountNum - bridgeFee;
+      
+      const demoQuote: StargateQuote = {
+        srcChainKey: fromChain,
+        dstChainKey: 'eto',
+        srcToken: fromToken,
+        dstToken: toToken,
+        srcAmount: amount,
+        dstAmountMin: receivedAmount.toFixed(2),
+        fee: `$${bridgeFee.toFixed(2)}`,
+        estimatedTime: '2-5 minutes'
+      };
+      
+      setQuote(demoQuote);
+      toast.success('Quote generated successfully!');
     } catch (error) {
-      console.error('Stargate quote error:', error);
-      toast.error('Unable to get cross-chain quote. Please try again.');
+      console.error('Quote generation error:', error);
+      toast.error('Unable to get quote. Please try again.');
     } finally {
       setIsLoadingQuote(false);
     }

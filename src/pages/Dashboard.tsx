@@ -254,17 +254,32 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-              <Activity className="h-8 w-8 text-muted-foreground" />
-              <div className="space-y-1">
-                <h3 className="font-medium">No activity yet</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your trading activity will appear here
-                </p>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/dashboard">View dashboard</Link>
-              </Button>
+            <div className="space-y-3">
+              {[
+                { type: 'Swap', pair: 'mUSDC → MAANG', amount: '250 mUSDC', value: '$250.00', time: '2 hours ago', positive: true },
+                { type: 'Bridge', pair: 'ETH → ETO', amount: '500 USDC', value: '$500.00', time: '5 hours ago', positive: true },
+                { type: 'Stake', pair: 'MAANG/USDC Pool', amount: '1,000 LP', value: '$1,000.00', time: '1 day ago', positive: true },
+                { type: 'Swap', pair: 'MAANG → mUSDC', amount: '50 MAANG', value: '$125.50', time: '2 days ago', positive: false },
+                { type: 'Unstake', pair: 'ETO/USDC Pool', amount: '500 LP', value: '$512.30', time: '3 days ago', positive: true }
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border border-border rounded-sm hover:bg-accent/30 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                      activity.positive ? 'bg-data-positive/20 text-data-positive' : 'bg-data-negative/20 text-data-negative'
+                    }`}>
+                      {activity.type[0]}
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">{activity.type}</div>
+                      <div className="text-xs text-muted-foreground">{activity.pair}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono text-sm">{activity.amount}</div>
+                    <div className="text-xs text-muted-foreground">{activity.time}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

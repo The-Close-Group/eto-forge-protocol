@@ -54,7 +54,7 @@ export default function Trade() {
                   Stake MAANG
                 </Button>
                 <Button 
-                  onClick={() => navigate("/swap")}
+                  onClick={() => navigate("/swap?token=MAANG")}
                   variant="outline"
                   size="lg"
                   className="w-full font-mono group-hover:border-primary/50"
@@ -89,7 +89,7 @@ export default function Trade() {
                   Stake USDC
                 </Button>
                 <Button 
-                  onClick={() => navigate("/swap")}
+                  onClick={() => navigate("/swap?token=USDC")}
                   variant="outline"
                   size="lg"
                   className="w-full font-mono group-hover:border-primary/50"

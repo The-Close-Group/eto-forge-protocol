@@ -10,10 +10,10 @@ const STAKING_POOLS = [
     risk: "Medium" as const,
     lockPeriod: "90 days",
     minStake: "$1,000",
-    totalStaked: "$0.00",
+    totalStaked: "$458,234.50",
     description: "Balanced pair with MAANG growth potential",
     autoCompound: true,
-    rewards: "$0.00/day"
+    rewards: "$31.12/day"
   },
   {
     id: "eto-usdc",
@@ -22,10 +22,10 @@ const STAKING_POOLS = [
     risk: "Low" as const,
     lockPeriod: "30 days",
     minStake: "$500",
-    totalStaked: "$0.00",
+    totalStaked: "$892,145.80",
     description: "Platform token staking with stability",
     autoCompound: true,
-    rewards: "$0.00/day"
+    rewards: "$45.23/day"
   },
   {
     id: "maang-solo",
@@ -34,10 +34,10 @@ const STAKING_POOLS = [
     risk: "High" as const,
     lockPeriod: "180 days",
     minStake: "$2,000",
-    totalStaked: "$0.00",
+    totalStaked: "$234,567.20",
     description: "Pure MAANG exposure for maximum growth",
     autoCompound: false,
-    rewards: "$0.00/day"
+    rewards: "$9.76/day"
   },
   {
     id: "usdc-solo",
@@ -46,10 +46,10 @@ const STAKING_POOLS = [
     risk: "Low" as const,
     lockPeriod: "7 days",
     minStake: "$100",
-    totalStaked: "$0.00",
+    totalStaked: "$1,245,890.00",
     description: "Stable yield with USD backing",
     autoCompound: true,
-    rewards: "$0.00/day"
+    rewards: "$29.67/day"
   }
 ];
 
