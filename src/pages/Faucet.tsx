@@ -38,10 +38,7 @@ export default function Faucet() {
           </div>
           
           <h1 className="text-display-lg md:text-display-xl font-display leading-tight">
-            <span className="text-muted-foreground/60">"</span>Because Stop losses are for losers<span className="text-muted-foreground/60">"</span>
-            <div className="text-xl md:text-2xl text-muted-foreground font-light mt-4">
-              — Sam Bankman-Fried
-            </div>
+            <span className="text-muted-foreground/60">"</span>Stop losses are for bag holders, secure your money with ETO and grow it<span className="text-muted-foreground/60">"</span>
           </h1>
           
           {sideNote && (
