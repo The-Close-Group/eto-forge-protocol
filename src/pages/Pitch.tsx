@@ -2,51 +2,91 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { 
-  TrendingUp, 
+  Lock,
+  Clock,
+  TrendingDown,
+  ShieldCheck,
   Zap, 
-  Shield, 
-  Globe, 
-  Sparkles, 
-  Users, 
-  Wallet,
-  BarChart3,
+  Target,
+  Globe,
   ArrowRight,
   CheckCircle2,
-  Target,
-  Rocket
+  Rocket,
+  Users
 } from "lucide-react";
 
 export default function Pitch() {
   const navigate = useNavigate();
 
   const problemPoints = [
-    "Fragmented liquidity across 100+ chains",
-    "High gas fees eating into profits",
-    "Slow cross-chain transfers (minutes to hours)",
-    "Complex UX requiring multiple wallets",
-    "No intelligent trading automation"
+    { 
+      icon: Lock, 
+      title: "Custodial & Permissioned", 
+      desc: "Current systems, including those proposed by big tech, are custodial and KYC-gated, locking you out of your own assets and preventing true DeFi composability." 
+    },
+    { 
+      icon: Clock, 
+      title: "Archaic Settlement Delays", 
+      desc: "The financial world still operates on T+2 settlement, tying up capital and eroding trust. This is an inefficiency big tech will inherit, not solve." 
+    },
+    { 
+      icon: TrendingDown, 
+      title: "Broken Tracking & Hidden Costs", 
+      desc: "Existing tokenized assets suffer from poor tracking, with discrepancies of 200+ bps costing users billions annually. It's a hidden tax on your wealth." 
+    }
   ];
 
   const solutionPoints = [
-    { icon: Zap, title: "Instant Swaps", desc: "Cross-chain trades in seconds" },
-    { icon: Shield, title: "Zero Gas", desc: "We absorb the fees for you" },
-    { icon: Globe, title: "12+ Chains", desc: "One interface, all networks" },
-    { icon: Sparkles, title: "AI Trading", desc: "Your 24/7 intelligent assistant" },
-    { icon: BarChart3, title: "DMM", desc: "Dynamic Market Making for best prices" }
+    { 
+      icon: ShieldCheck, 
+      title: "Self-Custody & True Ownership", 
+      desc: "Our ERC-20 tokens are self-custodial and non-KYC gated, compatible with protocols across all of DeFi. You control your keys, you control your assets." 
+    },
+    { 
+      icon: Zap, 
+      title: "Instant Settlement, 24/7 Trading", 
+      desc: "Transactions settle instantly on-chain, eliminating T+2 delays and unlocking capital immediately. The market never closes." 
+    },
+    { 
+      icon: Target, 
+      title: "Zero-Error Tracking", 
+      desc: "Our Dynamic Market Maker and Peg Stability Module ensure a peg accuracy of 50bps under sustained loads, providing a price you can trust." 
+    },
+    { 
+      icon: Globe, 
+      title: "Cross-Chain by Default", 
+      desc: "Built on LayerZero, DRI provides access to unified liquidity across 50+ blockchains, eliminating silos and creating one global market." 
+    }
   ];
 
-  const metrics = [
-    { value: "$2.4B+", label: "Total Value Locked" },
-    { value: "150K+", label: "Active Users" },
-    { value: "12+", label: "Chains Supported" },
-    { value: "99.9%", label: "Uptime" }
+  const comparisonPoints = [
+    {
+      feature: "Ownership Model",
+      driAdvantage: "Decentralized & Self-Custody. You own your assets.",
+      maangDisadvantage: "Centralized & Custodial. They are the bank."
+    },
+    {
+      feature: "Interoperability",
+      driAdvantage: "Open & Composable. Works with all of DeFi.",
+      maangDisadvantage: "Walled Garden. Works only within their ecosystem."
+    },
+    {
+      feature: "Transparency",
+      driAdvantage: "On-Chain & Auditable. Every transaction is public.",
+      maangDisadvantage: "Opaque & Algorithmic. You can't see under the hood."
+    },
+    {
+      feature: "Vision",
+      driAdvantage: "Empowerment. Building open financial infrastructure for everyone.",
+      maangDisadvantage: "Control. Capturing a new revenue stream from their users."
+    }
   ];
 
-  const roadmap = [
-    { q: "Q1 2025", items: ["MAANG Token Launch", "AI Assistant Beta", "Avalanche Integration"] },
-    { q: "Q2 2025", items: ["Layer Zero V2", "Mobile App", "10M Users Target"] },
-    { q: "Q3 2025", items: ["Institutional Products", "Compliance Framework", "Series A"] },
-    { q: "Q4 2025", items: ["Global Expansion", "100+ Chains", "IPO Prep"] }
+  const achievements = [
+    "From Concept to Mainnet in 7 Months on a bootstrapped budget of only $4,000.",
+    "Backed by Industry Leaders including Circle, Avalanche, and LayerZero.",
+    "Audited and Secured with all security audits passed before launch.",
+    "Proactively Engaging Regulators by actively working with the SEC Crypto Task Force."
   ];
 
   return (
@@ -59,28 +99,30 @@ export default function Pitch() {
         <div className="relative z-10 max-w-6xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <Rocket className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold">Investor Pitch Deck</span>
+            <span className="text-sm font-semibold">Entropy-to-Order: The Future of Finance is Not in Big Tech</span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter">
-            <span className="block bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              The Future of
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
+            <span className="block text-foreground mb-4">
+              MAANG Wants to Own Your Assets.
             </span>
             <span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              Cross-Chain Trading
+              We Think You Should Own Them Yourself.
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Building the <span className="text-primary font-semibold">world's first AI-powered</span> cross-chain DEX that actually works.
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            DRI is a decentralized protocol for on-chain index tokens that offers what big tech never will: <span className="text-primary font-semibold">self-custody, instant settlement, and a perfectly tight peg</span>. No delays. No intermediaries. Just true ownership.
           </p>
 
           <div className="flex gap-4 justify-center pt-8">
-            <Button size="lg" onClick={() => navigate('/signin')} className="group">
-              Launch Platform
+            <Button size="lg" onClick={() => {
+              const solutionSection = document.getElementById('solution');
+              solutionSection?.scrollIntoView({ behavior: 'smooth' });
+            }} className="group">
+              Explore the Protocol
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button size="lg" variant="outline">Download Deck</Button>
           </div>
         </div>
       </section>
@@ -89,50 +131,76 @@ export default function Pitch() {
       <section className="py-24 px-4 bg-card/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <Target className="h-12 w-12 mx-auto mb-4 text-destructive" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">The Problem</h2>
-            <p className="text-xl text-muted-foreground">
-              DeFi is broken. Users are suffering.
+            <Lock className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">The Walled Garden of Modern Finance</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              The current financial system—and big tech's approach to it—keeps you locked in and locked out.
             </p>
           </div>
 
-          <div className="grid gap-4 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
             {problemPoints.map((point, i) => (
-              <Card key={i} className="p-6 flex items-start gap-4 bg-destructive/5 border-destructive/20">
-                <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-destructive font-bold">{i + 1}</span>
-                </div>
-                <p className="text-lg font-medium pt-1">{point}</p>
+              <Card key={i} className="p-6 bg-destructive/5 border-destructive/20 hover:scale-105 transition-transform">
+                <point.icon className="h-10 w-10 text-destructive mb-4" />
+                <h3 className="text-xl font-bold mb-3">{point.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{point.desc}</p>
               </Card>
             ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <Card className="inline-block p-8 bg-gradient-to-r from-destructive/10 to-destructive/5">
-              <p className="text-3xl font-bold text-destructive mb-2">$50B+ Lost Annually</p>
-              <p className="text-muted-foreground">To inefficiencies, gas fees, and failed transactions</p>
-            </Card>
           </div>
         </div>
       </section>
 
       {/* Solution Section */}
-      <section className="py-24 px-4">
+      <section id="solution" className="py-24 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <Zap className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Our Solution</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              ETO combines AI, Layer Zero, and Dynamic Market Making to create the <span className="text-primary font-semibold">fastest, cheapest, and smartest</span> DEX ever built.
+            <ShieldCheck className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">DRI: The Protocol for a Truly Open Financial Future</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              The Dynamic Reflective Index (DRI) is a decentralized protocol that enables real-time, on-chain replication of real-world asset indices. <span className="text-primary font-semibold">It's not a better app; it's a new foundation for finance</span> built on transparency and user control.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {solutionPoints.map((item, i) => (
-              <Card key={i} className="p-6 hover:scale-105 transition-transform bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
-                <item.icon className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-muted-foreground">{item.desc}</p>
+              <Card key={i} className="p-8 hover:scale-105 transition-transform bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
+                <item.icon className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why We Win Section */}
+      <section className="py-24 px-4 bg-card/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <Target className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Why We Win Against MAANG</h2>
+            <p className="text-xl text-muted-foreground">
+              It's not just about better tech. It's about a fundamentally different approach.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {comparisonPoints.map((point, i) => (
+              <Card key={i} className="p-6 bg-gradient-to-r from-primary/5 to-secondary/5">
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Feature</p>
+                    <p className="text-lg font-bold">{point.feature}</p>
+                  </div>
+                  <div className="border-l-2 border-primary/20 pl-6">
+                    <p className="text-sm font-semibold text-primary mb-2 uppercase tracking-wide">DRI Advantage</p>
+                    <p className="text-base">{point.driAdvantage}</p>
+                  </div>
+                  <div className="border-l-2 border-destructive/20 pl-6">
+                    <p className="text-sm font-semibold text-destructive mb-2 uppercase tracking-wide">MAANG Disadvantage</p>
+                    <p className="text-base text-muted-foreground">{point.maangDisadvantage}</p>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
@@ -140,166 +208,22 @@ export default function Pitch() {
       </section>
 
       {/* Traction Section */}
-      <section className="py-24 px-4 bg-card/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <TrendingUp className="h-12 w-12 mx-auto mb-4 text-green-500" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Traction</h2>
-            <p className="text-xl text-muted-foreground">
-              Numbers that speak for themselves
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-8">
-            {metrics.map((metric, i) => (
-              <Card key={i} className="p-8 text-center bg-gradient-to-br from-primary/10 to-accent/10">
-                <p className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
-                  {metric.value}
-                </p>
-                <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide">
-                  {metric.label}
-                </p>
-              </Card>
-            ))}
-          </div>
-
-          <div className="mt-12 grid md:grid-cols-3 gap-6">
-            <Card className="p-6 bg-green-500/10 border-green-500/20">
-              <CheckCircle2 className="h-8 w-8 text-green-500 mb-3" />
-              <h3 className="font-bold mb-2">Revenue</h3>
-              <p className="text-2xl font-bold text-green-500">$2.1M ARR</p>
-              <p className="text-sm text-muted-foreground mt-1">400% YoY growth</p>
-            </Card>
-            <Card className="p-6 bg-blue-500/10 border-blue-500/20">
-              <Users className="h-8 w-8 text-blue-500 mb-3" />
-              <h3 className="font-bold mb-2">Growth</h3>
-              <p className="text-2xl font-bold text-blue-500">+15K/month</p>
-              <p className="text-sm text-muted-foreground mt-1">New active users</p>
-            </Card>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <Wallet className="h-8 w-8 text-purple-500 mb-3" />
-              <h3 className="font-bold mb-2">Retention</h3>
-              <p className="text-2xl font-bold text-purple-500">87%</p>
-              <p className="text-sm text-muted-foreground mt-1">30-day retention</p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Token Economics */}
       <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">MAANG Token</h2>
-            <p className="text-xl text-muted-foreground">
-              The heart of our ecosystem
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="p-8 bg-gradient-to-br from-primary/10 to-accent/10">
-              <h3 className="text-2xl font-bold mb-6">Token Utility</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-semibold">Governance</p>
-                    <p className="text-sm text-muted-foreground">Vote on protocol upgrades</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-semibold">Staking Rewards</p>
-                    <p className="text-sm text-muted-foreground">Earn up to 45% APY</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-semibold">Fee Discounts</p>
-                    <p className="text-sm text-muted-foreground">Up to 50% off trading fees</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-semibold">AI Access</p>
-                    <p className="text-sm text-muted-foreground">Premium AI assistant features</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-gradient-to-br from-secondary/10 to-primary/10">
-              <h3 className="text-2xl font-bold mb-6">Tokenomics</h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Current Price</p>
-                  <p className="text-4xl font-bold text-primary">$33.00</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Total Supply</p>
-                  <p className="text-2xl font-bold">100M MAANG</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Circulating</p>
-                  <p className="text-2xl font-bold">35M (35%)</p>
-                </div>
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-muted-foreground mb-2">Distribution</p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Team (2yr vest)</span>
-                      <span className="font-semibold">20%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Community</span>
-                      <span className="font-semibold">40%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Liquidity</span>
-                      <span className="font-semibold">25%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Investors</span>
-                      <span className="font-semibold">15%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Roadmap */}
-      <section className="py-24 px-4 bg-card/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <Rocket className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Roadmap</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Proven Execution. Unmatched Credibility.</h2>
             <p className="text-xl text-muted-foreground">
-              The journey to DeFi dominance
+              We don't just talk. We ship.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {roadmap.map((quarter, i) => (
-              <Card key={i} className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5 hover:scale-105 transition-transform">
-                <div className="text-center mb-4">
-                  <div className="inline-block px-4 py-1 rounded-full bg-primary/20 border border-primary/30">
-                    <span className="font-bold text-primary">{quarter.q}</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  {quarter.items.map((item, j) => (
-                    <div key={j} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
-                      <p className="text-sm font-medium">{item}</p>
-                    </div>
-                  ))}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {achievements.map((achievement, i) => (
+              <Card key={i} className="p-8 bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20 hover:scale-105 transition-transform">
+                <div className="flex items-start gap-4">
+                  <CheckCircle2 className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+                  <p className="text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: achievement.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary">$1</strong>') }} />
                 </div>
               </Card>
             ))}
@@ -307,51 +231,104 @@ export default function Pitch() {
         </div>
       </section>
 
-      {/* The Ask */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8">The Ask</h2>
-          
-          <Card className="p-12 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10">
-            <p className="text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
-              $5M Seed Round
-            </p>
-            <p className="text-xl text-muted-foreground mb-8">
-              To scale to 1M users, expand to 50+ chains, and dominate the cross-chain DEX market
-            </p>
-            
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-primary mb-2">$15M</p>
-                <p className="text-sm text-muted-foreground">Pre-money valuation</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-primary mb-2">25%</p>
-                <p className="text-sm text-muted-foreground">Equity offered</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-primary mb-2">18mo</p>
-                <p className="text-sm text-muted-foreground">Runway</p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 justify-center">
-              <Button size="lg" className="group">
-                Join the Round
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button size="lg" variant="outline">Schedule Call</Button>
-            </div>
-          </Card>
+      {/* Vision Section */}
+      <section className="py-24 px-4 bg-card/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <Zap className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">The Next Financial Paradigm</h2>
+            <Card className="p-12 bg-gradient-to-br from-primary/10 to-secondary/10 max-w-4xl mx-auto">
+              <p className="text-xl leading-relaxed text-muted-foreground">
+                DRI is more than a protocol; it's the foundation for a new capital market. Soon, our platform will become an <span className="text-primary font-bold">RWA Factory</span>, allowing anyone to tokenize real-world assets. Our ultimate goal is to offer a direct, on-chain alternative to the traditional IPO, allowing the world's most innovative companies to raise capital on our rails instead of the NYSE.
+              </p>
+            </Card>
+          </div>
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="py-16 px-4 bg-card/50">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-muted-foreground mb-4">Questions?</p>
-          <p className="text-2xl font-bold mb-2">investors@eto.finance</p>
-          <Button variant="link" onClick={() => navigate('/')}>
+      {/* Team Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">The Prodigies and The Titans</h2>
+            <p className="text-xl text-muted-foreground">
+              Youth meets experience. Audacity meets wisdom.
+            </p>
+          </div>
+
+          <div className="space-y-8 mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-6">Founders</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="p-8 bg-gradient-to-br from-primary/10 to-secondary/10">
+                <h4 className="text-2xl font-bold mb-2">Naman Bajpai</h4>
+                <p className="text-primary font-semibold mb-4">Co-Founder & CTO</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  A 19-year-old prodigious engineer and the technical architect of the entire ETO ecosystem. A product of a technological dynasty, he was mentored by the creators of the India Stack and has a documented history of building everything from rockets to advanced AI frameworks.
+                </p>
+              </Card>
+              <Card className="p-8 bg-gradient-to-br from-secondary/10 to-primary/10">
+                <h4 className="text-2xl font-bold mb-2">Ahyaan Sayed</h4>
+                <p className="text-primary font-semibold mb-4">Co-Founder & CEO</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  An 18-year-old visionary strategist with a background of 'old money' and a mission to build a new financial pillar to challenge Wall Street. He is the leader of The Foundry, a VC-backed hacker house and startup ecosystem in Philadelphia.
+                </p>
+              </Card>
+            </div>
+          </div>
+
+          <div>
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-6">Advisors</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <Card className="p-8 bg-card/50 border-primary/20">
+                <h4 className="text-xl font-bold mb-2">Glenn Tyranski</h4>
+                <p className="text-muted-foreground">
+                  Former Chief Regulatory Officer & SVP of the New York Stock Exchange (NYSE).
+                </p>
+              </Card>
+              <Card className="p-8 bg-card/50 border-primary/20">
+                <h4 className="text-xl font-bold mb-2">Robert L. Morier</h4>
+                <p className="text-muted-foreground">
+                  Senior Wall Street Managing Director with extensive capital markets and investment banking expertise.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <section className="py-24 px-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+            The future of finance will not be built by the companies that defined the last century. It will be built by those with the vision and technology to create the next one.
+          </h2>
+          <p className="text-2xl font-semibold text-primary">
+            Let's build it together.
+          </p>
+          
+          <Card className="p-8 bg-card/80 backdrop-blur">
+            <div className="space-y-4">
+              <p className="text-lg font-semibold text-muted-foreground">Contact Us</p>
+              <div className="space-y-2">
+                <p className="text-xl">
+                  <a href="tel:+15705920311" className="hover:text-primary transition-colors">+1 570 592 0311</a>
+                </p>
+                <p className="text-xl">
+                  <a href="mailto:AHYAAN@ENTROPYTOORDER.XYZ" className="hover:text-primary transition-colors">AHYAAN@ENTROPYTOORDER.XYZ</a>
+                </p>
+                <p className="text-xl">
+                  <a href="mailto:NAMAN@ENTROPYTOORDER.XYZ" className="hover:text-primary transition-colors">NAMAN@ENTROPYTOORDER.XYZ</a>
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Button variant="link" onClick={() => navigate('/')} className="text-lg">
             Back to Home
           </Button>
         </div>
