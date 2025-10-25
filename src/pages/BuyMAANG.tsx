@@ -17,7 +17,7 @@ export default function BuyMAANG() {
   const [usdcAmount, setUsdcAmount] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   
-  const maangPrice = getTokenPrice('MAANG') || 2.5;
+  const maangPrice = getTokenPrice('MAANG') || 33.0;
   const usdcPrice = getTokenPrice('mUSDC') || 1.0;
   
   // Calculate how much MAANG user will receive

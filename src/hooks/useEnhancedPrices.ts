@@ -16,7 +16,7 @@ export interface EnhancedPriceData {
 const FALLBACK_PRICES: Record<string, number> = {
   mUSDC: 1.0, // Mock USDC pegged to USD - exactly 1:1
   GOVDRI: 0.0, // No USD value - governance token
-  // MAANG and DRI removed - only show live Oracle/DMM prices
+  MAANG: 33.0, // Meta AI & Analytics Token
   
   // Common token fallbacks (used when CoinGecko is unavailable)
   ETH: 3567.00,
@@ -76,7 +76,7 @@ export function useEnhancedPrices() {
           }
         });
 
-        // 2. Add Oracle price for MAANG (prioritize Oracle over DMM)
+        // 2. Add Oracle price for MAANG (prioritize Oracle over DMM, then fallback)
         if (oraclePrice > 0) {
           priceData['MAANG'] = {
             usd: oraclePrice,
@@ -91,6 +91,14 @@ export function useEnhancedPrices() {
             usd_24h_change: 0,
             last_updated_at: Date.now() / 1000,
             source: 'dmm',
+          };
+        } else if (FALLBACK_PRICES['MAANG']) {
+          // Use static fallback price if Oracle/DMM unavailable
+          priceData['MAANG'] = {
+            usd: FALLBACK_PRICES['MAANG'],
+            usd_24h_change: 0,
+            last_updated_at: Date.now() / 1000,
+            source: 'fallback',
           };
         }
 

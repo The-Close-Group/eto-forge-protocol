@@ -28,7 +28,7 @@ interface TradeAssetSelectorProps {
 }
 
 const assets: Asset[] = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", price: 238.00, icon: "🤖" },
+  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: "🤖" },
   { symbol: "mUSDC", name: "Mock USD Coin", price: 1.00, icon: "💵" },
   { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐" },
   { symbol: "USDC", name: "USD Coin", price: 1.00, icon: "💵" },
