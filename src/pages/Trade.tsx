@@ -54,12 +54,12 @@ export default function Trade() {
                   Stake MAANG
                 </Button>
                 <Button 
-                  onClick={() => navigate("/swap?token=MAANG")}
+                  onClick={() => navigate("/buy-maang")}
                   variant="outline"
                   size="lg"
                   className="w-full font-mono group-hover:border-primary/50"
                 >
-                  Trade MAANG
+                  Buy MAANG
                 </Button>
               </div>
             </CardContent>

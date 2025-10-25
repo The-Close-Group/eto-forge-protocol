@@ -21,6 +21,7 @@ import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
 import Bridge from "@/pages/Bridge";
+import BuyMAANG from "@/pages/BuyMAANG";
 import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
@@ -58,6 +59,7 @@ const App = () => (
                         <Routes>
                           <Route path="/trade" element={<Trade />} />
                           <Route path="/bridge" element={<Bridge />} />
+                          <Route path="/buy-maang" element={<BuyMAANG />} />
                           <Route path="/order" element={<OrderPage />} />
                           <Route path="/transaction-complete" element={<TransactionComplete />} />
                           <Route path="/dashboard" element={<Dashboard />} />
