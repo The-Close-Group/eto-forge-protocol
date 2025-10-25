@@ -21,8 +21,7 @@ export default function Faucet() {
           </div>
           
           <h1 className="text-display-lg md:text-display-xl font-display">
-            Get Test{" "}
-            <span className="text-muted-foreground/40">Tokens</span>
+            ETO : Because Stop losses are for losers - Sam bankman fried
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
