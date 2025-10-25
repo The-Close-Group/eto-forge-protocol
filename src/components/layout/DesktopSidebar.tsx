@@ -8,6 +8,7 @@ import {
   LogOut,
   Droplets,
   ArrowDownUp,
+  Sparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { AceternitySidebar as Sidebar, SidebarBody, useSidebarAceternity } from "@/components/ui/sidebar-aceternity";
@@ -28,6 +29,7 @@ const wallets = [
 const navigationItems = [
   { title: "Trade", url: "/trade", icon: TrendingUp },
   { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
+  { title: "AI Assistant", url: "/ai-assistant", icon: Sparkles },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "System Health", url: "/system-health", icon: Shield },

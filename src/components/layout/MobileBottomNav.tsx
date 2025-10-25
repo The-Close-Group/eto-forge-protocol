@@ -8,12 +8,14 @@ import {
   Coins, 
   BarChart3, 
   Activity,
-  ArrowDownUp
+  ArrowDownUp,
+  Sparkles
 } from "lucide-react";
 
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Trade", url: "/trade", icon: TrendingUp },
+  { title: "AI", url: "/ai-assistant", icon: Sparkles },
   { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
   { title: "Staking", url: "/staking", icon: Coins },
 ];
