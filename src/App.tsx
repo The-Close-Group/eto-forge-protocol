@@ -15,7 +15,7 @@ import { RouteTransition } from "@/components/RouteTransition";
 
 
 // Pages
-import Welcome from "@/pages/Welcome";
+import Landing from "@/pages/Landing";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
@@ -47,7 +47,7 @@ const App = () => (
             <TopLoadingBar />
             <CommandPalette />
             <Routes>
-              <Route path="/" element={<Welcome />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               <Route
