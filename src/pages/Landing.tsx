@@ -51,44 +51,44 @@ export default function Landing() {
           </div>
 
           {/* Main Heading with Enhanced Animation */}
-          <div className="space-y-4 animate-fade-in">
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter">
-              <span className="block bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent drop-shadow-2xl">
+          <div className="space-y-6 animate-fade-in">
+            <h1 className="text-display-xl md:text-display-2xl font-display">
+              <span className="block text-foreground">
                 The Future
               </span>
-              <span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse">
+              <span className="block text-muted-foreground/40">
                 of Finance
               </span>
             </h1>
-            <div className="flex items-center justify-center gap-4 text-2xl md:text-4xl font-bold text-muted-foreground">
-              <span className="inline-block animate-bounce">⚡</span>
+            <div className="flex items-center justify-center gap-3 text-lg md:text-xl font-mono text-muted-foreground">
+              <span>⚡</span>
               <span>At Your Fingertips</span>
-              <span className="inline-block animate-bounce" style={{ animationDelay: '0.2s' }}>✨</span>
+              <span>✨</span>
             </div>
           </div>
 
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto animate-fade-in leading-relaxed">
-            Experience <span className="text-primary font-semibold">seamless cross-chain swaps</span> with Dynamic Market Making.
-            Trade MAANG, bridge assets, and earn rewards—<span className="text-secondary font-semibold">all in one place</span>.
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto animate-fade-in leading-relaxed font-light">
+            Experience <span className="font-mono font-medium text-foreground">seamless cross-chain swaps</span> with Dynamic Market Making.
+            Trade MAANG, bridge assets, and earn rewards—<span className="font-medium text-foreground">all in one place</span>.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-12 animate-fade-in">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 animate-fade-in">
             <Button
               size="lg"
               onClick={() => navigate('/signin')}
-              className="text-xl px-12 py-8 bg-gradient-to-r from-primary to-secondary hover:opacity-90 group shadow-2xl shadow-primary/50 transition-all duration-300 hover:scale-105"
+              className="text-base px-8 py-6 bg-gradient-to-r from-white/90 to-white/80 text-black hover:from-white hover:to-white/90 group shadow-xl transition-all duration-300 hover:scale-105 font-medium"
             >
-              <Zap className="mr-2 h-6 w-6 animate-pulse" />
+              <Zap className="mr-2 h-5 w-5" />
               Launch App
-              <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
               size="lg"
               variant="outline"
               onClick={() => navigate('/signup')}
-              className="text-xl px-12 py-8 border-2 border-primary/50 hover:bg-primary/10 transition-all duration-300 hover:scale-105"
+              className="text-base px-8 py-6 border-2 border-border hover:bg-accent transition-all duration-300 hover:scale-105 font-medium"
             >
               Get Started Free
             </Button>
@@ -96,27 +96,34 @@ export default function Landing() {
               size="lg"
               variant="outline"
               onClick={() => navigate('/pitch')}
-              className="text-xl px-12 py-8 border-2 border-secondary/50 hover:bg-secondary/10 transition-all duration-300 hover:scale-105"
+              className="text-base px-8 py-6 border-2 border-border hover:bg-accent transition-all duration-300 hover:scale-105 font-medium"
             >
               View Pitch Deck
             </Button>
           </div>
 
-          {/* Floating Feature Pills */}
-          <div className="flex flex-wrap gap-3 justify-center pt-8 animate-fade-in">
-            {['✅ No Gas Fees', '⚡ Instant Swaps', '🔒 100% Secure', '🌍 12+ Chains'].map((feature, i) => (
-              <div 
-                key={i} 
-                className="px-4 py-2 rounded-full bg-muted/50 border border-border/60 text-sm font-medium backdrop-blur-sm hover:scale-105 transition-transform"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                {feature}
-              </div>
-            ))}
+          {/* Features */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+              <span className="text-green-400">✓</span>
+              <span>No Gas Fees</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+              <span>⚡</span>
+              <span>Instant Swaps</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+              <span className="text-yellow-400">🔒</span>
+              <span>100% Secure</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+              <span className="text-blue-400">🌐</span>
+              <span>12+ Chains</span>
+            </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-20 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-5xl mx-auto">
             {[
               { label: 'Total Volume', value: '$2.4B+', icon: '📈' },
               { label: 'Active Users', value: '150K+', icon: '👥' },
@@ -125,14 +132,14 @@ export default function Landing() {
             ].map((stat, i) => (
               <Card 
                 key={i} 
-                className="p-8 text-center bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border-border/60 hover:border-primary/50 transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:shadow-primary/20 group animate-scale-in"
+                className="p-6 text-center bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border-border/60 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl group"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
-                <div className="text-4xl mb-2 group-hover:scale-125 transition-transform">{stat.icon}</div>
-                <div className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{stat.icon}</div>
+                <div className="text-3xl md:text-4xl font-bold font-display text-foreground">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground mt-2 font-medium">{stat.label}</div>
+                <div className="text-xs font-mono text-muted-foreground mt-2">{stat.label}</div>
               </Card>
             ))}
           </div>
@@ -188,13 +195,13 @@ export default function Landing() {
             ].map((feature, i) => (
               <Card
                 key={i}
-                className="p-10 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-border/60 hover:border-primary/50 transition-all duration-500 hover:scale-110 hover:-translate-y-2 group hover:shadow-2xl hover:shadow-primary/20 cursor-pointer"
+                className="p-8 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-border/60 hover:border-primary/50 transition-all duration-500 hover:scale-105 hover:-translate-y-1 group hover:shadow-xl cursor-pointer"
               >
-                <div className="text-primary mb-6 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
+                <div className="text-primary mb-4 group-hover:scale-110 transition-all duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed font-light">{feature.description}</p>
               </Card>
             ))}
           </div>
@@ -207,49 +214,46 @@ export default function Landing() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(139,92,246,0.2),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(59,130,246,0.2),transparent_50%)]" />
         
-        <div className="max-w-5xl mx-auto text-center space-y-10 relative z-10">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 border-2 border-primary/30 backdrop-blur-sm animate-pulse">
-            <span className="text-5xl animate-bounce">🤖</span>
-            <span className="text-base font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              MAANG TOKEN
-            </span>
+        <div className="max-w-5xl mx-auto text-center space-y-8 relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm">
+            <span className="text-2xl">🤖</span>
+            <span className="text-sm font-mono text-muted-foreground">MAANG TOKEN</span>
           </div>
 
-          <h2 className="text-6xl md:text-7xl font-black">
-            <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              Meta AI & Analytics
-            </span>
+          <h2 className="text-display-lg md:text-display-xl font-display">
+            <span className="text-foreground">Meta AI</span>{" "}
+            <span className="text-muted-foreground/40">& Analytics</span>
           </h2>
 
-          <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            The <span className="text-primary font-semibold">native token</span> powering the ETO ecosystem. 
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+            The <span className="font-mono font-medium text-foreground">native token</span> powering the ETO ecosystem. 
             Stake for rewards, govern the protocol, and unlock exclusive features.
           </p>
 
-          <div className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-card/80 backdrop-blur-xl border-2 border-primary/30">
-            <span className="text-muted-foreground">Current Price:</span>
-            <span className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              $33.00
+          <div className="inline-flex items-center gap-4 px-6 py-3 rounded-2xl bg-card/80 backdrop-blur-xl border border-border">
+            <span className="text-sm font-mono text-muted-foreground">Current Price:</span>
+            <span className="text-3xl md:text-4xl font-bold font-mono text-foreground">
+              $33<span className="text-muted-foreground/40">.00</span>
             </span>
-            <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold">
+            <span className="px-2.5 py-1 rounded-md bg-green-500/20 text-green-400 text-xs font-mono font-medium">
               +5.2%
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button
               size="lg"
               onClick={() => navigate('/signin')}
-              className="text-xl px-12 py-8 bg-gradient-to-r from-primary to-secondary hover:opacity-90 group shadow-2xl shadow-primary/50 transition-all duration-300 hover:scale-105"
+              className="text-base px-8 py-6 bg-gradient-to-r from-white/90 to-white/80 text-black hover:from-white hover:to-white/90 group shadow-xl transition-all duration-300 hover:scale-105 font-medium"
             >
               Trade MAANG Now
-              <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
               size="lg"
               variant="outline"
               onClick={() => navigate('/signin')}
-              className="text-xl px-12 py-8 border-2 border-primary/50 hover:bg-primary/10 transition-all duration-300 hover:scale-105"
+              className="text-base px-8 py-6 border-2 border-border hover:bg-accent transition-all duration-300 hover:scale-105 font-medium"
             >
               Learn More
             </Button>
@@ -262,28 +266,27 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-background to-background" />
         <div className="max-w-5xl mx-auto text-center space-y-12 relative z-10">
           <div className="space-y-6">
-            <h2 className="text-6xl md:text-8xl font-black">
-              <span className="block mb-4">Ready to</span>
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse">
-                Start Trading?
-              </span>
+            <h2 className="text-display-lg md:text-display-xl font-display">
+              <span className="text-foreground">Ready to</span>
+              <br />
+              <span className="text-muted-foreground/40">Start Trading?</span>
             </h2>
-            <p className="text-2xl text-muted-foreground max-w-2xl mx-auto">
-              Join <span className="text-primary font-bold">150,000+ traders</span> experiencing the future of DeFi
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto font-light">
+              Join <span className="font-mono font-medium text-foreground">150,000+ traders</span> experiencing the future of DeFi
             </p>
           </div>
           
-          <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-4">
             <Button
               size="lg"
               onClick={() => navigate('/signin')}
-              className="text-2xl px-16 py-10 bg-gradient-to-r from-primary to-secondary hover:opacity-90 group shadow-2xl shadow-primary/50 transition-all duration-300 hover:scale-110"
+              className="text-base px-12 py-6 bg-gradient-to-r from-white/90 to-white/80 text-black hover:from-white hover:to-white/90 group shadow-xl transition-all duration-300 hover:scale-105 font-medium"
             >
-              <Zap className="mr-3 h-7 w-7 animate-pulse" />
+              <Zap className="mr-2 h-5 w-5" />
               Launch App Now
-              <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-3 transition-transform" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs font-mono text-muted-foreground">
               ✨ No credit card required • Get started in 30 seconds
             </p>
           </div>

@@ -19,11 +19,12 @@ export default function Trade() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="max-w-4xl w-full">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground font-mono mb-2">
-            Token Trading Hub
+        <div className="text-center mb-12">
+          <h1 className="text-display-lg md:text-display-xl font-display mb-4">
+            Token{" "}
+            <span className="text-muted-foreground/40">Trading Hub</span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground font-light">
             Choose your preferred token to stake or trade
           </p>
         </div>

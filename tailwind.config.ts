@@ -19,9 +19,14 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'mono': ['JetBrains Mono', 'monospace'],
-				'sans': ['JetBrains Mono', 'monospace'],
-				'industrial': ['JetBrains Mono', 'monospace'],
+				'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				'mono': ['JetBrains Mono', 'Consolas', 'monospace'],
+				'display': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+			},
+			fontSize: {
+				'display-2xl': ['4.5rem', { lineHeight: '1', letterSpacing: '-0.02em', fontWeight: '800' }],
+				'display-xl': ['3.75rem', { lineHeight: '1', letterSpacing: '-0.02em', fontWeight: '800' }],
+				'display-lg': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
