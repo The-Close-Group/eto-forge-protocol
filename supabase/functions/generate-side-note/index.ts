@@ -31,7 +31,7 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: 'Generate a short, witty side note (max 2 sentences) about the quote "Stop losses are for bag holders, secure your money with ETO and grow it". Make it encouraging and slightly humorous about smart trading strategies.'
+            content: 'Generate a short, witty side note (max 2 sentences) about the quote "Stop being bag holder, secure your money with ETO and grow it". Make it encouraging and slightly humorous about smart trading strategies.'
           }
         ],
       }),
