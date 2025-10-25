@@ -17,6 +17,7 @@ import { RouteTransition } from "@/components/RouteTransition";
 
 // Pages
 import Landing from "@/pages/Landing";
+import Pitch from "@/pages/Pitch";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
@@ -50,6 +51,7 @@ const App = () => (
               <CommandPalette />
               <Routes>
                 <Route path="/" element={<Landing />} />
+                <Route path="/pitch" element={<Pitch />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route

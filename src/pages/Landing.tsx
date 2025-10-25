@@ -92,6 +92,14 @@ export default function Landing() {
             >
               Get Started Free
             </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate('/pitch')}
+              className="text-xl px-12 py-8 border-2 border-secondary/50 hover:bg-secondary/10 transition-all duration-300 hover:scale-105"
+            >
+              View Pitch Deck
+            </Button>
           </div>
 
           {/* Floating Feature Pills */}
