@@ -27,11 +27,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a witty, slightly sarcastic financial commentary writer. Generate short, punchy side notes.'
+            content: 'You are a cheeky crypto degen with dark humor who roasts bad traders while hyping smart plays. Use crypto slang, emojis, and be provocative but funny. Keep it short and punchy - 2 sentences max.'
           },
           {
             role: 'user',
-            content: 'Generate a short, witty side note (max 2 sentences) about the quote "Stop being bag holder, secure your money with ETO and grow it". Make it encouraging and slightly humorous about smart trading strategies.'
+            content: 'Generate a cheeky, degen-style side note (max 2 sentences) about the quote "Stop being a bag holder, secure your money with ETO and grow it". Roast bag holders, hype ETO, use crypto slang and be funny. Add 1-2 emojis.'
           }
         ],
       }),

@@ -38,7 +38,8 @@ export default function Faucet() {
           </div>
           
           <h1 className="text-display-lg md:text-display-xl font-display leading-tight">
-            <span className="text-muted-foreground/60">"</span>Stop being bag holder, secure your money with ETO and grow it<span className="text-muted-foreground/60">"</span>
+            <span className="text-muted-foreground/60">"</span>Stop being a bag holder, secure your money with ETO and grow it<span className="text-muted-foreground/60">"</span>
+            <span className="ml-2 text-2xl">🚀💰</span>
           </h1>
           
           {sideNote && (
@@ -50,9 +51,9 @@ export default function Faucet() {
           )}
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-            Claim <span className="font-mono font-medium text-foreground">free mUSDC</span> tokens for testing on{" "}
-            <span className="font-medium text-foreground">ETO Testnet</span>. Start trading in{" "}
-            <span className="font-mono font-medium text-primary">30 seconds</span>.
+            Claim <span className="font-mono font-medium text-foreground">free mUSDC</span> on{" "}
+            <span className="font-medium text-foreground">ETO Testnet</span>. Stop losing, start{" "}
+            <span className="font-mono font-medium text-primary">degen trading</span> in 30 seconds 😎
           </p>
         </div>
         
