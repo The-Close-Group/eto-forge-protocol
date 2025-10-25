@@ -107,11 +107,11 @@ export default function Bridge() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-2xl">
-      <div className="space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 pb-20 md:pb-6 max-w-2xl">
+      <div className="space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Cross-Chain Bridge</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold">Cross-Chain Bridge</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Bridge tokens from other chains to ETO Testnet using Stargate Finance
           </p>
         </div>
@@ -126,14 +126,14 @@ export default function Bridge() {
               Seamlessly transfer tokens across chains to trade on ETO
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             {/* From Chain & Token */}
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label>From Chain</Label>
+                  <Label className="text-sm">From Chain</Label>
                   <Select value={fromChain} onValueChange={setFromChain}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 sm:h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -146,9 +146,9 @@ export default function Bridge() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>From Token</Label>
+                  <Label className="text-sm">From Token</Label>
                   <Select value={fromToken} onValueChange={setFromToken}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 sm:h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -163,12 +163,13 @@ export default function Bridge() {
               </div>
 
               <div className="space-y-2">
-                <Label>Amount</Label>
+                <Label className="text-sm">Amount</Label>
                 <Input
                   type="number"
-                  placeholder="0.0"
+                  placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  className="h-11 sm:h-10"
                 />
               </div>
             </div>
@@ -182,16 +183,16 @@ export default function Bridge() {
 
             {/* To Chain & Token (Fixed to ETO) */}
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label>To Chain</Label>
-                  <div className="px-3 py-2 border rounded-md bg-muted">
+                  <Label className="text-sm">To Chain</Label>
+                  <div className="px-3 py-2.5 sm:py-2 border rounded-md bg-muted h-11 sm:h-10 flex items-center">
                     ETO Testnet
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>To Token</Label>
-                  <div className="px-3 py-2 border rounded-md bg-muted">
+                  <Label className="text-sm">To Token</Label>
+                  <div className="px-3 py-2.5 sm:py-2 border rounded-md bg-muted h-11 sm:h-10 flex items-center">
                     Mock USDC (mUSDC)
                   </div>
                 </div>
@@ -208,11 +209,11 @@ export default function Bridge() {
             </div>
 
             {/* Quote & Execute */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <Button
                 onClick={getStargateQuote}
                 disabled={!amount || !account || isLoadingQuote}
-                className="w-full"
+                className="w-full h-11 sm:h-10"
                 variant="outline"
               >
                 {isLoadingQuote ? (
@@ -241,7 +242,7 @@ export default function Bridge() {
                   <Button
                     onClick={executeSwap}
                     disabled={isExecuting}
-                    className="w-full"
+                    className="w-full h-11 sm:h-10"
                   >
                     {isExecuting ? (
                       <>
@@ -257,7 +258,7 @@ export default function Bridge() {
             </div>
 
             {!account && (
-              <div className="text-center text-muted-foreground">
+              <div className="text-center text-xs sm:text-sm text-muted-foreground">
                 Connect your wallet to start cross-chain bridging
               </div>
             )}

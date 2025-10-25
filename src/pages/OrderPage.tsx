@@ -201,19 +201,19 @@ export default function OrderPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-4xl mx-auto space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 pb-20 md:pb-6 max-w-4xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button variant="outline" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 sm:h-9 sm:w-9">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold font-mono">Create Order</h1>
-          <p className="text-muted-foreground">Structure your trade with advanced options</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-mono">Create Order</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Structure your trade with advanced options</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Order Form */}
         <div className="lg:col-span-2">
           <Card>
@@ -224,12 +224,12 @@ export default function OrderPage() {
                 <Badge variant="outline">${currentPrice.toLocaleString()}</Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6">
               {/* Asset Selection */}
               <div className="space-y-2">
-                <Label>Asset</Label>
+                <Label className="text-sm sm:text-base">Asset</Label>
                 <Select value={selectedAsset} onValueChange={setSelectedAsset}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 sm:h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -247,19 +247,19 @@ export default function OrderPage() {
 
               {/* Order Side */}
               <div className="space-y-2">
-                <Label>Order Side</Label>
-                <div className="grid grid-cols-2 gap-2">
+                <Label className="text-sm sm:text-base">Order Side</Label>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <Button
                     variant={orderSide === "buy" ? "default" : "outline"}
                     onClick={() => setOrderSide("buy")}
-                    className={orderSide === "buy" ? "bg-data-positive hover:bg-data-positive/90" : ""}
+                    className={`h-11 sm:h-10 ${orderSide === "buy" ? "bg-data-positive hover:bg-data-positive/90" : ""}`}
                   >
                     Buy
                   </Button>
                   <Button
                     variant={orderSide === "sell" ? "default" : "outline"}
                     onClick={() => setOrderSide("sell")}
-                    className={orderSide === "sell" ? "bg-data-negative hover:bg-data-negative/90" : ""}
+                    className={`h-11 sm:h-10 ${orderSide === "sell" ? "bg-data-negative hover:bg-data-negative/90" : ""}`}
                   >
                     Sell
                   </Button>
@@ -268,25 +268,26 @@ export default function OrderPage() {
 
               {/* Order Type */}
               <Tabs value={orderType} onValueChange={setOrderType}>
-                <TabsList className="grid w-full grid-cols-6">
-                  <TabsTrigger value="market">Market</TabsTrigger>
-                  <TabsTrigger value="limit">Limit</TabsTrigger>
-                  <TabsTrigger value="stop">Stop</TabsTrigger>
-                  <TabsTrigger value="oco">OCO</TabsTrigger>
-                  <TabsTrigger value="trailing_stop">Trail</TabsTrigger>
-                  <TabsTrigger value="iceberg">Iceberg</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1">
+                  <TabsTrigger value="market" className="text-xs sm:text-sm">Market</TabsTrigger>
+                  <TabsTrigger value="limit" className="text-xs sm:text-sm">Limit</TabsTrigger>
+                  <TabsTrigger value="stop" className="text-xs sm:text-sm">Stop</TabsTrigger>
+                  <TabsTrigger value="oco" className="text-xs sm:text-sm">OCO</TabsTrigger>
+                  <TabsTrigger value="trailing_stop" className="text-xs sm:text-sm">Trail</TabsTrigger>
+                  <TabsTrigger value="iceberg" className="text-xs sm:text-sm">Iceberg</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="market" className="space-y-4">
+                <TabsContent value="market" className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label>Amount ({selectedAsset})</Label>
+                    <Label className="text-sm sm:text-base">Amount ({selectedAsset})</Label>
                     <Input
                       type="number"
                       placeholder="0.00"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
+                      className="h-11 sm:h-10"
                     />
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Market price: ${currentPrice.toLocaleString()}
                     </p>
                   </div>
@@ -457,7 +458,7 @@ export default function OrderPage() {
 
               {/* Place Order Button */}
               <Button
-                className="w-full"
+                className="w-full h-12 sm:h-11 text-base"
                 size="lg"
                 onClick={handlePlaceOrder}
                 disabled={!amount || (orderType === "limit" && !limitPrice) || (orderType === "oco" && (!limitPrice || !stopPrice)) || (orderType === "trailing_stop" && !trailPercent && !trailAmount) || (orderType === "iceberg" && !displaySize)}

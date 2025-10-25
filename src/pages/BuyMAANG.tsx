@@ -65,27 +65,27 @@ export default function BuyMAANG() {
   };
   
   return (
-    <div className="container mx-auto p-6 max-w-2xl">
-      <div className="space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 pb-20 md:pb-6 max-w-2xl">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold font-mono flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-2xl">
+          <h1 className="text-2xl sm:text-3xl font-bold font-mono flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center text-xl sm:text-2xl">
               🤖
             </div>
             Buy MAANG
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Purchase MAANG tokens with your mUSDC balance
           </p>
         </div>
 
         {/* Price Info */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <Card className="bg-card border-border">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="text-xs text-muted-foreground mb-1">MAANG Price</div>
-              <div className="text-2xl font-bold font-mono text-primary">
+              <div className="text-xl sm:text-2xl font-bold font-mono text-primary">
                 ${maangPrice.toFixed(2)}
               </div>
               <div className="text-xs text-data-positive flex items-center gap-1 mt-1">
@@ -96,9 +96,9 @@ export default function BuyMAANG() {
           </Card>
           
           <Card className="bg-card border-border">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="text-xs text-muted-foreground mb-1">Your Balance</div>
-              <div className="text-2xl font-bold font-mono">
+              <div className="text-xl sm:text-2xl font-bold font-mono">
                 {account ? '1,250.00' : '0.00'}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
@@ -119,18 +119,18 @@ export default function BuyMAANG() {
               Enter the amount of mUSDC you want to spend
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             {/* Input Section */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
-                <Label>You Pay</Label>
+                <Label className="text-sm sm:text-base">You Pay</Label>
                 <div className="relative">
                   <Input
                     type="number"
                     placeholder="0.00"
                     value={usdcAmount}
                     onChange={(e) => setUsdcAmount(e.target.value)}
-                    className="pr-20 text-lg font-mono"
+                    className="pr-20 text-base sm:text-lg font-mono h-12 sm:h-auto"
                     disabled={!account}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
@@ -140,7 +140,7 @@ export default function BuyMAANG() {
               </div>
 
               {/* Arrow Indicator */}
-              <div className="flex justify-center">
+              <div className="flex justify-center py-1">
                 <div className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center bg-background">
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -148,9 +148,9 @@ export default function BuyMAANG() {
 
               {/* Output Section */}
               <div className="space-y-2">
-                <Label>You Receive</Label>
+                <Label className="text-sm sm:text-base">You Receive</Label>
                 <div className="relative">
-                  <div className="w-full px-4 py-3 border border-border rounded-lg bg-muted text-lg font-mono">
+                  <div className="w-full px-4 py-3 sm:py-3.5 border border-border rounded-lg bg-muted text-base sm:text-lg font-mono min-h-[48px] flex items-center">
                     {maangAmount}
                   </div>
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
@@ -162,7 +162,7 @@ export default function BuyMAANG() {
 
             {/* Transaction Details */}
             {usdcAmount && parseFloat(usdcAmount) > 0 && (
-              <div className="space-y-3 p-4 bg-muted rounded-lg">
+              <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-muted rounded-lg">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Price per MAANG</span>
                   <span className="font-mono">${maangPrice.toFixed(2)}</span>
@@ -184,7 +184,7 @@ export default function BuyMAANG() {
             <Button
               onClick={handleBuy}
               disabled={!account || !usdcAmount || parseFloat(usdcAmount) <= 0 || isProcessing}
-              className="w-full"
+              className="w-full h-12 sm:h-11 text-base"
               size="lg"
             >
               {isProcessing ? (
