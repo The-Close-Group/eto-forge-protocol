@@ -20,8 +20,11 @@ export default function Faucet() {
             <span className="text-sm font-mono text-muted-foreground">TESTNET FAUCET</span>
           </div>
           
-          <h1 className="text-display-lg md:text-display-xl font-display">
-            ETO : Because Stop losses are for losers - Sam bankman fried
+          <h1 className="text-display-lg md:text-display-xl font-display leading-tight">
+            <span className="text-muted-foreground/60">"</span>Because Stop losses are for losers<span className="text-muted-foreground/60">"</span>
+            <div className="text-xl md:text-2xl text-muted-foreground font-light mt-4">
+              — Sam Bankman-Fried
+            </div>
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
