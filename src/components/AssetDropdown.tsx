@@ -58,7 +58,7 @@ export function AssetDropdown({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-popover border-border shadow-md z-[60]" align="end">
+      <PopoverContent className="w-full p-0 bg-card border-border shadow-md z-[200]" align="end">
         <Command>
           <CommandInput placeholder="Search assets..." className="h-9" />
           <CommandList>

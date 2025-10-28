@@ -16,6 +16,7 @@ import {
 import { AssetDropdown, Asset } from "./AssetDropdown";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ShareTradeCard } from "@/components/ShareTradeCard";
 
 interface StakingPool {
   id: string;
@@ -49,6 +50,8 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   const [payAmount, setPayAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [isFirstStake, setIsFirstStake] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -68,6 +71,11 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
       setReceiveAmount(amount.toString());
     }
   }, [payAmount, selectedPool]);
+
+  useEffect(() => {
+    const hasStaked = localStorage.getItem('hasCompletedStake');
+    if (!hasStaked) setIsFirstStake(true);
+  }, []);
 
   const handleMaxClick = () => {
     if (payAsset) {
@@ -94,6 +102,10 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   const confirmStake = () => {
     setShowConfirmation(false);
     onStakeNow();
+    if (isFirstStake) {
+      localStorage.setItem('hasCompletedStake', 'true');
+      setTimeout(() => setShowShareCard(true), 300);
+    }
   };
 
   // Collapsed state
@@ -186,10 +198,14 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
               <div className="flex items-center justify-between mb-4">
                 <div className="flex-1">
                   <Input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="0"
                     value={payAmount}
-                    onChange={(e) => setPayAmount(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/,/g, '.');
+                      if (/^\d*(?:\.\d{0,6})?$/.test(v)) setPayAmount(v);
+                    }}
                     className="text-4xl font-bold font-mono bg-transparent border-0 px-0 focus-visible:ring-0 h-auto placeholder:text-muted-foreground/30"
                   />
                   <div className="text-lg text-muted-foreground font-mono mt-1">
@@ -304,6 +320,15 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Share Card for first stake */}
+          <ShareTradeCard
+            isOpen={showShareCard}
+            onClose={() => setShowShareCard(false)}
+            fromAsset={payAsset?.symbol || ''}
+            toAsset={selectedPool ? `${selectedPool.name} LP` : 'LP'}
+            amount={payAmount}
+          />
         </CardContent>
       </Card>
     </div>

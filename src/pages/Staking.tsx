@@ -57,6 +57,8 @@ const USER_POSITIONS: any[] = [];
 
 export default function Staking() {
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(STAKING_POOLS[0]);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Handle URL parameters for deep linking
   useEffect(() => {
@@ -75,13 +77,15 @@ export default function Staking() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
         <StakingWidget
-          isOpen={true}
-          onClose={() => {}}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
           selectedPool={selectedStakingPool}
-          isExpanded={true}
-          onToggleExpanded={() => {}}
+          isExpanded={isExpanded}
+          onToggleExpanded={() => setIsExpanded((v: boolean) => !v)}
           isIsolated={true}
-          onStakeNow={() => {}}
+          onStakeNow={() => {
+            /* no-op for now; widget handles confirmation and share */
+          }}
         />
       </div>
     </div>
