@@ -30,33 +30,6 @@ export default function Faucet() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 pb-24 md:pb-6">
       <div className="max-w-3xl w-full space-y-8">
-        {/* Hero Section */}
-        <div className="text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm">
-            <span className="text-2xl">💰</span>
-            <span className="text-sm font-mono text-muted-foreground">TESTNET FAUCET</span>
-          </div>
-          
-          <h1 className="text-display-lg md:text-display-xl font-display leading-tight">
-            <span className="text-muted-foreground/60">"</span>Stop being a bag holder, secure your money with ETO and grow it<span className="text-muted-foreground/60">"</span>
-            <span className="ml-2 text-2xl">🚀💰</span>
-          </h1>
-          
-          {sideNote && (
-            <div className="inline-block mt-4 px-4 py-3 bg-muted/50 border border-border rounded-lg backdrop-blur-sm">
-              <p className="text-sm text-muted-foreground italic max-w-2xl">
-                {sideNote}
-              </p>
-            </div>
-          )}
-          
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-            Claim <span className="font-mono font-medium text-foreground">free mUSDC</span> on{" "}
-            <span className="font-medium text-foreground">ETO Testnet</span>. Stop losing, start{" "}
-            <span className="font-mono font-medium text-primary">degen trading</span> in 30 seconds 😎
-          </p>
-        </div>
-        
         {/* Faucet Component */}
         <div className="backdrop-blur-sm">
           <USDCFaucet />
