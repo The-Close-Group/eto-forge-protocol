@@ -3,6 +3,16 @@ import { X, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AssetDropdown, Asset } from "./AssetDropdown";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,6 +48,7 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
   const [receiveAsset, setReceiveAsset] = useState<Asset | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -76,8 +87,13 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
 
   const handleStakeNow = () => {
     if (canStake) {
-      onStakeNow();
+      setShowConfirmation(true);
     }
+  };
+
+  const confirmStake = () => {
+    setShowConfirmation(false);
+    onStakeNow();
   };
 
   // Collapsed state
@@ -257,6 +273,37 @@ export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onTog
           >
             {!payAmount ? "Enter Amount to Stake" : "Stake Now"}
           </Button>
+
+          {/* Confirmation Dialog */}
+          <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Staking</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2">
+                  <div>You are about to stake:</div>
+                  <div className="font-mono font-bold text-foreground">
+                    {payAmount} {payAsset?.symbol}
+                  </div>
+                  {selectedPool && (
+                    <>
+                      <div className="pt-2">Pool: <span className="font-semibold text-foreground">{selectedPool.name}</span></div>
+                      <div>APY: <span className="font-semibold text-data-positive">{selectedPool.apy}</span></div>
+                      <div>Lock Period: <span className="font-semibold text-foreground">{selectedPool.lockPeriod}</span></div>
+                    </>
+                  )}
+                  <div className="pt-2 text-sm text-muted-foreground">
+                    Are you sure you want to proceed?
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmStake} className="bg-data-positive hover:bg-data-positive/90">
+                  Confirm Stake
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

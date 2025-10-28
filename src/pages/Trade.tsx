@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePrices } from "@/hooks/usePrices";
+import maangLogo from "@/assets/maang-logo.svg";
 
 export default function Trade() {
   const navigate = useNavigate();
@@ -35,8 +36,8 @@ export default function Trade() {
           <Card className="bg-card border-border hover:border-primary/50 transition-all duration-300 group">
             <CardContent className="p-8 text-center">
               <div className="mb-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center text-4xl mx-auto mb-4">
-                  🤖
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4 p-2">
+                  <img src={maangLogo} alt="MAANG" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-2xl font-bold font-mono mb-2">MAANG</h3>
                 <p className="text-muted-foreground mb-4">Meta AI & Analytics Token</p>
@@ -47,18 +48,10 @@ export default function Trade() {
               
               <div className="space-y-3">
                 <Button 
-                  onClick={() => navigate("/staking")}
+                  onClick={() => navigate("/buy-maang")}
                   variant="positive"
                   size="lg"
                   className="w-full font-mono"
-                >
-                  Stake MAANG
-                </Button>
-                <Button 
-                  onClick={() => navigate("/buy-maang")}
-                  variant="outline"
-                  size="lg"
-                  className="w-full font-mono group-hover:border-primary/50"
                 >
                   Buy MAANG
                 </Button>
@@ -82,18 +75,10 @@ export default function Trade() {
               
               <div className="space-y-3">
                 <Button 
-                  onClick={() => navigate("/staking")}
+                  onClick={() => navigate("/swap?token=USDC")}
                   variant="positive"
                   size="lg"
                   className="w-full font-mono"
-                >
-                  Stake USDC
-                </Button>
-                <Button 
-                  onClick={() => navigate("/swap?token=USDC")}
-                  variant="outline"
-                  size="lg"
-                  className="w-full font-mono group-hover:border-primary/50"
                 >
                   Trade USDC
                 </Button>
