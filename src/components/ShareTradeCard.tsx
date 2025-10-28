@@ -1,10 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Share2, Copy, Check, Download } from 'lucide-react';
+import { Share2, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 import maangLogo from '@/assets/maang-logo.svg';
 
 interface ShareTradeCardProps {
@@ -23,36 +21,9 @@ export function ShareTradeCard({
   amount,
 }: ShareTradeCardProps) {
   const [copied, setCopied] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const shareText = `Just traded ${amount} ${fromAsset} for ${toAsset} on ETO! 🚀`;
   const shareUrl = 'https://eto.trade';
-
-  const handleExportImage = async () => {
-    if (!cardRef.current) return;
-    
-    setIsExporting(true);
-    try {
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#1a1a1a',
-        scale: 2,
-        logging: false,
-      });
-      
-      const link = document.createElement('a');
-      link.download = `eto-trade-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      
-      toast.success('Image downloaded!');
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Failed to export image');
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
@@ -72,7 +43,6 @@ export function ShareTradeCard({
   };
 
   const handleShareDiscord = () => {
-    // Discord doesn't have a direct share URL, so we'll copy the text
     handleCopy();
     toast.success('Message copied! Paste it in Discord');
   };
@@ -89,7 +59,7 @@ export function ShareTradeCard({
 
         <div className="space-y-4">
           {/* Preview Card */}
-          <div ref={cardRef} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 border border-primary/20">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 border border-primary/20">
             <div className="flex items-center justify-center gap-3 mb-6">
               <img src={maangLogo} alt="ETO" className="w-16 h-16" />
             </div>
@@ -107,23 +77,6 @@ export function ShareTradeCard({
               </div>
             </div>
           </div>
-
-          {/* Export Image Button */}
-          <Button
-            variant="positive"
-            onClick={handleExportImage}
-            disabled={isExporting}
-            className="w-full"
-          >
-            {isExporting ? (
-              'Generating Image...'
-            ) : (
-              <>
-                <Download className="mr-2 h-4 w-4" />
-                Download Image
-              </>
-            )}
-          </Button>
 
           {/* Share Buttons */}
           <div className="space-y-2">
