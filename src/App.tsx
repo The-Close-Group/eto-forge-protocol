@@ -16,8 +16,8 @@ import { RouteTransition } from "@/components/RouteTransition";
 
 
 // Pages
-import Landing from "@/pages/Landing";
 import Pitch from "@/pages/Pitch";
+import { Navigate } from "react-router-dom";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
@@ -50,7 +50,7 @@ const App = () => (
               <TopLoadingBar />
               <CommandPalette />
               <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/pitch" element={<Pitch />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
