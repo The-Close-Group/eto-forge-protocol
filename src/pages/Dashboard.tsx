@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, Activity, TrendingUp } from "lucide-react";
+import { Coins, Activity, TrendingUp, Award } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserState } from "@/contexts/UserStateContext";
@@ -133,7 +133,7 @@ export default function Dashboard() {
                     );
                   })()}
                 </div>
-                <Button asChild size="sm">
+                <Button asChild size="sm" variant="positive">
                   <Link to="/trade">{hasWallet ? 'Start Trading' : 'Connect Wallet'}</Link>
                 </Button>
               </CardContent>
@@ -145,13 +145,13 @@ export default function Dashboard() {
               <CardTitle>Quick action</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button asChild className="w-full">
+              <Button asChild className="w-full" variant="positive">
                 <Link to="/trade">
                   <TrendingUp className="h-4 w-4" />
                   Start trading
                 </Link>
               </Button>
-              <Button variant="outline" asChild className="w-full">
+              <Button variant="positive" asChild className="w-full">
                 <Link to="/staking">
                   <Coins className="h-4 w-4" />
                   View staking
@@ -162,7 +162,33 @@ export default function Dashboard() {
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Points Dashboard */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-4 w-4 text-data-positive" />
+                Loyalty Points
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Total points</span>
+                  <span className="font-medium text-lg text-data-positive">0</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">This week</span>
+                  <span className="font-medium leading-relaxed text-right">+0</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Rank</span>
+                  <span className="font-medium leading-relaxed text-right">Unranked</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-4">
               <CardTitle>Staking overview</CardTitle>
@@ -179,7 +205,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Total rewards</span>
-                  <span className="font-medium leading-relaxed text-right">$0.00</span>
+                  <span className="font-medium leading-relaxed text-right text-data-positive">$0.00</span>
                 </div>
               </div>
             </CardContent>
