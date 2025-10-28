@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { useActiveAccount } from 'thirdweb/react';
-import { ShoppingCart, TrendingUp, Loader2, ArrowRight } from 'lucide-react';
+import { ShoppingCart, TrendingUp, Loader2, ArrowRight, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { usePrices } from '@/hooks/usePrices';
+import { ShareTradeCard } from '@/components/ShareTradeCard';
+import maangLogo from '@/assets/maang-logo.svg';
 
 export default function BuyMAANG() {
   const account = useActiveAccount();
@@ -16,6 +19,17 @@ export default function BuyMAANG() {
   
   const [usdcAmount, setUsdcAmount] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [isFirstTrade, setIsFirstTrade] = useState(false);
+
+  // Check if this is user's first trade
+  useEffect(() => {
+    const hasTraded = localStorage.getItem('hasCompletedTrade');
+    if (!hasTraded) {
+      setIsFirstTrade(true);
+    }
+  }, []);
   
   const maangPrice = getTokenPrice('MAANG') || 33.0;
   const usdcPrice = getTokenPrice('mUSDC') || 1.0;
@@ -33,7 +47,7 @@ export default function BuyMAANG() {
   const estimatedFee = totalCost * 0.003; // 0.3% fee
   const totalWithFee = totalCost + estimatedFee;
   
-  const handleBuy = async () => {
+  const handleBuyClick = () => {
     if (!account?.address) {
       toast.error('Please connect your wallet');
       return;
@@ -43,7 +57,12 @@ export default function BuyMAANG() {
       toast.error('Please enter a valid amount');
       return;
     }
-    
+
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmBuy = async () => {
+    setShowConfirmation(false);
     setIsProcessing(true);
     
     try {
@@ -52,16 +71,29 @@ export default function BuyMAANG() {
       
       toast.success(`Successfully bought ${maangAmount} MAANG!`);
       
-      // Navigate to transaction complete
-      setTimeout(() => {
-        navigate('/transaction-complete');
-      }, 1000);
+      // Mark as traded and show share card if first trade
+      if (isFirstTrade) {
+        localStorage.setItem('hasCompletedTrade', 'true');
+        setTimeout(() => {
+          setIsProcessing(false);
+          setShowShareCard(true);
+        }, 500);
+      } else {
+        // Navigate to transaction complete
+        setTimeout(() => {
+          navigate('/transaction-complete');
+        }, 1000);
+      }
     } catch (error) {
       console.error('Buy error:', error);
       toast.error('Purchase failed. Please try again.');
-    } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleCloseShare = () => {
+    setShowShareCard(false);
+    navigate('/dashboard');
   };
   
   return (
@@ -70,8 +102,8 @@ export default function BuyMAANG() {
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold font-mono flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center text-xl sm:text-2xl">
-              🤖
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <img src={maangLogo} alt="MAANG" className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
             Buy MAANG
           </h1>
@@ -182,9 +214,10 @@ export default function BuyMAANG() {
 
             {/* Buy Button */}
             <Button
-              onClick={handleBuy}
+              onClick={handleBuyClick}
               disabled={!account || !usdcAmount || parseFloat(usdcAmount) <= 0 || isProcessing}
               className="w-full h-12 sm:h-11 text-base"
+              variant="positive"
               size="lg"
             >
               {isProcessing ? (
@@ -243,6 +276,57 @@ export default function BuyMAANG() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Confirm Purchase
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 pt-4">
+              <p>You are about to purchase:</p>
+              
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">You pay:</span>
+                  <span className="font-mono font-semibold">{usdcAmount} mUSDC</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">You receive:</span>
+                  <span className="font-mono font-semibold">{maangAmount} MAANG</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-border">
+                  <span className="text-muted-foreground">Price per MAANG:</span>
+                  <span className="font-mono">${maangPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Trading Fee:</span>
+                  <span className="font-mono">${estimatedFee.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <p className="text-sm">Are you sure you want to proceed?</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmBuy} className="bg-data-positive hover:bg-data-positive/90">
+              Confirm Purchase
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Share Card for First Trade */}
+      <ShareTradeCard
+        isOpen={showShareCard}
+        onClose={handleCloseShare}
+        fromAsset="mUSDC"
+        toAsset="MAANG"
+        amount={maangAmount}
+      />
     </div>
   );
 }

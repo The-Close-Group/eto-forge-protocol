@@ -16,6 +16,7 @@ import { usePrices } from "@/hooks/usePrices";
 import { useActiveAccount } from "thirdweb/react";
 import { DMM_ADDRESS } from "@/config/contracts";
 import maangLogo from "@/assets/maang-logo.svg";
+import { ShareTradeCard } from "@/components/ShareTradeCard";
 
 // Remove fallback prices - fetch live values from chain
 const FALLBACK_ASSET_PRICES = {
@@ -70,6 +71,17 @@ export default function OrderPage() {
   const [currentStep, setCurrentStep] = useState<'approve' | 'swap' | 'confirm'>('approve');
   const [transactionHash, setTransactionHash] = useState<string>();
   const [error, setError] = useState<string>();
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [isFirstTrade, setIsFirstTrade] = useState(false);
+  const [completedTradeInfo, setCompletedTradeInfo] = useState<{ fromAsset: string; toAsset: string; amount: string } | null>(null);
+
+  // Check if this is user's first trade
+  useEffect(() => {
+    const hasTraded = localStorage.getItem('hasCompletedTrade');
+    if (!hasTraded) {
+      setIsFirstTrade(true);
+    }
+  }, []);
 
   const calculateTotal = () => {
     if (!amount) return 0;
@@ -140,9 +152,25 @@ export default function OrderPage() {
             setTransactionStatus('success');
             setTransactionHash(`0x${Math.random().toString(16).substr(2, 64)}`);
             
-            setTimeout(() => {
-              navigate(`/transaction-complete?type=dmm-buy&fromAsset=mUSDC&toAsset=MAANG&fromAmount=${usdcAmount}&toAmount=${amount}`);
-            }, 2000);
+            // Store trade info for share card
+            setCompletedTradeInfo({
+              fromAsset: 'mUSDC',
+              toAsset: 'MAANG',
+              amount: amount
+            });
+            
+            // Show share card if first trade, otherwise navigate
+            if (isFirstTrade) {
+              localStorage.setItem('hasCompletedTrade', 'true');
+              setTimeout(() => {
+                setIsTransactionOpen(false);
+                setShowShareCard(true);
+              }, 2000);
+            } else {
+              setTimeout(() => {
+                navigate(`/transaction-complete?type=dmm-buy&fromAsset=mUSDC&toAsset=MAANG&fromAmount=${usdcAmount}&toAmount=${amount}`);
+              }, 2000);
+            }
           } else {
             throw new Error('DMM buy failed');
           }
@@ -156,9 +184,25 @@ export default function OrderPage() {
             setTransactionStatus('success');
             setTransactionHash(`0x${Math.random().toString(16).substr(2, 64)}`);
             
-            setTimeout(() => {
-              navigate(`/transaction-complete?type=dmm-sell&fromAsset=MAANG&toAsset=mUSDC&fromAmount=${amount}&toAmount=${calculateTotal()}`);
-            }, 2000);
+            // Store trade info for share card
+            setCompletedTradeInfo({
+              fromAsset: 'MAANG',
+              toAsset: 'mUSDC',
+              amount: amount
+            });
+            
+            // Show share card if first trade, otherwise navigate
+            if (isFirstTrade) {
+              localStorage.setItem('hasCompletedTrade', 'true');
+              setTimeout(() => {
+                setIsTransactionOpen(false);
+                setShowShareCard(true);
+              }, 2000);
+            } else {
+              setTimeout(() => {
+                navigate(`/transaction-complete?type=dmm-sell&fromAsset=MAANG&toAsset=mUSDC&fromAmount=${amount}&toAmount=${calculateTotal()}`);
+              }, 2000);
+            }
           } else {
             throw new Error('DMM sell failed');
           }
@@ -592,6 +636,20 @@ export default function OrderPage() {
         toAmount={amount}
         error={error}
       />
+
+      {/* Share Card for First Trade */}
+      {completedTradeInfo && (
+        <ShareTradeCard
+          isOpen={showShareCard}
+          onClose={() => {
+            setShowShareCard(false);
+            navigate('/dashboard');
+          }}
+          fromAsset={completedTradeInfo.fromAsset}
+          toAsset={completedTradeInfo.toAsset}
+          amount={completedTradeInfo.amount}
+        />
+      )}
     </div>
   );
 }
