@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, Zap } from "lucide-react";
+import maangLogo from "@/assets/maang-logo.svg";
 
 interface QuickBuyAsset {
   symbol: string;
@@ -19,7 +19,7 @@ interface QuickBuyBannerProps {
 }
 
 const QUICK_BUY_ASSETS: QuickBuyAsset[] = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: "🤖", trending: true, change24h: 5.2 },
+  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: maangLogo, trending: true, change24h: 5.2 },
   { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐", change24h: 2.1 },
   { symbol: "BTC", name: "Bitcoin", price: 45000.00, icon: "₿", change24h: 1.8 },
   { symbol: "AVAX", name: "Avalanche", price: 26.00, icon: "🔺", trending: true, change24h: 3.7 },
@@ -54,8 +54,12 @@ export function QuickBuyBanner({ onQuickBuy }: QuickBuyBannerProps) {
                 className="flex items-center gap-4 cursor-pointer flex-1"
                 onClick={() => handleAssetClick(asset)}
               >
-                <div className="w-16 h-16 bg-primary/10 rounded-sm flex items-center justify-center">
-                  <span className="text-2xl">{asset.icon}</span>
+                <div className="w-16 h-16 bg-primary/10 rounded-sm flex items-center justify-center p-2">
+                  {asset.symbol === "MAANG" ? (
+                    <img src={asset.icon} alt={asset.symbol} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-2xl">{asset.icon}</span>
+                  )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">

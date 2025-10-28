@@ -3,6 +3,7 @@ import usdcLogo from "@/assets/usdc-logo.png";
 import avaxLogo from "@/assets/avalanche-logo.png";
 import solLogo from "@/assets/solana-logo.png";
 import lzLogo from "@/assets/layerzero-logo.png";
+import maangLogo from "@/assets/maang-logo.svg";
 
 interface CoinIconProps {
   symbol: string;
@@ -18,6 +19,7 @@ const SYMBOL_TO_LOGO: Record<string, string> = {
   SOL: solLogo,
   LZ: lzLogo,
   LAYERZERO: lzLogo,
+  MAANG: maangLogo,
 };
 
 export default function CoinIcon({ symbol, size = 18, className = "", alt }: CoinIconProps) {

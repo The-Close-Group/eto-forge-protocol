@@ -15,6 +15,7 @@ import { useDMMSwap } from "@/hooks/useDMMSwap";
 import { usePrices } from "@/hooks/usePrices";
 import { useActiveAccount } from "thirdweb/react";
 import { DMM_ADDRESS } from "@/config/contracts";
+import maangLogo from "@/assets/maang-logo.svg";
 
 // Remove fallback prices - fetch live values from chain
 const FALLBACK_ASSET_PRICES = {
@@ -22,7 +23,7 @@ const FALLBACK_ASSET_PRICES = {
 };
 
 const ASSETS = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", icon: "🤖" },
+  { symbol: "MAANG", name: "Meta AI & Analytics", icon: maangLogo },
   { symbol: "mUSDC", name: "Mock USD Coin", icon: "💵" },
   { symbol: "ETH", name: "Ethereum", icon: "⟐" },
   { symbol: "USDC", name: "USD Coin", icon: "💵" },
@@ -236,7 +237,11 @@ export default function OrderPage() {
                     {ASSETS.map((asset) => (
                       <SelectItem key={asset.symbol} value={asset.symbol}>
                         <div className="flex items-center gap-2">
-                          <span>{asset.icon}</span>
+                          {asset.symbol === "MAANG" ? (
+                            <img src={asset.icon} alt={asset.symbol} className="w-4 h-4 object-contain" />
+                          ) : (
+                            <span>{asset.icon}</span>
+                          )}
                           <span>{asset.name} ({asset.symbol})</span>
                         </div>
                       </SelectItem>

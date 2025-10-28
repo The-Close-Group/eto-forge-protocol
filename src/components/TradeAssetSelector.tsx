@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle } from "lucide-react";
 import CoinIcon from "@/components/CoinIcon";
+import maangLogo from "@/assets/maang-logo.svg";
 
 interface Asset {
   symbol: string;
@@ -28,7 +29,7 @@ interface TradeAssetSelectorProps {
 }
 
 const assets: Asset[] = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: "🤖" },
+  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: maangLogo },
   { symbol: "mUSDC", name: "Mock USD Coin", price: 1.00, icon: "💵" },
   { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐" },
   { symbol: "USDC", name: "USD Coin", price: 1.00, icon: "💵" },
