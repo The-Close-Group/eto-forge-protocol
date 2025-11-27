@@ -107,7 +107,7 @@ export default function Bridge() {
         <div>
           <h1 className="text-3xl font-bold">Cross-Chain Bridge</h1>
           <p className="text-muted-foreground">
-            Bridge tokens from other chains to ETO Testnet using Stargate Finance
+            Bridge tokens from other chains to ETO L1 using Stargate Finance
           </p>
         </div>
 
@@ -181,7 +181,7 @@ export default function Bridge() {
                 <div className="space-y-2">
                   <Label>To Chain</Label>
                   <div className="px-3 py-2 border rounded-md bg-muted">
-                    ETO Testnet
+                    ETO L1
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -270,7 +270,7 @@ export default function Bridge() {
                 1
               </div>
               <div>
-                <strong>Bridge to ETO:</strong> Transfer tokens from any supported chain to ETO Testnet
+                <strong>Bridge to ETO:</strong> Transfer tokens from any supported chain to ETO L1
               </div>
             </div>
             <div className="flex items-start gap-3">

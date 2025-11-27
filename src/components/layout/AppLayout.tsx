@@ -11,13 +11,13 @@ export function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <DesktopSidebar />
-        
-        <main className="flex-1 overflow-auto pb-20 md:pb-0">
+
+        <main className="flex-1 overflow-auto pb-20 md:pb-0 md:ml-[60px]">
           <RouteTransition>
             {children}
           </RouteTransition>
         </main>
-        
+
         <MobileBottomNav />
       </div>
     </SidebarProvider>

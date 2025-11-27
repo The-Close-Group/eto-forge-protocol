@@ -1,6 +1,6 @@
 import { ConnectButton } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
-import { client, etoTestnet } from '@/lib/thirdweb';
+import { client, etoMainnet, supportedChains, etoMainnetParams } from '@/lib/thirdweb';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwitchActiveWalletChain } from "thirdweb/react";
@@ -29,85 +29,36 @@ export default function SignIn() {
       <ConnectButton
         autoConnect={false}
         client={client}
-        chain={etoTestnet}
+        chain={etoMainnet}
+        chains={supportedChains}
         connectModal={{ size: "wide" }}
         wallets={wallets}
         onConnect={async (wallet) => {
           console.log('Wallet connected:', wallet);
           const address = wallet.getAccount()?.address;
           if (address) {
-            // Switch to ETO testnet
+            // ALWAYS try to add/update chain first to fix any wrong config
             try {
-              await switchChain(etoTestnet);
-              toast.success('Switched to ETO Testnet');
+              // Force add the correct chain config (this will update if exists)
+              if (activeWallet && typeof (activeWallet as any).request === "function") {
+                await (activeWallet as any).request({
+                  method: 'wallet_addEthereumChain',
+                  params: [etoMainnetParams],
+                });
+                console.log('ETO L1 chain config updated');
+              }
+            } catch (addError: any) {
+              // Ignore if already added - that's fine
+              console.log('Chain add result:', addError?.message || 'success');
+            }
+
+            // Now switch to the chain
+            try {
+              await switchChain(etoMainnet);
+              toast.success('Connected to ETO L1');
             } catch (error) {
               console.error('Failed to switch chain:', error);
-              toast.error('Failed to switch - trying to add chain...');
-
-              if (activeWallet && typeof (activeWallet as any).request === "function") {
-                try {
-                  await (activeWallet as any).request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                      chainId: `0x${etoTestnet.id.toString(16)}`,
-                      chainName: etoTestnet.name,
-                      nativeCurrency: etoTestnet.nativeCurrency,
-                      rpcUrls: [etoTestnet.rpc],
-                      blockExplorerUrls: [etoTestnet.blockExplorers[0].url],
-                    }],
-                  });
-                  toast.success('ETO Testnet added to wallet');
-
-                  // Retry switch after adding
-                  await switchChain(etoTestnet);
-                  toast.success('Switched to ETO Testnet');
-                } catch (addError: any) {
-                  console.error('Failed to add chain:', addError);
-                  if (addError.code === 4001) {
-                    toast.error('User rejected chain addition');
-                  } else if (addError.message?.includes('already added')) {
-                    toast.info('Chain already added - please switch manually in MetaMask');
-                  } else {
-                    toast.error('Failed to add ETO Testnet. Add manually in MetaMask settings.');
-                  }
-                }
-              } else {
-                toast.error('Wallet does not support chain addition');
-              }
-            }
-            
-            // Final check and retry
-            if (currentChain?.id !== etoTestnet.id) {
-              try {
-                await switchChain(etoTestnet);
-              } catch (retryError) {
-                const chainParams = {
-                  chainId: `0x${etoTestnet.id.toString(16)}`,
-                  chainName: etoTestnet.name,
-                  nativeCurrency: etoTestnet.nativeCurrency,
-                  rpcUrls: [etoTestnet.rpc],
-                  blockExplorerUrls: [etoTestnet.blockExplorers[0].url],
-                };
-
-                toast.error(
-                  <div>
-                    <p>Please add ETO Testnet manually in MetaMask:</p>
-                    <pre className="text-xs bg-muted p-2 rounded my-2 overflow-auto">
-                      {JSON.stringify(chainParams, null, 2)}
-                    </pre>
-                    <Button 
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(JSON.stringify(chainParams));
-                        toast.success('Params copied! Paste into MetaMask > Settings > Networks > Add Network');
-                      }}
-                    >
-                      Copy Params
-                    </Button>
-                  </div>,
-                  { duration: 30000 }
-                );
-              }
+              toast.error('Please switch to ETO L1 manually in your wallet');
             }
 
             // Determine if new user

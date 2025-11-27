@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Clock } from "lucide-react";
 import { addDays, subMonths, subYears, startOfYear, isAfter } from "date-fns";
 import TimeRangeSelector, { RangeKey } from "@/components/TimeRangeSelector";
+import { useProtocolStats } from "@/hooks/useProtocolStats";
 const PegStabilityChart = lazy(() => import("@/components/charts/PegStabilityChart"));
 const OracleFreshnessChart = lazy(() => import("@/components/charts/OracleFreshnessChart"));
 const ServiceUptimeRadials = lazy(() => import("@/components/charts/ServiceUptimeRadials"));
@@ -45,6 +46,7 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, { hasEr
 
 export default function SystemHealth() {
   const canonical = typeof window !== "undefined" ? window.location.href : "";
+  const { data: protocolStats, isLoading: isLoadingProtocol } = useProtocolStats();
 
   // Time-series data for Peg Stability (timestamp in ms)
   type PegPoint = { t: number; dev: number };
@@ -115,16 +117,19 @@ export default function SystemHealth() {
     return pegSeries.filter((p) => p.t >= fromTs);
   }, [pegSeries, range]);
   const freshnessData = [
-    { asset: "ETH", seconds: 3.1 },
-    { asset: "BTC", seconds: 2.7 },
-    { asset: "SOL", seconds: 5.8 },
-    { asset: "USDC", seconds: 1.9 },
-    { asset: "AVAX", seconds: 6.3 },
+    { asset: "Pyth", seconds: 2.1 },
+    { asset: "Hermes", seconds: 3.4 },
+    { asset: "Pyth Pro", seconds: 1.8 },
+    { asset: "Redstone", seconds: 4.2 },
+    { asset: "Chainlink", seconds: 2.9 },
+    { asset: "Canary", seconds: 5.1 },
+    { asset: "Chaos", seconds: 3.7 },
+    { asset: "Chronicle", seconds: 2.5 },
   ];
 
   const uptimeData = [
     { name: "DMM Core", uptime: 99.997 },
-    { name: "DRI Controller", uptime: 99.995 },
+    { name: "MAANG Controller", uptime: 99.995 },
     { name: "Oracle Aggregator", uptime: 99.999 },
     { name: "PSM Module", uptime: 99.992 },
     { name: "Circuit Breakers", uptime: 100.000 },
@@ -132,9 +137,9 @@ export default function SystemHealth() {
 
   const reservesData = [
     { name: "mUSDC", value: 45 },
-    { name: "DRI", value: 35 },
+    { name: "MAANG", value: 35 },
     { name: "MAANG", value: 15 },
-    { name: "GOVDRI", value: 5 },
+    { name: "GOVMAANG", value: 5 },
   ];
 
   return (
@@ -184,7 +189,7 @@ export default function SystemHealth() {
                   <div className="trading-panel p-6 space-y-6">
                     <div className="space-y-2">
                       <h2 id="peg-accuracy" className="text-xl font-semibold flex items-center gap-2">
-                        <Target className="h-5 w-5 text-accent" /> DRI Protocol Health
+                        <Target className="h-5 w-5 text-accent" /> ETO Protocol Health
                       </h2>
                       <p className="text-sm text-muted-foreground">
                         Reflective price mechanism active. DMM liquidity concentrated. All systems operational.
@@ -192,20 +197,28 @@ export default function SystemHealth() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Reflective Price</p>
-                        <p className="text-2xl font-mono font-bold text-data-positive">$2.34</p>
+                        <p className="text-sm text-muted-foreground">Oracle Price</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">
+                          {isLoadingProtocol ? <Skeleton className="h-8 w-20" /> : `$${(protocolStats?.oraclePrice || 0).toFixed(2)}`}
+                        </p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Oracle Price</p>
-                        <p className="text-2xl font-mono font-bold text-data-positive">$2.35</p>
+                        <p className="text-sm text-muted-foreground">DMM Price</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">
+                          {isLoadingProtocol ? <Skeleton className="h-8 w-20" /> : `$${(protocolStats?.dmmPrice || 0).toFixed(2)}`}
+                        </p>
                       </div>
                       <div className="metric-tile">
                         <p className="text-sm text-muted-foreground">Price Deviation</p>
-                        <p className="text-2xl font-mono font-bold text-data-positive">0.43%</p>
+                        <p className={`text-2xl font-mono font-bold ${Math.abs(protocolStats?.priceDeviation || 0) < 10 ? 'text-data-positive' : 'text-data-negative'}`}>
+                          {isLoadingProtocol ? <Skeleton className="h-8 w-16" /> : `${(protocolStats?.priceDeviation || 0).toFixed(2)} bps`}
+                        </p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">DMM Liquidity</p>
-                        <p className="text-2xl font-mono font-bold text-data-positive">$2.4M</p>
+                        <p className="text-sm text-muted-foreground">Total Value Locked</p>
+                        <p className="text-2xl font-mono font-bold text-data-positive">
+                          {isLoadingProtocol ? <Skeleton className="h-8 w-20" /> : `$${((protocolStats?.tvl || 0) / 1000000).toFixed(2)}M`}
+                        </p>
                       </div>
                     </div>
                     
@@ -215,19 +228,29 @@ export default function SystemHealth() {
                         <p className="text-xl font-mono font-bold text-accent">200x</p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">PSM Reserves</p>
-                        <p className="text-xl font-mono font-bold text-data-positive">89%</p>
+                        <p className="text-sm text-muted-foreground">Vault Share Price</p>
+                        <p className="text-xl font-mono font-bold text-data-positive">
+                          {isLoadingProtocol ? <Skeleton className="h-6 w-16" /> : (protocolStats?.vaultSharePrice || 1).toFixed(4)}
+                        </p>
                       </div>
                       <div className="metric-tile">
-                        <p className="text-sm text-muted-foreground">Sync Interval</p>
-                        <p className="text-xl font-mono font-bold">30s</p>
+                        <p className="text-sm text-muted-foreground">DMM Liquidity</p>
+                        <p className="text-xl font-mono font-bold">
+                          {isLoadingProtocol ? <Skeleton className="h-6 w-16" /> : `${(protocolStats?.totalLiquidity || 0).toFixed(2)} LP`}
+                        </p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">Reflective Sync Active</Badge>
-                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">DMM Operational</Badge>
+                      {protocolStats?.isHealthy ? (
+                        <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">System Healthy</Badge>
+                      ) : (
+                        <Badge variant="outline" className="bg-data-negative/10 text-data-negative border-data-negative/30">System Warning</Badge>
+                      )}
+                      {!protocolStats?.dmmPaused && (
+                        <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">DMM Operational</Badge>
+                      )}
                       <Badge variant="outline">Circuit Breakers Normal</Badge>
-                      <Badge variant="outline">PSM Reserves Healthy</Badge>
+                      <Badge variant="outline">Oracle Skip Enabled</Badge>
                       <Badge variant="outline">Oracle Consensus 100%</Badge>
                     </div>
                   </div>
@@ -417,15 +440,15 @@ export default function SystemHealth() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between py-2 border-b border-border/30">
-                  <span className="font-mono">ETH Pool</span>
+                  <span className="font-mono">MAANG/USDC Pool</span>
                   <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-data-positive" /> <span className="text-data-positive font-mono">Healthy</span></span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-border/30">
-                  <span className="font-mono">USDC Pool</span>
+                  <span className="font-mono">MAANG/ETH Pool</span>
                   <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-data-positive" /> <span className="text-data-positive font-mono">Healthy</span></span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span className="font-mono">BTC Pool</span>
+                  <span className="font-mono">USDC/MAANG Pool</span>
                   <span className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" /> <span className="text-warning font-mono">Monitor</span></span>
                 </div>
               </div>

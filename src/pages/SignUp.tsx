@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ConnectButton } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
-import { client, etoTestnet } from '@/lib/thirdweb';
+import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { useActiveAccount } from 'thirdweb/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -64,7 +64,8 @@ export default function SignUp() {
           <ConnectButton
             client={client}
             wallets={wallets}
-            chain={etoTestnet}
+            chain={etoMainnet}
+            chains={supportedChains}
             connectModal={{ size: "wide" }}
             onConnect={async (wallet) => {
               console.log('Wallet connected:', wallet);

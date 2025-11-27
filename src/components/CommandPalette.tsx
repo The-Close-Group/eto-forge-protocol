@@ -28,7 +28,7 @@ interface Item {
 
 const items: Item[] = [
   { title: "Trade", url: "/trade", icon: TrendingUp },
-  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
+  // { title: "Bridge", url: "/bridge", icon: ArrowDownUp }, // Temporarily removed
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "System Health", url: "/system-health", icon: Shield },

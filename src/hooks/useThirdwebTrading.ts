@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 import { getContract, prepareContractCall, sendTransaction, readContract } from 'thirdweb';
-import { client, etoTestnet } from '@/lib/thirdweb';
-import { MOCK_USDC_ADDRESS, DMM_ADDRESS, DMM_ABI, ERC20_ABI } from '@/config/contracts';
+import { client, etoMainnet } from '@/lib/thirdweb';
+import { USDC_ADDRESS, DMM_ADDRESS, DMM_ABI, ERC20_ABI } from '@/config/contracts';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseUnits, formatUnits } from 'ethers';
@@ -21,16 +21,16 @@ export function useThirdwebTrading() {
   const [isLoading, setIsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
 
-  const mUSDCContract = getContract({
+  const usdcContract = getContract({
     client,
-    chain: etoTestnet,
-    address: MOCK_USDC_ADDRESS,
+    chain: etoMainnet,
+    address: USDC_ADDRESS,
     abi: ERC20_ABI,
   });
 
   const dmmContract = getContract({
     client,
-    chain: etoTestnet,
+    chain: etoMainnet,
     address: DMM_ADDRESS,
     abi: DMM_ABI,
   });

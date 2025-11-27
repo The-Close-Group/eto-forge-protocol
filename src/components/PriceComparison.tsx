@@ -56,17 +56,17 @@ export function PriceComparison() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Oracle Price</div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-emerald-500">
               ${formattedOraclePrice}
             </div>
             <Badge variant="secondary" className="text-xs">
               Official Feed
             </Badge>
           </div>
-          
+
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">DMM Price</div>
-            <div className="text-2xl font-bold text-purple-600">
+            <div className="text-2xl font-bold text-lime-400">
               ${formattedDmmPrice}
             </div>
             <Badge variant="secondary" className="text-xs">

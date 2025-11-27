@@ -1,6 +1,6 @@
 import { defineChain } from "thirdweb/chains";
 import { ethereum, polygon, arbitrum, optimism, avalanche } from "thirdweb/chains";
-import { etoTestnet } from "@/lib/thirdweb";
+import { etoMainnet } from "@/lib/thirdweb";
 
 export interface TokenInfo {
   symbol: string;
@@ -47,13 +47,21 @@ const NATIVE_TOKENS: Record<string, TokenInfo> = {
     isNative: true,
     coingeckoId: "avalanche-2",
   },
-  GOVDRI: {
-    symbol: "GOVDRI",
-    name: "GOVDRI Token",
+  GOVMAANG: {
+    symbol: "GOVMAANG",
+    name: "GOVMAANG Token",
     address: "NATIVE",
     decimals: 18,
     isNative: true,
     coingeckoId: null, // Custom token, no CoinGecko ID
+  },
+  ETO_ETH: {
+    symbol: "ETH",
+    name: "Ether",
+    address: "NATIVE",
+    decimals: 18,
+    isNative: true,
+    coingeckoId: "ethereum",
   },
 };
 
@@ -147,26 +155,44 @@ const ERC20_TOKENS: Record<string, TokenInfo[]> = {
     },
   ],
   etoTestnet: [
-            {
-          symbol: "mUSDC",
-          name: "Mock USD Coin",
-          address: "0xBDd8A29859C96EB305A012C2ae286782B063238c",
-          decimals: 6,
-          coingeckoId: null, // Custom token, not on CoinGecko
-        },
+    {
+      symbol: "mUSDC",
+      name: "Mock USD Coin",
+      address: "0xBDd8A29859C96EB305A012C2ae286782B063238c",
+      decimals: 6,
+      coingeckoId: null,
+    },
     {
       symbol: "MAANG",
       name: "MAANG Token",
       address: "0xda60301ab3ffd71cc044f0b93d63745de7c815a3",
       decimals: 18,
-      coingeckoId: null, // Custom DMM token
+      coingeckoId: null,
     },
     {
-      symbol: "DRI",
-      name: "DRI Token",
+      symbol: "MAANG",
+      name: "MAANG Token",
       address: "0xd84d467b36e38ea5fb488298ac24dd926cf17f92",
       decimals: 18,
-      coingeckoId: null, // Custom DeFi token
+      coingeckoId: null,
+    },
+  ],
+  // ETO L1 Mainnet - V4 Production Deployment
+  etoMainnet: [
+    {
+      symbol: "USDC",
+      name: "USD Coin",
+      address: "0x98e3B2a66A8Bf81A716A02b1379D082772e524E5", // V10
+      decimals: 6,
+      coingeckoId: "usd-coin",
+    },
+    {
+      symbol: "MAANG",
+      name: "MAANG Token",
+      address: "0x5e0CBA25D4Acd25014b77E4c7908Cf1e2DA73EF8", // V10
+      decimals: 18,
+      coingeckoId: null, // MAANG index token
+      logoUri: "/assets/maang-logo.svg",
     },
   ],
 };
@@ -233,15 +259,17 @@ export const CHAIN_CONFIGS: Record<string, ChainConfig> = {
     ],
     blockExplorer: "https://snowtrace.io",
   },
-  etoTestnet: {
-    chain: etoTestnet,
-    name: "ETO Testnet",
-    nativeToken: NATIVE_TOKENS.GOVDRI,
-    tokens: ERC20_TOKENS.etoTestnet,
+
+  // ETO L1 Mainnet - Production
+  etoMainnet: {
+    chain: etoMainnet,
+    name: "ETO L1",
+    nativeToken: NATIVE_TOKENS.ETO_ETH,
+    tokens: ERC20_TOKENS.etoMainnet,
     rpcUrls: [
-      "https://subnets.avax.network/eto/testnet/rpc",
+      "https://eto.ash.center/rpc",
     ],
-    blockExplorer: "https://subnets-test.avax.network/eto",
+    blockExplorer: "https://eto-explorer.ash.center",
   },
 };
 
@@ -292,4 +320,4 @@ export function getTokensWithCoingeckoId(): TokenInfo[] {
 
 // Export specific configurations for easy access
 export const SUPPORTED_CHAINS = Object.keys(CHAIN_CONFIGS);
-export const DEFAULT_CHAIN = "etoTestnet"; // Default to ETO testnet for development
+export const DEFAULT_CHAIN = "etoMainnet"; // Default to ETO L1 mainnet for production

@@ -1,27 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { useActiveAccount } from 'thirdweb/react';
-import { ShoppingCart, TrendingUp, Loader2, ArrowRight, Shield } from 'lucide-react';
+import { TrendingUp, Loader2, ArrowDownUp, Shield, AlertTriangle, Info, Zap, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { usePrices } from '@/hooks/usePrices';
 import { ShareTradeCard } from '@/components/ShareTradeCard';
-import maangLogo from '@/assets/maang-logo.svg';
+import { useDirectSwap } from '@/hooks/useDirectSwap';
+// Logo not needed in this component
 
 export default function BuyMAANG() {
   const account = useActiveAccount();
   const navigate = useNavigate();
-  const { getTokenPrice } = usePrices();
   
-  const [usdcAmount, setUsdcAmount] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  // Use direct swap hook (bypasses Thirdweb)
+  const directSwap = useDirectSwap();
+
+  const [inputAmount, setInputAmount] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [isFirstTrade, setIsFirstTrade] = useState(false);
+  const [isReversed, setIsReversed] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [validationError, setValidationError] = useState<string>('');
+  const [livePrice, setLivePrice] = useState<number>(0);
+  const [userBalances, setUserBalances] = useState({ usdc: '0', dri: '0' });
+  const [quote, setQuote] = useState<{ output: string; minReceived: string } | null>(null);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   // Check if this is user's first trade
   useEffect(() => {
@@ -30,64 +40,191 @@ export default function BuyMAANG() {
       setIsFirstTrade(true);
     }
   }, []);
+
+  // Fetch live price and balances
+  useEffect(() => {
+    const fetchData = async () => {
+      const price = await directSwap.getCurrentPrice();
+      if (price > 0) setLivePrice(price);
+      
+      if (account?.address) {
+        const balances = await directSwap.getBalances();
+        setUserBalances(balances);
+      }
+    };
+    
+    fetchData();
+    const interval = setInterval(fetchData, 10000); // Refresh every 10s
+    return () => clearInterval(interval);
+  }, [directSwap, account?.address]);
+
+  const driPrice = livePrice || 328.0; // Fallback to ~oracle price
+  const usdcPrice = 1.0;
+
+  // Memoize token directions
+  const fromToken = useMemo(() => isReversed ? 'MAANG' : 'mUSDC', [isReversed]);
+  const toToken = useMemo(() => isReversed ? 'mUSDC' : 'MAANG', [isReversed]);
+
+  // Fetch quote when input changes
+  useEffect(() => {
+    const fetchQuote = async () => {
+      if (!inputAmount || parseFloat(inputAmount) <= 0) {
+        setQuote(null);
+        return;
+      }
+
+      const quoteResult = isReversed
+        ? await directSwap.getSellQuote(inputAmount)
+        : await directSwap.getBuyQuote(inputAmount);
+
+      if (quoteResult) {
+        setQuote({
+          output: quoteResult.outputAmount,
+          minReceived: quoteResult.minimumReceived,
+        });
+      }
+    };
+
+    const debounce = setTimeout(fetchQuote, 300);
+    return () => clearTimeout(debounce);
+  }, [inputAmount, isReversed, directSwap]);
+
+  // Memoize calculations
+  const outputAmount = useMemo(() => {
+    // Use live quote if available
+    if (quote?.output) return quote.output;
+    
+    // Fallback to estimate
+    if (!inputAmount || isNaN(parseFloat(inputAmount))) return '0.00';
+    const input = parseFloat(inputAmount);
+
+    if (isReversed) {
+      // MAANG -> mUSDC
+      const output = input * driPrice;
+      return output.toFixed(2);
+    } else {
+      // mUSDC -> MAANG
+      const output = input / driPrice;
+      return output.toFixed(6);
+    }
+  }, [inputAmount, isReversed, driPrice, quote]);
+
+  const { totalCost, estimatedFee, totalWithFee } = useMemo(() => {
+    const cost = parseFloat(inputAmount || '0');
+    const fee = cost * 0.003;
+    return {
+      totalCost: cost,
+      estimatedFee: fee,
+      totalWithFee: cost + fee
+    };
+  }, [inputAmount]);
+
+  // Validation logic
+  const validateAmount = useCallback((amount: string): string => {
+    if (!amount || amount === '0') return '';
+
+    const num = parseFloat(amount);
+    if (isNaN(num) || num <= 0) {
+      return 'Please enter a valid amount';
+    }
+
+    if (num < 0.01) {
+      return 'Minimum swap amount is 0.01';
+    }
+
+    if (num > 1000000) {
+      return 'Maximum swap amount is 1,000,000';
+    }
+
+    // Check real balance if wallet connected
+    if (account) {
+      const balance = isReversed
+        ? parseFloat(userBalances.dri)
+        : parseFloat(userBalances.usdc);
+      if (num > balance) {
+        return `Insufficient ${fromToken} balance (have ${balance.toFixed(2)})`;
+      }
+    }
+
+    return '';
+  }, [account, fromToken, isReversed, userBalances]);
+
+  // Validate on amount change
+  useEffect(() => {
+    const error = validateAmount(inputAmount);
+    setValidationError(error);
+  }, [inputAmount, validateAmount]);
+
+  // Price impact calculation
+  const priceImpact = useMemo(() => {
+    if (!inputAmount || parseFloat(inputAmount) === 0) return 0;
+    // Simulate price impact (higher for larger amounts)
+    const amount = parseFloat(inputAmount);
+    return Math.min((amount / 10000) * 100, 15); // Max 15% impact
+  }, [inputAmount]);
+
+  // Use callback for flip handler
+  const handleFlipTokens = useCallback(() => {
+    setIsFlipping(true);
+    setIsReversed(prev => !prev);
+    setInputAmount('');
+    setValidationError('');
+    setTimeout(() => setIsFlipping(false), 300);
+  }, []);
   
-  const maangPrice = getTokenPrice('MAANG') || 33.0;
-  const usdcPrice = getTokenPrice('mUSDC') || 1.0;
-  
-  // Calculate how much MAANG user will receive
-  const calculateMAANGAmount = () => {
-    if (!usdcAmount || isNaN(parseFloat(usdcAmount))) return '0.00';
-    const usdc = parseFloat(usdcAmount);
-    const maangAmount = (usdc * usdcPrice) / maangPrice;
-    return maangAmount.toFixed(4);
-  };
-  
-  const maangAmount = calculateMAANGAmount();
-  const totalCost = parseFloat(usdcAmount || '0');
-  const estimatedFee = totalCost * 0.003; // 0.3% fee
-  const totalWithFee = totalCost + estimatedFee;
-  
-  const handleBuyClick = () => {
+  const handleSwapClick = useCallback(() => {
     if (!account?.address) {
       toast.error('Please connect your wallet');
       return;
     }
-    
-    if (!usdcAmount || parseFloat(usdcAmount) <= 0) {
+
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    if (!inputAmount || parseFloat(inputAmount) <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
 
     setShowConfirmation(true);
-  };
+  }, [account, validationError, inputAmount]);
 
-  const handleConfirmBuy = async () => {
+  const handleConfirmSwap = async () => {
     setShowConfirmation(false);
-    setIsProcessing(true);
-    
+
     try {
-      // Simulate buy transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Execute real swap
+      let txHash: string | null;
       
-      toast.success(`Successfully bought ${maangAmount} MAANG!`);
-      
-      // Mark as traded and show share card if first trade
-      if (isFirstTrade) {
-        localStorage.setItem('hasCompletedTrade', 'true');
-        setTimeout(() => {
-          setIsProcessing(false);
-          setShowShareCard(true);
-        }, 500);
+      if (isReversed) {
+        // Sell MAANG for USDC
+        txHash = await directSwap.sellDRI(inputAmount, quote?.minReceived);
       } else {
-        // Navigate to transaction complete
-        setTimeout(() => {
-          navigate('/transaction-complete');
-        }, 1000);
+        // Buy MAANG with USDC
+        txHash = await directSwap.buyDRI(inputAmount, quote?.minReceived);
+      }
+
+      if (txHash) {
+        setLastTxHash(txHash);
+        
+        // Refresh balances
+        const newBalances = await directSwap.getBalances();
+        setUserBalances(newBalances);
+
+        // Mark as traded and show share card if first trade
+        if (isFirstTrade) {
+          localStorage.setItem('hasCompletedTrade', 'true');
+          setShowShareCard(true);
+        } else {
+          // Reset form for next swap
+          setInputAmount('');
+          setQuote(null);
+        }
       }
     } catch (error) {
-      console.error('Buy error:', error);
-      toast.error('Purchase failed. Please try again.');
-      setIsProcessing(false);
+      console.error('Swap error:', error);
     }
   };
 
@@ -103,12 +240,12 @@ export default function BuyMAANG() {
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold font-mono flex items-center gap-3">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-              <img src={maangLogo} alt="MAANG" className="w-6 h-6 sm:w-7 sm:h-7" />
+              <ArrowDownUp className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
-            Buy MAANG
+            Swap Tokens
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Purchase MAANG tokens with your mUSDC balance
+            Swap between MAANG and mUSDC instantly
           </p>
         </div>
 
@@ -118,135 +255,280 @@ export default function BuyMAANG() {
             <CardContent className="p-3 sm:p-4">
               <div className="text-xs text-muted-foreground mb-1">MAANG Price</div>
               <div className="text-xl sm:text-2xl font-bold font-mono text-primary">
-                ${maangPrice.toFixed(2)}
+                ${driPrice.toFixed(2)}
               </div>
-              <div className="text-xs text-data-positive flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3" />
-                +12.5% (24h)
+              <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                Live from DMM
               </div>
             </CardContent>
           </Card>
           
           <Card className="bg-card border-border">
             <CardContent className="p-3 sm:p-4">
-              <div className="text-xs text-muted-foreground mb-1">Your Balance</div>
-              <div className="text-xl sm:text-2xl font-bold font-mono">
-                {account ? '1,250.00' : '0.00'}
+              <div className="text-xs text-muted-foreground mb-1">Your Balances</div>
+              <div className="text-lg sm:text-xl font-bold font-mono">
+                {account ? userBalances.usdc : '0.00'} <span className="text-sm text-muted-foreground">mUSDC</span>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                mUSDC available
+              <div className="text-sm font-mono text-muted-foreground mt-1">
+                {account ? userBalances.dri : '0.00'} MAANG
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Buy Form */}
+        {/* Swap Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
-              Purchase MAANG
+            <CardTitle className="flex items-center gap-2 justify-between">
+              <div className="flex items-center gap-2">
+                <ArrowDownUp className="h-5 w-5" />
+                Swap Assets
+              </div>
+              <Badge variant="outline" className="text-xs gap-1">
+                <Zap className="h-3 w-3" />
+                DMM
+              </Badge>
             </CardTitle>
             <CardDescription>
-              Enter the amount of mUSDC you want to spend
+              Using ETO Protocol's Dynamic Market Maker for optimal pricing
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">
             {/* Input Section */}
-            <div className="space-y-3 sm:space-y-4">
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">You Pay</Label>
-                <div className="relative">
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={usdcAmount}
-                    onChange={(e) => setUsdcAmount(e.target.value)}
-                    className="pr-20 text-base sm:text-lg font-mono h-12 sm:h-auto"
-                    disabled={!account}
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                    mUSDC
+            <div className="space-y-3 sm:space-y-4 relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`input-${isReversed}`}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="space-y-2"
+                >
+                  <div className="flex justify-between items-center">
+                    <Label className="text-sm sm:text-base">You Pay</Label>
+                    <span className="text-xs text-muted-foreground">
+                      Balance: {isReversed ? userBalances.dri : userBalances.usdc} {fromToken}
+                    </span>
                   </div>
-                </div>
-              </div>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={inputAmount}
+                        onChange={(e) => setInputAmount(e.target.value)}
+                        className={`pr-20 text-base sm:text-lg font-mono h-12 sm:h-auto ${
+                          validationError ? 'border-destructive focus-visible:ring-destructive' : ''
+                        }`}
+                      />
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={`from-${fromToken}`}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium"
+                        >
+                          {fromToken}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-12 px-4"
+                      onClick={() => {
+                        const balance = isReversed ? userBalances.dri : userBalances.usdc;
+                        setInputAmount(balance);
+                      }}
+                    >
+                      MAX
+                    </Button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
 
-              {/* Arrow Indicator */}
-              <div className="flex justify-center py-1">
-                <div className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center bg-background">
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
+              {/* Flip Button */}
+              <div className="flex justify-center py-1 relative z-10">
+                <motion.button
+                  onClick={handleFlipTokens}
+                  className={`w-12 h-12 rounded-full border-2 flex items-center justify-center bg-background shadow-lg cursor-pointer hover:shadow-xl transition-colors ${
+                    isFlipping ? 'border-primary' : 'border-primary/50'
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{ rotate: isFlipping ? 180 : 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 25 }}
+                >
+                  <ArrowDownUp className="h-6 w-6 text-primary" />
+                </motion.button>
               </div>
 
               {/* Output Section */}
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">You Receive</Label>
-                <div className="relative">
-                  <div className="w-full px-4 py-3 sm:py-3.5 border border-border rounded-lg bg-muted text-base sm:text-lg font-mono min-h-[48px] flex items-center">
-                    {maangAmount}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`output-${isReversed}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="space-y-2"
+                >
+                  <Label className="text-sm sm:text-base">You Receive</Label>
+                  <div className="relative">
+                    <div className="w-full px-4 py-3 sm:py-3.5 border border-border rounded-lg bg-muted text-base sm:text-lg font-mono min-h-[48px] flex items-center">
+                      {outputAmount}
+                    </div>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={`to-${toToken}`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium"
+                      >
+                        {toToken}
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                    MAANG
-                  </div>
-                </div>
-              </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
 
+            {/* Validation Error */}
+            {validationError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+              >
+                <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                <p className="text-sm text-destructive">{validationError}</p>
+              </motion.div>
+            )}
+
             {/* Transaction Details */}
-            {usdcAmount && parseFloat(usdcAmount) > 0 && (
-              <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-muted rounded-lg">
+            {inputAmount && parseFloat(inputAmount) > 0 && !validationError && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-muted rounded-lg overflow-hidden"
+              >
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Price per MAANG</span>
-                  <span className="font-mono">${maangPrice.toFixed(2)}</span>
+                  <span className="text-muted-foreground">Exchange Rate</span>
+                  <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Trading Fee (0.3%)</span>
                   <span className="font-mono">${estimatedFee.toFixed(2)}</span>
                 </div>
+                {priceImpact > 1 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      Price Impact
+                      <Info className="h-3 w-3" />
+                    </span>
+                    <span className={`font-mono ${
+                      priceImpact > 5 ? 'text-destructive' : priceImpact > 3 ? 'text-warning' : 'text-muted-foreground'
+                    }`}>
+                      {priceImpact.toFixed(2)}%
+                    </span>
+                  </div>
+                )}
                 <div className="pt-3 border-t border-border">
                   <div className="flex justify-between">
                     <span className="font-medium">Total Cost</span>
-                    <span className="font-mono font-bold">${totalWithFee.toFixed(2)} mUSDC</span>
+                    <span className="font-mono font-bold">{totalWithFee.toFixed(4)} {fromToken}</span>
                   </div>
                 </div>
-              </div>
+                {priceImpact > 5 && (
+                  <div className="flex items-start gap-2 pt-2 text-xs text-warning">
+                    <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>High price impact! Consider reducing swap amount.</span>
+                  </div>
+                )}
+              </motion.div>
             )}
 
-            {/* Buy Button */}
+            {/* Swap Button */}
             <Button
-              onClick={handleBuyClick}
-              disabled={!account || !usdcAmount || parseFloat(usdcAmount) <= 0 || isProcessing}
+              onClick={handleSwapClick}
+              disabled={!account || !inputAmount || parseFloat(inputAmount) <= 0 || directSwap.isLoading || directSwap.isApproving || !!validationError}
               className="w-full h-12 sm:h-11 text-base"
-              variant="positive"
+              variant={priceImpact > 5 ? "destructive" : "positive"}
               size="lg"
             >
-              {isProcessing ? (
+              {directSwap.isApproving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
+                  Approving...
+                </>
+              ) : directSwap.isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Swapping...
                 </>
               ) : !account ? (
-                'Connect Wallet to Buy'
+                'Connect Wallet to Swap'
+              ) : validationError ? (
+                <>
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  Cannot Swap
+                </>
               ) : (
                 <>
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  Buy MAANG
+                  <ArrowDownUp className="mr-2 h-4 w-4" />
+                  {priceImpact > 5 ? 'Swap Anyway' : `Swap ${fromToken}`}
                 </>
               )}
             </Button>
 
             {!account && (
               <div className="text-center text-sm text-muted-foreground">
-                Connect your wallet to start buying MAANG tokens
+                Connect your wallet to start swapping tokens
+              </div>
+            )}
+
+            {account && inputAmount && !validationError && (
+              <div className="text-center text-xs text-muted-foreground">
+                <div className="flex items-center justify-center gap-1">
+                  <Shield className="h-3 w-3" />
+                  <span>Gas fees sponsored • 0.3% trading fee</span>
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
 
+        {/* Last Transaction Link */}
+        {lastTxHash && (
+          <Card className="bg-green-500/10 border-green-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  ✓ Last swap successful!
+                </span>
+                <a
+                  href={`https://eto-explorer.ash.center/tx/${lastTxHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-500 hover:underline flex items-center gap-1"
+                >
+                  View transaction <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Info Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Why buy MAANG?</CardTitle>
+            <CardTitle className="text-lg">About Trading</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <div className="flex items-start gap-3">
@@ -254,7 +536,7 @@ export default function BuyMAANG() {
                 1
               </div>
               <div>
-                <strong className="text-foreground">AI-Powered Growth:</strong> MAANG leverages cutting-edge AI and analytics technology
+                <strong className="text-foreground">Instant Swaps:</strong> Swap between MAANG and mUSDC instantly with 0.3% fees
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -262,7 +544,7 @@ export default function BuyMAANG() {
                 2
               </div>
               <div>
-                <strong className="text-foreground">High Liquidity:</strong> Trade instantly with deep liquidity pools on ETO
+                <strong className="text-foreground">Protocol-Owned Liquidity:</strong> Deep liquidity provided by ETO Protocol
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -270,7 +552,7 @@ export default function BuyMAANG() {
                 3
               </div>
               <div>
-                <strong className="text-foreground">Staking Rewards:</strong> Earn up to 24.8% APY by staking MAANG tokens
+                <strong className="text-foreground">Fair Pricing:</strong> Current MAANG price: ${driPrice.toFixed(2)} from DMM
               </div>
             </div>
           </CardContent>
@@ -283,37 +565,39 @@ export default function BuyMAANG() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
-              Confirm Purchase
+              Confirm Swap
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4 pt-4">
-              <p>You are about to purchase:</p>
-              
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">You pay:</span>
-                  <span className="font-mono font-semibold">{usdcAmount} mUSDC</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">You receive:</span>
-                  <span className="font-mono font-semibold">{maangAmount} MAANG</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-border">
-                  <span className="text-muted-foreground">Price per MAANG:</span>
-                  <span className="font-mono">${maangPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Trading Fee:</span>
-                  <span className="font-mono">${estimatedFee.toFixed(2)}</span>
-                </div>
-              </div>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4 pt-4">
+                <span className="block">You are about to swap:</span>
 
-              <p className="text-sm">Are you sure you want to proceed?</p>
+                <div className="bg-muted p-4 rounded-lg space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">You pay:</span>
+                    <span className="font-mono font-semibold">{inputAmount} {fromToken}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">You receive:</span>
+                    <span className="font-mono font-semibold">{outputAmount} {toToken}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-border">
+                    <span className="text-muted-foreground">Exchange Rate:</span>
+                    <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Trading Fee:</span>
+                    <span className="font-mono">${estimatedFee.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <span className="block text-sm">Are you sure you want to proceed?</span>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmBuy} className="bg-data-positive hover:bg-data-positive/90">
-              Confirm Purchase
+            <AlertDialogAction onClick={handleConfirmSwap} className="bg-data-positive hover:bg-data-positive/90">
+              Confirm Swap
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -323,9 +607,9 @@ export default function BuyMAANG() {
       <ShareTradeCard
         isOpen={showShareCard}
         onClose={handleCloseShare}
-        fromAsset="mUSDC"
-        toAsset="MAANG"
-        amount={maangAmount}
+        fromAsset={fromToken}
+        toAsset={toToken}
+        amount={outputAmount}
       />
     </div>
   );

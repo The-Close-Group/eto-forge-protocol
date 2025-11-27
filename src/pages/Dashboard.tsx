@@ -1,17 +1,30 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, Activity, TrendingUp } from "lucide-react";
+import { Coins, Activity, TrendingUp, CheckCircle2, AlertTriangle, Server, ExternalLink } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserState } from "@/contexts/UserStateContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { USDCFaucet } from "@/components/USDCFaucet";
 import { useBalances } from "@/hooks/useBalances";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, ConnectButton } from "thirdweb/react";
 import { usePrices } from "@/hooks/usePrices";
 import { PriceComparison } from "@/components/PriceComparison";
 import { OracleDMMChart } from "@/components/charts/OracleDMMChart";
+import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
+import { createWallet } from "thirdweb/wallets";
+import { useProtocolStats } from "@/hooks/useProtocolStats";
+import { useProtocolActivity } from "@/hooks/useProtocolActivity";
+import { Badge } from "@/components/ui/badge";
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+  createWallet("app.phantom"),
+  createWallet("walletConnect"),
+];
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -35,6 +48,12 @@ export default function Dashboard() {
   // Get price data
   const { getTokenPrice } = usePrices();
   
+  // Get protocol stats (TVL, health, etc.)
+  const { data: protocolStats, isLoading: isLoadingProtocol } = useProtocolStats();
+  
+  // Get protocol activity (drips, syncs, etc.)
+  const { data: protocolActivity, isLoading: isLoadingActivity } = useProtocolActivity();
+  
   // Combine loading states
   const isLoading = isLoadingBlockchain || isLoadingUser;
   
@@ -46,9 +65,9 @@ export default function Dashboard() {
   };
 
   const trendingAssets = [
-    { symbol: "ARB", change: "+8.7%", positive: true },
-    { symbol: "OP", change: "+3.1%", positive: true },
-    { symbol: "AVAX", change: "+3.2%", positive: true },
+    { symbol: "MAANG", change: "+0.0%", positive: true },
+    { symbol: "mUSDC", change: "~$1.00", positive: true },
+    { symbol: "sMAANG", change: "LP Shares", positive: true },
   ];
 
   const handleAssetClick = (symbol: string) => {
@@ -133,9 +152,26 @@ export default function Dashboard() {
                     );
                   })()}
                 </div>
-                <Button asChild size="sm">
-                  <Link to="/trade">{hasWallet ? 'Start Trading' : 'Connect Wallet'}</Link>
-                </Button>
+                {hasWallet ? (
+                  <Button asChild size="sm">
+                    <Link to="/trade">Start Trading</Link>
+                  </Button>
+                ) : (
+                  <ConnectButton
+                    client={client}
+                    wallets={wallets}
+                    chain={etoMainnet}
+                    chains={supportedChains}
+                    connectModal={{ size: "compact" }}
+                    connectButton={{
+                      label: "Connect Wallet",
+                      style: {
+                        height: "36px",
+                        fontSize: "14px",
+                      },
+                    }}
+                  />
+                )}
               </CardContent>
             </Card>
           </div>
@@ -161,25 +197,51 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Key Stats */}
+        {/* Protocol Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle>Staking overview</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-4 w-4" />
+                Protocol Status
+                {protocolStats && (
+                  <Badge variant={protocolStats.isHealthy ? "default" : "destructive"} className="ml-auto">
+                    {protocolStats.isHealthy ? (
+                      <><CheckCircle2 className="h-3 w-3 mr-1" /> Healthy</>
+                    ) : (
+                      <><AlertTriangle className="h-3 w-3 mr-1" /> Warning</>
+                    )}
+                  </Badge>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Total staked</span>
-                  <span className="font-medium leading-relaxed text-right">$0.00</span>
+                  <span className="text-sm text-muted-foreground">Total Value Locked</span>
+                  <span className="font-medium leading-relaxed text-right">
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-20" /> : 
+                      `$${(protocolStats?.tvl || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                    }
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Current APY</span>
-                  <span className="font-medium leading-relaxed text-right">0.0%</span>
+                  <span className="text-sm text-muted-foreground">DRI Price (DMM)</span>
+                  <span className="font-medium leading-relaxed text-right">
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-20" /> : 
+                      `$${(protocolStats?.dmmPrice || 0).toFixed(2)}`
+                    }
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Total rewards</span>
-                  <span className="font-medium leading-relaxed text-right">$0.00</span>
+                  <span className="text-sm text-muted-foreground">Price Deviation</span>
+                  <span className={`font-medium leading-relaxed text-right ${
+                    Math.abs(protocolStats?.priceDeviation || 0) < 10 ? 'text-data-positive' : 'text-data-negative'
+                  }`}>
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
+                      `${(protocolStats?.priceDeviation || 0).toFixed(2)} bps`
+                    }
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -187,21 +249,33 @@ export default function Dashboard() {
           
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle>Trading activity</CardTitle>
+              <CardTitle>Vault Stats</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Total trades</span>
-                  <span className="font-medium leading-relaxed text-right">0</span>
+                  <span className="text-sm text-muted-foreground">Total Assets</span>
+                  <span className="font-medium leading-relaxed text-right">
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-20" /> : 
+                      `${(protocolStats?.vaultTotalAssets || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })} DRI`
+                    }
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">LP trades</span>
-                  <span className="font-medium leading-relaxed text-right">0</span>
+                  <span className="text-sm text-muted-foreground">Share Price</span>
+                  <span className="font-medium leading-relaxed text-right">
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
+                      `${(protocolStats?.vaultSharePrice || 1).toFixed(4)}`
+                    }
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Volume</span>
-                  <span className="font-medium leading-relaxed text-right">$0.00</span>
+                  <span className="text-sm text-muted-foreground">DMM Liquidity</span>
+                  <span className="font-medium leading-relaxed text-right">
+                    {isLoadingProtocol ? <Skeleton className="h-4 w-20" /> : 
+                      `${(protocolStats?.totalLiquidity || 0).toFixed(2)} LP`
+                    }
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -245,41 +319,69 @@ export default function Dashboard() {
         {/* Price History Chart */}
         <OracleDMMChart />
 
-        {/* Recent Activity */}
+        {/* Protocol Activity */}
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Recent activity
+              Protocol Activity
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {[
-                { type: 'Swap', pair: 'mUSDC → MAANG', amount: '250 mUSDC', value: '$250.00', time: '2 hours ago', positive: true },
-                { type: 'Bridge', pair: 'ETH → ETO', amount: '500 USDC', value: '$500.00', time: '5 hours ago', positive: true },
-                { type: 'Stake', pair: 'MAANG/USDC Pool', amount: '1,000 LP', value: '$1,000.00', time: '1 day ago', positive: true },
-                { type: 'Swap', pair: 'MAANG → mUSDC', amount: '50 MAANG', value: '$125.50', time: '2 days ago', positive: false },
-                { type: 'Unstake', pair: 'ETO/USDC Pool', amount: '500 LP', value: '$512.30', time: '3 days ago', positive: true }
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border border-border rounded-sm hover:bg-accent/30 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                      activity.positive ? 'bg-data-positive/20 text-data-positive' : 'bg-data-negative/20 text-data-negative'
-                    }`}>
-                      {activity.type[0]}
+              {isLoadingActivity ? (
+                <>
+                  <Skeleton className="h-14 w-full" />
+                  <Skeleton className="h-14 w-full" />
+                  <Skeleton className="h-14 w-full" />
+                </>
+              ) : protocolActivity && protocolActivity.length > 0 ? (
+                protocolActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-center justify-between p-3 border border-border rounded-sm hover:bg-accent/30 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                        activity.type === 'drip_execute' ? 'bg-data-positive/20 text-data-positive' :
+                        activity.type === 'drip_commit' ? 'bg-primary/20 text-primary' :
+                        activity.type === 'deposit' ? 'bg-blue-500/20 text-blue-500' :
+                        activity.type === 'withdraw' ? 'bg-orange-500/20 text-orange-500' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        {activity.type === 'drip_execute' ? 'D' :
+                         activity.type === 'drip_commit' ? 'C' :
+                         activity.type === 'deposit' ? '+' :
+                         activity.type === 'withdraw' ? '-' :
+                         activity.type === 'sync' ? 'S' : '?'}
+                      </div>
+                      <div>
+                        <div className="font-medium text-sm">{activity.description}</div>
+                        {activity.amount && (
+                          <div className="text-xs text-muted-foreground">{activity.amount}</div>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium text-sm">{activity.type}</div>
-                      <div className="text-xs text-muted-foreground">{activity.pair}</div>
+                    <div className="text-right flex items-center gap-2">
+                      <div>
+                        <div className="text-xs text-muted-foreground">{activity.timeAgo}</div>
+                        <div className="text-xs text-muted-foreground">Block #{activity.blockNumber}</div>
+                      </div>
+                      {activity.txHash && (
+                        <a 
+                          href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:text-primary/80"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-mono text-sm">{activity.amount}</div>
-                    <div className="text-xs text-muted-foreground">{activity.time}</div>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No recent protocol activity
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>

@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { client, etoTestnet } from "@/lib/thirdweb";
+import { client } from "@/lib/thirdweb";
 import { getContract, getRpcClient, eth_getBalance } from "thirdweb";
 import { balanceOf } from "thirdweb/extensions/erc20";
+import { getEtoBalance, getEtoTokenBalance } from "@/lib/etoRpc";
 import { useActiveAccount } from "thirdweb/react";
 import { useUserState } from "@/contexts/UserStateContext";
 import { useCallback } from "react";
@@ -49,15 +50,17 @@ export function useBalances(enabledChains: string[] = [DEFAULT_CHAIN]) {
         try {
           // Fetch native token balance
           try {
-            const rpcRequest = getRpcClient({ client, chain: chainConfig.chain });
-            const nativeBalance = await eth_getBalance(rpcRequest, { address });
+            let nativeBalance: bigint;
+            
+            // Use direct RPC for ETO L1 (chainKey === 'etoMainnet')
+            if (chainKey === 'etoMainnet') {
+              nativeBalance = await getEtoBalance(address as `0x${string}`);
+            } else {
+              const rpcRequest = getRpcClient({ client, chain: chainConfig.chain });
+              nativeBalance = await eth_getBalance(rpcRequest, { address });
+            }
             
             let formatted = Number(nativeBalance) / 10 ** chainConfig.nativeToken.decimals;
-            
-            // Add test balance of 1 GOVDRI for demo purposes if balance is 0
-            if (formatted === 0 && chainConfig.nativeToken.symbol === 'GOVDRI') {
-              formatted = 1.0; // 1 GOVDRI for testing
-            }
             
             const price = getTokenPrice(chainConfig.nativeToken.symbol);
             const usdValue = formatted * price;
@@ -74,21 +77,12 @@ export function useBalances(enabledChains: string[] = [DEFAULT_CHAIN]) {
           } catch (error) {
             console.warn(`Failed to fetch native balance for ${chainConfig.nativeToken.symbol} on ${chainConfig.name}:`, error);
             
-            // Add test balance for GOVDRI even on error for demo purposes
-            let testBalance = "0.0000";
-            let testUsdValue = "0.00";
-            if (chainConfig.nativeToken.symbol === 'GOVDRI') {
-              testBalance = "1.0000"; // 1 GOVDRI for testing
-              const price = getTokenPrice(chainConfig.nativeToken.symbol);
-              testUsdValue = (1.0 * price).toFixed(2);
-            }
-            
             allResults.push({
               symbol: chainConfig.nativeToken.symbol,
-              balance: testBalance,
+              balance: "0.0000",
               decimals: chainConfig.nativeToken.decimals,
               isNative: true,
-              usdValue: testUsdValue,
+              usdValue: "0.00",
               chainName: chainConfig.name,
               chainKey,
             });
@@ -97,12 +91,23 @@ export function useBalances(enabledChains: string[] = [DEFAULT_CHAIN]) {
           // Fetch ERC20 token balances
           for (const token of chainConfig.tokens) {
             try {
-              const contract = getContract({ 
-                client, 
-                chain: chainConfig.chain, 
-                address: token.address 
-              });
-              const balance = await balanceOf({ contract, address });
+              let balance: bigint;
+              
+              // Use direct RPC for ETO L1
+              if (chainKey === 'etoMainnet') {
+                balance = await getEtoTokenBalance(
+                  token.address as `0x${string}`,
+                  address as `0x${string}`
+                );
+              } else {
+                const contract = getContract({ 
+                  client, 
+                  chain: chainConfig.chain, 
+                  address: token.address 
+                });
+                balance = await balanceOf({ contract, address });
+              }
+              
               const formatted = Number(balance) / 10 ** token.decimals;
               const price = getTokenPrice(token.symbol);
               const usdValue = formatted * price;

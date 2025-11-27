@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ConnectButton } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
-import { client, etoTestnet } from "@/lib/thirdweb";
+import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
 
 const wallets = [
   createWallet("io.metamask"),
@@ -27,7 +27,7 @@ const wallets = [
 
 const navigationItems = [
   { title: "Trade", url: "/trade", icon: TrendingUp },
-  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
+  // { title: "Bridge", url: "/bridge", icon: ArrowDownUp }, // Temporarily removed
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Staking", url: "/staking", icon: Coins },
   { title: "System Health", url: "/system-health", icon: Shield },
@@ -72,6 +72,7 @@ function SidebarContentInner() {
               display: animate ? (open ? "block" : "none") : "block",
               opacity: animate ? (open ? 1 : 0) : 1,
             }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
             className="leading-tight"
           >
             <h2 className="font-semibold text-soft-foreground">ETO</h2>
@@ -86,34 +87,45 @@ function SidebarContentInner() {
             height: open ? "auto" : 0,
             opacity: open ? 1 : 0,
           }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
           className="overflow-hidden mt-2"
         >
           <ConnectButton
             client={client}
             wallets={wallets}
-            chain={etoTestnet}
+            chain={etoMainnet}
+            chains={supportedChains}
             connectModal={{ size: "compact" }}
             connectButton={{
               style: {
                 width: "100%",
-                backgroundColor: "hsl(var(--primary))",
-                color: "hsl(var(--primary-foreground))",
+                backgroundColor: "#ffffff",
+                color: "#000000",
                 border: "none",
                 borderRadius: "6px",
-                padding: "8px 12px",
+                padding: "10px 16px",
                 fontSize: "14px",
                 fontWeight: "500",
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               },
             }}
             detailsButton={{
               style: {
                 width: "100%",
-                backgroundColor: "transparent",
-                color: "hsl(var(--foreground))",
-                border: "1px solid hsl(var(--border))",
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                border: "none",
                 borderRadius: "6px",
-                padding: "8px 12px",
-                fontSize: "12px",
+                padding: "10px 16px",
+                fontSize: "13px",
+                fontWeight: "500",
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               },
             }}
           />
@@ -126,18 +138,24 @@ function SidebarContentInner() {
               key={item.title}
               to={item.url}
               className={({ isActive: linkActive }) =>
-                `flex items-center ${open ? "gap-3 px-3 py-2" : "justify-center px-2 py-3"} rounded-md transition-colors ` +
+                `flex items-center rounded-md relative overflow-hidden ` +
+                `${open ? "px-3 py-2" : "px-0 py-2 justify-center"} ` +
                 `${isActive(item.url) || linkActive ? "bg-primary text-primary-foreground" : "text-soft-foreground hover:bg-accent hover:text-accent-foreground"}`
               }
+              style={{ transition: "padding 0.25s ease-in-out" }}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
+              <div className="w-5 h-5 shrink-0 flex items-center justify-center">
+                <item.icon className="w-5 h-5" style={{ transform: "scale(1)", transition: "none" }} />
+              </div>
               <motion.span
                 initial={false}
                 animate={{
-                  display: animate ? (open ? "inline-block" : "none") : "inline-block",
+                  width: animate ? (open ? "auto" : 0) : "auto",
+                  marginLeft: animate ? (open ? 12 : 0) : 12,
                   opacity: animate ? (open ? 1 : 0) : 1,
                 }}
-                className="font-medium"
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="font-medium whitespace-nowrap overflow-hidden"
               >
                 {item.title}
               </motion.span>
@@ -152,15 +170,21 @@ function SidebarContentInner() {
           variant="ghost"
           size="sm"
           onClick={signOut}
-          className={`w-full justify-start gap-2 text-muted-foreground hover:text-foreground ${open ? "" : "justify-center"}`}
+          className={`w-full text-muted-foreground hover:text-foreground relative overflow-hidden ${open ? "px-3 py-2 justify-start" : "px-0 py-2 justify-center"}`}
+          style={{ transition: "padding 0.25s ease-in-out" }}
         >
-          <LogOut className="h-4 w-4" />
+          <div className="w-4 h-4 shrink-0 flex items-center justify-center">
+            <LogOut className="w-4 h-4" style={{ transform: "scale(1)", transition: "none" }} />
+          </div>
           <motion.span
             initial={false}
             animate={{
-              display: animate ? (open ? "inline-block" : "none") : "inline-block",
+              width: animate ? (open ? "auto" : 0) : "auto",
+              marginLeft: animate ? (open ? 8 : 0) : 8,
               opacity: animate ? (open ? 1 : 0) : 1,
             }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="whitespace-nowrap overflow-hidden"
           >
             Sign Out
           </motion.span>

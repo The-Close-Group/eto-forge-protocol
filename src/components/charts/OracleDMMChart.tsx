@@ -97,12 +97,12 @@ export function OracleDMMChart() {
                       <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
                         <p className="text-sm font-medium mb-2">{label}</p>
                         {oraclePrice && (
-                          <p className="text-sm text-blue-600">
+                          <p className="text-sm text-emerald-500">
                             Oracle: ${Number(oraclePrice.value).toFixed(6)}
                           </p>
                         )}
                         {dmmPrice && (
-                          <p className="text-sm text-purple-600">
+                          <p className="text-sm text-lime-400">
                             DMM: ${Number(dmmPrice.value).toFixed(6)}
                           </p>
                         )}
@@ -121,18 +121,18 @@ export function OracleDMMChart() {
               <Line
                 type="monotone"
                 dataKey="Oracle Price"
-                stroke="#2563eb"
+                stroke="#10b981"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, stroke: "#2563eb", strokeWidth: 2 }}
+                activeDot={{ r: 4, stroke: "#10b981", strokeWidth: 2 }}
               />
               <Line
                 type="monotone"
                 dataKey="DMM Price"
-                stroke="#7c3aed"
+                stroke="#a3e635"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, stroke: "#7c3aed", strokeWidth: 2 }}
+                activeDot={{ r: 4, stroke: "#a3e635", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -141,11 +141,11 @@ export function OracleDMMChart() {
         {/* Chart Legend */}
         <div className="flex items-center justify-center gap-6 mt-4 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-px bg-blue-600"></div>
+            <div className="w-3 h-px bg-emerald-500"></div>
             <span className="text-muted-foreground">Oracle Feed (Official)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-px bg-purple-600"></div>
+            <div className="w-3 h-px bg-lime-400"></div>
             <span className="text-muted-foreground">DMM Price (Market)</span>
           </div>
         </div>

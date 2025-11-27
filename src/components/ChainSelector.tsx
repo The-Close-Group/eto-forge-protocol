@@ -2,36 +2,26 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Globe, Check, Loader2 } from 'lucide-react';
+import { Globe, Check, Loader2, AlertCircle } from 'lucide-react';
 import { useSwitchActiveWalletChain, useActiveWalletChain } from "thirdweb/react";
-import { supportedChains, etoTestnet } from '@/lib/thirdweb';
+import { etoMainnet } from '@/lib/thirdweb';
 
-const chainIcons: Record<number, string> = {
-  1: '🔵', // Ethereum
-  137: '🟣', // Polygon
-  42161: '🔴', // Arbitrum
-};
-
-const chainNames: Record<number, string> = {
-  1: 'Ethereum',
-  137: 'Polygon',
-  42161: 'Arbitrum',
-};
+// Only ETO L1 is supported for DRI Protocol
+const ETO_CHAIN_ID = 69420;
 
 export function ChainSelector() {
   const [isSwitching, setIsSwitching] = useState(false);
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
 
-  const handleChainSwitch = async (chainId: number) => {
-    if (activeChain?.id === chainId) return;
+  const isOnCorrectChain = activeChain?.id === ETO_CHAIN_ID;
+
+  const handleSwitchToETO = async () => {
+    if (isOnCorrectChain) return;
     
     setIsSwitching(true);
     try {
-      const targetChain = supportedChains.find(chain => chain.id === chainId);
-      if (targetChain) {
-        await switchChain(targetChain);
-      }
+      await switchChain(etoMainnet);
     } catch (error) {
       console.error('Failed to switch chain:', error);
     } finally {
@@ -46,40 +36,49 @@ export function ChainSelector() {
         <span className="text-sm font-medium">Network</span>
       </div>
       
-      <div className="grid grid-cols-3 gap-2">
-        {supportedChains.map((chain) => (
-          <Card 
-            key={chain.id}
-            className={`cursor-pointer transition-colors duration-200 ${
-              activeChain?.id === chain.id 
-                ? 'border-primary bg-primary/10' 
-                : 'border-border hover:bg-accent/50'
-            }`}
-          >
-            <CardContent className="p-0">
+      <Card 
+        className={`transition-colors duration-200 ${
+          isOnCorrectChain 
+            ? 'border-green-500 bg-green-500/10' 
+            : 'border-yellow-500 bg-yellow-500/10'
+        }`}
+      >
+        <CardContent className="p-3">
+          {isOnCorrectChain ? (
+            <div className="flex items-center gap-2">
+              <div className="text-lg">🟢</div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">ETO L1 Mainnet</div>
+                <div className="text-xs text-muted-foreground">Chain ID: {ETO_CHAIN_ID}</div>
+              </div>
+              <Check className="h-4 w-4 text-green-500" />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm">Wrong network detected</span>
+              </div>
               <Button
-                variant="ghost"
-                className="w-full h-auto p-3 flex flex-col items-center gap-2 hover:bg-transparent"
-                onClick={() => handleChainSwitch(chain.id)}
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={handleSwitchToETO}
                 disabled={isSwitching}
               >
-                <div className="text-lg">
-                  {chainIcons[chain.id] || '⚪'}
-                </div>
-                <div className="text-xs font-medium text-center">
-                  {chainNames[chain.id] || `Chain ${chain.id}`}
-                </div>
-                {activeChain?.id === chain.id && (
-                  <Check className="h-3 w-3 text-primary" />
-                )}
-                {isSwitching && (
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                {isSwitching ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                    Switching...
+                  </>
+                ) : (
+                  'Switch to ETO L1'
                 )}
               </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -17,17 +17,18 @@ import { RouteTransition } from "@/components/RouteTransition";
 
 // Pages
 import Pitch from "@/pages/Pitch";
+import Landing from "@/pages/Landing";
 import { Navigate } from "react-router-dom";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
-import Bridge from "@/pages/Bridge";
+// import Bridge from "@/pages/Bridge"; // Temporarily removed
 import BuyMAANG from "@/pages/BuyMAANG";
 import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
-import Staking from "@/pages/Staking";
+import StakingPage from "@/pages/StakingPage";
 
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
@@ -49,7 +50,7 @@ const App = () => (
               <TopLoadingBar />
               <CommandPalette />
               <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
@@ -61,13 +62,13 @@ const App = () => (
                         <RouteTransition>
                           <Routes>
                             <Route path="/trade" element={<Trade />} />
-                            <Route path="/bridge" element={<Bridge />} />
+                            {/* <Route path="/bridge" element={<Bridge />} /> */} {/* Temporarily removed */}
                             <Route path="/buy-maang" element={<BuyMAANG />} />
                             <Route path="/order" element={<OrderPage />} />
                             <Route path="/transaction-complete" element={<TransactionComplete />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
-                            <Route path="/staking" element={<Staking />} />
+                            <Route path="/staking" element={<StakingPage />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
                             <Route path="/faucet" element={<Faucet />} />

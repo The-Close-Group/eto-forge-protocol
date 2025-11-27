@@ -14,7 +14,7 @@ import {
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Trade", url: "/trade", icon: TrendingUp },
-  { title: "Bridge", url: "/bridge", icon: ArrowDownUp },
+  // { title: "Bridge", url: "/bridge", icon: ArrowDownUp }, // Temporarily removed
   { title: "Staking", url: "/staking", icon: Coins },
 ];
 
