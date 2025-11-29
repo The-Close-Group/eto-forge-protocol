@@ -38,9 +38,9 @@ interface StakingWidgetProps {
 }
 
 const MOCK_ASSETS: Asset[] = [
-  { id: "maang", symbol: "MAANG", name: "Dynamic Reflective Index", balance: 1000.00 },
-  { id: "smaang", symbol: "sMAANG", name: "Staked MAANG", balance: 500.00 },
-  { id: "usdc", symbol: "USDC", name: "USD Coin", balance: 5000.00 },
+  { id: "maang", symbol: "MAANG", name: "Dynamic Reflective Index", balance: 1000.00, logo: "/assets/maang-logo.svg" },
+  { id: "smaang", symbol: "sMAANG", name: "Staked MAANG", balance: 500.00, logo: "/assets/maang-logo.svg" },
+  { id: "usdc", symbol: "USDC", name: "USD Coin", balance: 5000.00, logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" },
 ];
 
 export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onToggleExpanded, isIsolated, onStakeNow }: StakingWidgetProps) {

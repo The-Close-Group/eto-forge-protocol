@@ -22,6 +22,7 @@ export interface Asset {
   name: string;
   balance: number;
   icon?: string;
+  logo?: string;
 }
 
 interface AssetDropdownProps {
@@ -50,6 +51,9 @@ export function AssetDropdown({
         >
           {selectedAsset ? (
             <div className="flex items-center gap-2">
+              {selectedAsset.logo && (
+                <img src={selectedAsset.logo} alt="" className="w-5 h-5 object-contain" />
+              )}
               <span className="font-medium">{selectedAsset.symbol}</span>
             </div>
           ) : (
@@ -76,6 +80,9 @@ export function AssetDropdown({
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-2">
+                      {asset.logo && (
+                        <img src={asset.logo} alt="" className="w-5 h-5 object-contain" />
+                      )}
                       <span className="font-medium">{asset.symbol}</span>
                       <span className="text-sm text-muted-foreground">{asset.name}</span>
                     </div>
