@@ -1,26 +1,47 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { useActiveAccount } from 'thirdweb/react';
-import { TrendingUp, Loader2, ArrowDownUp, Shield, AlertTriangle, Info, Zap, ExternalLink } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useActiveAccount, ConnectButton } from 'thirdweb/react';
+import { 
+  TrendingUp, Loader2, ArrowDownUp, Shield, AlertTriangle, Info, Zap, 
+  ExternalLink, Check, RefreshCw, Clock, ChevronRight, Sparkles,
+  ChevronDown, Wallet, ArrowRight
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ShareTradeCard } from '@/components/ShareTradeCard';
 import { useDirectSwap } from '@/hooks/useDirectSwap';
-// Logo not needed in this component
+import Sparkline, { generateSparklineData } from '@/components/Sparkline';
+import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
+import { createWallet } from 'thirdweb/wallets';
+import maangLogo from '@/assets/maang-logo.svg';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+];
 
 export default function BuyMAANG() {
   const account = useActiveAccount();
   const navigate = useNavigate();
-  
-  // Use direct swap hook (bypasses Thirdweb)
   const directSwap = useDirectSwap();
 
+  // UI States
+  const [isVisible, setIsVisible] = useState(false);
   const [inputAmount, setInputAmount] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
@@ -32,16 +53,19 @@ export default function BuyMAANG() {
   const [userBalances, setUserBalances] = useState({ usdc: '0', dri: '0' });
   const [quote, setQuote] = useState<{ output: string; minReceived: string } | null>(null);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+  const [slippage, setSlippage] = useState(0.5);
+  const [recentTrades, setRecentTrades] = useState<Array<{id: string; from: string; to: string; amount: string; time: Date}>>([]);
 
-  // Check if this is user's first trade
   useEffect(() => {
-    const hasTraded = localStorage.getItem('hasCompletedTrade');
-    if (!hasTraded) {
-      setIsFirstTrade(true);
-    }
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Fetch live price and balances
+  useEffect(() => {
+    const hasTraded = localStorage.getItem('hasCompletedTrade');
+    if (!hasTraded) setIsFirstTrade(true);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const price = await directSwap.getCurrentPrice();
@@ -54,18 +78,14 @@ export default function BuyMAANG() {
     };
     
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Refresh every 10s
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, [directSwap, account?.address]);
 
-  const driPrice = livePrice || 328.0; // Fallback to ~oracle price
-  const usdcPrice = 1.0;
-
-  // Memoize token directions
+  const driPrice = livePrice || 328.0;
   const fromToken = useMemo(() => isReversed ? 'MAANG' : 'mUSDC', [isReversed]);
   const toToken = useMemo(() => isReversed ? 'mUSDC' : 'MAANG', [isReversed]);
 
-  // Fetch quote when input changes
   useEffect(() => {
     const fetchQuote = async () => {
       if (!inputAmount || parseFloat(inputAmount) <= 0) {
@@ -89,81 +109,43 @@ export default function BuyMAANG() {
     return () => clearTimeout(debounce);
   }, [inputAmount, isReversed, directSwap]);
 
-  // Memoize calculations
   const outputAmount = useMemo(() => {
-    // Use live quote if available
     if (quote?.output) return quote.output;
-    
-    // Fallback to estimate
     if (!inputAmount || isNaN(parseFloat(inputAmount))) return '0.00';
     const input = parseFloat(inputAmount);
-
-    if (isReversed) {
-      // MAANG -> mUSDC
-      const output = input * driPrice;
-      return output.toFixed(2);
-    } else {
-      // mUSDC -> MAANG
-      const output = input / driPrice;
-      return output.toFixed(6);
-    }
+    return isReversed 
+      ? (input * driPrice).toFixed(2)
+      : (input / driPrice).toFixed(6);
   }, [inputAmount, isReversed, driPrice, quote]);
 
   const { totalCost, estimatedFee, totalWithFee } = useMemo(() => {
     const cost = parseFloat(inputAmount || '0');
     const fee = cost * 0.003;
-    return {
-      totalCost: cost,
-      estimatedFee: fee,
-      totalWithFee: cost + fee
-    };
+    return { totalCost: cost, estimatedFee: fee, totalWithFee: cost + fee };
   }, [inputAmount]);
 
-  // Validation logic
+  const priceImpact = useMemo(() => {
+    if (!inputAmount || parseFloat(inputAmount) === 0) return 0;
+    return Math.min((parseFloat(inputAmount) / 10000) * 100, 15);
+  }, [inputAmount]);
+
   const validateAmount = useCallback((amount: string): string => {
     if (!amount || amount === '0') return '';
-
     const num = parseFloat(amount);
-    if (isNaN(num) || num <= 0) {
-      return 'Please enter a valid amount';
-    }
-
-    if (num < 0.01) {
-      return 'Minimum swap amount is 0.01';
-    }
-
-    if (num > 1000000) {
-      return 'Maximum swap amount is 1,000,000';
-    }
-
-    // Check real balance if wallet connected
+    if (isNaN(num) || num <= 0) return 'Please enter a valid amount';
+    if (num < 0.01) return 'Minimum swap amount is 0.01';
+    if (num > 1000000) return 'Maximum swap amount is 1,000,000';
     if (account) {
-      const balance = isReversed
-        ? parseFloat(userBalances.dri)
-        : parseFloat(userBalances.usdc);
-      if (num > balance) {
-        return `Insufficient ${fromToken} balance (have ${balance.toFixed(2)})`;
-      }
+      const balance = isReversed ? parseFloat(userBalances.dri) : parseFloat(userBalances.usdc);
+      if (num > balance) return `Insufficient ${fromToken} balance (have ${balance.toFixed(2)})`;
     }
-
     return '';
   }, [account, fromToken, isReversed, userBalances]);
 
-  // Validate on amount change
   useEffect(() => {
-    const error = validateAmount(inputAmount);
-    setValidationError(error);
+    setValidationError(validateAmount(inputAmount));
   }, [inputAmount, validateAmount]);
 
-  // Price impact calculation
-  const priceImpact = useMemo(() => {
-    if (!inputAmount || parseFloat(inputAmount) === 0) return 0;
-    // Simulate price impact (higher for larger amounts)
-    const amount = parseFloat(inputAmount);
-    return Math.min((amount / 10000) * 100, 15); // Max 15% impact
-  }, [inputAmount]);
-
-  // Use callback for flip handler
   const handleFlipTokens = useCallback(() => {
     setIsFlipping(true);
     setIsReversed(prev => !prev);
@@ -177,48 +159,42 @@ export default function BuyMAANG() {
       toast.error('Please connect your wallet');
       return;
     }
-
     if (validationError) {
       toast.error(validationError);
       return;
     }
-
     if (!inputAmount || parseFloat(inputAmount) <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
-
     setShowConfirmation(true);
   }, [account, validationError, inputAmount]);
 
   const handleConfirmSwap = async () => {
     setShowConfirmation(false);
-
     try {
-      // Execute real swap
-      let txHash: string | null;
-      
-      if (isReversed) {
-        // Sell MAANG for USDC
-        txHash = await directSwap.sellDRI(inputAmount, quote?.minReceived);
-      } else {
-        // Buy MAANG with USDC
-        txHash = await directSwap.buyDRI(inputAmount, quote?.minReceived);
-      }
+      const txHash = isReversed
+        ? await directSwap.sellDRI(inputAmount, quote?.minReceived)
+        : await directSwap.buyDRI(inputAmount, quote?.minReceived);
 
       if (txHash) {
         setLastTxHash(txHash);
-        
-        // Refresh balances
         const newBalances = await directSwap.getBalances();
         setUserBalances(newBalances);
+        
+        // Add to recent trades
+        setRecentTrades(prev => [{
+          id: txHash,
+          from: fromToken,
+          to: toToken,
+          amount: outputAmount,
+          time: new Date()
+        }, ...prev].slice(0, 5));
 
-        // Mark as traded and show share card if first trade
         if (isFirstTrade) {
           localStorage.setItem('hasCompletedTrade', 'true');
           setShowShareCard(true);
         } else {
-          // Reset form for next swap
           setInputAmount('');
           setQuote(null);
         }
@@ -234,80 +210,174 @@ export default function BuyMAANG() {
   };
   
   return (
-    <div className="container mx-auto p-4 sm:p-6 pb-20 md:pb-6 max-w-2xl">
-      <div className="space-y-4 sm:space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold font-mono flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-              <ArrowDownUp className="w-6 h-6 sm:w-7 sm:h-7" />
+    <div className="min-h-screen bg-background">
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Confirm Swap
+            </DialogTitle>
+            <DialogDescription>Review your swap details</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="p-4 rounded-xl bg-muted/50">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                    {isReversed ? (
+                      <img src={maangLogo} alt="" className="w-6 h-6" />
+                    ) : (
+                      <span className="text-lg">💵</span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">You pay</div>
+                    <div className="text-xl font-bold">{inputAmount} {fromToken}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center my-2">
+                <ArrowDownUp className="w-5 h-5 text-muted-foreground" />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    {isReversed ? (
+                      <span className="text-lg">💵</span>
+                    ) : (
+                      <img src={maangLogo} alt="" className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">You receive</div>
+                    <div className="text-xl font-bold text-primary">{outputAmount} {toToken}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            Swap Tokens
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Swap between MAANG and mUSDC instantly
+
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Exchange Rate</span>
+                <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Trading Fee (0.3%)</span>
+                <span className="font-mono">${estimatedFee.toFixed(4)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Price Impact</span>
+                <span className={`font-mono ${priceImpact > 3 ? 'text-warning' : 'text-data-positive'}`}>
+                  {priceImpact.toFixed(2)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Slippage Tolerance</span>
+                <span className="font-mono">{slippage}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Gas Fee</span>
+                <span className="text-data-positive font-medium">Sponsored ✓</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowConfirmation(false)}>Cancel</Button>
+            <Button variant="cta" onClick={handleConfirmSwap}>
+              Confirm Swap
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <div className="max-w-[1440px] mx-auto p-6">
+        {/* Page Header */}
+        <div 
+          className={`mb-8 transition-all duration-700 ease-out ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-2">
+            <ArrowDownUp className="w-4 h-4" />
+            <span>Dynamic Market Maker</span>
+            <Badge variant="outline" className="ml-2 text-[10px]">Live</Badge>
+          </div>
+          <h1 className="text-[32px] font-semibold tracking-tight mb-2">Swap Tokens</h1>
+          <p className="text-muted-foreground text-[15px]">
+            Instant swaps between MAANG and mUSDC with zero gas fees
           </p>
         </div>
 
-        {/* Price Info */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          <Card className="bg-card border-border">
-            <CardContent className="p-3 sm:p-4">
-              <div className="text-xs text-muted-foreground mb-1">MAANG Price</div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-primary">
-                ${driPrice.toFixed(2)}
-              </div>
-              <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                Live from DMM
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-card border-border">
-            <CardContent className="p-3 sm:p-4">
-              <div className="text-xs text-muted-foreground mb-1">Your Balances</div>
-              <div className="text-lg sm:text-xl font-bold font-mono">
-                {account ? userBalances.usdc : '0.00'} <span className="text-sm text-muted-foreground">mUSDC</span>
-              </div>
-              <div className="text-sm font-mono text-muted-foreground mt-1">
-                {account ? userBalances.dri : '0.00'} MAANG
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+          {/* Left Column */}
+          <div 
+            className={`space-y-6 transition-all duration-700 delay-100 ease-out ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+            }`}
+          >
+            {/* Price Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: 'MAANG Price', value: `$${driPrice.toFixed(2)}`, icon: <TrendingUp className="w-4 h-4" />, change: '+2.4%' },
+                { label: 'mUSDC Balance', value: account ? userBalances.usdc : '0.00', icon: <Wallet className="w-4 h-4" /> },
+                { label: 'MAANG Balance', value: account ? userBalances.dri : '0.00', icon: <Wallet className="w-4 h-4" /> },
+                { label: '24h Volume', value: '$2.4M', icon: <Zap className="w-4 h-4" /> },
+              ].map((stat) => (
+                <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                      {stat.icon}
+                      <span className="text-[12px]">{stat.label}</span>
+                    </div>
+                    <div className="text-xl font-semibold font-mono">{stat.value}</div>
+                    {stat.change && (
+                      <div className="text-[11px] text-data-positive mt-1 flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        {stat.change}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-        {/* Swap Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 justify-between">
-              <div className="flex items-center gap-2">
-                <ArrowDownUp className="h-5 w-5" />
-                Swap Assets
-              </div>
-              <Badge variant="outline" className="text-xs gap-1">
-                <Zap className="h-3 w-3" />
-                DMM
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              Using ETO Protocol's Dynamic Market Maker for optimal pricing
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
-            {/* Input Section */}
-            <div className="space-y-3 sm:space-y-4 relative">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`input-${isReversed}`}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="space-y-2"
-                >
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm sm:text-base">You Pay</Label>
-                    <span className="text-xs text-muted-foreground">
+            {/* Swap Card */}
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b border-border pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[16px] flex items-center gap-2">
+                    <ArrowDownUp className="w-5 h-5 text-primary" />
+                    Swap
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-[11px]">
+                      <Zap className="w-3 h-3 mr-1" />
+                      DMM
+                    </Badge>
+                    <button 
+                      className="text-[12px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                      onClick={() => toast.info(`Slippage: ${slippage}%`)}
+                    >
+                      {slippage}% slippage
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-6 space-y-6">
+                {/* From Token */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <Label>You Pay</Label>
+                    <span className="text-[12px] text-muted-foreground">
                       Balance: {isReversed ? userBalances.dri : userBalances.usdc} {fromToken}
                     </span>
                   </div>
@@ -318,292 +388,312 @@ export default function BuyMAANG() {
                         placeholder="0.00"
                         value={inputAmount}
                         onChange={(e) => setInputAmount(e.target.value)}
-                        className={`pr-20 text-base sm:text-lg font-mono h-12 sm:h-auto ${
-                          validationError ? 'border-destructive focus-visible:ring-destructive' : ''
+                        className={`text-2xl font-mono h-14 pr-24 ${
+                          validationError ? 'border-destructive' : ''
                         }`}
                       />
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={`from-${fromToken}`}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium"
-                        >
-                          {fromToken}
-                        </motion.div>
-                      </AnimatePresence>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+                          {isReversed ? (
+                            <img src={maangLogo} alt="" className="w-4 h-4" />
+                          ) : (
+                            <span className="text-xs">$</span>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">{fromToken}</span>
+                      </div>
                     </div>
                     <Button
                       variant="outline"
-                      size="sm"
-                      className="h-12 px-4"
-                      onClick={() => {
-                        const balance = isReversed ? userBalances.dri : userBalances.usdc;
-                        setInputAmount(balance);
-                      }}
+                      onClick={() => setInputAmount(isReversed ? userBalances.dri : userBalances.usdc)}
                     >
                       MAX
                     </Button>
                   </div>
-                </motion.div>
-              </AnimatePresence>
+                </div>
 
-              {/* Flip Button */}
-              <div className="flex justify-center py-1 relative z-10">
-                <motion.button
-                  onClick={handleFlipTokens}
-                  className={`w-12 h-12 rounded-full border-2 flex items-center justify-center bg-background shadow-lg cursor-pointer hover:shadow-xl transition-colors ${
-                    isFlipping ? 'border-primary' : 'border-primary/50'
-                  }`}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={{ rotate: isFlipping ? 180 : 0 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 25 }}
-                >
-                  <ArrowDownUp className="h-6 w-6 text-primary" />
-                </motion.button>
-              </div>
+                {/* Flip Button */}
+                <div className="flex justify-center">
+                  <motion.button
+                    onClick={handleFlipTokens}
+                    className="w-12 h-12 rounded-full border-2 border-primary/30 flex items-center justify-center bg-background shadow-lg hover:border-primary transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{ rotate: isFlipping ? 180 : 0 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 25 }}
+                  >
+                    <ArrowDownUp className="w-5 h-5 text-primary" />
+                  </motion.button>
+                </div>
 
-              {/* Output Section */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`output-${isReversed}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="space-y-2"
-                >
-                  <Label className="text-sm sm:text-base">You Receive</Label>
+                {/* To Token */}
+                <div className="space-y-2">
+                  <Label>You Receive</Label>
                   <div className="relative">
-                    <div className="w-full px-4 py-3 sm:py-3.5 border border-border rounded-lg bg-muted text-base sm:text-lg font-mono min-h-[48px] flex items-center">
-                      {outputAmount}
+                    <div className="w-full px-4 py-4 border border-border rounded-xl bg-muted/30 text-2xl font-mono flex items-center justify-between">
+                      <span>{outputAmount}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          {isReversed ? (
+                            <span className="text-xs">$</span>
+                          ) : (
+                            <img src={maangLogo} alt="" className="w-4 h-4" />
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">{toToken}</span>
+                      </div>
                     </div>
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={`to-${toToken}`}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium"
-                      >
-                        {toToken}
-                      </motion.div>
-                    </AnimatePresence>
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Validation Error */}
-            {validationError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
-              >
-                <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-                <p className="text-sm text-destructive">{validationError}</p>
-              </motion.div>
-            )}
-
-            {/* Transaction Details */}
-            {inputAmount && parseFloat(inputAmount) > 0 && !validationError && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-muted rounded-lg overflow-hidden"
-              >
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Exchange Rate</span>
-                  <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Trading Fee (0.3%)</span>
-                  <span className="font-mono">${estimatedFee.toFixed(2)}</span>
-                </div>
-                {priceImpact > 1 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground flex items-center gap-1">
-                      Price Impact
-                      <Info className="h-3 w-3" />
-                    </span>
-                    <span className={`font-mono ${
-                      priceImpact > 5 ? 'text-destructive' : priceImpact > 3 ? 'text-warning' : 'text-muted-foreground'
-                    }`}>
-                      {priceImpact.toFixed(2)}%
-                    </span>
+
+                {/* Validation Error */}
+                {validationError && (
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                    <AlertTriangle className="w-4 h-4 text-destructive mt-0.5" />
+                    <span className="text-sm text-destructive">{validationError}</span>
                   </div>
                 )}
-                <div className="pt-3 border-t border-border">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Total Cost</span>
-                    <span className="font-mono font-bold">{totalWithFee.toFixed(4)} {fromToken}</span>
-                  </div>
-                </div>
-                {priceImpact > 5 && (
-                  <div className="flex items-start gap-2 pt-2 text-xs text-warning">
-                    <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" />
-                    <span>High price impact! Consider reducing swap amount.</span>
+
+                {/* Transaction Details */}
+                {inputAmount && parseFloat(inputAmount) > 0 && !validationError && (
+                  <div className="p-4 rounded-xl bg-muted/30 space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Exchange Rate</span>
+                      <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Trading Fee</span>
+                      <span className="font-mono">${estimatedFee.toFixed(4)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Price Impact</span>
+                      <span className={`font-mono ${priceImpact > 3 ? 'text-warning' : 'text-data-positive'}`}>
+                        ~{priceImpact.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-border">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <Shield className="w-3 h-3" /> Gas Fee
+                      </span>
+                      <span className="text-data-positive font-medium">Sponsored ✓</span>
+                    </div>
                   </div>
                 )}
-              </motion.div>
+
+                {/* Swap Button */}
+                {!account ? (
+                  <ConnectButton
+                    client={client}
+                    wallets={wallets}
+                    chain={etoMainnet}
+                    chains={supportedChains}
+                    connectModal={{ size: "compact" }}
+                    connectButton={{
+                      label: "Connect Wallet to Swap",
+                      style: {
+                        width: "100%",
+                        background: "hsl(160 70% 50%)",
+                        color: "#000",
+                        border: "none",
+                        borderRadius: "12px",
+                        padding: "14px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      },
+                    }}
+                  />
+                ) : (
+                  <Button
+                    variant={priceImpact > 5 ? "destructive" : "cta"}
+                    size="xl"
+                    className="w-full"
+                    onClick={handleSwapClick}
+                    disabled={!inputAmount || parseFloat(inputAmount) <= 0 || directSwap.isLoading || directSwap.isApproving || !!validationError}
+                  >
+                    {directSwap.isApproving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Approving...
+                      </>
+                    ) : directSwap.isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Swapping...
+                      </>
+                    ) : validationError ? (
+                      <>
+                        <AlertTriangle className="w-4 h-4 mr-2" />
+                        Cannot Swap
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDownUp className="w-4 h-4 mr-2" />
+                        Swap {fromToken} for {toToken}
+                      </>
+                    )}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Trades */}
+            {recentTrades.length > 0 && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-[15px] flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Recent Swaps
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {recentTrades.map((trade) => (
+                    <div key={trade.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-data-positive/10 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-data-positive" />
+                        </div>
+                        <div>
+                          <div className="text-[13px] font-medium">{trade.from} → {trade.to}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {trade.time.toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[13px] font-mono font-medium">{trade.amount}</div>
+                        <a
+                          href={`https://eto-explorer.ash.center/tx/${trade.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                        >
+                          View <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             )}
+          </div>
 
-            {/* Swap Button */}
-            <Button
-              onClick={handleSwapClick}
-              disabled={!account || !inputAmount || parseFloat(inputAmount) <= 0 || directSwap.isLoading || directSwap.isApproving || !!validationError}
-              className="w-full h-12 sm:h-11 text-base"
-              variant={priceImpact > 5 ? "destructive" : "positive"}
-              size="lg"
-            >
-              {directSwap.isApproving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Approving...
-                </>
-              ) : directSwap.isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Swapping...
-                </>
-              ) : !account ? (
-                'Connect Wallet to Swap'
-              ) : validationError ? (
-                <>
-                  <AlertTriangle className="mr-2 h-4 w-4" />
-                  Cannot Swap
-                </>
-              ) : (
-                <>
-                  <ArrowDownUp className="mr-2 h-4 w-4" />
-                  {priceImpact > 5 ? 'Swap Anyway' : `Swap ${fromToken}`}
-                </>
-              )}
-            </Button>
-
-            {!account && (
-              <div className="text-center text-sm text-muted-foreground">
-                Connect your wallet to start swapping tokens
-              </div>
-            )}
-
-            {account && inputAmount && !validationError && (
-              <div className="text-center text-xs text-muted-foreground">
-                <div className="flex items-center justify-center gap-1">
-                  <Shield className="h-3 w-3" />
-                  <span>Gas fees sponsored • 0.3% trading fee</span>
+          {/* Right Sidebar */}
+          <div 
+            className={`space-y-5 transition-all duration-700 delay-200 ease-out ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+            }`}
+          >
+            {/* MAANG Price Card */}
+            <div className="cta-card">
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center p-2">
+                    <img src={maangLogo} alt="" className="w-full h-full" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lg">MAANG</div>
+                    <div className="text-[11px] text-muted-foreground">Dynamic Reflective Index</div>
+                  </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                
+                <div className="text-[42px] font-semibold tracking-tight leading-none text-primary mb-2">
+                  ${driPrice.toFixed(2)}
+                </div>
+                <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-4">
+                  <Badge variant="outline" className="text-[10px]">Live from DMM</Badge>
+                  <span className="text-data-positive flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    +2.4%
+                  </span>
+                </div>
 
-        {/* Last Transaction Link */}
-        {lastTxHash && (
-          <Card className="bg-green-500/10 border-green-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-green-600 dark:text-green-400">
-                  ✓ Last swap successful!
-                </span>
-                <a
-                  href={`https://eto-explorer.ash.center/tx/${lastTxHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-500 hover:underline flex items-center gap-1"
-                >
-                  View transaction <ExternalLink className="h-3 w-3" />
-                </a>
+                <Sparkline data={generateSparklineData(30, 'up')} height={60} variant="positive" showArea={true} />
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
 
-        {/* Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">About Trading</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
-                1
-              </div>
-              <div>
-                <strong className="text-foreground">Instant Swaps:</strong> Swap between MAANG and mUSDC instantly with 0.3% fees
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
-                2
-              </div>
-              <div>
-                <strong className="text-foreground">Protocol-Owned Liquidity:</strong> Deep liquidity provided by ETO Protocol
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
-                3
-              </div>
-              <div>
-                <strong className="text-foreground">Fair Pricing:</strong> Current MAANG price: ${driPrice.toFixed(2)} from DMM
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Market Info */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-[14px]">Market Info</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">24h Volume</span>
+                  <span className="font-mono">$2.4M</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Liquidity</span>
+                  <span className="font-mono">$12.8M</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Trades</span>
+                  <span className="font-mono">1,247</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Fees Saved Today</span>
+                  <span className="text-data-positive font-mono">$45.2K</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* How It Works */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-[14px] flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  How Swapping Works
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { step: '1', title: 'Enter Amount', desc: 'Type how much to swap' },
+                  { step: '2', title: 'Review Rate', desc: 'Check the exchange rate' },
+                  { step: '3', title: 'Confirm Swap', desc: 'Approve the transaction' },
+                ].map((item) => (
+                  <div key={item.step} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-[12px] font-bold flex items-center justify-center shrink-0">
+                      {item.step}
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-medium">{item.title}</div>
+                      <div className="text-[11px] text-muted-foreground">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-[14px]">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-0.5">
+                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                  <Link to="/staking">
+                    <span className="text-[13px]">Stake MAANG</span>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                  <Link to="/faucet">
+                    <span className="text-[13px]">Get Test Tokens</span>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                  <Link to="/dashboard">
+                    <span className="text-[13px]">View Dashboard</span>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
-      {/* Confirmation Dialog */}
-      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              Confirm Swap
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-4 pt-4">
-                <span className="block">You are about to swap:</span>
-
-                <div className="bg-muted p-4 rounded-lg space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">You pay:</span>
-                    <span className="font-mono font-semibold">{inputAmount} {fromToken}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">You receive:</span>
-                    <span className="font-mono font-semibold">{outputAmount} {toToken}</span>
-                  </div>
-                  <div className="flex justify-between pt-2 border-t border-border">
-                    <span className="text-muted-foreground">Exchange Rate:</span>
-                    <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Trading Fee:</span>
-                    <span className="font-mono">${estimatedFee.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <span className="block text-sm">Are you sure you want to proceed?</span>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSwap} className="bg-data-positive hover:bg-data-positive/90">
-              Confirm Swap
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Share Card for First Trade */}
+      {/* Share Card */}
       <ShareTradeCard
         isOpen={showShareCard}
         onClose={handleCloseShare}

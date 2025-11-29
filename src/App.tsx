@@ -30,6 +30,7 @@ import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
 import StakingPage from "@/pages/StakingPage";
+import Shortcuts from "@/pages/Shortcuts";
 
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
@@ -71,6 +72,7 @@ const App = () => (
                             <Route path="/dashboard" element={<Dashboard />} />
                             {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
                             <Route path="/staking" element={<StakingPage />} />
+                            <Route path="/shortcuts" element={<Shortcuts />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
                             <Route path="/faucet" element={<Faucet />} />
