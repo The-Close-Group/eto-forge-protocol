@@ -1,18 +1,13 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
 import {
   LayoutDashboard,
-  TrendingUp,
   Coins,
-  Shield,
   LogOut,
-  Droplets,
   Wallet,
-  Calculator,
   Database,
   ExternalLink,
   ChevronDown,
   Zap,
-  Users,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { AceternitySidebar as Sidebar, SidebarBody, useSidebarAceternity } from "@/components/ui/sidebar-aceternity";
@@ -23,10 +18,8 @@ import { useStakingContext } from "@/contexts/StakingContext";
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Assets", url: "/trade", icon: Wallet },
-  { title: "Staking Providers", url: "/staking", icon: Users },
-  { title: "Staking Calculator", url: "/staking", icon: Calculator },
+  { title: "Staking", url: "/staking", icon: Coins },
   { title: "Data API", url: "/system-health", icon: Database, external: true },
-  { title: "Liquid Staking", url: "/staking", icon: Coins, badge: "Beta" },
 ];
 
 export function DesktopSidebar() {
