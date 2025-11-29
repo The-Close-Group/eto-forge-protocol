@@ -80,6 +80,7 @@ interface StakingContextType {
 const StakingContext = createContext<StakingContextType | undefined>(undefined);
 
 // Default staking assets - ETO L1 Native Assets Only
+// NOTE: APY and TVL values are placeholders (zeroed) - real values should come from on-chain data
 const defaultAssets: StakingAsset[] = [
   {
     id: 'maang',
@@ -88,12 +89,12 @@ const defaultAssets: StakingAsset[] = [
     type: 'defi',
     logo: '/assets/maang-logo.svg',
     color: '#4dd4ac',
-    baseAPY: 8.5,
+    baseAPY: 0, // No real APY data source yet
     minStake: 1,
     maxStake: 100000,
     lockPeriods: [1, 3, 6, 12],
     riskLevel: 'low',
-    tvl: 45000000,
+    tvl: 0, // No real TVL data source yet
     stakedByUser: 0,
   },
   {
@@ -103,12 +104,12 @@ const defaultAssets: StakingAsset[] = [
     type: 'liquid',
     logo: '/assets/maang-logo.svg',
     color: '#38bdf8',
-    baseAPY: 12.5,
+    baseAPY: 0, // No real APY data source yet
     minStake: 1,
     maxStake: 100000,
     lockPeriods: [1, 3, 6, 12],
     riskLevel: 'low',
-    tvl: 32000000,
+    tvl: 0, // No real TVL data source yet
     stakedByUser: 0,
   },
   {
@@ -118,41 +119,19 @@ const defaultAssets: StakingAsset[] = [
     type: 'defi',
     logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
     color: '#2775ca',
-    baseAPY: 5.2,
+    baseAPY: 0, // No real APY data source yet
     minStake: 10,
     maxStake: 1000000,
     lockPeriods: [1, 3, 6, 12],
     riskLevel: 'low',
-    tvl: 28000000,
+    tvl: 0, // No real TVL data source yet
     stakedByUser: 0,
   },
 ];
 
-// Demo positions - ETO L1 Native Assets
-const demoPositions: StakingPosition[] = [
-  {
-    id: 'pos-1',
-    assetId: 'maang',
-    amount: 1250.5,
-    startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000), // 45 days ago
-    lockPeriod: 6,
-    apy: 9.8,
-    earnedRewards: 31.39686,
-    status: 'active',
-    autoCompound: true,
-  },
-  {
-    id: 'pos-2',
-    assetId: 'usdc',
-    amount: 500,
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    lockPeriod: 3,
-    apy: 5.2,
-    earnedRewards: 2.16,
-    status: 'active',
-    autoCompound: false,
-  },
-];
+// Demo positions - Empty by default, real positions come from on-chain data
+// NOTE: This is placeholder data - real positions should be fetched from the vault contract
+const demoPositions: StakingPosition[] = [];
 
 export function StakingProvider({ children }: { children: ReactNode }) {
   // State

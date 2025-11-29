@@ -38,12 +38,12 @@ const ERC20_ABI = [
   }
 ] as const;
 
-// Staking tiers with APY bonuses
+// NOTE: Staking tiers data is placeholder - real APY values should come from on-chain
 const stakingTiers = [
-  { name: 'Bronze', minStake: 0, apy: 4.5, color: '#CD7F32' },
-  { name: 'Silver', minStake: 1000, apy: 5.2, color: '#C0C0C0' },
-  { name: 'Gold', minStake: 5000, apy: 6.0, color: '#FFD700' },
-  { name: 'Platinum', minStake: 25000, apy: 7.5, color: '#E5E4E2' },
+  { name: 'Bronze', minStake: 0, apy: 0, color: '#CD7F32' },
+  { name: 'Silver', minStake: 1000, apy: 0, color: '#C0C0C0' },
+  { name: 'Gold', minStake: 5000, apy: 0, color: '#FFD700' },
+  { name: 'Platinum', minStake: 25000, apy: 0, color: '#E5E4E2' },
 ];
 
 export default function StakingPage() {

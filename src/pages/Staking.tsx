@@ -2,54 +2,55 @@
 import { useState, useEffect } from "react";
 import { StakingWidget } from "@/components/StakingWidget";
 
+// NOTE: Staking pools data is placeholder - real data should come from on-chain contracts
 const STAKING_POOLS = [
   {
     id: "maang-usdc",
     name: "MAANG/USDC",
-    apy: "24.8%",
+    apy: "—%",
     risk: "Medium" as const,
-    lockPeriod: "90 days",
-    minStake: "$1,000",
-    totalStaked: "$458,234.50",
+    lockPeriod: "—",
+    minStake: "$0",
+    totalStaked: "$0",
     description: "Balanced pair with MAANG growth potential",
     autoCompound: true,
-    rewards: "$31.12/day"
+    rewards: "$0/day"
   },
   {
     id: "eto-usdc",
     name: "ETO/USDC",
-    apy: "18.5%",
+    apy: "—%",
     risk: "Low" as const,
-    lockPeriod: "30 days",
-    minStake: "$500",
-    totalStaked: "$892,145.80",
+    lockPeriod: "—",
+    minStake: "$0",
+    totalStaked: "$0",
     description: "Platform token staking with stability",
     autoCompound: true,
-    rewards: "$45.23/day"
+    rewards: "$0/day"
   },
   {
     id: "maang-solo",
     name: "MAANG Solo",
-    apy: "15.2%",
+    apy: "—%",
     risk: "High" as const,
-    lockPeriod: "180 days",
-    minStake: "$2,000",
-    totalStaked: "$234,567.20",
+    lockPeriod: "—",
+    minStake: "$0",
+    totalStaked: "$0",
     description: "Pure MAANG exposure for maximum growth",
     autoCompound: false,
-    rewards: "$9.76/day"
+    rewards: "$0/day"
   },
   {
     id: "usdc-solo",
     name: "USDC Solo",
-    apy: "8.7%",
+    apy: "—%",
     risk: "Low" as const,
-    lockPeriod: "7 days",
-    minStake: "$100",
-    totalStaked: "$1,245,890.00",
+    lockPeriod: "—",
+    minStake: "$0",
+    totalStaked: "$0",
     description: "Stable yield with USD backing",
     autoCompound: true,
-    rewards: "$29.67/day"
+    rewards: "$0/day"
   }
 ];
 

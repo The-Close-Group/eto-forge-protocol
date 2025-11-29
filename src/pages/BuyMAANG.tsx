@@ -328,7 +328,7 @@ export default function BuyMAANG() {
                 { label: 'MAANG Price', value: `$${driPrice.toFixed(2)}`, icon: <TrendingUp className="w-4 h-4" />, change: '+2.4%' },
                 { label: 'mUSDC Balance', value: account ? userBalances.usdc : '0.00', icon: <Wallet className="w-4 h-4" /> },
                 { label: 'MAANG Balance', value: account ? userBalances.dri : '0.00', icon: <Wallet className="w-4 h-4" /> },
-                { label: '24h Volume', value: '$2.4M', icon: <Zap className="w-4 h-4" /> },
+                { label: '24h Volume', value: '—', icon: <Zap className="w-4 h-4" /> },
               ].map((stat) => (
                 <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
                   <CardContent className="p-4">
@@ -619,7 +619,7 @@ export default function BuyMAANG() {
               <CardContent className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">24h Volume</span>
-                  <span className="font-mono">$2.4M</span>
+                  <span className="font-mono">—</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Liquidity</span>

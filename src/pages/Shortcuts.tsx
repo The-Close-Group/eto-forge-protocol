@@ -30,7 +30,6 @@ const connectors = [
     icon: '🦊', 
     status: 'popular',
     description: 'Browser extension wallet',
-    users: '30M+'
   },
   { 
     id: 'coinbase', 
@@ -38,7 +37,6 @@ const connectors = [
     icon: '🔵', 
     status: 'verified',
     description: 'Self-custody crypto wallet',
-    users: '10M+'
   },
   { 
     id: 'rainbow', 
@@ -46,7 +44,6 @@ const connectors = [
     icon: '🌈', 
     status: 'popular',
     description: 'Ethereum wallet for everyone',
-    users: '2M+'
   },
   { 
     id: 'phantom', 
@@ -54,7 +51,6 @@ const connectors = [
     icon: '👻', 
     status: 'new',
     description: 'Multi-chain crypto wallet',
-    users: '3M+'
   },
   { 
     id: 'walletconnect', 
@@ -62,15 +58,14 @@ const connectors = [
     icon: '🔗', 
     status: 'verified',
     description: 'Connect any mobile wallet',
-    users: '50M+'
   },
 ];
 
-// Gas stats
+// NOTE: Gas stats are placeholder - real values should come from backend analytics
 const gasStats = [
-  { label: 'Txns Sponsored Today', value: '12,847', change: '+24%' },
-  { label: 'Gas Saved (USD)', value: '$45,290', change: '+18%' },
-  { label: 'Active Users', value: '3,421', change: '+12%' },
+  { label: 'Txns Sponsored Today', value: '—', change: undefined },
+  { label: 'Gas Saved (USD)', value: '$0', change: undefined },
+  { label: 'Active Users', value: '—', change: undefined },
   { label: 'Avg Gas Price', value: '0.00 ETH', status: 'Free' },
 ];
 
@@ -189,7 +184,7 @@ export default function Shortcuts() {
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[13px] font-medium">Gas Savings (7D)</span>
-                    <span className="text-[12px] text-muted-foreground">$45,290 saved</span>
+                    <span className="text-[12px] text-muted-foreground">$0 saved</span>
                   </div>
                   <Sparkline data={generateSparklineData(30, 'up')} height={80} variant="positive" showArea={true} />
                 </div>
@@ -373,15 +368,15 @@ export default function Shortcuts() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-muted-foreground">Block Height</span>
-                  <span className="text-[12px] font-mono">2,847,391</span>
+                  <span className="text-[12px] font-mono">—</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-muted-foreground">Avg Block Time</span>
-                  <span className="text-[12px] font-mono">2.1s</span>
+                  <span className="text-[12px] font-mono">—</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-muted-foreground">TPS</span>
-                  <span className="text-[12px] font-mono">1,247</span>
+                  <span className="text-[12px] font-mono">—</span>
                 </div>
               </CardContent>
             </Card>
@@ -436,11 +431,8 @@ export default function Shortcuts() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {[
-                  { action: 'Swap USDC → MAANG', saved: '$0.42', time: '2m ago' },
-                  { action: 'Stake 500 MAANG', saved: '$0.38', time: '15m ago' },
-                  { action: 'Approve Token', saved: '$0.21', time: '1h ago' },
-                ].map((item, i) => (
+                {/* NOTE: Recent gas savings are placeholder - real data should come from on-chain events */}
+                {([] as Array<{ action: string; saved: string; time: string }>).map((item, i) => (
                   <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
                     <div>
                       <div className="text-[12px] font-medium">{item.action}</div>

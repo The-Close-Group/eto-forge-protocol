@@ -568,7 +568,7 @@ export default function OrderPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-data-positive" />
-                <span>24h Volume: $124M</span>
+                <span>24h Volume: —</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />

@@ -40,20 +40,20 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   
-  // Mock profile data (would come from API/Supabase in production)
+  // NOTE: Profile data is placeholder - real data should come from Supabase/backend
   const [profile, setProfile] = useState({
-    displayName: "Ryan Crawford",
-    username: "@ryan997",
-    email: "ryan.crawford@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "ETO Labs",
-    role: "DeFi Trader",
-    bio: "Passionate about decentralized finance and building the future of trading.",
-    verificationStatus: "verified",
-    kycLevel: 2,
-    riskScore: 85,
-    memberSince: "October 2024",
-    tier: "PRO"
+    displayName: user?.email?.split('@')[0] || "—",
+    username: "—",
+    email: user?.email || "—",
+    phone: "—",
+    company: "—",
+    role: "—",
+    bio: "—",
+    verificationStatus: "unverified",
+    kycLevel: 0,
+    riskScore: 0,
+    memberSince: "—",
+    tier: "—"
   });
 
   const [notifications, setNotifications] = useState({
@@ -96,12 +96,8 @@ export default function Profile() {
     { label: 'Member Tier', value: profile.tier, icon: Award, trend: 'up' },
   ];
 
-  const recentActivity = [
-    { action: 'Staked 500 MAANG', time: '2 hours ago', type: 'stake' },
-    { action: 'Claimed 12.5 rewards', time: '5 hours ago', type: 'claim' },
-    { action: 'Profile updated', time: '1 day ago', type: 'profile' },
-    { action: 'Connected MetaMask', time: '3 days ago', type: 'wallet' },
-  ];
+  // NOTE: Recent activity is empty - real activity should come from on-chain events
+  const recentActivity: Array<{ action: string; time: string; type: string }> = [];
 
   return (
     <>
