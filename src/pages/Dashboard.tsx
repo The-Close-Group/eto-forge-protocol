@@ -541,7 +541,7 @@ export default function Dashboard() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-52">
-              <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
                 <User className="w-4 h-4 mr-2" />
                 My Profile
               </DropdownMenuItem>

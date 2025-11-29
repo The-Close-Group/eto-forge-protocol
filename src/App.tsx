@@ -36,6 +36,7 @@ import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
 import SidebarDemoPage from "@/pages/SidebarDemoPage";
+import Profile from "@/pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
                             <Route path="/shortcuts" element={<Shortcuts />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
+                            <Route path="/profile" element={<Profile />} />
                             <Route path="/faucet" element={<Faucet />} />
                             <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
                             <Route path="*" element={<NotFound />} />
