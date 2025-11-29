@@ -79,106 +79,61 @@ interface StakingContextType {
 
 const StakingContext = createContext<StakingContextType | undefined>(undefined);
 
-// Default staking assets
+// Default staking assets - ETO L1 Native Assets Only
 const defaultAssets: StakingAsset[] = [
   {
-    id: 'eth',
-    name: 'Ethereum',
-    symbol: 'ETH',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040',
-    color: '#627eea',
-    baseAPY: 4.5,
-    minStake: 0.01,
-    maxStake: 1000,
+    id: 'maang',
+    name: 'MAANG',
+    symbol: 'MAANG',
+    type: 'defi',
+    logo: '/assets/maang-logo.svg',
+    color: '#4dd4ac',
+    baseAPY: 8.5,
+    minStake: 1,
+    maxStake: 100000,
     lockPeriods: [1, 3, 6, 12],
     riskLevel: 'low',
     tvl: 45000000,
     stakedByUser: 0,
   },
   {
-    id: 'bnb',
-    name: 'BNB Chain',
-    symbol: 'BNB',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=040',
-    color: '#f3ba2f',
-    baseAPY: 5.2,
-    minStake: 0.1,
-    maxStake: 500,
+    id: 'smaang',
+    name: 'Staked MAANG',
+    symbol: 'sMAANG',
+    type: 'liquid',
+    logo: '/assets/maang-logo.svg',
+    color: '#38bdf8',
+    baseAPY: 12.5,
+    minStake: 1,
+    maxStake: 100000,
     lockPeriods: [1, 3, 6, 12],
     riskLevel: 'low',
     tvl: 32000000,
     stakedByUser: 0,
   },
   {
-    id: 'matic',
-    name: 'Polygon',
-    symbol: 'MATIC',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/polygon-matic-logo.svg?v=040',
-    color: '#8247e5',
-    baseAPY: 6.8,
+    id: 'usdc',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    type: 'defi',
+    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
+    color: '#2775ca',
+    baseAPY: 5.2,
     minStake: 10,
-    maxStake: 100000,
+    maxStake: 1000000,
     lockPeriods: [1, 3, 6, 12],
-    riskLevel: 'medium',
-    tvl: 18000000,
-    stakedByUser: 0,
-  },
-  {
-    id: 'avax',
-    name: 'Avalanche',
-    symbol: 'AVAX',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=040',
-    color: '#e84142',
-    baseAPY: 8.2,
-    minStake: 1,
-    maxStake: 10000,
-    lockPeriods: [1, 3, 6, 12],
-    riskLevel: 'medium',
-    tvl: 25000000,
-    stakedByUser: 0,
-  },
-  {
-    id: 'sol',
-    name: 'Solana',
-    symbol: 'SOL',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/solana-sol-logo.svg?v=040',
-    color: '#14f195',
-    baseAPY: 7.5,
-    minStake: 0.5,
-    maxStake: 5000,
-    lockPeriods: [1, 3, 6, 12],
-    riskLevel: 'medium',
+    riskLevel: 'low',
     tvl: 28000000,
-    stakedByUser: 0,
-  },
-  {
-    id: 'atom',
-    name: 'Cosmos',
-    symbol: 'ATOM',
-    type: 'pos',
-    logo: 'https://cryptologos.cc/logos/cosmos-atom-logo.svg?v=040',
-    color: '#2e3148',
-    baseAPY: 12.5,
-    minStake: 1,
-    maxStake: 50000,
-    lockPeriods: [1, 3, 6, 12],
-    riskLevel: 'high',
-    tvl: 12000000,
     stakedByUser: 0,
   },
 ];
 
-// Demo positions
+// Demo positions - ETO L1 Native Assets
 const demoPositions: StakingPosition[] = [
   {
     id: 'pos-1',
-    assetId: 'avax',
-    amount: 125.5,
+    assetId: 'maang',
+    amount: 1250.5,
     startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000), // 45 days ago
     lockPeriod: 6,
     apy: 9.8,
@@ -188,12 +143,12 @@ const demoPositions: StakingPosition[] = [
   },
   {
     id: 'pos-2',
-    assetId: 'eth',
-    amount: 2.5,
+    assetId: 'usdc',
+    amount: 500,
     startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     lockPeriod: 3,
     apy: 5.2,
-    earnedRewards: 0.0108,
+    earnedRewards: 2.16,
     status: 'active',
     autoCompound: false,
   },
@@ -202,7 +157,7 @@ const demoPositions: StakingPosition[] = [
 export function StakingProvider({ children }: { children: ReactNode }) {
   // State
   const [assets] = useState<StakingAsset[]>(defaultAssets);
-  const [selectedAssetId, setSelectedAssetId] = useState<string>('avax');
+  const [selectedAssetId, setSelectedAssetId] = useState<string>('maang');
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
   const [stakeAmount, setStakeAmount] = useState(100);
   const [autoCompound, setAutoCompound] = useState(true);
@@ -355,12 +310,11 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
   // Get recommended allocation
   const getRecommendedAllocation = useCallback((totalAmount: number) => {
-    // Simple diversification strategy
+    // Simple diversification strategy for ETO L1 native assets
     const allocations = [
-      { assetId: 'eth', percentage: 40 },
-      { assetId: 'bnb', percentage: 25 },
-      { assetId: 'avax', percentage: 20 },
-      { assetId: 'matic', percentage: 15 },
+      { assetId: 'maang', percentage: 50 },
+      { assetId: 'smaang', percentage: 30 },
+      { assetId: 'usdc', percentage: 20 },
     ];
 
     return allocations.map(a => ({

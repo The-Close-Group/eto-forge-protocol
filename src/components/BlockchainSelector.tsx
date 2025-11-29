@@ -23,76 +23,22 @@ export function BlockchainSelector() {
   const [currency, setCurrency] = useState("USDC");
   
   const getBlockchainOptions = (amount: number): BlockchainOption[] => {
+    // ETO L1 is the only supported chain
     const baseOptions: BlockchainOption[] = [
       {
-        id: "polygon",
-        name: "Polygon",
-        logo: "🟣",
-        feeUsd: 0.02,
-        feePercentage: (0.02 / amount) * 100,
-        processingTime: "~30 seconds",
-        processingSeconds: 30,
-        congestion: "low"
+        id: "eto-l1",
+        name: "ETO L1",
+        logo: "⚡",
+        feeUsd: 0.001,
+        feePercentage: (0.001 / amount) * 100,
+        processingTime: "~2 seconds",
+        processingSeconds: 2,
+        congestion: "low",
+        isRecommended: true
       },
-      {
-        id: "arbitrum",
-        name: "Arbitrum",
-        logo: "🔵",
-        feeUsd: 0.25,
-        feePercentage: (0.25 / amount) * 100,
-        processingTime: "~1 minute",
-        processingSeconds: 60,
-        congestion: "low"
-      },
-      {
-        id: "optimism",
-        name: "Optimism",
-        logo: "🔴",
-        feeUsd: 0.35,
-        feePercentage: (0.35 / amount) * 100,
-        processingTime: "~1 minute",
-        processingSeconds: 60,
-        congestion: "medium"
-      },
-      {
-        id: "base",
-        name: "Base",
-        logo: "🔷",
-        feeUsd: 0.18,
-        feePercentage: (0.18 / amount) * 100,
-        processingTime: "~45 seconds",
-        processingSeconds: 45,
-        congestion: "low"
-      },
-      {
-        id: "ethereum",
-        name: "Ethereum",
-        logo: "⚫",
-        feeUsd: 15.50,
-        feePercentage: (15.50 / amount) * 100,
-        processingTime: "~2 minutes",
-        processingSeconds: 120,
-        congestion: "medium"
-      }
     ];
 
-    // Smart recommendation logic
-    let recommended: string;
-    if (amount < 100) {
-      // Small transactions: prioritize lowest fees
-      recommended = "polygon";
-    } else if (amount < 10000) {
-      // Medium transactions: balance fees and speed
-      recommended = "arbitrum";
-    } else {
-      // Large transactions: prioritize security and reliability
-      recommended = "ethereum";
-    }
-
-    return baseOptions.map(option => ({
-      ...option,
-      isRecommended: option.id === recommended
-    }));
+    return baseOptions;
   };
 
   const amountValue = parseFloat(amount) || 0;
@@ -138,13 +84,13 @@ export function BlockchainSelector() {
               className="flex-1"
             />
             <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger className="w-20">
+              <SelectTrigger className="w-24">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USDC">USDC</SelectItem>
-                <SelectItem value="ETH">ETH</SelectItem>
-                <SelectItem value="BTC">BTC</SelectItem>
+                <SelectItem value="MAANG">MAANG</SelectItem>
+                <SelectItem value="sMAANG">sMAANG</SelectItem>
               </SelectContent>
             </Select>
           </div>

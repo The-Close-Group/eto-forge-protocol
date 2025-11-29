@@ -88,10 +88,10 @@ export default function Dashboard() {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
   const [notifications, setNotifications] = useState([
-    { id: 1, title: "Staking reward received", message: "+0.025 ETH", time: "2m ago", read: false },
-    { id: 2, title: "Price alert triggered", message: "ETH crossed $2,500", time: "15m ago", read: false },
-    { id: 3, title: "Unstaking complete", message: "32 MATIC available", time: "1h ago", read: true },
-    { id: 4, title: "New staking pool", message: "BNB pool now available", time: "3h ago", read: true },
+    { id: 1, title: "Staking reward received", message: "+12.5 MAANG", time: "2m ago", read: false },
+    { id: 2, title: "Price alert triggered", message: "MAANG crossed $1.50", time: "15m ago", read: false },
+    { id: 3, title: "Unstaking complete", message: "500 USDC available", time: "1h ago", read: true },
+    { id: 4, title: "New staking tier", message: "sMAANG Premium now available", time: "3h ago", read: true },
   ]);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();

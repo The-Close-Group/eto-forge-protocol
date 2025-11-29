@@ -38,10 +38,9 @@ interface StakingWidgetProps {
 }
 
 const MOCK_ASSETS: Asset[] = [
+  { id: "maang", symbol: "MAANG", name: "Dynamic Reflective Index", balance: 1000.00 },
+  { id: "smaang", symbol: "sMAANG", name: "Staked MAANG", balance: 500.00 },
   { id: "usdc", symbol: "USDC", name: "USD Coin", balance: 5000.00 },
-  { id: "eth", symbol: "ETH", name: "Ethereum", balance: 2.5 },
-  { id: "eto", symbol: "ETO", name: "ETO Token", balance: 1000.00 },
-  { id: "btc", symbol: "BTC", name: "Bitcoin", balance: 0.1 },
 ];
 
 export function StakingWidget({ isOpen, onClose, selectedPool, isExpanded, onToggleExpanded, isIsolated, onStakeNow }: StakingWidgetProps) {

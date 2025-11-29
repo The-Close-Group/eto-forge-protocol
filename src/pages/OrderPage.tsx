@@ -24,15 +24,9 @@ const FALLBACK_ASSET_PRICES = {
 };
 
 const ASSETS = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", icon: maangLogo },
-  { symbol: "mUSDC", name: "Mock USD Coin", icon: "💵" },
-  { symbol: "ETH", name: "Ethereum", icon: "⟐" },
+  { symbol: "MAANG", name: "Dynamic Reflective Index", icon: maangLogo },
+  { symbol: "sMAANG", name: "Staked MAANG", icon: maangLogo },
   { symbol: "USDC", name: "USD Coin", icon: "💵" },
-  { symbol: "AVAX", name: "Avalanche", icon: "🔺" },
-  { symbol: "BTC", name: "Bitcoin", icon: "₿" },
-  { symbol: "ARB", name: "Arbitrum", icon: "🔷" },
-  { symbol: "OP", name: "Optimism", icon: "🔴" },
-  { symbol: "MATIC", name: "Polygon", icon: "🟣" }
 ];
 
 export default function OrderPage() {

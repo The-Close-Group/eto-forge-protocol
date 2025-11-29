@@ -203,10 +203,9 @@ export default function Analytics() {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { chain: "Ethereum", percentage: "45%", amount: "$5,130" },
-                  { chain: "Arbitrum", percentage: "25%", amount: "$2,855" },
-                  { chain: "Polygon", percentage: "20%", amount: "$2,284" },
-                  { chain: "Optimism", percentage: "10%", amount: "$1,142" },
+                  { chain: "MAANG", percentage: "50%", amount: "$5,705" },
+                  { chain: "sMAANG", percentage: "30%", amount: "$3,423" },
+                  { chain: "USDC", percentage: "20%", amount: "$2,283" },
                 ].map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <span>{item.chain}</span>
