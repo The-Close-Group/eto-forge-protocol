@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
+import { StakingProvider } from "@/contexts/StakingContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -42,7 +43,8 @@ const App = () => (
     <AuthProvider>
       <PortfolioProvider>
         <UserStateProvider>
-          <TooltipProvider>
+          <StakingProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -82,7 +84,8 @@ const App = () => (
                 />
               </Routes>
             </BrowserRouter>
-          </TooltipProvider>
+            </TooltipProvider>
+          </StakingProvider>
         </UserStateProvider>
       </PortfolioProvider>
     </AuthProvider>

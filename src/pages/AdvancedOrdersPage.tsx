@@ -79,7 +79,7 @@ export default function AdvancedOrdersPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-purple-500" />
+              <Layers className="h-4 w-4 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Iceberg</p>
                 <p className="text-xl font-bold">{stats.icebergOrders}</p>

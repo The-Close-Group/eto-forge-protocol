@@ -5,27 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/85 border border-border/60 shadow-sm hover:shadow-md",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/85 border border-border/60 shadow-sm hover:shadow-md",
-        outline:
-          "border border-border/60 bg-background hover:bg-accent/80 hover:text-accent-foreground shadow-sm hover:shadow-md",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/75 border border-border/60 shadow-sm hover:shadow-md",
-        ghost: "hover:bg-accent/60 hover:text-accent-foreground",
+        default: "bg-primary text-primary-foreground hover:bg-primary/85",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-border bg-transparent hover:bg-muted text-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-muted text-muted-foreground hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        soft: "bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20 shadow-sm",
-        positive: "bg-[hsl(var(--positive-button))] text-[hsl(var(--positive-button-foreground))] font-semibold hover:bg-[hsl(var(--positive-button))]/90 border border-border/60 shadow-sm hover:shadow-md [text-shadow:0_1px_2px_rgba(0,0,0,0.3)]",
+        cta: "bg-primary text-primary-foreground font-semibold hover:bg-primary/85",
+        ctaDark: "bg-[hsl(240_4%_14%)] text-foreground border border-[hsl(240_4%_18%)] hover:bg-[hsl(240_4%_17%)] hover:border-[hsl(240_4%_22%)]",
+        positive: "bg-[hsl(160_70%_50%)] text-black font-semibold hover:bg-[hsl(160_70%_45%)]",
       },
       size: {
-        default: "h-10 px-4 py-2 rounded-lg",
-        sm: "h-9 px-3 rounded-lg",
-        lg: "h-11 px-8 rounded-lg",
-        icon: "h-10 w-10 rounded-lg",
+        default: "h-9 px-4 py-2 rounded-[10px]",
+        sm: "h-8 px-3 rounded-lg text-[12px]",
+        lg: "h-10 px-5 rounded-[10px]",
+        xl: "h-11 px-6 rounded-xl text-[14px]",
+        icon: "h-9 w-9 rounded-lg",
       },
     },
     defaultVariants: {
