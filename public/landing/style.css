@@ -775,9 +775,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 80px 60px;
+    padding: 150px 60px;
     min-height: 100vh;
     position: relative;
+    margin-top: 100px;
 }
 
 .features-content {
@@ -1028,7 +1029,8 @@ body {
 
 @media (max-width: 768px) {
     .page-features {
-        padding: 60px 30px;
+        padding: 100px 30px;
+        margin-top: 60px;
     }
     
     .features-grid-new {
@@ -1109,10 +1111,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 100px 40px;
+    padding: 150px 40px;
     min-height: 100vh;
     position: relative;
     z-index: 10;
+    margin-top: 100px;
 }
 
 .maang-content {
@@ -1392,8 +1395,8 @@ body {
     justify-content: center;
     min-height: 100vh;
     background: #0a0a0a;
-    padding: 100px 60px;
-    margin-top: 250px;
+    padding: 150px 60px;
+    margin-top: 350px;
     position: relative;
     gap: 60px;
 }
@@ -1480,7 +1483,8 @@ body {
 /* Responsive - TAAS Section */
 @media (max-width: 768px) {
     .page-taas {
-        padding: 80px 30px;
+        padding: 100px 30px;
+        margin-top: 200px;
         gap: 50px;
     }
     
@@ -1526,7 +1530,8 @@ body {
 /* Responsive - MAANG Section */
 @media (max-width: 768px) {
     .page-maang {
-        padding: 80px 30px;
+        padding: 100px 30px;
+        margin-top: 60px;
     }
     
     .h-carousel-wrapper {
