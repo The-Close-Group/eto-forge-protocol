@@ -38,7 +38,7 @@
             <!-- Hero Section -->
             <div class="hero-section">
                 <h1 class="hero-title">Tokenize Everything</h1>
-                <p class="hero-subtitle">On-Chain Index Tokens with Composability</p>
+                <p class="hero-subtitle">Trade equity indices on-chain. Self-custody. Instant settlement.</p>
                 <button class="explore-btn" onclick="window.location.href='/signin'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
@@ -52,13 +52,13 @@
             <!-- Feature Cards -->
             <div class="feature-card card-left">
                 <div class="card-content"></div>
-                <h3 class="card-title">+ earn<br/>rewards</h3>
+                <h3 class="card-title">100%<br/>self-custody</h3>
                 <div class="card-glow"></div>
             </div>
 
             <div class="feature-card card-right">
                 <div class="card-content"></div>
-                <h3 class="card-title">liquidity +<br/>pools</h3>
+                <h3 class="card-title">T+0<br/>settlement</h3>
                 <div class="card-glow"></div>
             </div>
 
@@ -339,8 +339,9 @@
                 </div>
             </div>
             
-            <p class="maang-available">Available now on ETO Markets</p>
-            <h2 class="maang-title">Trade Entropy MAANG Token Now!</h2>
+            <p class="maang-available">Meta · Amazon · Apple · Nvidia · Google</p>
+            <h2 class="maang-title">One Token. Five Giants.</h2>
+            <p class="maang-description">MAANG tracks a basket of big tech equities — on-chain, composable, and without holding the underlying shares.</p>
             
             <button class="explore-btn maang-btn">
                 <span>EXPLORE MARKETS</span>
@@ -356,172 +357,41 @@
     <!-- Page 3: Features Section -->
     <section class="page page-features" id="features">
         <div class="features-content">
-            <!-- Section Header -->
-            <div class="features-header">
-                <span class="features-eyebrow">How DRI Works</span>
-                <h2 class="features-headline">On-chain equity exposure.<br/>No custody. No off-ramp.</h2>
-                <p class="features-subheadline">MAANG is an ERC-20 token that tracks a basket of Meta, Amazon, Apple, Nvidia, and Google — without holding the underlying shares.</p>
-            </div>
-
-            <div class="bento-grid">
+            <div class="features-grid-simple">
                 <!-- Card 1: NAV Tracking -->
-                <div class="bento-card bento-card-sm">
-                    <div class="bento-card-content bento-center">
-                        <div class="stat-graphic">
-                            <div class="stat-band">
-                                <span class="band-label">±0.25%</span>
-                                <div class="band-visual">
-                                    <div class="band-line"></div>
-                                    <div class="band-dot"></div>
-                                </div>
+                <div class="feature-card-simple">
+                    <div class="feature-card-visual">
+                        <div class="nav-band-graphic">
+                            <span class="nav-value">±0.25%</span>
+                            <div class="nav-line">
+                                <div class="nav-dot"></div>
                             </div>
                         </div>
-                        <h3 class="bento-title">Tight NAV Tracking</h3>
-                        <p class="bento-description-sm">Price stays within ±0.25% of true index value during market hours via DMM + PSM.</p>
                     </div>
+                    <h3 class="feature-card-title">Tight Tracking</h3>
+                    <p class="feature-card-desc">Price stays pegged to NAV within a tight band during market hours.</p>
                 </div>
 
-                <!-- Card 2: Self-Custody -->
-                <div class="bento-card bento-card-md">
-                    <div class="bento-card-content">
-                        <div class="security-icon-wrapper">
-                            <div class="security-icon-ring">
-                                <div class="security-icon-ring-inner">
-                                    <svg class="wallet-icon" viewBox="0 0 24 24" fill="none" stroke="#57FEC7" stroke-width="1.5">
-                                        <rect x="2" y="6" width="20" height="14" rx="2"/>
-                                        <path d="M2 10h20"/>
-                                        <circle cx="16" cy="14" r="2"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bento-text-center">
-                            <h3 class="bento-title">100% Self-Custody</h3>
-                            <p class="bento-description">MAANG lives in your wallet. No broker, no counterparty, no permission needed to trade or transfer.</p>
+                <!-- Card 2: Composable -->
+                <div class="feature-card-simple">
+                    <div class="feature-card-visual">
+                        <div class="erc20-badge">
+                            <span>ERC-20</span>
                         </div>
                     </div>
+                    <h3 class="feature-card-title">Fully Composable</h3>
+                    <p class="feature-card-desc">Use as collateral, in LPs, or across any DeFi protocol.</p>
                 </div>
 
-                <!-- Card 3: Instant Settlement -->
-                <div class="bento-card bento-card-md">
-                    <div class="bento-card-content">
-                        <div class="time-comparison">
-                            <div class="time-block time-tradfi">
-                                <span class="time-label">TradFi</span>
-                                <span class="time-value">T+1</span>
-                                <span class="time-sub">24+ hours</span>
-                            </div>
-                            <div class="time-arrow">→</div>
-                            <div class="time-block time-dri">
-                                <span class="time-label">DRI</span>
-                                <span class="time-value">T+0</span>
-                                <span class="time-sub">~15 seconds</span>
-                            </div>
-                        </div>
-                        <div class="bento-text-center">
-                            <h3 class="bento-title">Instant Settlement</h3>
-                            <p class="bento-description">Tap in, tap out in seconds. No waiting for T+1 settlement or off-ramp queues.</p>
+                <!-- Card 3: Zero Fee -->
+                <div class="feature-card-simple">
+                    <div class="feature-card-visual">
+                        <div class="zero-badge">
+                            <span>0%</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Card 4: How It Works (Wide) -->
-                <div class="bento-card bento-card-lg">
-                    <div class="bento-card-content bento-split">
-                        <div class="bento-split-left">
-                            <div class="bento-icon-circle">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M12 6v6l4 2"/>
-                                </svg>
-                            </div>
-                            <div class="bento-text">
-                                <h3 class="bento-title">Dynamic Market Maker (DMM)</h3>
-                                <p class="bento-description">A concentrated-liquidity AMM keeps price locked to NAV. When drift occurs, the PSM trades at the edges to recenter — capturing spread P&L for token holders.</p>
-                            </div>
-                        </div>
-                        <div class="bento-split-right">
-                            <div class="mechanism-visual">
-                                <div class="mechanism-row">
-                                    <div class="mechanism-step">
-                                        <span class="step-icon">📊</span>
-                                        <span class="step-label">Oracle</span>
-                                        <span class="step-desc">NAV feed</span>
-                                    </div>
-                                    <div class="mechanism-arrow">→</div>
-                                    <div class="mechanism-step">
-                                        <span class="step-icon">⚡</span>
-                                        <span class="step-label">DMM</span>
-                                        <span class="step-desc">±0.25% band</span>
-                                    </div>
-                                    <div class="mechanism-arrow">→</div>
-                                    <div class="mechanism-step">
-                                        <span class="step-icon">🔄</span>
-                                        <span class="step-label">PSM</span>
-                                        <span class="step-desc">Peg stability</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 5: Why Not TradFi (Wide) -->
-                <div class="bento-card bento-card-lg">
-                    <div class="bento-card-content bento-split">
-                        <div class="bento-split-left">
-                            <div class="bento-icon-circle">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                </svg>
-                            </div>
-                            <div class="bento-text">
-                                <h3 class="bento-title">Skip the Off-Ramp Tax</h3>
-                                <p class="bento-description">Diversify into equity exposure without leaving DeFi. No FX fees, no wire transfers, no 0.6–2.5% off-ramp costs.</p>
-                            </div>
-                        </div>
-                        <div class="bento-split-right">
-                            <div class="comparison-table">
-                                <div class="comparison-row comparison-header">
-                                    <span></span>
-                                    <span>TradFi</span>
-                                    <span>DRI</span>
-                                </div>
-                                <div class="comparison-row">
-                                    <span>Round-trip cost</span>
-                                    <span class="text-muted">0.6–2.5%</span>
-                                    <span class="text-accent">~0.5%</span>
-                                </div>
-                                <div class="comparison-row">
-                                    <span>Settlement</span>
-                                    <span class="text-muted">T+1 days</span>
-                                    <span class="text-accent">Seconds</span>
-                                </div>
-                                <div class="comparison-row">
-                                    <span>Composable</span>
-                                    <span class="text-muted">No</span>
-                                    <span class="text-accent">Yes</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 6: Zero Protocol Fee -->
-                <div class="bento-card bento-card-full">
-                    <div class="bento-card-content bento-horizontal">
-                        <div class="bento-icon-circle bento-icon-lg">
-                            <span class="zero-fee">0%</span>
-                        </div>
-                        <div class="bento-text">
-                            <h3 class="bento-title">Zero Protocol Trading Fee</h3>
-                            <p class="bento-description">You pay the pool spread — nothing else. PSM spread accrues to NAV, benefiting all token holders.</p>
-                        </div>
-                        <div class="composable-badge">
-                            <span class="badge-label">ERC-20</span>
-                            <span class="badge-desc">Use as collateral, LP, or in any DeFi protocol</span>
-                        </div>
-                    </div>
+                    <h3 class="feature-card-title">Zero Protocol Fee</h3>
+                    <p class="feature-card-desc">You only pay the pool spread. No hidden fees.</p>
                 </div>
             </div>
         </div>
@@ -530,8 +400,9 @@
     <!-- Page 4: Tokenization as a Service -->
     <section class="page page-taas" id="taas">
         <div class="taas-content">
-            <p class="taas-subtitle">Tokenization as a Service</p>
-            <h1 class="taas-title">Tokenize Global Markets</h1>
+            <p class="taas-subtitle">Powered by DRI Protocol</p>
+            <h1 class="taas-title">Tokenize Any Index</h1>
+            <p class="taas-description">Launch on-chain index tokens with built-in NAV tracking, liquidity, and peg stability — no custody required.</p>
             <button class="explore-btn taas-btn" onclick="window.location.href='/signin'">
                 <span>GET STARTED</span>
                 <div class="btn-icon">
