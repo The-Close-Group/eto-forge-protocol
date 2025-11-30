@@ -38,7 +38,7 @@
             <!-- Hero Section -->
             <div class="hero-section">
                 <h1 class="hero-title">Tokenize Everything</h1>
-                <p class="hero-subtitle">Trade equity indices on-chain. Self-custody. Instant settlement.</p>
+                <p class="hero-subtitle">On-Chain Equity Indices. Self-Custody. Instant Settlement.</p>
                 <button class="explore-btn" onclick="window.location.href='/signin'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
@@ -52,13 +52,13 @@
             <!-- Feature Cards -->
             <div class="feature-card card-left">
                 <div class="card-content"></div>
-                <h3 class="card-title">100%<br/>self-custody</h3>
+                <h3 class="card-title">+ earn<br/>rewards</h3>
                 <div class="card-glow"></div>
             </div>
 
             <div class="feature-card card-right">
                 <div class="card-content"></div>
-                <h3 class="card-title">T+0<br/>settlement</h3>
+                <h3 class="card-title">liquidity +<br/>pools</h3>
                 <div class="card-glow"></div>
             </div>
 
@@ -340,8 +340,7 @@
             </div>
             
             <p class="maang-available">Meta · Amazon · Apple · Nvidia · Google</p>
-            <h2 class="maang-title">One Token. Five Giants.</h2>
-            <p class="maang-description">MAANG tracks a basket of big tech equities — on-chain, composable, and without holding the underlying shares.</p>
+            <h2 class="maang-title">Trade MAANG On-Chain</h2>
             
             <button class="explore-btn maang-btn">
                 <span>EXPLORE MARKETS</span>
@@ -357,41 +356,57 @@
     <!-- Page 3: Features Section -->
     <section class="page page-features" id="features">
         <div class="features-content">
-            <div class="features-grid-simple">
+            <div class="features-grid-new">
                 <!-- Card 1: NAV Tracking -->
-                <div class="feature-card-simple">
-                    <div class="feature-card-visual">
-                        <div class="nav-band-graphic">
-                            <span class="nav-value">±0.25%</span>
-                            <div class="nav-line">
-                                <div class="nav-dot"></div>
-                            </div>
+                <div class="grid-card">
+                    <div class="grid-card-header">
+                        <h3 class="grid-card-title">±0.25%</h3>
+                        <p class="grid-card-subtitle">Tight NAV tracking via DMM + PSM during market hours</p>
+                    </div>
+                    <div class="grid-card-graphic graphic-yield">
+                        <div class="yield-sphere">
+                            <div class="yield-dollar">$</div>
                         </div>
                     </div>
-                    <h3 class="feature-card-title">Tight Tracking</h3>
-                    <p class="feature-card-desc">Price stays pegged to NAV within a tight band during market hours.</p>
+                    <div class="grid-card-arrow">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </div>
 
-                <!-- Card 2: Composable -->
-                <div class="feature-card-simple">
-                    <div class="feature-card-visual">
-                        <div class="erc20-badge">
-                            <span>ERC-20</span>
+                <!-- Card 2: ERC-20 Composable -->
+                <div class="grid-card">
+                    <div class="grid-card-header">
+                        <h3 class="grid-card-title">ERC-20</h3>
+                        <p class="grid-card-subtitle">Fully composable across DeFi — use as collateral, LP, or trade freely</p>
+                    </div>
+                    <div class="grid-card-graphic graphic-erc">
+                        <div class="puzzle-piece">
+                            <div class="puzzle-glow"></div>
                         </div>
                     </div>
-                    <h3 class="feature-card-title">Fully Composable</h3>
-                    <p class="feature-card-desc">Use as collateral, in LPs, or across any DeFi protocol.</p>
+                    <div class="grid-card-arrow">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </div>
 
-                <!-- Card 3: Zero Fee -->
-                <div class="feature-card-simple">
-                    <div class="feature-card-visual">
-                        <div class="zero-badge">
-                            <span>0%</span>
-                        </div>
+                <!-- Card 3: Self-Custody -->
+                <div class="grid-card">
+                    <div class="grid-card-header">
+                        <h3 class="grid-card-title">Self-Custody</h3>
+                        <p class="grid-card-subtitle">Token lives in your wallet. No broker, no counterparty, no permission needed.</p>
                     </div>
-                    <h3 class="feature-card-title">Zero Protocol Fee</h3>
-                    <p class="feature-card-desc">You only pay the pool spread. No hidden fees.</p>
+                    <div class="grid-card-graphic graphic-feature3">
+                        <div class="glass-shape"></div>
+                    </div>
+                    <div class="grid-card-arrow">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -400,9 +415,8 @@
     <!-- Page 4: Tokenization as a Service -->
     <section class="page page-taas" id="taas">
         <div class="taas-content">
-            <p class="taas-subtitle">Powered by DRI Protocol</p>
-            <h1 class="taas-title">Tokenize Any Index</h1>
-            <p class="taas-description">Launch on-chain index tokens with built-in NAV tracking, liquidity, and peg stability — no custody required.</p>
+            <p class="taas-subtitle">Tokenization as a Service</p>
+            <h1 class="taas-title">Tokenize Global Markets</h1>
             <button class="explore-btn taas-btn" onclick="window.location.href='/signin'">
                 <span>GET STARTED</span>
                 <div class="btn-icon">
