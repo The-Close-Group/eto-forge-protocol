@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
+import { StakingProvider } from "@/contexts/StakingContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -29,11 +30,13 @@ import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
 import StakingPage from "@/pages/StakingPage";
+import Shortcuts from "@/pages/Shortcuts";
 
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
 import SidebarDemoPage from "@/pages/SidebarDemoPage";
+import Profile from "@/pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +45,8 @@ const App = () => (
     <AuthProvider>
       <PortfolioProvider>
         <UserStateProvider>
-          <TooltipProvider>
+          <StakingProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -69,8 +73,10 @@ const App = () => (
                             <Route path="/dashboard" element={<Dashboard />} />
                             {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
                             <Route path="/staking" element={<StakingPage />} />
+                            <Route path="/shortcuts" element={<Shortcuts />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
+                            <Route path="/profile" element={<Profile />} />
                             <Route path="/faucet" element={<Faucet />} />
                             <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
                             <Route path="*" element={<NotFound />} />
@@ -82,7 +88,8 @@ const App = () => (
                 />
               </Routes>
             </BrowserRouter>
-          </TooltipProvider>
+            </TooltipProvider>
+          </StakingProvider>
         </UserStateProvider>
       </PortfolioProvider>
     </AuthProvider>

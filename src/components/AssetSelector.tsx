@@ -12,7 +12,8 @@ interface Asset {
   name: string;
   price: number;
   change24h: number;
-  icon: string;
+  icon?: string;
+  logo?: string;
 }
 
 interface AssetSelectorProps {
@@ -27,17 +28,13 @@ interface AssetSelectorProps {
 }
 
 const popularAssets: Asset[] = [
-  { symbol: "ETH", name: "Ethereum", price: 2000, change24h: 2.5, icon: "🔵" },
-  { symbol: "BTC", name: "Bitcoin", price: 42000, change24h: 1.8, icon: "🟠" },
-  { symbol: "USDC", name: "USD Coin", price: 1, change24h: 0.1, icon: "🔴" },
-  { symbol: "USDT", name: "Tether", price: 1, change24h: -0.05, icon: "🟢" },
+  { symbol: "MAANG", name: "Dynamic Reflective Index", price: 1.50, change24h: 5.2, logo: "/assets/maang-logo.svg" },
+  { symbol: "sMAANG", name: "Staked MAANG", price: 1.57, change24h: 4.5, logo: "/assets/maang-logo.svg" },
+  { symbol: "USDC", name: "USD Coin", price: 1, change24h: 0.0, logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" },
 ];
 
 const allAssets: Asset[] = [
   ...popularAssets,
-  { symbol: "DAI", name: "Dai Stablecoin", price: 1, change24h: 0.02, icon: "🟡" },
-  { symbol: "LINK", name: "Chainlink", price: 15.5, change24h: 3.2, icon: "🔗" },
-  { symbol: "UNI", name: "Uniswap", price: 6.8, change24h: -1.4, icon: "🦄" },
 ];
 
 export function AssetSelector({ 
