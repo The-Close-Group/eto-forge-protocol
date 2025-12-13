@@ -7,7 +7,14 @@ import { USDC_ADDRESS, DMM_ADDRESS, DRI_TOKEN_ADDRESS } from '@/config/contracts
 import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
 import { client, etoMainnet } from '@/lib/thirdweb';
 
-const EXPLORER_URL = 'https://eto.ash.center';
+const EXPLORER_URL = 'https://eto-explorer.ash.center';
+
+// DMMv2 CLMM uses Uniswap V3 style interface:
+// - zeroForOne=true: Swap token0 (DRI) -> token1 (USDC) = SELL DRI
+// - zeroForOne=false: Swap token1 (USDC) -> token0 (DRI) = BUY DRI
+// - amountSpecified > 0: exact input
+// - amountSpecified < 0: exact output
+// - sqrtPriceLimitX96=0: use default boundary
 
 // Get contract instances using thirdweb
 const dmmContract = getContract({
@@ -53,22 +60,27 @@ export function useDirectSwap() {
     return prices.dmmPrice || 328.0;
   }, [prices.dmmPrice]);
 
-  // Get quote for buying DRI with USDC
+  // Get quote for buying DRI with USDC (zeroForOne=false)
   const getBuyQuote = useCallback(async (usdcAmount: string): Promise<SwapQuote | null> => {
     if (!usdcAmount || parseFloat(usdcAmount) <= 0) return null;
 
     try {
+      // USDC has 6 decimals, positive amount = exact input
       const amountIn = BigInt(Math.floor(parseFloat(usdcAmount) * 1e6));
       
-      const outputAmount = await readContract({
+      // quote(bool zeroForOne, int256 amountSpecified) returns (int256 amount0, int256 amount1)
+      // zeroForOne=false means we're swapping token1 (USDC) for token0 (DRI)
+      const [amount0, amount1] = await readContract({
         contract: dmmContract,
-        method: "function quote(address tokenIn, uint256 amountIn) view returns (uint256)",
-        params: [USDC_ADDRESS as `0x${string}`, amountIn],
+        method: "function quote(bool zeroForOne, int256 amountSpecified) view returns (int256, int256)",
+        params: [false, amountIn],
       });
 
-      const outputNum = Number(outputAmount) / 1e18;
+      // amount0 is negative (DRI we receive), amount1 is positive (USDC we pay)
+      // Use absolute value of amount0 for output
+      const outputNum = Math.abs(Number(amount0)) / 1e18;
       const currentPrice = await getCurrentPrice();
-      const executionPrice = parseFloat(usdcAmount) / outputNum;
+      const executionPrice = outputNum > 0 ? parseFloat(usdcAmount) / outputNum : currentPrice;
       const priceImpact = currentPrice > 0 ? ((executionPrice - currentPrice) / currentPrice) * 100 : 0;
 
       return {
@@ -84,22 +96,27 @@ export function useDirectSwap() {
     }
   }, [getCurrentPrice]);
 
-  // Get quote for selling DRI for USDC
+  // Get quote for selling DRI for USDC (zeroForOne=true)
   const getSellQuote = useCallback(async (driAmount: string): Promise<SwapQuote | null> => {
     if (!driAmount || parseFloat(driAmount) <= 0) return null;
 
     try {
+      // DRI has 18 decimals, positive amount = exact input
       const amountIn = BigInt(Math.floor(parseFloat(driAmount) * 1e18));
       
-      const outputAmount = await readContract({
+      // quote(bool zeroForOne, int256 amountSpecified) returns (int256 amount0, int256 amount1)
+      // zeroForOne=true means we're swapping token0 (DRI) for token1 (USDC)
+      const [amount0, amount1] = await readContract({
         contract: dmmContract,
-        method: "function quote(address tokenIn, uint256 amountIn) view returns (uint256)",
-        params: [DRI_TOKEN_ADDRESS as `0x${string}`, amountIn],
+        method: "function quote(bool zeroForOne, int256 amountSpecified) view returns (int256, int256)",
+        params: [true, amountIn],
       });
 
-      const outputNum = Number(outputAmount) / 1e6;
+      // amount0 is positive (DRI we pay), amount1 is negative (USDC we receive)
+      // Use absolute value of amount1 for output
+      const outputNum = Math.abs(Number(amount1)) / 1e6;
       const currentPrice = await getCurrentPrice();
-      const executionPrice = outputNum / parseFloat(driAmount);
+      const executionPrice = parseFloat(driAmount) > 0 ? outputNum / parseFloat(driAmount) : currentPrice;
       const priceImpact = currentPrice > 0 ? ((currentPrice - executionPrice) / currentPrice) * 100 : 0;
 
       return {
@@ -185,11 +202,12 @@ export function useDirectSwap() {
     }
   }, [account, sendTransaction]);
 
-  // Execute swap using thirdweb
+  // Execute swap using thirdweb (Uniswap V3 style)
+  // zeroForOne: true = sell DRI for USDC, false = buy DRI with USDC
   const executeSwap = useCallback(async (
+    zeroForOne: boolean,
     tokenIn: string,
-    amountIn: bigint,
-    minAmountOut: bigint
+    amountIn: bigint
   ): Promise<string | null> => {
     if (!account?.address) {
       toast.error('Please connect your wallet');
@@ -213,11 +231,13 @@ export function useDirectSwap() {
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
 
-      // Prepare swap transaction
+      // Prepare swap transaction - Uniswap V3 style
+      // swap(bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96)
+      // sqrtPriceLimitX96=0 means use default price boundary
       const transaction = prepareContractCall({
         contract: dmmContract,
-        method: "function swap(address tokenIn, uint256 amountIn, uint256 minAmountOut) returns (uint256)",
-        params: [tokenIn as `0x${string}`, amountIn, minAmountOut],
+        method: "function swap(bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96) returns (int256, int256)",
+        params: [zeroForOne, amountIn, 0n],
       });
 
       toast.info('Executing swap...');
@@ -257,18 +277,20 @@ export function useDirectSwap() {
     }
   }, [account, checkAllowance, approveToken, sendTransaction, queryClient]);
 
-  // Buy DRI with USDC
-  const buyDRI = useCallback(async (usdcAmount: string, minDriOut?: string): Promise<string | null> => {
+  // Buy DRI with USDC (zeroForOne=false: USDC -> DRI)
+  const buyDRI = useCallback(async (usdcAmount: string, _minDriOut?: string): Promise<string | null> => {
+    // USDC has 6 decimals
     const amountIn = BigInt(Math.floor(parseFloat(usdcAmount) * 1e6));
-    const minOut = minDriOut ? BigInt(Math.floor(parseFloat(minDriOut) * 1e18)) : 0n;
-    return executeSwap(USDC_ADDRESS, amountIn, minOut);
+    // zeroForOne=false means we're swapping token1 (USDC) for token0 (DRI)
+    return executeSwap(false, USDC_ADDRESS, amountIn);
   }, [executeSwap]);
 
-  // Sell DRI for USDC
-  const sellDRI = useCallback(async (driAmount: string, minUsdcOut?: string): Promise<string | null> => {
+  // Sell DRI for USDC (zeroForOne=true: DRI -> USDC)
+  const sellDRI = useCallback(async (driAmount: string, _minUsdcOut?: string): Promise<string | null> => {
+    // DRI has 18 decimals
     const amountIn = BigInt(Math.floor(parseFloat(driAmount) * 1e18));
-    const minOut = minUsdcOut ? BigInt(Math.floor(parseFloat(minUsdcOut) * 1e6)) : 0n;
-    return executeSwap(DRI_TOKEN_ADDRESS, amountIn, minOut);
+    // zeroForOne=true means we're swapping token0 (DRI) for token1 (USDC)
+    return executeSwap(true, DRI_TOKEN_ADDRESS, amountIn);
   }, [executeSwap]);
 
   // Get user balances
