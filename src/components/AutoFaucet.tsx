@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Fuel, CheckCircle2, ExternalLink, Coins } from 'lucide-react';
 
 // Faucet API endpoint - set via VITE_FAUCET_API_URL env var after deploying Lambda
 const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || '';
@@ -68,6 +67,15 @@ export function AutoFaucet() {
 
   useEffect(() => {
     async function claimFaucet() {
+      // Debug logging
+      console.log('[AutoFaucet] Check:', {
+        hasUrl: !!FAUCET_API_URL,
+        address: account?.address,
+        claiming: claimingRef.current,
+        hasClaimed,
+        claimedLocally: account?.address ? hasClaimedLocally(account.address) : 'no-address'
+      });
+
       // Skip if no API URL configured
       if (!FAUCET_API_URL) {
         console.log('[AutoFaucet] No FAUCET_API_URL configured, skipping');
@@ -80,20 +88,15 @@ export function AutoFaucet() {
       
       // Check if already claimed locally
       if (hasClaimedLocally(account.address)) {
+        console.log('[AutoFaucet] Already claimed locally, skipping');
         setHasClaimed(true);
         return;
       }
 
       claimingRef.current = true;
       
-      // Show loading toast (shorter duration since API is fast)
-      const loadingId = toast.loading(
-        <div className="flex items-center gap-2">
-          <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
-          <span>Sending you starter funds...</span>
-        </div>,
-        { duration: 10000 }
-      );
+      // Show loading toast
+      const loadingId = toast.loading('⛽ Sending you starter funds...', { duration: 10000 });
 
       try {
         console.log('[AutoFaucet] Claiming for:', account.address);
@@ -138,36 +141,12 @@ export function AutoFaucet() {
             queryClient.invalidateQueries({ queryKey: ["multi-chain-balances"] });
           }, 2000);
 
-          // Show success toast with links
+          // Show success toast
+          const usdcMsg = data.usdcAmount && parseFloat(data.usdcAmount) > 0 
+            ? ` + ${data.usdcAmount} mUSDC` 
+            : '';
           toast.success(
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Welcome to ETO!</span>
-              </div>
-              <div className="text-sm text-muted-foreground space-y-1">
-                <div className="flex items-center gap-1">
-                  <Fuel className="w-3 h-3" />
-                  <span>{data.ethAmount || '0.1'} ETH for gas</span>
-                </div>
-                {data.usdcAmount && parseFloat(data.usdcAmount) > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Coins className="w-3 h-3" />
-                    <span>{data.usdcAmount} mUSDC to trade</span>
-                  </div>
-                )}
-              </div>
-              {data.explorer && (
-                <a
-                  href={data.explorer}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-500 hover:underline flex items-center gap-1"
-                >
-                  View transaction <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </div>,
+            `🎉 Welcome to ETO! Sent ${data.ethAmount || '0.1'} ETH${usdcMsg}`,
             { duration: 8000 }
           );
 
@@ -179,7 +158,7 @@ export function AutoFaucet() {
         
         // Only show error if it's a timeout (AbortError)
         if (error.name === 'AbortError') {
-          toast.error('Faucet request timed out. Please try again later.');
+          toast.error('⏱️ Faucet request timed out. Please try again later.');
         }
         // Silent fail for other errors - don't block the user
       } finally {
