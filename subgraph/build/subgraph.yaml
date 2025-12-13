@@ -6,7 +6,7 @@ dataSources:
     name: DynamicMarketMaker
     network: eto-l1
     source:
-      address: "0xda1A772B83D0C71770e02E607F1eCCBaa27d911b"
+      address: "0xd14Ea79ab8B06BD5D2F4c805b3D9F6D134002648"
       abi: DynamicMarketMaker
       startBlock: 1
     mapping:
@@ -32,7 +32,7 @@ dataSources:
     name: SmaangVault
     network: eto-l1
     source:
-      address: "0x7B084e69F730779b52cFF90cEc3aA2De1Eec5e13"
+      address: "0xed2EEd3257Ce0A9ECeeE1055b5e54E724E63c09a"
       abi: SmaangVault
       startBlock: 1
     mapping:
@@ -60,7 +60,7 @@ dataSources:
     name: OracleAggregator
     network: eto-l1
     source:
-      address: "0x3E100b518F0Fc2CC0065F129cc5663a271910238"
+      address: "0x432edDe96fca51943b2a65b889ED50De7E51BdF7"
       abi: OracleAggregator
       startBlock: 1
     mapping:

@@ -19,7 +19,9 @@
 				"sts:GetCallerIdentity",
 				"elasticache:*",
 				"dynamodb:*",
-				"apigateway:*"
+				"apigateway:*",
+				"elasticloadbalancing:*",
+				"iam:CreateServiceLinkedRole"
 			],
 			"Resource": "*"
 		},
