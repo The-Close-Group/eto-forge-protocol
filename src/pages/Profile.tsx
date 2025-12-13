@@ -20,9 +20,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStakingContext } from "@/contexts/StakingContext";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import SEO from "@/components/SEO";
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),
@@ -148,59 +149,13 @@ export default function Profile() {
     }
   };
 
-  // Redirect to connect wallet if not connected
-  if (!account?.address) {
-    return (
-      <>
-        <SEO
-          title="Connect Wallet | ETO Protocol"
-          description="Connect your wallet to view your profile and manage your positions."
-        />
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
-          <div className="max-w-md w-full">
-            <div className="cta-card text-center">
-              <div className="relative z-10">
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                  <Wallet className="w-10 h-10 text-primary" />
-                </div>
-                <h1 className="text-2xl font-semibold mb-2">Connect Your Wallet</h1>
-                <p className="text-muted-foreground mb-6">
-                  Your wallet address is your identity on ETO. Connect to view your profile, positions, and transaction history.
-                </p>
-                <ConnectButton
-                  client={client}
-                  wallets={wallets}
-                  chain={etoMainnet}
-                  chains={supportedChains}
-                  connectModal={{ size: "compact" }}
-                  connectButton={{
-                    label: "Connect Wallet",
-                    style: {
-                      background: "hsl(160, 70%, 50%)",
-                      color: "hsl(var(--primary-foreground))",
-                      borderRadius: "10px",
-                      padding: "12px 24px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      width: "100%",
-                    },
-                  }}
-                />
-                <p className="text-[11px] text-muted-foreground mt-4">
-                  We never store your private keys. Your wallet, your control.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
+  // Show profile page with connect prompt if not connected
+  const isConnected = !!account?.address;
 
   return (
     <>
       <SEO
-        title={`${walletIdentity?.shortAddress} | ETO Protocol`}
+        title={isConnected ? `${walletIdentity?.shortAddress} | ETO Protocol` : "Profile | ETO Protocol"}
         description="View your wallet profile, staking positions, and transaction history."
       />
 
@@ -211,40 +166,50 @@ export default function Profile() {
             <div className="flex items-center gap-3">
               <div 
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: `${walletIdentity?.color}20` }}
+                style={{ backgroundColor: isConnected ? `${walletIdentity?.color}20` : 'hsl(var(--muted))' }}
               >
-                <Wallet className="w-5 h-5" style={{ color: walletIdentity?.color }} />
+                <Wallet className="w-5 h-5" style={{ color: isConnected ? walletIdentity?.color : 'hsl(var(--muted-foreground))' }} />
               </div>
               <div>
-                <h1 className="text-[15px] font-semibold font-mono">{walletIdentity?.shortAddress}</h1>
-                <p className="text-[11px] text-muted-foreground">Wallet Profile</p>
+                <h1 className="text-[15px] font-semibold font-mono">
+                  {isConnected ? walletIdentity?.shortAddress : 'Profile'}
+                </h1>
+                <p className="text-[11px] text-muted-foreground">
+                  {isConnected ? 'Wallet Profile' : 'Connect wallet to view'}
+                </p>
               </div>
             </div>
-            <Badge 
-              variant="outline" 
-              className="ml-4"
-              style={{ 
-                backgroundColor: `${walletIdentity?.color}15`, 
-                color: walletIdentity?.color,
-                borderColor: `${walletIdentity?.color}40`
-              }}
-            >
-              <Award className="w-3 h-3 mr-1" />
-              {walletIdentity?.tier}
-            </Badge>
+            {isConnected && (
+              <Badge 
+                variant="outline" 
+                className="ml-4"
+                style={{ 
+                  backgroundColor: `${walletIdentity?.color}15`, 
+                  color: walletIdentity?.color,
+                  borderColor: `${walletIdentity?.color}40`
+                }}
+              >
+                <Award className="w-3 h-3 mr-1" />
+                {walletIdentity?.tier}
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="icon-btn" onClick={handleViewOnExplorer}>
-              <ExternalLink className="w-4 h-4" />
-            </button>
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
+            {isConnected && (
+              <>
+                <button className="icon-btn" onClick={handleViewOnExplorer}>
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+                <button 
+                  className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </>
+            )}
             <button className="icon-btn flex items-center gap-1.5">
               <span className="text-[13px]">Settings</span>
               <Settings className="w-4 h-4" />
@@ -253,6 +218,53 @@ export default function Profile() {
         </header>
 
         <div className="max-w-[1440px] mx-auto p-6 space-y-6">
+          {/* Connect Wallet Prompt - Show when not connected */}
+          {!isConnected && (
+            <div 
+              className={`transition-all duration-700 ease-out ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <Card className="max-w-lg mx-auto">
+                <CardContent className="pt-8 pb-8 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                    <Wallet className="w-8 h-8 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
+                  <p className="text-muted-foreground text-[14px] mb-6 max-w-sm mx-auto">
+                    Your wallet address is your identity on ETO. Connect to view your profile, positions, and transaction history.
+                  </p>
+                  <ConnectButton
+                    client={client}
+                    wallets={wallets}
+                    chain={etoMainnet}
+                    chains={supportedChains}
+                    connectModal={{ size: "compact" }}
+                    connectButton={{
+                      label: "Connect Wallet",
+                      style: {
+                        background: "hsl(160, 70%, 50%)",
+                        color: "#000",
+                        borderRadius: "10px",
+                        padding: "12px 24px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        width: "100%",
+                        maxWidth: "280px",
+                      },
+                    }}
+                  />
+                  <p className="text-[11px] text-muted-foreground mt-4">
+                    We never store your private keys. Your wallet, your control.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Profile Content - Only show when connected */}
+          {isConnected && (
+            <>
           {/* Wallet Identity Card */}
           <div 
             className={`cta-card transition-all duration-700 ease-out ${
@@ -723,6 +735,8 @@ export default function Profile() {
               </Card>
             </div>
           </div>
+          </>
+          )}
         </div>
       </div>
     </>

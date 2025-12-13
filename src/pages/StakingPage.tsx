@@ -21,9 +21,11 @@ import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
 import { Link } from 'react-router-dom';
 import maangLogo from '@/assets/maang-logo.svg';
+import { InfoButton } from '@/components/InfoButton';
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
 ];
@@ -229,10 +231,17 @@ export default function StakingPage() {
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-[16px] flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    Vault Operations
-                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-[16px] flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      Vault Operations
+                    </CardTitle>
+                    <InfoButton
+                      title="Vault Operations"
+                      description="Deposit USDC or MAANG tokens into the sMAANG vault to earn yield from protocol trading fees. When you deposit, you receive sMAANG shares that represent your portion of the vault. The share price increases over time as the vault earns fees, meaning your shares become worth more. You can withdraw anytime by redeeming your shares for MAANG tokens."
+                      size="sm"
+                    />
+                  </div>
                   <div className="flex gap-1 p-1 bg-muted rounded-lg">
                     <button
                       className={`px-4 py-1.5 rounded-md text-[13px] font-medium transition-all ${
@@ -466,10 +475,17 @@ export default function StakingPage() {
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-[15px] flex items-center gap-2">
-                      <Target className="w-4 h-4 text-primary" />
-                      Your Position
-                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-[15px] flex items-center gap-2">
+                        <Target className="w-4 h-4 text-primary" />
+                        Your Position
+                      </CardTitle>
+                      <InfoButton
+                        title="Your Position"
+                        description="This shows your current staking position in the sMAANG vault. Your staked value is calculated by multiplying your shares by the current share price. The APY shows your current earning rate based on your tier. Pending rewards are estimated based on your position and will compound automatically into your share value."
+                        size="sm"
+                      />
+                    </div>
                     <Badge style={{ background: currentTier.color + '20', color: currentTier.color }}>
                       {currentTier.name} Tier
                     </Badge>
@@ -633,7 +649,14 @@ export default function StakingPage() {
             {/* Staking Tiers */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Staking Tiers</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[14px]">Staking Tiers</CardTitle>
+                  <InfoButton
+                    title="Staking Tiers"
+                    description="Staking tiers determine your APY rate based on how much you have staked. Higher tiers unlock better rewards. As you stake more, you automatically move up to higher tiers. Each tier has a minimum stake requirement — reach the threshold to unlock the tier's APY rate."
+                    size="sm"
+                  />
+                </div>
               </CardHeader>
               <CardContent className="space-y-2">
                 {stakingTiers.map((tier) => (

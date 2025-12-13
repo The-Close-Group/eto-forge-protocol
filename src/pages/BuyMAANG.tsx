@@ -28,9 +28,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
 ];

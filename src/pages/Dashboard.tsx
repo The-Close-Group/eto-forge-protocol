@@ -37,9 +37,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),
@@ -52,7 +53,7 @@ export default function Dashboard() {
   const { signOut } = useAuth();
   
   // Staking context
-  const {
+  const { 
     assets,
     selectedAsset,
     selectAsset,
@@ -669,15 +670,15 @@ export default function Dashboard() {
                 onClick={() => { setTimeFilter(time); toast.info(`Showing ${time} data`); }}
               >
                 {time}
-              </button>
+            </button>
             ))}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="filter-dropdown">
+            <button className="filter-dropdown">
                   {sortOrder === 'apy' ? 'APY' : sortOrder === 'tvl' ? 'TVL' : 'Risk'}
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setSortOrder('apy')}>
@@ -712,8 +713,8 @@ export default function Dashboard() {
                 const isSelected = selectedAsset?.id === asset.id;
                 
                 return (
-                  <div 
-                    key={asset.id}
+                <div 
+                  key={asset.id}
                     className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
                     onClick={() => selectAsset(asset.id)}
                     onDoubleClick={() => navigate('/buy-maang', { state: { selectedToken: asset.symbol } })}
@@ -725,46 +726,46 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2.5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2.5">
                         <div 
                           className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
                           style={{ background: `${asset.color}15` }}
                         >
-                          <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
-                        </div>
-                        <div>
-                          <div className="text-[11px] text-muted-foreground">{asset.type.toUpperCase()}</div>
-                          <div className="text-[13px] font-medium">{asset.name}</div>
-                        </div>
+                        <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-primary" />}
+                      <div>
+                          <div className="text-[11px] text-muted-foreground">{asset.type.toUpperCase()}</div>
+                        <div className="text-[13px] font-medium">{asset.name}</div>
+                      </div>
                     </div>
-                    
-                    <div className="mb-3">
-                      <div className="reward-rate-label">Reward Rate</div>
+                      {isSelected && <Check className="w-4 h-4 text-primary" />}
+                  </div>
+                  
+                  <div className="mb-3">
+                    <div className="reward-rate-label">Reward Rate</div>
                       <div className="flex items-baseline gap-0.5">
                         <span className="reward-rate">{effectiveAPY.toFixed(2)}</span>
                         <span className="text-xl text-muted-foreground font-normal">%</span>
-                      </div>
                     </div>
-                    
+                  </div>
+                  
                     <div className={`status-badge ${asset.riskLevel === 'low' ? 'status-badge-positive' : asset.riskLevel === 'high' ? 'status-badge-negative' : ''} mb-4`}>
                       <span className="w-[6px] h-[6px] rounded-full bg-current" />
                       {asset.riskLevel} risk
-                    </div>
-                    
-                    <div className="relative">
-                      <Sparkline 
+                  </div>
+                  
+                  <div className="relative">
+                    <Sparkline 
                         data={sparkData} 
                         height={60}
                         variant={asset.riskLevel !== 'high' ? 'positive' : 'negative'}
-                        showArea={true}
-                        showEndValue={true}
+                      showArea={true}
+                      showEndValue={true}
                         endValue={`$${(asset.tvl / 1000000).toFixed(1)}M TVL`}
-                      />
-                    </div>
+                    />
                   </div>
+                </div>
                 );
               })}
             </div>
@@ -834,7 +835,7 @@ export default function Dashboard() {
                     <div className="p-4 rounded-xl bg-muted/30 mb-4">
                       <div className="text-[13px] text-muted-foreground mb-2">Portfolio Performance</div>
                       <Sparkline data={generateSparklineData(50, 'up')} height={100} variant="accent" showArea={true} />
-                    </div>
+                      </div>
                   )}
 
                   {activePosition && activeAsset && (
@@ -847,10 +848,10 @@ export default function Dashboard() {
                           <img src={activeAsset.logo} alt="" className="w-6 h-6" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-0.5">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-0.5">
                             <span>Last Update — {Math.floor((Date.now() - activePosition.startDate.getTime()) / (1000 * 60))} minutes ago</span>
-                            <Clock className="w-3 h-3" />
-                          </div>
+                          <Clock className="w-3 h-3" />
+                        </div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-[18px] font-semibold">Stake {activeAsset.name} ({activeAsset.symbol})</h3>
                             <div 
@@ -859,27 +860,27 @@ export default function Dashboard() {
                             >
                               <img src={activeAsset.logo} alt="" className="w-3 h-3 brightness-0 invert" />
                             </div>
-                            <button className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 ml-2">
-                              View Profile <ArrowUpRight className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
+                          <button className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 ml-2">
+                            View Profile <ArrowUpRight className="w-3.5 h-3.5" />
+                          </button>
                       </div>
+                    </div>
+                  </div>
 
-                      <div>
+                  <div>
                         <div className="text-[13px] text-muted-foreground mb-1">Current Reward Balance, {activeAsset.symbol}</div>
                         <div className="flex items-center gap-4">
                           <span className="text-[46px] font-medium tracking-tight leading-none tabular-nums">
                             {activePosition.earnedRewards.toFixed(5)}
-                          </span>
+                      </span>
                           <Button variant="cta" size="default" onClick={handleStake}>
-                            Upgrade
-                          </Button>
+                        Upgrade
+                      </Button>
                           <Button variant="outline" size="default" onClick={() => handleUnstake(activePosition.id)}>
-                            Unstake
-                          </Button>
-                        </div>
-                      </div>
+                        Unstake
+                      </Button>
+                    </div>
+                  </div>
                     </div>
                   )}
 
@@ -941,8 +942,8 @@ export default function Dashboard() {
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center justify-between text-[15px]">
                   <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-primary" />
-                    Protocol Activity
+                  <Zap className="h-4 w-4 text-primary" />
+                  Protocol Activity
                   </div>
                   <button 
                     className={`text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
