@@ -46,12 +46,13 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, { hasEr
 }
 
 // Service status data
+// NOTE: Service uptime data is placeholder - real values should come from monitoring system
 const services = [
-  { id: 'dmm', name: 'DMM Core', status: 'operational', uptime: 99.997, latency: '12ms' },
-  { id: 'oracle', name: 'Oracle Aggregator', status: 'operational', uptime: 99.999, latency: '3ms' },
-  { id: 'maang', name: 'MAANG Controller', status: 'operational', uptime: 99.995, latency: '8ms' },
-  { id: 'psm', name: 'PSM Module', status: 'operational', uptime: 99.992, latency: '15ms' },
-  { id: 'circuit', name: 'Circuit Breakers', status: 'operational', uptime: 100.000, latency: '1ms' },
+  { id: 'dmm', name: 'DMM Core', status: 'operational', uptime: 0, latency: '—' },
+  { id: 'oracle', name: 'Oracle Aggregator', status: 'operational', uptime: 0, latency: '—' },
+  { id: 'maang', name: 'MAANG Controller', status: 'operational', uptime: 0, latency: '—' },
+  { id: 'psm', name: 'PSM Module', status: 'operational', uptime: 0, latency: '—' },
+  { id: 'circuit', name: 'Circuit Breakers', status: 'operational', uptime: 0, latency: '—' },
 ];
 
 const oracleFeeds = [
@@ -173,12 +174,13 @@ export default function SystemHealth() {
     { asset: "Chronicle", seconds: 2.5 },
   ];
 
+  // NOTE: Uptime data is placeholder - real values should come from monitoring system
   const uptimeData = [
-    { name: "DMM Core", uptime: 99.997 },
-    { name: "MAANG Controller", uptime: 99.995 },
-    { name: "Oracle Aggregator", uptime: 99.999 },
-    { name: "PSM Module", uptime: 99.992 },
-    { name: "Circuit Breakers", uptime: 100.000 },
+    { name: "DMM Core", uptime: 0 },
+    { name: "MAANG Controller", uptime: 0 },
+    { name: "Oracle Aggregator", uptime: 0 },
+    { name: "PSM Module", uptime: 0 },
+    { name: "Circuit Breakers", uptime: 0 },
   ];
 
   // Calculate reserves from real protocol data
@@ -474,7 +476,7 @@ export default function SystemHealth() {
 
                   <TabsContent value="network" className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
+                      {[<<<<<<< naman-update-UI
                         { 
                           label: 'Block Time', 
                           value: `${avgBlockTime}s`, 
@@ -495,6 +497,7 @@ export default function SystemHealth() {
                           value: `#${(protocolStats?.lastBlock || 0).toLocaleString()}`, 
                           status: 'Synced' 
                         },
+
                       ].map((metric) => (
                         <div key={metric.label} className="staking-asset-card">
                           <div className="text-[11px] text-muted-foreground mb-2">{metric.label}</div>
@@ -511,7 +514,7 @@ export default function SystemHealth() {
                     </div>
                   </TabsContent>
                 </Tabs>
-              </div>
+                </div>
               </div>
 
             {/* Right Sidebar */}
@@ -560,7 +563,9 @@ export default function SystemHealth() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {/* NOTE: These values should come from real-time monitoring */}
                   {[
+
                     { 
                       label: 'Oracle Freshness', 
                       value: protocolStats?.oracleTimestamp 
@@ -583,6 +588,7 @@ export default function SystemHealth() {
                       value: `${Math.abs(protocolStats?.priceDeviation || 0).toFixed(1)} bps`, 
                       desc: Math.abs(protocolStats?.priceDeviation || 0) < 50 ? 'Within tolerance' : 'Monitor' 
                     },
+
                   ].map((item) => (
                     <div key={item.label} className="p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                       <div className="flex items-center justify-between mb-1">
@@ -606,10 +612,11 @@ export default function SystemHealth() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* NOTE: These values should come from real-time monitoring */}
                   {[
-                    { label: 'Asset Tracking', value: 99.8 },
-                    { label: 'Price Feed Reliability', value: 99.95 },
-                    { label: 'Oracle Sync Rate', value: 100 },
+                    { label: 'Asset Tracking', value: 0 },
+                    { label: 'Price Feed Reliability', value: 0 },
+                    { label: 'Oracle Sync Rate', value: 0 },
                   ].map((item) => (
                     <div key={item.label} className="space-y-2">
                       <div className="flex items-center justify-between">

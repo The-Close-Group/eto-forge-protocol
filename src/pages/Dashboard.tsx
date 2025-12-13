@@ -89,12 +89,8 @@ export default function Dashboard() {
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: "Staking reward received", message: "+12.5 MAANG", time: "2m ago", read: false },
-    { id: 2, title: "Price alert triggered", message: "MAANG crossed $1.50", time: "15m ago", read: false },
-    { id: 3, title: "Unstaking complete", message: "500 USDC available", time: "1h ago", read: true },
-    { id: 4, title: "New staking tier", message: "sMAANG Premium now available", time: "3h ago", read: true },
-  ]);
+  // NOTE: Notifications are empty - real notifications should come from backend/events
+  const [notifications, setNotifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
@@ -265,8 +261,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-
-
       {/* Stake Dialog */}
       <Dialog open={stakeDialogOpen} onOpenChange={setStakeDialogOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -745,10 +739,12 @@ export default function Dashboard() {
                     return (
                   <div 
                     key={asset.id}
+
                     className={`staking-asset-card cursor-pointer group ${isSelected ? 'ring-2 ring-primary' : ''}`}
                     onClick={handleCardClick}
                   >
                     <div className="flex items-center justify-between mb-3">
+
                       <div className="flex items-center gap-2.5">
                         <div 
                           className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"

@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  User, Shield, Bell, Key, Settings, ChevronRight, Copy, ExternalLink,
+  Shield, Bell, Key, Settings, ChevronRight, Copy, ExternalLink,
   CheckCircle2, AlertTriangle, Clock, Wallet, TrendingUp, Award, Zap,
-  RefreshCw, Edit3, Camera, Mail, Phone, Building2, FileText, Lock
+  RefreshCw, QrCode, Link as LinkIcon, History, ArrowUpRight, ArrowDownLeft,
+  Coins, Activity, Hash, Box, AlertCircle
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useActiveAccount, ConnectButton } from "thirdweb/react";
 import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
 import { createWallet } from "thirdweb/wallets";
@@ -32,15 +31,30 @@ const wallets = [
   createWallet("walletConnect"),
 ];
 
+// Format wallet address for display
+const formatAddress = (address: string, startChars = 6, endChars = 4) => {
+  if (!address) return "—";
+  return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
+};
+
+// Generate a deterministic color from address
+const getAddressColor = (address: string) => {
+  if (!address) return "hsl(160, 70%, 50%)";
+  const hash = address.slice(2, 8);
+  const hue = parseInt(hash, 16) % 360;
+  return `hsl(${hue}, 60%, 50%)`;
+};
+
 export default function Profile() {
   const account = useActiveAccount();
-  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { positions, getTotalStaked, getTotalRewards } = useStakingContext();
   
   const [isVisible, setIsVisible] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
-  const [isEditing, setIsEditing] = useState(false);
+  const [showFullAddress, setShowFullAddress] = useState(false);
   
   // Profile data - uses wallet address if available
   const [profile, setProfile] = useState({
@@ -70,12 +84,71 @@ export default function Profile() {
   }, [account?.address]);
 
   const [notifications, setNotifications] = useState({
-    emailAlerts: true,
-    pushNotifications: false,
-    securityAlerts: true,
-    marketAlerts: true,
-    orderAlerts: true
+    transactionAlerts: true,
+    stakingRewards: true,
+    priceAlerts: false,
+    governanceAlerts: true,
+    securityAlerts: true
   });
+
+  // Derive identity from wallet address
+  const walletIdentity = useMemo(() => {
+    if (!account?.address) return null;
+    const addr = account.address.toLowerCase();
+    return {
+      address: account.address,
+      shortAddress: formatAddress(account.address),
+      color: getAddressColor(addr),
+      // ENS-style identifier (mock - would come from on-chain)
+      identifier: `${addr.slice(2, 6)}.eto`,
+      // Activity tier based on positions
+      tier: positions.length >= 5 ? 'Whale' : positions.length >= 2 ? 'Active' : positions.length >= 1 ? 'Holder' : 'New',
+      // On-chain since (mock)
+      firstTxDate: '—',
+    };
+  }, [account?.address, positions.length]);
+
+  // Stats derived from on-chain data
+  const stats = useMemo(() => [
+    { 
+      label: 'Total Staked', 
+      value: `$${getTotalStaked().toLocaleString()}`, 
+      icon: Coins, 
+      trend: 'up',
+      subtext: 'Across all positions'
+    },
+    { 
+      label: 'Pending Rewards', 
+      value: `+${getTotalRewards().toFixed(4)}`, 
+      icon: TrendingUp, 
+      trend: 'up',
+      subtext: 'Claimable rewards'
+    },
+    { 
+      label: 'Active Positions', 
+      value: positions.length.toString(), 
+      icon: Activity, 
+      trend: 'up',
+      subtext: 'Staking positions'
+    },
+    { 
+      label: 'Wallet Tier', 
+      value: walletIdentity?.tier || '—', 
+      icon: Award, 
+      trend: 'up',
+      subtext: 'Based on activity'
+    },
+  ], [getTotalStaked, getTotalRewards, positions.length, walletIdentity?.tier]);
+
+  // Recent transactions (mock - would come from on-chain indexer)
+  const recentTransactions: Array<{
+    hash: string;
+    type: 'stake' | 'unstake' | 'claim' | 'swap' | 'transfer';
+    amount: string;
+    token: string;
+    time: string;
+    status: 'confirmed' | 'pending';
+  }> = [];
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 50);
@@ -84,9 +157,9 @@ export default function Profile() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    toast.loading("Refreshing profile...", { id: "refresh" });
+    toast.loading("Refreshing wallet data...", { id: "refresh" });
     await new Promise(resolve => setTimeout(resolve, 800));
-    toast.success("Profile refreshed", { id: "refresh" });
+    toast.success("Wallet data refreshed", { id: "refresh" });
     setIsRefreshing(false);
   };
 
@@ -97,9 +170,10 @@ export default function Profile() {
     }
   };
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    toast.success("Profile updated successfully");
+  const handleViewOnExplorer = () => {
+    if (account?.address) {
+      window.open(`https://eto-explorer.ash.center/address/${account.address}`, '_blank');
+    }
   };
 
   const stats = [
@@ -141,14 +215,15 @@ export default function Profile() {
   if (recentActivity.length === 0) {
     recentActivity.push(
       { action: 'No recent activity', time: 'Connect wallet to see history', type: 'wallet' }
+
     );
   }
 
   return (
     <>
       <SEO
-        title="My Profile | ETO Protocol"
-        description="Manage your profile, settings, and account preferences."
+        title={`${walletIdentity?.shortAddress} | ETO Protocol`}
+        description="View your wallet profile, staking positions, and transaction history."
       />
 
       <div className="min-h-screen bg-background">
@@ -156,23 +231,34 @@ export default function Profile() {
         <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <User className="w-5 h-5 text-primary" />
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: `${walletIdentity?.color}20` }}
+              >
+                <Wallet className="w-5 h-5" style={{ color: walletIdentity?.color }} />
               </div>
               <div>
-                <h1 className="text-[15px] font-semibold">My Profile</h1>
-                <p className="text-[11px] text-muted-foreground">Account Settings & Preferences</p>
+                <h1 className="text-[15px] font-semibold font-mono">{walletIdentity?.shortAddress}</h1>
+                <p className="text-[11px] text-muted-foreground">Wallet Profile</p>
               </div>
             </div>
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 ml-4">
+            <Badge 
+              variant="outline" 
+              className="ml-4"
+              style={{ 
+                backgroundColor: `${walletIdentity?.color}15`, 
+                color: walletIdentity?.color,
+                borderColor: `${walletIdentity?.color}40`
+              }}
+            >
               <Award className="w-3 h-3 mr-1" />
-              {profile.tier}
+              {walletIdentity?.tier}
             </Badge>
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="icon-btn">
-              <Bell className="w-4 h-4" />
+            <button className="icon-btn" onClick={handleViewOnExplorer}>
+              <ExternalLink className="w-4 h-4" />
             </button>
             <button 
               className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
@@ -189,82 +275,83 @@ export default function Profile() {
         </header>
 
         <div className="max-w-[1440px] mx-auto p-6 space-y-6">
-          {/* Profile Header Card */}
+          {/* Wallet Identity Card */}
           <div 
             className={`cta-card transition-all duration-700 ease-out ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
             <div className="relative z-10">
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
-                {/* Avatar */}
+              <div className="flex flex-col md:flex-row md:items-start gap-6">
+                {/* Wallet Avatar */}
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/20">
-                    <User className="w-12 h-12 text-primary" />
+                  <div 
+                    className="w-24 h-24 rounded-2xl flex items-center justify-center border"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${walletIdentity?.color}20, ${walletIdentity?.color}05)`,
+                      borderColor: `${walletIdentity?.color}30`
+                    }}
+                  >
+                    <Hash className="w-10 h-10" style={{ color: walletIdentity?.color }} />
                   </div>
-                  <button className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors">
-                    <Camera className="w-4 h-4" />
-                  </button>
+                  <div 
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: walletIdentity?.color }}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                  </div>
                 </div>
 
-                {/* Profile Info */}
+                {/* Wallet Info */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h2 className="text-2xl font-semibold">{profile.displayName}</h2>
-                    {profile.verificationStatus === 'verified' && (
-                      <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Verified
-                      </Badge>
-                    )}
+                  <div className="flex items-center gap-3 mb-2">
+                    <button 
+                      onClick={() => setShowFullAddress(!showFullAddress)}
+                      className="text-2xl font-mono font-semibold hover:text-primary transition-colors cursor-pointer"
+                    >
+                      {showFullAddress ? account.address : walletIdentity?.shortAddress}
+                    </button>
+                    <button 
+                      onClick={handleCopyAddress}
+                      className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <Copy className="w-4 h-4 text-muted-foreground" />
+                    </button>
                   </div>
-                  <p className="text-muted-foreground mb-2">{profile.username}</p>
-                  <p className="text-[13px] text-muted-foreground max-w-lg">{profile.bio}</p>
                   
-                  <div className="flex items-center gap-4 mt-4">
-                    <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
-                      <Building2 className="w-3.5 h-3.5" />
-                      {profile.company}
+                  <p className="text-muted-foreground text-[13px] mb-4">
+                    Click address to {showFullAddress ? 'collapse' : 'expand'}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 text-[12px]">
+                      <Box className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-muted-foreground">Chain:</span>
+                      <span className="font-medium">ETO L1</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
-                      <Clock className="w-3.5 h-3.5" />
-                      Member since {profile.memberSince}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 text-[12px]">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-muted-foreground">First tx:</span>
+                      <span className="font-medium">{walletIdentity?.firstTxDate}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 text-[12px]">
+                      <Activity className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-muted-foreground">Positions:</span>
+                      <span className="font-medium">{positions.length}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex flex-col gap-2">
-                  <Button variant="cta" onClick={() => setIsEditing(true)}>
-                    <Edit3 className="w-4 h-4 mr-2" />
-                    Edit Profile
+                  <Button variant="cta" onClick={handleViewOnExplorer}>
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View on Explorer
                   </Button>
-                  {account?.address ? (
-                    <Button variant="outline" onClick={handleCopyAddress}>
-                      <Copy className="w-4 h-4 mr-2" />
-                      {account.address.slice(0, 6)}...{account.address.slice(-4)}
-                    </Button>
-                  ) : (
-                    <ConnectButton
-                      client={client}
-                      wallets={wallets}
-                      chain={etoMainnet}
-                      chains={supportedChains}
-                      connectModal={{ size: "compact" }}
-                      connectButton={{
-                        label: "Connect Wallet",
-                        style: {
-                          background: "transparent",
-                          color: "hsl(var(--foreground))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "10px",
-                          padding: "10px 16px",
-                          fontSize: "13px",
-                          fontWeight: "500",
-                        },
-                      }}
-                    />
-                  )}
+                  <Button variant="outline" onClick={handleCopyAddress}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Address
+                  </Button>
                 </div>
               </div>
             </div>
@@ -282,13 +369,14 @@ export default function Profile() {
                 className="staking-asset-card"
                 style={{ animationDelay: `${index * 75}ms` }}
               >
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] text-muted-foreground uppercase tracking-wider">{stat.label}</span>
                   <stat.icon className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <div className="text-2xl font-semibold tabular-nums text-foreground">
+                <div className="text-2xl font-semibold tabular-nums text-foreground mb-1">
                   {stat.value}
                 </div>
+                <p className="text-[10px] text-muted-foreground">{stat.subtext}</p>
                 <div className="mt-3">
                   <Sparkline 
                     data={generateSparklineData(20, stat.trend as 'up' | 'down')} 
@@ -312,165 +400,222 @@ export default function Profile() {
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-4">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="security">Security</TabsTrigger>
-                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                  <TabsTrigger value="api">API Keys</TabsTrigger>
+                  <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                  <TabsTrigger value="positions">Positions</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
-                  {/* Profile Details Card */}
+                  {/* Wallet Summary Card */}
                   <div className="active-staking-card">
                     <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-[15px] font-medium">Profile Details</h3>
-                      <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-                        <Edit3 className="w-4 h-4 mr-1" />
-                        Edit
+                      <h3 className="text-[15px] font-medium">Wallet Summary</h3>
+                      <Button variant="ghost" size="sm" onClick={handleRefresh}>
+                        <RefreshCw className="w-4 h-4 mr-1" />
+                        Refresh
                       </Button>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Email</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Mail className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-[14px]">{profile.email}</span>
+                        <div className="p-4 rounded-xl bg-muted/30">
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Wallet Address</div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[14px] font-mono">{formatAddress(account.address, 10, 8)}</span>
+                            <button onClick={handleCopyAddress} className="text-muted-foreground hover:text-foreground">
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Phone</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Phone className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-[14px]">{profile.phone}</span>
+                        <div className="p-4 rounded-xl bg-muted/30">
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Network</div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-data-positive" />
+                            <span className="text-[14px]">ETO L1 Mainnet</span>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-4">
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Company</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Building2 className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-[14px]">{profile.company}</span>
-                          </div>
+                        <div className="p-4 rounded-xl bg-muted/30">
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Total Value</div>
+                          <span className="text-[14px] font-semibold">${getTotalStaked().toLocaleString()}</span>
                         </div>
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Role</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Award className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-[14px]">{profile.role}</span>
-                          </div>
+                        <div className="p-4 rounded-xl bg-muted/30">
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Wallet Tier</div>
+                          <Badge 
+                            variant="outline"
+                            style={{ 
+                              backgroundColor: `${walletIdentity?.color}15`, 
+                              color: walletIdentity?.color,
+                              borderColor: `${walletIdentity?.color}40`
+                            }}
+                          >
+                            {walletIdentity?.tier}
+                          </Badge>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Recent Activity */}
+                  {/* Connected Apps */}
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-[14px] flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        Recent Activity
+                        <LinkIcon className="w-4 h-4 text-primary" />
+                        Connected Apps
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-1">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              activity.type === 'stake' ? 'bg-primary/10 text-primary' :
-                              activity.type === 'claim' ? 'bg-data-positive/10 text-data-positive' :
-                              'bg-muted text-muted-foreground'
-                            }`}>
-                              {activity.type === 'stake' ? <Zap className="w-4 h-4" /> :
-                               activity.type === 'claim' ? <TrendingUp className="w-4 h-4" /> :
-                               activity.type === 'wallet' ? <Wallet className="w-4 h-4" /> :
-                               <User className="w-4 h-4" />}
-                            </div>
-                            <span className="text-[13px]">{activity.action}</span>
+                    <CardContent>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Zap className="w-4 h-4 text-primary" />
                           </div>
-                          <span className="text-[11px] text-muted-foreground">{activity.time}</span>
+                          <div>
+                            <span className="text-[13px] font-medium">ETO Protocol</span>
+                            <p className="text-[11px] text-muted-foreground">Full access</p>
+                          </div>
                         </div>
-                      ))}
+                        <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
+                          Active
+                        </Badge>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
 
-                <TabsContent value="security" className="space-y-4">
+                <TabsContent value="transactions" className="space-y-4">
                   <div className="active-staking-card">
-                    <h3 className="text-[15px] font-medium mb-5">Security Status</h3>
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-[15px] font-medium">Transaction History</h3>
+                      <Button variant="ghost" size="sm" onClick={handleViewOnExplorer}>
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        Explorer
+                      </Button>
+                    </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      <div className="p-4 rounded-xl bg-muted/30">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Shield className="w-4 h-4 text-data-positive" />
-                          <span className="text-[12px] text-muted-foreground">Verification</span>
-                        </div>
-                        <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
-                          {profile.verificationStatus}
-                        </Badge>
-                      </div>
-                      <div className="p-4 rounded-xl bg-muted/30">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FileText className="w-4 h-4 text-primary" />
-                          <span className="text-[12px] text-muted-foreground">KYC Level</span>
-                        </div>
-                        <span className="text-xl font-semibold">Level {profile.kycLevel}</span>
-                      </div>
-                      <div className="p-4 rounded-xl bg-muted/30">
-                        <div className="flex items-center gap-2 mb-2">
-                          <TrendingUp className="w-4 h-4 text-data-positive" />
-                          <span className="text-[12px] text-muted-foreground">Risk Score</span>
-                        </div>
-                        <span className="text-xl font-semibold text-data-positive">{profile.riskScore}/100</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
-                        <div className="flex items-center gap-3">
-                          <Lock className="w-5 h-5 text-data-positive" />
-                          <div>
-                            <span className="text-[13px] font-medium">Two-Factor Authentication</span>
-                            <p className="text-[11px] text-muted-foreground">Secure your account with 2FA</p>
+                    {recentTransactions.length > 0 ? (
+                      <div className="space-y-2">
+                        {recentTransactions.map((tx) => (
+                          <div key={tx.hash} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                tx.type === 'stake' ? 'bg-primary/10 text-primary' :
+                                tx.type === 'unstake' ? 'bg-warning/10 text-warning' :
+                                tx.type === 'claim' ? 'bg-data-positive/10 text-data-positive' :
+                                tx.type === 'swap' ? 'bg-blue-500/10 text-blue-500' :
+                                'bg-muted text-muted-foreground'
+                              }`}>
+                                {tx.type === 'stake' || tx.type === 'transfer' ? 
+                                  <ArrowDownLeft className="w-4 h-4" /> : 
+                                  <ArrowUpRight className="w-4 h-4" />
+                                }
+                              </div>
+                              <div>
+                                <span className="text-[13px] font-medium capitalize">{tx.type}</span>
+                                <p className="text-[11px] text-muted-foreground font-mono">{formatAddress(tx.hash, 8, 6)}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[13px] font-medium">{tx.amount} {tx.token}</span>
+                              <p className="text-[11px] text-muted-foreground">{tx.time}</p>
+                            </div>
                           </div>
-                        </div>
-                        <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
-                          Enabled
-                        </Badge>
+                        ))}
                       </div>
-                      <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
-                        <div className="flex items-center gap-3">
-                          <Wallet className="w-5 h-5 text-primary" />
-                          <div>
-                            <span className="text-[13px] font-medium">Connected Wallet</span>
-                            <p className="text-[11px] text-muted-foreground">
-                              {account?.address ? `${account.address.slice(0, 10)}...${account.address.slice(-8)}` : 'Not connected'}
-                            </p>
-                          </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                          <History className="w-7 h-7 text-muted-foreground" />
                         </div>
-                        {account?.address ? (
-                          <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
-                            Connected
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline">Not Connected</Badge>
-                        )}
+                        <h4 className="text-[15px] font-medium mb-1">No Transactions</h4>
+                        <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
+                          Transaction history will appear here once you start using ETO
+                        </p>
+                        <Button variant="outline" asChild>
+                          <Link to="/buy-maang">
+                            Make Your First Trade
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Link>
+                        </Button>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </TabsContent>
 
-                <TabsContent value="notifications" className="space-y-4">
+                <TabsContent value="positions" className="space-y-4">
+                  <div className="active-staking-card">
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-[15px] font-medium">Staking Positions</h3>
+                      <Button variant="cta" size="sm" asChild>
+                        <Link to="/staking">
+                          <Zap className="w-4 h-4 mr-1" />
+                          Stake More
+                        </Link>
+                      </Button>
+                    </div>
+                    
+                    {positions.length > 0 ? (
+                      <div className="space-y-3">
+                        {positions.map((position) => (
+                          <div key={position.id} className="p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <Coins className="w-5 h-5 text-primary" />
+                                <span className="font-medium">{position.asset.symbol}</span>
+                              </div>
+                              <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
+                                Active
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-[12px]">
+                              <div>
+                                <span className="text-muted-foreground">Staked</span>
+                                <p className="font-medium">{position.amount.toLocaleString()}</p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">APY</span>
+                                <p className="font-medium text-data-positive">{position.apy.toFixed(2)}%</p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Rewards</span>
+                                <p className="font-medium">+{position.rewards.toFixed(4)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                          <Coins className="w-7 h-7 text-muted-foreground" />
+                        </div>
+                        <h4 className="text-[15px] font-medium mb-1">No Active Positions</h4>
+                        <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
+                          Start staking to earn rewards on your assets
+                        </p>
+                        <Button variant="cta" asChild>
+                          <Link to="/staking">
+                            Start Staking
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="settings" className="space-y-4">
                   <div className="active-staking-card">
                     <h3 className="text-[15px] font-medium mb-5">Notification Preferences</h3>
                     
                     <div className="space-y-4">
                       {[
-                        { key: 'emailAlerts', label: 'Email Alerts', desc: 'Receive notifications via email' },
-                        { key: 'pushNotifications', label: 'Push Notifications', desc: 'Browser push notifications' },
+                        { key: 'transactionAlerts', label: 'Transaction Alerts', desc: 'Get notified when transactions are confirmed' },
+                        { key: 'stakingRewards', label: 'Staking Rewards', desc: 'Notifications when rewards are available' },
+                        { key: 'priceAlerts', label: 'Price Alerts', desc: 'Alerts for significant price movements' },
+                        { key: 'governanceAlerts', label: 'Governance', desc: 'Proposals and voting notifications' },
                         { key: 'securityAlerts', label: 'Security Alerts', desc: 'Important security notifications' },
-                        { key: 'marketAlerts', label: 'Market Alerts', desc: 'Price and market updates' },
-                        { key: 'orderAlerts', label: 'Order Alerts', desc: 'Trade execution notifications' },
                       ].map((item) => (
                         <div key={item.key} className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
                           <div>
@@ -489,51 +634,25 @@ export default function Profile() {
                     </div>
                   </div>
                 </TabsContent>
-
-                <TabsContent value="api" className="space-y-4">
-                  <div className="active-staking-card">
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-[15px] font-medium">API Keys</h3>
-                      <Button variant="cta" size="sm">
-                        <Key className="w-4 h-4 mr-2" />
-                        Generate Key
-                      </Button>
-                    </div>
-                    
-                    <div className="text-center py-12">
-                      <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                        <Key className="w-7 h-7 text-muted-foreground" />
-                      </div>
-                      <h4 className="text-[15px] font-medium mb-1">No API Keys</h4>
-                      <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
-                        Generate API keys to access your account programmatically
-                      </p>
-                      <Button variant="outline">
-                        Learn More
-                        <ExternalLink className="w-3.5 h-3.5 ml-1" />
-                      </Button>
-                    </div>
-                  </div>
-                </TabsContent>
               </Tabs>
             </div>
 
             {/* Right Sidebar */}
             <div className="space-y-5">
-              {/* Account Status */}
+              {/* Wallet Status */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-[14px] flex items-center gap-2">
                     <Shield className="w-4 h-4 text-primary" />
-                    Account Status
+                    Wallet Status
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
-                    { label: 'Email Verified', value: true },
-                    { label: 'KYC Complete', value: true },
-                    { label: '2FA Enabled', value: true },
-                    { label: 'Wallet Connected', value: !!account?.address },
+                    { label: 'Wallet Connected', value: true },
+                    { label: 'ETO L1 Network', value: true },
+                    { label: 'Transactions Enabled', value: true },
+                    { label: 'Signing Enabled', value: true },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                       <span className="text-[12px]">{item.label}</span>
@@ -547,23 +666,28 @@ export default function Profile() {
                 </CardContent>
               </Card>
 
-              {/* Risk Score */}
+              {/* Address QR */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-[14px] flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-primary" />
-                    Risk Assessment
+                    <QrCode className="w-4 h-4 text-primary" />
+                    Receive Funds
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="text-center py-4">
-                    <div className="text-4xl font-bold text-data-positive mb-1">{profile.riskScore}</div>
-                    <div className="text-[12px] text-muted-foreground">Risk Score</div>
+                  <div className="aspect-square rounded-xl bg-white p-4 flex items-center justify-center">
+                    <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+                      <QrCode className="w-16 h-16 text-muted-foreground" />
+                    </div>
                   </div>
-                  <Progress value={profile.riskScore} className="h-2" />
-                  <p className="text-[11px] text-muted-foreground text-center">
-                    Your account has a low risk profile based on your trading history and verification status.
-                  </p>
+                  <div className="text-center">
+                    <p className="text-[11px] text-muted-foreground mb-2">Your ETO L1 Address</p>
+                    <p className="text-[12px] font-mono break-all">{account.address}</p>
+                  </div>
+                  <Button variant="outline" className="w-full" onClick={handleCopyAddress}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Address
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -581,7 +705,13 @@ export default function Profile() {
                   </Button>
                   <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
                     <Link to="/staking">
-                      <span className="text-[13px]">My Staking</span>
+                      <span className="text-[13px]">Staking</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                    <Link to="/buy-maang">
+                      <span className="text-[13px]">Swap Tokens</span>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </Link>
                   </Button>
@@ -591,19 +721,13 @@ export default function Profile() {
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </Link>
                   </Button>
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/system-health">
-                      <span className="text-[13px]">System Health</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
                 </CardContent>
               </Card>
 
-              {/* Danger Zone */}
+              {/* Disconnect */}
               <Card className="border-destructive/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-[14px] text-destructive">Danger Zone</CardTitle>
+                  <CardTitle className="text-[14px] text-destructive">Disconnect</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Button 
@@ -611,10 +735,11 @@ export default function Profile() {
                     className="w-full" 
                     onClick={() => {
                       signOut();
-                      toast.success("Signed out successfully");
+                      toast.success("Wallet disconnected");
+                      navigate('/');
                     }}
                   >
-                    Sign Out
+                    Disconnect Wallet
                   </Button>
                 </CardContent>
               </Card>
@@ -625,4 +750,3 @@ export default function Profile() {
     </>
   );
 }
-

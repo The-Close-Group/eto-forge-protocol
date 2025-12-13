@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { ShareTradeCard } from '@/components/ShareTradeCard';
 import { useDirectSwap } from '@/hooks/useDirectSwap';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
@@ -42,8 +42,8 @@ const wallets = [
 export default function BuyMAANG() {
   const account = useActiveAccount();
   const navigate = useNavigate();
+  const location = useLocation();
   const directSwap = useDirectSwap();
-
   // Get price from global store (updated via WebSocket every block)
   const prices = useProtocolStore(selectPrices);
   
@@ -93,7 +93,8 @@ export default function BuyMAANG() {
   const [inputAmount, setInputAmount] = useState('');
   const [showShareCard, setShowShareCard] = useState(false);
   const [isFirstTrade, setIsFirstTrade] = useState(false);
-  const [isReversed, setIsReversed] = useState(false);
+  // If MAANG or sMAANG was selected, start in sell mode (MAANG -> mUSDC)
+  const [isReversed, setIsReversed] = useState(selectedToken === 'MAANG' || selectedToken === 'sMAANG');
   const [isFlipping, setIsFlipping] = useState(false);
   const [validationError, setValidationError] = useState<string>('');
   const [userBalances, setUserBalances] = useState({ usdc: '0', dri: '0' });
@@ -316,6 +317,7 @@ export default function BuyMAANG() {
                 { label: 'mUSDC Balance', value: account ? userBalances.usdc : '0.00', icon: <Wallet className="w-4 h-4" /> },
                 { label: 'MAANG Balance', value: account ? userBalances.dri : '0.00', icon: <Wallet className="w-4 h-4" /> },
                 { label: '24h Volume', value: marketStats?.volume24hFormatted || '$2.4M', icon: <Zap className="w-4 h-4" /> },
+
               ].map((stat) => (
                 <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
                   <CardContent className="p-4">
@@ -610,6 +612,7 @@ export default function BuyMAANG() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">24h Volume</span>
                   <span className="font-mono">{marketStats?.volume24hFormatted || '$2.4M'}</span>
+
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Liquidity</span>

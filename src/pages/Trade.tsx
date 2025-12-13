@@ -67,8 +67,8 @@ export default function Trade() {
   const livePrice = dmmPrice || oraclePrice || 1;
   const priceSource = dmmPrice > 0 ? 'DMM' : oraclePrice > 0 ? 'Oracle' : 'N/A';
 
-  // Staked MAANG price (slightly higher due to accrued yield)
-  const smaangPrice = livePrice * 1.045;
+  // NOTE: sMAANG price should come from vault share price, using same as MAANG for now
+  const smaangPrice = livePrice;
 
   return (
     <div className="min-h-screen p-6 md:p-8 bg-background overflow-hidden">
@@ -143,7 +143,7 @@ export default function Trade() {
                   {!asset.isStable && (
                     <Badge variant="outline" className={`${asset.accentColor} border-current/30`}>
                       <TrendingUp className="w-3 h-3 mr-1" />
-                      +2.4%
+                      —%
                     </Badge>
                   )}
                 </div>
@@ -294,7 +294,7 @@ export default function Trade() {
                 <div className="text-center md:text-left">
                   <div className="text-xs text-muted-foreground mb-1">sMAANG Yield</div>
                   <div className="text-lg font-mono font-semibold text-primary">
-                    +4.5% APY
+                    —% APY
                   </div>
                 </div>
               </div>

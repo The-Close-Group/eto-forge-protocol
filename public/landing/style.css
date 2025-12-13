@@ -9,10 +9,11 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #0a0a0a;
     color: white;
     overflow-x: hidden;
@@ -27,11 +28,16 @@ body {
     min-height: 100vh;
     position: relative;
     width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .page-hero {
     position: relative;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ========================================
@@ -215,14 +221,82 @@ body {
     overflow: visible;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
 .feature-card:hover .card-content {
     transform: translateY(-6px);
 }
 
+.card-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.card-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Left card text alignment */
+.card-left .card-title,
+.card-left .card-subtitle {
+    text-align: left;
+}
+
+/* Right card text alignment */
+.card-right .card-title,
+.card-right .card-subtitle {
+    text-align: right;
+}
+
+/* Card Hover Overlay */
+.card-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 30;
+}
+
+.card-hover-overlay p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    margin: 0;
+}
+
+.feature-card:hover .card-hover-overlay {
+    opacity: 1;
+}
+
 /* Left card - mask creates concave cutout on bottom-RIGHT matching globe */
 .card-left .card-content {
+    align-items: flex-start;
     -webkit-mask: radial-gradient(
         circle 600px at calc(100% + 480px) calc(100% + 480px),
         transparent 599px,
@@ -237,6 +311,7 @@ body {
 
 /* Right card - mask creates concave cutout on bottom-LEFT matching globe */
 .card-right .card-content {
+    align-items: flex-end;
     -webkit-mask: radial-gradient(
         circle 600px at -480px calc(100% + 480px),
         transparent 599px,
@@ -249,19 +324,13 @@ body {
     );
 }
 
-/* Card title - positioned at TOP-LEFT */
+/* Card title */
 .card-title {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.35;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
     color: #57FEC7;
-    text-align: center;
-    z-index: 25;
-    width: 80%;
+    margin: 0;
 }
 
 /* Glow orb base styles */
@@ -368,18 +437,23 @@ body {
     letter-spacing: 0.3px;
 }
 
-.partner-text-bold {
-    color: white;
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 0.5px;
-}
-
 .partner-img {
-    height: 22px;
+    height: 24px;
     width: auto;
     object-fit: contain;
     filter: brightness(0) invert(1);
+}
+
+.partner-svg {
+    height: 24px;
+    width: auto;
+    filter: none;
+}
+
+.partner-svg-wide {
+    height: 24px;
+    width: auto;
+    filter: none;
 }
 
 .partner-img-dark {
@@ -402,11 +476,6 @@ body {
     font-weight: 500;
 }
 
-.partner-suzaku .partner-text {
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
 
 /* ========================================
    ANIMATIONS
@@ -518,6 +587,7 @@ body {
     }
     
     .card-left .card-content {
+        align-items: flex-start;
         -webkit-mask: radial-gradient(
             circle 500px at calc(100% + 400px) calc(100% + 400px),
             transparent 499px,
@@ -531,6 +601,7 @@ body {
     }
     
     .card-right .card-content {
+        align-items: flex-end;
         -webkit-mask: radial-gradient(
             circle 500px at -400px calc(100% + 400px),
             transparent 499px,
@@ -569,6 +640,7 @@ body {
     }
     
     .card-left .card-content {
+        align-items: flex-start;
         -webkit-mask: radial-gradient(
             circle 400px at calc(100% + 320px) calc(100% + 320px),
             transparent 399px,
@@ -582,6 +654,7 @@ body {
     }
     
     .card-right .card-content {
+        align-items: flex-end;
         -webkit-mask: radial-gradient(
             circle 400px at -320px calc(100% + 320px),
             transparent 399px,
@@ -656,6 +729,14 @@ body {
     .card-right .card-content {
         -webkit-mask: none;
         mask: none;
+        align-items: flex-start;
+    }
+    
+    .card-left .card-title,
+    .card-left .card-subtitle,
+    .card-right .card-title,
+    .card-right .card-subtitle {
+        text-align: left;
     }
     
     .card-left .card-glow,
@@ -776,9 +857,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 80px 60px;
+    padding: 150px 60px;
     min-height: 100vh;
     position: relative;
+    margin-top: 100px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .features-content {
@@ -856,6 +940,47 @@ body {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* Hover Tooltip - Full Card Overlay */
+.grid-card-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 28px;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.grid-card-tooltip p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    text-align: center;
+    max-width: 90%;
+}
+
+.grid-card:hover .grid-card-tooltip {
+    opacity: 1;
+}
+
+.grid-card:hover .grid-card-header,
+.grid-card:hover .grid-card-graphic,
+.grid-card:hover .grid-card-arrow {
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+}
+
 .grid-card-points {
     position: absolute;
     bottom: -60px;
@@ -866,6 +991,223 @@ body {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 4px;
+}
+
+/* Yield Card Graphic */
+.graphic-yield {
+    position: relative;
+}
+
+.yield-sphere {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(80, 80, 80, 0.6) 0%,
+        rgba(60, 60, 60, 0.4) 50%,
+        rgba(40, 40, 40, 0.3) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 
+        inset -20px -20px 40px rgba(0, 0, 0, 0.4),
+        inset 10px 10px 30px rgba(255, 255, 255, 0.05);
+}
+
+.yield-sphere::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50% 0 0 50%;
+}
+
+.yield-dollar {
+    font-size: 80px;
+    font-weight: 700;
+    color: #57FEC7;
+    text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* Fanned Token Stack Visual */
+.graphic-tokens-fan {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokens-fan {
+    position: relative;
+    width: 220px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fan-token {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(80, 80, 80, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fan-token svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Fanned positions - stacked with offset */
+.fan-token-1 {
+    z-index: 5;
+    transform: translateX(0) rotate(0deg);
+}
+
+.fan-token-2 {
+    z-index: 4;
+    transform: translateX(-35px) translateY(-5px) rotate(-8deg);
+}
+
+.fan-token-3 {
+    z-index: 3;
+    transform: translateX(-65px) translateY(-15px) rotate(-16deg);
+}
+
+.fan-token-4 {
+    z-index: 2;
+    transform: translateX(35px) translateY(-5px) rotate(8deg);
+}
+
+.fan-token-5 {
+    z-index: 1;
+    transform: translateX(65px) translateY(-15px) rotate(16deg);
+}
+
+/* Hover effects */
+.grid-card:hover .fan-token-1 {
+    transform: translateX(0) rotate(0deg) scale(1.05);
+}
+
+.grid-card:hover .fan-token-2 {
+    transform: translateX(-45px) translateY(-8px) rotate(-10deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-3 {
+    transform: translateX(-85px) translateY(-18px) rotate(-18deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-4 {
+    transform: translateX(45px) translateY(-8px) rotate(10deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-5 {
+    transform: translateX(85px) translateY(-18px) rotate(18deg) scale(1.02);
+}
+
+/* ERC-20 Card Graphic */
+.graphic-erc {
+    position: relative;
+}
+
+.puzzle-piece {
+    width: 160px;
+    height: 220px;
+    background: linear-gradient(180deg, 
+        #F5E6E0 0%,
+        #EED9D3 50%,
+        #E8CCC5 100%
+    );
+    border-radius: 16px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.puzzle-piece::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(90deg, 
+        #F5E6E0 0%,
+        #E8CCC5 100%
+    );
+    border-radius: 0 30px 30px 0;
+}
+
+.puzzle-glow {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.4) 30%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    filter: blur(10px);
+}
+
+/* Self-Custody Card Graphic */
+.graphic-feature3 {
+    position: relative;
+}
+
+.glass-shape {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, 
+        rgba(87, 254, 199, 0.15) 0%,
+        rgba(87, 254, 199, 0.05) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-shape::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    filter: blur(4px);
+}
+
+.glass-shape::after {
+    content: '🔐';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
 }
 
 /* Yield Card Graphic */
@@ -1017,19 +1359,26 @@ body {
    ======================================== */
 @media (max-width: 1100px) {
     .features-grid-new {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .grid-card {
+        width: 100%;
+        max-width: 100%;
     }
     
     .grid-card:last-child {
-        grid-column: span 2;
-        max-width: 50%;
-        margin: 0 auto;
+        grid-column: span 1;
+        max-width: 100%;
+        margin: 0;
     }
 }
 
 @media (max-width: 768px) {
     .page-features {
-        padding: 60px 30px;
+        padding: 100px 30px;
+        margin-top: 60px;
     }
     
     .features-grid-new {
@@ -1063,6 +1412,21 @@ body {
         font-size: 60px;
     }
     
+    .tokens-fan {
+        width: 180px;
+        height: 140px;
+    }
+    
+    .fan-token {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .fan-token-2 { transform: translateX(-28px) translateY(-4px) rotate(-8deg); }
+    .fan-token-3 { transform: translateX(-52px) translateY(-12px) rotate(-16deg); }
+    .fan-token-4 { transform: translateX(28px) translateY(-4px) rotate(8deg); }
+    .fan-token-5 { transform: translateX(52px) translateY(-12px) rotate(16deg); }
+    
     .puzzle-piece {
         width: 130px;
         height: 180px;
@@ -1076,7 +1440,8 @@ body {
 
 @media (max-width: 480px) {
     .page-features {
-        padding: 40px 20px;
+        padding: 60px 20px;
+        margin-top: 40px;
     }
     
     .grid-card {
@@ -1110,10 +1475,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 100px 40px;
+    padding: 150px 40px;
     min-height: 100vh;
     position: relative;
     z-index: 10;
+    margin-top: 100px;
+    overflow-x: hidden;
 }
 
 .maang-content {
@@ -1164,16 +1531,14 @@ body {
     padding: 20px 40px;
 }
 
-.h-carousel-track:hover {
-    animation-play-state: paused;
-}
+/* Removed hover pause for seamless infinite loop */
 
 @keyframes hCarouselScroll {
     0% {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-50%);
+        transform: translateX(-33.333%);
     }
 }
 
@@ -1347,6 +1712,24 @@ body {
     filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
 }
 
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
 .h-token-shine {
     position: absolute;
     top: 8%;
@@ -1361,7 +1744,7 @@ body {
 }
 
 .maang-available {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: #57FEC7;
@@ -1370,12 +1753,20 @@ body {
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 48px;
     font-weight: 800;
     color: white;
-    margin-bottom: 32px;
+    margin-bottom: 12px;
     letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
 }
 
 .maang-btn {
@@ -1393,10 +1784,13 @@ body {
     justify-content: center;
     min-height: 100vh;
     background: #0a0a0a;
-    padding: 100px 60px;
-    margin-top: 250px;
+    padding: 150px 60px;
+    margin-top: 350px;
     position: relative;
     gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .taas-content {
@@ -1406,7 +1800,7 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: #57FEC7;
@@ -1416,7 +1810,7 @@ body {
 }
 
 .taas-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
     color: white;
@@ -1433,8 +1827,9 @@ body {
 /* Dual Carousel Container */
 .dual-carousel-container {
     position: relative;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -1443,7 +1838,7 @@ body {
 
 /* Full width carousels for TAAS page */
 .dual-carousel-container .h-carousel-wrapper {
-    width: 100vw;
+    width: 100%;
     max-width: none;
     margin: 0;
     padding: 10px 0;
@@ -1481,7 +1876,8 @@ body {
 /* Responsive - TAAS Section */
 @media (max-width: 768px) {
     .page-taas {
-        padding: 80px 30px;
+        padding: 100px 30px;
+        margin-top: 200px;
         gap: 50px;
     }
     
@@ -1527,7 +1923,8 @@ body {
 /* Responsive - MAANG Section */
 @media (max-width: 768px) {
     .page-maang {
-        padding: 80px 30px;
+        padding: 100px 30px;
+        margin-top: 60px;
     }
     
     .h-carousel-wrapper {
@@ -1553,6 +1950,11 @@ body {
     .h-token-logo {
         width: 42px;
         height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
     }
     
     .h-token-front {
@@ -1604,6 +2006,11 @@ body {
         height: 30px;
     }
     
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
     .h-token-front {
         transform: translateZ(5px);
     }
@@ -1618,5 +2025,1665 @@ body {
     
     .maang-title {
         font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
+    }
+}
+
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0.4;
+    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
+    background-size: 7px 7px;
+    animation: hDotsMove 3s linear infinite;
+    mask-image: radial-gradient(circle, black 50%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
+}
+
+@keyframes hDotsMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 35px 35px;
+    }
+}
+
+.h-token-ring {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    border: 2px solid rgba(120, 120, 120, 0.4);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-ring {
+    border-color: rgba(87, 254, 199, 0.5);
+}
+
+.h-token-logo {
+    width: 55px;
+    height: 55px;
+    position: relative;
+    z-index: 5;
+}
+
+.h-token-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+    transition: filter 0.3s ease;
+}
+
+.h-token:hover .h-token-logo svg {
+    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
+}
+
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
+.h-token-shine {
+    position: absolute;
+    top: 8%;
+    left: 12%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    filter: blur(3px);
+    z-index: 3;
+}
+
+.maang-available {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.maang-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.maang-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* ========================================
+   PAGE 4: TOKENIZATION AS A SERVICE
+   ======================================== */
+.page-taas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 150px 60px;
+    margin-top: 350px;
+    position: relative;
+    gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.taas-content {
+    text-align: center;
+    max-width: 900px;
+    flex-shrink: 0;
+}
+
+.taas-subtitle {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.taas-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.taas-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* Dual Carousel Container */
+.dual-carousel-container {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Full width carousels for TAAS page */
+.dual-carousel-container .h-carousel-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.dual-carousel-container .h-carousel-wrapper::before,
+.dual-carousel-container .h-carousel-wrapper::after {
+    width: 100px;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.dual-carousel-container .h-carousel-wrapper::after {
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+/* Track moving right (reverse direction) */
+.track-right {
+    animation: hCarouselScrollRight 18s linear infinite;
+}
+
+/* Track moving left (original direction) */
+.track-left {
+    animation: hCarouselScroll 18s linear infinite;
+}
+
+@keyframes hCarouselScrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive - TAAS Section */
+@media (max-width: 768px) {
+    .page-taas {
+        padding: 100px 30px;
+        margin-top: 200px;
+        gap: 50px;
+    }
+    
+    .taas-title {
+        font-size: 48px;
+        letter-spacing: -1px;
+    }
+    
+    .taas-subtitle {
+        font-size: 14px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-taas {
+        padding: 60px 20px;
+        gap: 40px;
+    }
+    
+    .taas-title {
+        font-size: 36px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 40px;
+    }
+}
+
+/* Responsive - MAANG Section */
+@media (max-width: 768px) {
+    .page-maang {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 600px;
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 50px;
+    }
+    
+    .h-carousel-track {
+        gap: 30px;
+    }
+    
+    .h-token {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .h-token-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(6px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+    
+    .h-token-edge::before {
+        height: 12px;
+    }
+    
+    .maang-title {
+        font-size: 32px;
+    }
+    
+    .maang-available {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-maang {
+        padding: 60px 20px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 100%;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 30px;
+    }
+    
+    .h-carousel-track {
+        gap: 20px;
+    }
+    
+    .h-token {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .h-token-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(5px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(5px);
+    }
+    
+    .h-token-edge::before {
+        height: 10px;
+    }
+    
+    .maang-title {
+        font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
+    }
+}
+
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0.4;
+    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
+    background-size: 7px 7px;
+    animation: hDotsMove 3s linear infinite;
+    mask-image: radial-gradient(circle, black 50%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
+}
+
+@keyframes hDotsMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 35px 35px;
+    }
+}
+
+.h-token-ring {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    border: 2px solid rgba(120, 120, 120, 0.4);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-ring {
+    border-color: rgba(87, 254, 199, 0.5);
+}
+
+.h-token-logo {
+    width: 55px;
+    height: 55px;
+    position: relative;
+    z-index: 5;
+}
+
+.h-token-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+    transition: filter 0.3s ease;
+}
+
+.h-token:hover .h-token-logo svg {
+    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
+}
+
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
+.h-token-shine {
+    position: absolute;
+    top: 8%;
+    left: 12%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    filter: blur(3px);
+    z-index: 3;
+}
+
+.maang-available {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.maang-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.maang-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* ========================================
+   PAGE 4: TOKENIZATION AS A SERVICE
+   ======================================== */
+.page-taas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 150px 60px;
+    margin-top: 350px;
+    position: relative;
+    gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.taas-content {
+    text-align: center;
+    max-width: 900px;
+    flex-shrink: 0;
+}
+
+.taas-subtitle {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.taas-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.taas-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* Dual Carousel Container */
+.dual-carousel-container {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Full width carousels for TAAS page */
+.dual-carousel-container .h-carousel-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.dual-carousel-container .h-carousel-wrapper::before,
+.dual-carousel-container .h-carousel-wrapper::after {
+    width: 100px;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.dual-carousel-container .h-carousel-wrapper::after {
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+/* Track moving right (reverse direction) */
+.track-right {
+    animation: hCarouselScrollRight 18s linear infinite;
+}
+
+/* Track moving left (original direction) */
+.track-left {
+    animation: hCarouselScroll 18s linear infinite;
+}
+
+@keyframes hCarouselScrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive - TAAS Section */
+@media (max-width: 768px) {
+    .page-taas {
+        padding: 100px 30px;
+        margin-top: 200px;
+        gap: 50px;
+    }
+    
+    .taas-title {
+        font-size: 48px;
+        letter-spacing: -1px;
+    }
+    
+    .taas-subtitle {
+        font-size: 14px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-taas {
+        padding: 60px 20px;
+        gap: 40px;
+    }
+    
+    .taas-title {
+        font-size: 36px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 40px;
+    }
+}
+
+/* Responsive - MAANG Section */
+@media (max-width: 768px) {
+    .page-maang {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 600px;
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 50px;
+    }
+    
+    .h-carousel-track {
+        gap: 30px;
+    }
+    
+    .h-token {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .h-token-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(6px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+    
+    .h-token-edge::before {
+        height: 12px;
+    }
+    
+    .maang-title {
+        font-size: 32px;
+    }
+    
+    .maang-available {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-maang {
+        padding: 60px 20px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 100%;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 30px;
+    }
+    
+    .h-carousel-track {
+        gap: 20px;
+    }
+    
+    .h-token {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .h-token-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(5px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(5px);
+    }
+    
+    .h-token-edge::before {
+        height: 10px;
+    }
+    
+    .maang-title {
+        font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
     }
 }
