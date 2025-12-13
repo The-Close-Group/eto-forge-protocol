@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 import { toast } from 'sonner';
-import { Fuel, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Fuel, CheckCircle2, ExternalLink, Coins } from 'lucide-react';
 
 // Faucet API endpoint - set via VITE_FAUCET_API_URL env var after deploying Lambda
 const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || '';
@@ -18,8 +18,10 @@ interface FaucetResponse {
   success?: boolean;
   error?: string;
   message?: string;
-  txHash?: string;
-  amount?: string;
+  ethTxHash?: string;
+  usdcTxHash?: string;
+  ethAmount?: string;
+  usdcAmount?: string;
   timeRemaining?: number;
   explorer?: string;
 }
@@ -89,7 +91,7 @@ export function AutoFaucet() {
         const loadingId = toast.loading(
           <div className="flex items-center gap-2">
             <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
-            <span>Sending you starter gas...</span>
+            <span>Sending you starter funds...</span>
           </div>,
           { duration: 30000 }
         );
@@ -130,11 +132,17 @@ export function AutoFaucet() {
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
                 <span className="font-medium">Welcome to ETO!</span>
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground space-y-1">
                 <div className="flex items-center gap-1">
                   <Fuel className="w-3 h-3" />
-                  <span>{data.amount || '0.1'} ETH for gas</span>
+                  <span>{data.ethAmount || '0.1'} ETH for gas</span>
                 </div>
+                {data.usdcAmount && parseFloat(data.usdcAmount) > 0 && (
+                  <div className="flex items-center gap-1">
+                    <Coins className="w-3 h-3" />
+                    <span>{data.usdcAmount} mUSDC to trade</span>
+                  </div>
+                )}
               </div>
               {data.explorer && (
                 <a
