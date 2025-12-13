@@ -4,11 +4,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Fuel, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useActiveAccount } from 'thirdweb/react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+
+// AWS Lambda faucet endpoint
+const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || '';
+
+interface FaucetResponse {
+  success?: boolean;
+  error?: string;
+  ethTxHash?: string;
+  usdcTxHash?: string;
+  ethAmount?: string;
+  usdcAmount?: string;
+  message?: string;
+  timeRemaining?: number;
+}
 
 export function GasFaucet() {
   const account = useActiveAccount();
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [usdcTxHash, setUsdcTxHash] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [cooldownHours, setCooldownHours] = useState<number | null>(null);
@@ -19,26 +33,33 @@ export function GasFaucet() {
       return;
     }
 
+    if (!FAUCET_API_URL) {
+      toast.error("Faucet not configured");
+      return;
+    }
+
     setTxHash(null);
+    setUsdcTxHash(null);
     setIsSuccess(false);
     setIsPending(true);
     setCooldownHours(null);
 
     try {
-      toast.info("Requesting gas from faucet...");
+      toast.info("⛽ Requesting funds from faucet...");
 
-      const { data, error } = await supabase.functions.invoke('gas-faucet', {
-        body: { address: account.address },
+      const response = await fetch(FAUCET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: account.address }),
       });
 
-      if (error) {
-        throw new Error(error.message || 'Failed to claim gas');
-      }
+      const data: FaucetResponse = await response.json();
 
       if (data.error) {
-        if (data.cooldownRemaining) {
-          setCooldownHours(data.cooldownRemaining);
-          toast.error(data.error);
+        if (data.timeRemaining) {
+          const hours = Math.ceil(data.timeRemaining / 3600);
+          setCooldownHours(hours);
+          toast.error(`On cooldown. Try again in ${hours} hours.`);
         } else {
           toast.error(data.error);
         }
@@ -46,13 +67,15 @@ export function GasFaucet() {
       }
 
       if (data.success) {
-        setTxHash(data.txHash);
+        setTxHash(data.ethTxHash || null);
+        setUsdcTxHash(data.usdcTxHash || null);
         setIsSuccess(true);
-        toast.success(data.message || "Successfully claimed gas!");
+        const usdcMsg = data.usdcAmount ? ` + ${data.usdcAmount} mUSDC` : '';
+        toast.success(`🎉 Sent ${data.ethAmount || '0.1'} ETH${usdcMsg}!`);
       }
     } catch (error: any) {
       console.error("Gas faucet error:", error);
-      toast.error(error.message || "Failed to claim gas");
+      toast.error(error.message || "Failed to claim funds");
     } finally {
       setIsPending(false);
     }
@@ -63,10 +86,10 @@ export function GasFaucet() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Fuel className="h-5 w-5 text-yellow-500" />
-          Gas Faucet
+          Starter Faucet
         </CardTitle>
         <CardDescription>
-          Get free ETH for gas on ETO L1 - no existing balance required!
+          Get free ETH + mUSDC on ETO L1 - no existing balance required!
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -87,7 +110,7 @@ export function GasFaucet() {
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending gas...
+              Sending funds...
             </>
           ) : isSuccess ? (
             <>
@@ -102,27 +125,39 @@ export function GasFaucet() {
           ) : (
             <>
               <Fuel className="mr-2 h-4 w-4" />
-              Claim 0.01 ETH for Gas
+              Claim 0.1 ETH + 1000 mUSDC
             </>
           )}
         </Button>
           
-        {txHash && (
-          <div className="text-sm text-center">
-            <a 
-              href={`https://eto.ash.center/tx/${txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-500 hover:underline inline-flex items-center gap-1"
-            >
-              View transaction <ExternalLink className="h-3 w-3" />
-            </a>
+        {(txHash || usdcTxHash) && (
+          <div className="text-sm text-center space-y-1">
+            {txHash && (
+              <a 
+                href={`https://eto-explorer.ash.center/tx/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-yellow-500 hover:underline inline-flex items-center gap-1"
+              >
+                ETH Transaction <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+            {usdcTxHash && (
+              <a 
+                href={`https://eto-explorer.ash.center/tx/${usdcTxHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline inline-flex items-center gap-1 ml-3"
+              >
+                USDC Transaction <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
           </div>
         )}
         
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-yellow-500/10">
           <p>• <strong>No gas needed</strong> to claim - it's sent to you!</p>
-          <p>• 0.01 ETH is enough for ~100+ transactions</p>
+          <p>• Get 0.1 ETH for gas + 1000 mUSDC for trading</p>
           <p>• 24-hour cooldown between claims</p>
         </div>
       </CardContent>
