@@ -105,59 +105,8 @@ async function recordRequest(address, txHash) {
 }
 
 /**
- * Send ETH to address
- */
-async function sendGas(wallet, toAddress) {
-  const balance = await wallet.provider.getBalance(wallet.address);
-  const dripAmount = ethers.parseEther(CONFIG.ETH_DRIP_AMOUNT);
-
-  if (balance < dripAmount) {
-    throw new Error('Faucet ETH balance too low');
-  }
-
-  console.log(`Sending ${CONFIG.ETH_DRIP_AMOUNT} ETH from ${wallet.address} to ${toAddress}`);
-
-  const tx = await wallet.sendTransaction({
-    to: toAddress,
-    value: dripAmount,
-  });
-
-  console.log(`ETH Transaction sent: ${tx.hash}`);
-  await tx.wait(1);
-  console.log(`ETH Transaction confirmed`);
-
-  return tx.hash;
-}
-
-/**
- * Send mock USDC to address
- */
-async function sendUSDC(wallet, toAddress) {
-  const usdcContract = new ethers.Contract(CONFIG.USDC_CONTRACT, ERC20_ABI, wallet);
-  
-  // Get decimals (USDC typically has 6)
-  const decimals = await usdcContract.decimals();
-  const dripAmount = ethers.parseUnits(CONFIG.USDC_DRIP_AMOUNT, decimals);
-  
-  // Check faucet USDC balance
-  const balance = await usdcContract.balanceOf(wallet.address);
-  if (balance < dripAmount) {
-    console.warn('Faucet USDC balance too low, skipping USDC transfer');
-    return null;
-  }
-
-  console.log(`Sending ${CONFIG.USDC_DRIP_AMOUNT} mUSDC from ${wallet.address} to ${toAddress}`);
-
-  const tx = await usdcContract.transfer(toAddress, dripAmount);
-  console.log(`USDC Transaction sent: ${tx.hash}`);
-  await tx.wait(1);
-  console.log(`USDC Transaction confirmed`);
-
-  return tx.hash;
-}
-
-/**
- * Send both ETH and USDC
+ * Send ETH and USDC to address (fire-and-forget for speed)
+ * Returns immediately after sending, doesn't wait for confirmation
  */
 async function sendFaucetTokens(toAddress) {
   const privateKey = process.env.FAUCET_PRIVATE_KEY;
@@ -168,18 +117,48 @@ async function sendFaucetTokens(toAddress) {
   const provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL, CONFIG.CHAIN_ID);
   const wallet = new ethers.Wallet(privateKey, provider);
 
-  // Send ETH first (required)
-  const ethTxHash = await sendGas(wallet, toAddress);
+  // Get current nonce to send both transactions in parallel
+  const nonce = await provider.getTransactionCount(wallet.address);
   
-  // Try to send USDC (optional - don't fail if USDC balance is low)
+  const ethDripAmount = ethers.parseEther(CONFIG.ETH_DRIP_AMOUNT);
+  
+  // Check ETH balance
+  const ethBalance = await provider.getBalance(wallet.address);
+  if (ethBalance < ethDripAmount) {
+    throw new Error('Faucet ETH balance too low');
+  }
+
+  console.log(`Sending ${CONFIG.ETH_DRIP_AMOUNT} ETH from ${wallet.address} to ${toAddress}`);
+
+  // Send ETH transaction (don't wait for confirmation)
+  const ethTx = await wallet.sendTransaction({
+    to: toAddress,
+    value: ethDripAmount,
+    nonce: nonce,
+  });
+  console.log(`ETH Transaction sent: ${ethTx.hash}`);
+
+  // Try to send USDC with next nonce (fire-and-forget)
   let usdcTxHash = null;
   try {
-    usdcTxHash = await sendUSDC(wallet, toAddress);
+    const usdcContract = new ethers.Contract(CONFIG.USDC_CONTRACT, ERC20_ABI, wallet);
+    const decimals = await usdcContract.decimals();
+    const usdcDripAmount = ethers.parseUnits(CONFIG.USDC_DRIP_AMOUNT, decimals);
+    
+    const usdcBalance = await usdcContract.balanceOf(wallet.address);
+    if (usdcBalance >= usdcDripAmount) {
+      console.log(`Sending ${CONFIG.USDC_DRIP_AMOUNT} mUSDC to ${toAddress}`);
+      const usdcTx = await usdcContract.transfer(toAddress, usdcDripAmount, { nonce: nonce + 1 });
+      usdcTxHash = usdcTx.hash;
+      console.log(`USDC Transaction sent: ${usdcTxHash}`);
+    } else {
+      console.warn('Faucet USDC balance too low, skipping USDC transfer');
+    }
   } catch (error) {
     console.warn('USDC transfer failed:', error.message);
   }
 
-  return { ethTxHash, usdcTxHash };
+  return { ethTxHash: ethTx.hash, usdcTxHash };
 }
 
 /**
