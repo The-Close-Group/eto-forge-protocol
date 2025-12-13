@@ -29,12 +29,9 @@ interface TradeAssetSelectorProps {
 }
 
 const assets: Asset[] = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: maangLogo },
-  { symbol: "mUSDC", name: "Mock USD Coin", price: 1.00, icon: "💵" },
-  { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐" },
+  { symbol: "MAANG", name: "Dynamic Reflective Index", price: 1.50, icon: maangLogo },
+  { symbol: "sMAANG", name: "Staked MAANG", price: 1.57, icon: maangLogo },
   { symbol: "USDC", name: "USD Coin", price: 1.00, icon: "💵" },
-  { symbol: "AVAX", name: "Avalanche", price: 26.00, icon: "🔺" },
-  { symbol: "BTC", name: "Bitcoin", price: 45000.00, icon: "₿" },
 ];
 
 export function TradeAssetSelector({ 

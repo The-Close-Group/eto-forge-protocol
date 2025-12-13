@@ -797,7 +797,7 @@ body {
     border-radius: 20px;
     padding: 28px;
     position: relative;
-    min-height: 480px;
+    min-height: 560px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -857,14 +857,16 @@ body {
 
 .grid-card-points {
     position: absolute;
-    bottom: -60px;
+    bottom: 70px;
     left: 28px;
+    right: 28px;
 }
 
 .grid-card-points p {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.4;
 }
 
 /* Yield Card Graphic */
@@ -1037,7 +1039,7 @@ body {
     }
     
     .grid-card {
-        min-height: 400px;
+        min-height: 480px;
     }
     
     .grid-card:last-child {
@@ -1047,6 +1049,16 @@ body {
     
     .grid-card-title {
         font-size: 26px;
+    }
+    
+    .grid-card-points {
+        bottom: 60px;
+        left: 24px;
+        right: 24px;
+    }
+    
+    .grid-card-points p {
+        font-size: 12px;
     }
     
     .scroll-indicator {
@@ -1071,6 +1083,15 @@ body {
         width: 130px;
         height: 130px;
     }
+    
+    .maang-description {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+    
+    .maang-callout {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1080,7 +1101,7 @@ body {
     
     .grid-card {
         padding: 24px;
-        min-height: 360px;
+        min-height: 460px;
     }
     
     .grid-card-title {
@@ -1092,12 +1113,21 @@ body {
     }
     
     .grid-card-points {
-        bottom: -50px;
+        bottom: 50px;
         left: 24px;
+        right: 24px;
     }
     
     .grid-card-points p {
-        font-size: 12px;
+        font-size: 11px;
+    }
+    
+    .maang-description {
+        font-size: 14px;
+    }
+    
+    .maang-callout {
+        font-size: 13px;
     }
 }
 
@@ -1373,8 +1403,29 @@ body {
     font-size: 48px;
     font-weight: 800;
     color: white;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     letter-spacing: -1px;
+}
+
+.maang-description {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.maang-callout {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    margin-bottom: 32px;
+    letter-spacing: 0.3px;
 }
 
 .maang-btn {
@@ -1419,9 +1470,65 @@ body {
     font-size: 72px;
     font-weight: 800;
     color: white;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     letter-spacing: -2px;
     line-height: 1.1;
+}
+
+.taas-description {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 50px;
+    letter-spacing: 0.2px;
+}
+
+/* 3-Step Process */
+.taas-steps {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 50px;
+    max-width: 900px;
+}
+
+.taas-step {
+    flex: 1;
+    text-align: center;
+    max-width: 250px;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #57FEC7 0%, #3ad9a5 100%);
+    color: #0a0a0a;
+    font-size: 28px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 8px 20px rgba(87, 254, 199, 0.3);
+}
+
+.step-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.step-description {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
 }
 
 .taas-btn {
@@ -1493,6 +1600,34 @@ body {
         font-size: 14px;
     }
     
+    .taas-description {
+        font-size: 18px;
+    }
+    
+    .taas-steps {
+        flex-direction: column;
+        gap: 30px;
+        max-width: 100%;
+    }
+    
+    .taas-step {
+        max-width: 100%;
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .step-title {
+        font-size: 20px;
+    }
+    
+    .step-description {
+        font-size: 14px;
+    }
+    
     .dual-carousel-container {
         gap: 5px;
     }
@@ -1511,6 +1646,29 @@ body {
     
     .taas-title {
         font-size: 36px;
+    }
+    
+    .taas-description {
+        font-size: 16px;
+    }
+    
+    .taas-steps {
+        gap: 25px;
+    }
+    
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    
+    .step-title {
+        font-size: 18px;
+    }
+    
+    .step-description {
+        font-size: 13px;
     }
     
     .dual-carousel-container {

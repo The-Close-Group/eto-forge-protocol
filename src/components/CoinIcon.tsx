@@ -1,8 +1,5 @@
 import React from "react";
 import usdcLogo from "@/assets/usdc-logo.png";
-import avaxLogo from "@/assets/avalanche-logo.png";
-import solLogo from "@/assets/solana-logo.png";
-import lzLogo from "@/assets/layerzero-logo.png";
 import maangLogo from "@/assets/maang-logo.svg";
 
 interface CoinIconProps {
@@ -14,12 +11,9 @@ interface CoinIconProps {
 
 const SYMBOL_TO_LOGO: Record<string, string> = {
   USDC: usdcLogo,
-  USDT: usdcLogo, // fallback to USDC style if no dedicated icon
-  AVAX: avaxLogo,
-  SOL: solLogo,
-  LZ: lzLogo,
-  LAYERZERO: lzLogo,
+  MUSDC: usdcLogo,
   MAANG: maangLogo,
+  SMAANG: maangLogo,
 };
 
 export default function CoinIcon({ symbol, size = 18, className = "", alt }: CoinIconProps) {

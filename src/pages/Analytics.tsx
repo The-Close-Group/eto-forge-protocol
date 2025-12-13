@@ -61,8 +61,8 @@ export default function Analytics() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">127</div>
-            <p className="text-xs text-muted-foreground">+23% from last week</p>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">—</p>
           </CardContent>
         </Card>
 
@@ -72,8 +72,8 @@ export default function Analytics() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">68.5%</div>
-            <p className="text-xs text-muted-foreground">+2.1% from last week</p>
+            <div className="text-2xl font-bold">—%</div>
+            <p className="text-xs text-muted-foreground">—</p>
           </CardContent>
         </Card>
 
@@ -83,8 +83,8 @@ export default function Analytics() {
             <PieChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$891</div>
-            <p className="text-xs text-muted-foreground">-5.2% from last week</p>
+            <div className="text-2xl font-bold">$0</div>
+            <p className="text-xs text-muted-foreground">—</p>
           </CardContent>
         </Card>
       </div>
@@ -128,15 +128,15 @@ export default function Analytics() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Total Return</p>
-                  <p className="text-2xl font-bold text-green-500">+$2,847</p>
+                  <p className="text-2xl font-bold text-muted-foreground">$0</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Best Day</p>
-                  <p className="text-2xl font-bold text-green-500">+$543</p>
+                  <p className="text-2xl font-bold text-muted-foreground">$0</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Worst Day</p>
-                  <p className="text-2xl font-bold text-red-500">-$234</p>
+                  <p className="text-2xl font-bold text-muted-foreground">$0</p>
                 </div>
               </div>
             </CardContent>
@@ -202,11 +202,11 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* NOTE: Asset allocation data is placeholder - real data should come from wallet balances */}
                 {[
-                  { chain: "Ethereum", percentage: "45%", amount: "$5,130" },
-                  { chain: "Arbitrum", percentage: "25%", amount: "$2,855" },
-                  { chain: "Polygon", percentage: "20%", amount: "$2,284" },
-                  { chain: "Optimism", percentage: "10%", amount: "$1,142" },
+                  { chain: "MAANG", percentage: "—%", amount: "$0" },
+                  { chain: "sMAANG", percentage: "—%", amount: "$0" },
+                  { chain: "USDC", percentage: "—%", amount: "$0" },
                 ].map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <span>{item.chain}</span>

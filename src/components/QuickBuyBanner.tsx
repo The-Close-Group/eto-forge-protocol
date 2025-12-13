@@ -19,10 +19,8 @@ interface QuickBuyBannerProps {
 }
 
 const QUICK_BUY_ASSETS: QuickBuyAsset[] = [
-  { symbol: "MAANG", name: "Meta AI & Analytics", price: 33.00, icon: maangLogo, trending: true, change24h: 5.2 },
-  { symbol: "ETH", name: "Ethereum", price: 3567.00, icon: "⟐", change24h: 2.1 },
-  { symbol: "BTC", name: "Bitcoin", price: 45000.00, icon: "₿", change24h: 1.8 },
-  { symbol: "AVAX", name: "Avalanche", price: 26.00, icon: "🔺", trending: true, change24h: 3.7 },
+  { symbol: "MAANG", name: "Dynamic Reflective Index", price: 1.50, icon: maangLogo, trending: true, change24h: 5.2 },
+  { symbol: "sMAANG", name: "Staked MAANG", price: 1.57, icon: maangLogo, change24h: 4.5 },
   { symbol: "USDC", name: "USD Coin", price: 1.00, icon: "💵", change24h: 0.0 },
 ];
 
