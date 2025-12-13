@@ -476,7 +476,7 @@ export default function SystemHealth() {
 
                   <TabsContent value="network" className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[<<<<<<< naman-update-UI
+                      {[
                         { 
                           label: 'Block Time', 
                           value: `${avgBlockTime}s`, 
