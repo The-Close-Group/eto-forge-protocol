@@ -93,7 +93,10 @@ export default function BuyMAANG() {
   const [inputAmount, setInputAmount] = useState('');
   const [showShareCard, setShowShareCard] = useState(false);
   const [isFirstTrade, setIsFirstTrade] = useState(false);
-  // If MAANG or sMAANG was selected, start in sell mode (MAANG -> mUSDC)
+  // Check URL params to determine initial swap direction
+  // If user navigated with ?token=MAANG or ?token=sMAANG, start in sell mode
+  const searchParams = new URLSearchParams(location.search);
+  const selectedToken = searchParams.get('token');
   const [isReversed, setIsReversed] = useState(selectedToken === 'MAANG' || selectedToken === 'sMAANG');
   const [isFlipping, setIsFlipping] = useState(false);
   const [validationError, setValidationError] = useState<string>('');
