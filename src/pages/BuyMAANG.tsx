@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { ShareTradeCard } from '@/components/ShareTradeCard';
 import { useDirectSwap } from '@/hooks/useDirectSwap';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
@@ -38,7 +38,11 @@ const wallets = [
 export default function BuyMAANG() {
   const account = useActiveAccount();
   const navigate = useNavigate();
+  const location = useLocation();
   const directSwap = useDirectSwap();
+
+  // Get selected token from navigation state (from Dashboard double-click)
+  const selectedToken = (location.state as { selectedToken?: string })?.selectedToken;
 
   // UI States
   const [isVisible, setIsVisible] = useState(false);
@@ -46,7 +50,8 @@ export default function BuyMAANG() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [isFirstTrade, setIsFirstTrade] = useState(false);
-  const [isReversed, setIsReversed] = useState(false);
+  // If MAANG or sMAANG was selected, start in sell mode (MAANG -> mUSDC)
+  const [isReversed, setIsReversed] = useState(selectedToken === 'MAANG' || selectedToken === 'sMAANG');
   const [isFlipping, setIsFlipping] = useState(false);
   const [validationError, setValidationError] = useState<string>('');
   const [livePrice, setLivePrice] = useState<number>(0);

@@ -234,11 +234,11 @@ export default function Dashboard() {
                 .map(asset => (
                   <button
                     key={asset.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left group"
                     onClick={() => {
-                      selectAsset(asset.id);
                       setSearchOpen(false);
                       setSearchQuery('');
+                      navigate('/buy-maang', { state: { selectedToken: asset.symbol } });
                     }}
                   >
                     <div 
@@ -256,7 +256,7 @@ export default function Dashboard() {
                     <div className={`text-[12px] font-medium ${asset.riskLevel === 'low' ? 'text-data-positive' : asset.riskLevel === 'high' ? 'text-data-negative' : 'text-warning'}`}>
                       {asset.riskLevel}
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
+                    <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </button>
                 ))}
             </div>
@@ -714,9 +714,17 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={asset.id}
-                    className={`staking-asset-card cursor-pointer group ${isSelected ? 'ring-2 ring-primary' : ''}`}
+                    className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
                     onClick={() => selectAsset(asset.id)}
+                    onDoubleClick={() => navigate('/buy-maang', { state: { selectedToken: asset.symbol } })}
                   >
+                    {/* Hover tooltip */}
+                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
+                      </div>
+                    </div>
+                    
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2.5">
                         <div 
