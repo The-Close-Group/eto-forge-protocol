@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { etoPublicClient } from '@/lib/etoRpc';
 import { USDC_ADDRESS, SMAANG_VAULT_ADDRESS, DRI_TOKEN_ADDRESS } from '@/config/contracts';
 
-const EXPLORER_URL = 'https://eto-explorer.ash.center';
+const EXPLORER_URL = 'https://eto.ash.center';
 
 // Vault ABI for staking functions
 const VAULT_ABI = [

@@ -33,12 +33,12 @@ const NATIVE_TOKENS: Record<string, TokenInfo> = {
 
 // ERC20 token definitions - ETO L1 Native Assets Only
 const ERC20_TOKENS: Record<string, TokenInfo[]> = {
-  // ETO L1 Mainnet - V67 Deployment (Dec 1, 2025)
+  // ETO L1 Mainnet - Chain Reset (Dec 12, 2025)
   etoMainnet: [
     {
       symbol: "USDC",
       name: "USD Coin",
-      address: "0x38b151DFa17F7b633F1DF1d15896324A25e4A75e", // V67
+      address: "0x27aC6E8be60d2d7bAd2171ae6789f3fbEf9689fd", // Mock USDC
       decimals: 6,
       coingeckoId: "usd-coin",
       logoUri: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040",
@@ -46,7 +46,7 @@ const ERC20_TOKENS: Record<string, TokenInfo[]> = {
     {
       symbol: "MAANG",
       name: "MAANG Token",
-      address: "0xcDc5A61974E385d3cE5C1eEB6AA2cDcE7DFbD520", // V67
+      address: "0xdA8ac54e6a88ceC7724993Cd602168114debb510", // DRI Token
       decimals: 18,
       coingeckoId: null, // MAANG index token
       logoUri: "/assets/maang-logo.svg",
@@ -54,7 +54,7 @@ const ERC20_TOKENS: Record<string, TokenInfo[]> = {
     {
       symbol: "sMAANG",
       name: "Staked MAANG",
-      address: "0x7B084e69F730779b52cFF90cEc3aA2De1Eec5e13", // V67 sMAANG Vault
+      address: "0xed2EEd3257Ce0A9ECeeE1055b5e54E724E63c09a", // SMAANG Vault
       decimals: 18,
       coingeckoId: null,
       logoUri: "/assets/maang-logo.svg",

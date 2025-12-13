@@ -554,7 +554,7 @@ export default function BuyMAANG() {
                       <div className="text-right">
                         <div className="text-[13px] font-mono font-medium">{trade.amount}</div>
                         <a
-                          href={`https://eto-explorer.ash.center/tx/${trade.id}`}
+                          href={`https://eto.ash.center/tx/${trade.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[11px] text-primary hover:underline flex items-center gap-1"

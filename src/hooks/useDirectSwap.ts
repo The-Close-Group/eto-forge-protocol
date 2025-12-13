@@ -7,7 +7,7 @@ import { USDC_ADDRESS, DMM_ADDRESS, DRI_TOKEN_ADDRESS } from '@/config/contracts
 import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
 import { client, etoMainnet } from '@/lib/thirdweb';
 
-const EXPLORER_URL = 'https://eto-explorer.ash.center';
+const EXPLORER_URL = 'https://eto.ash.center';
 
 // Get contract instances using thirdweb
 const dmmContract = getContract({

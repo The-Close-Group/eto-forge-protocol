@@ -119,7 +119,7 @@ export function USDCFaucet() {
         {txHash && (
           <div className="text-sm text-center">
             <a 
-              href={`https://eto-explorer.ash.center/tx/${txHash}`}
+              href={`https://eto.ash.center/tx/${txHash}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline inline-flex items-center gap-1"
@@ -130,7 +130,7 @@ export function USDCFaucet() {
         )}
         
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
-          <p>• Wallet will auto-switch to <strong>ETO L1 (69420)</strong></p>
+          <p>• Wallet will auto-switch to <strong>ETO L1 (69670)</strong></p>
           <p>• Gas fees are sponsored - completely free!</p>
         </div>
       </CardContent>

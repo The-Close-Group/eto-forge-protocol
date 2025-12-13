@@ -3,7 +3,7 @@ import { defineChain } from 'viem';
 
 // Define ETO L1 chain for viem (bypasses Thirdweb's registry)
 export const etoL1Chain = defineChain({
-  id: 69420,
+  id: 69670,
   name: 'ETO L1 Mainnet',
   nativeCurrency: {
     name: 'Ether',

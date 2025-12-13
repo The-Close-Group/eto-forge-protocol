@@ -1,25 +1,27 @@
 import { etoMainnet } from "@/lib/thirdweb";
 
 // =============================================================================
-// ETO L1 Mainnet - V67 Deployment (Dec 1, 2025)
-// Chain ID: 69420 | RPC: https://eto.ash.center/rpc
-// Features: Paper trading mode enabled, oracle staleness checks bypassed
-// Deployer: 0xE9F99D0DC9788C18F6e27a696238e0d4e0ABB329
+// ETO L1 Mainnet - Chain Reset (Dec 12, 2025)
+// Chain ID: 69670 | RPC: https://eto.ash.center/rpc
+// Deployer: 0xF9DCd381f0e2B491bb03B1717ee3350ee1c35e15
 // =============================================================================
 export const CONTRACTS = {
   // Core tokens
-  MAANG_TOKEN: "0xcDc5A61974E385d3cE5C1eEB6AA2cDcE7DFbD520",
-  GOVMAANG_TOKEN: "0x3bb00B75dE7ED537f1a822622F2003339EF33FAB",
-  USDC: "0x38b151DFa17F7b633F1DF1d15896324A25e4A75e",
+  MAANG_TOKEN: "0xdA8ac54e6a88ceC7724993Cd602168114debb510", // DRI Token
+  GOVMAANG_TOKEN: "0x735153A73b47b2f4E5a68aDfb9Da4528013150C2", // GOVDRI Token
+  USDC: "0x27aC6E8be60d2d7bAd2171ae6789f3fbEf9689fd", // Mock USDC
   
   // DeFi Protocol Contracts  
-  DYNAMIC_MARKET_MAKER: "0xda1A772B83D0C71770e02E607F1eCCBaa27d911b",
-  ORACLE_AGGREGATOR: "0x3E100b518F0Fc2CC0065F129cc5663a271910238",
-  BOOTSTRAP_MAANG_CONTROLLER: "0x288f79DE46e5D731A249589214A44d69C26e2bbc",
-  PEG_STABILITY_MODULE: "0x2Cf9d2b9315781115650CF2c96Af6253d2e55784",
+  DYNAMIC_MARKET_MAKER: "0xd14Ea79ab8B06BD5D2F4c805b3D9F6D134002648", // DMMv2 CLMM
+  ORACLE_AGGREGATOR: "0x432edDe96fca51943b2a65b889ED50De7E51BdF7",
+  BOOTSTRAP_MAANG_CONTROLLER: "0x936D89d33AE7f78D1151C436F71d66242b603FF0", // DRI Controller
+  PEG_STABILITY_MODULE: "0x059756156294103Aeb7935e8566560A17921E30F",
   
   // Vault (liquidity drip mechanism)
-  SMAANG_VAULT: "0x7B084e69F730779b52cFF90cEc3aA2De1Eec5e13",
+  SMAANG_VAULT: "0xed2EEd3257Ce0A9ECeeE1055b5e54E724E63c09a",
+  
+  // Governor
+  GOVERNOR: "0x302714564b44c669F1678deA5a7dD541aE8a4CCc",
 } as const;
 
 // Legacy aliases for backwards compatibility
@@ -271,7 +273,7 @@ export function getContractConfig(contractName: keyof typeof CONTRACTS) {
 
 // Chain configuration
 export const CHAIN_CONFIG = {
-  chainId: 69420,
+  chainId: 69670,
   rpcUrl: "https://eto.ash.center/rpc",
   name: "ETO L1",
   nativeCurrency: {

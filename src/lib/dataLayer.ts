@@ -10,7 +10,7 @@ import { CHAIN_CONFIGS } from '@/config/tokens';
 // =============================================================================
 
 export const etoL1Chain = defineChain({
-  id: 69420,
+  id: 69670,
   name: 'ETO L1 Mainnet',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {

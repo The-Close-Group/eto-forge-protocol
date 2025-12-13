@@ -110,7 +110,7 @@ export function GasFaucet() {
         {txHash && (
           <div className="text-sm text-center">
             <a 
-              href={`https://eto-explorer.ash.center/tx/${txHash}`}
+              href={`https://eto.ash.center/tx/${txHash}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-yellow-500 hover:underline inline-flex items-center gap-1"

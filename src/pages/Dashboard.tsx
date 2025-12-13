@@ -1119,7 +1119,7 @@ export default function Dashboard() {
                           </div>
                           {activity.txHash && (
                             <a 
-                              href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
+                              href={`https://eto.ash.center/tx/${activity.txHash}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="icon-btn p-1.5"
