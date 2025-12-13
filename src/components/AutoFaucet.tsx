@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Fuel, CheckCircle2, ExternalLink, Coins } from 'lucide-react';
 
@@ -61,6 +62,7 @@ function markClaimedLocally(address: string): void {
  */
 export function AutoFaucet() {
   const account = useActiveAccount();
+  const queryClient = useQueryClient();
   const claimingRef = useRef(false);
   const [hasClaimed, setHasClaimed] = useState(false);
 
@@ -124,6 +126,11 @@ export function AutoFaucet() {
         if (data.success) {
           markClaimedLocally(account.address);
           setHasClaimed(true);
+
+          // Force wallet balance refresh after 2 seconds (wait for block confirmation)
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ["multi-chain-balances"] });
+          }, 2000);
 
           // Show success toast with links
           toast.success(
