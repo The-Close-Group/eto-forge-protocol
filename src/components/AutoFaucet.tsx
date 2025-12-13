@@ -85,18 +85,18 @@ export function AutoFaucet() {
       }
 
       claimingRef.current = true;
+      
+      // Show loading toast (shorter duration since API is fast)
+      const loadingId = toast.loading(
+        <div className="flex items-center gap-2">
+          <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
+          <span>Sending you starter funds...</span>
+        </div>,
+        { duration: 10000 }
+      );
 
       try {
         console.log('[AutoFaucet] Claiming for:', account.address);
-        
-        // Show loading toast (shorter duration since API is fast)
-        const loadingId = toast.loading(
-          <div className="flex items-center gap-2">
-            <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
-            <span>Sending you starter funds...</span>
-          </div>,
-          { duration: 10000 }
-        );
 
         // Add timeout to prevent hanging
         const controller = new AbortController();
@@ -173,9 +173,15 @@ export function AutoFaucet() {
 
           console.log('[AutoFaucet] Success:', data);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('[AutoFaucet] Network error:', error);
-        // Silent fail - don't block the user
+        toast.dismiss(loadingId);
+        
+        // Only show error if it's a timeout (AbortError)
+        if (error.name === 'AbortError') {
+          toast.error('Faucet request timed out. Please try again later.');
+        }
+        // Silent fail for other errors - don't block the user
       } finally {
         claimingRef.current = false;
       }
