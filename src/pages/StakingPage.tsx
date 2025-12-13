@@ -325,13 +325,49 @@ export default function StakingPage() {
                 </div>
               )}
 
-                    {/* Vault Contract Notice */}
-                    <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-center">
-                      <div className="text-yellow-500 font-medium mb-1">Vault Redeployment Required</div>
-                      <div className="text-sm text-muted-foreground">
-                        The vault contract needs to be redeployed with correct token addresses.
-                      </div>
-                    </div>
+                    {/* Deposit Button */}
+                    {!account ? (
+                      <ConnectButton
+                        client={client}
+                        wallets={wallets}
+                        chain={etoMainnet}
+                        chains={supportedChains}
+                        connectModal={{ size: "compact" }}
+                        connectButton={{
+                          label: "Connect Wallet to Deposit",
+                          style: {
+                            width: "100%",
+                            background: "hsl(160 70% 50%)",
+                            color: "#000",
+                            border: "none",
+                            borderRadius: "12px",
+                            padding: "14px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                          },
+                        }}
+                      />
+                    ) : (
+                      <Button
+                        variant="cta"
+                        size="xl"
+                        className="w-full"
+                        onClick={handleDeposit}
+                        disabled={isLoading || !depositAmount || vaultStats?.depositsPaused}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Deposit {depositMode.toUpperCase()}
+                          </>
+                        )}
+                      </Button>
+                    )}
 
                     {/* Gas Sponsored */}
                     <div className="flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
