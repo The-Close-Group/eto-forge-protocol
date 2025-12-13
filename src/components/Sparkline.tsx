@@ -111,17 +111,79 @@ export default function Sparkline({
   );
 }
 
-export const generateSparklineData = (length: number = 20, trend: 'up' | 'down' | 'flat' = 'up') => {
+// Seeded random number generator for consistent data
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+// Cache for sparkline data to prevent regeneration on re-renders
+const sparklineCache = new Map<string, number[]>();
+
+/**
+ * Generate stable sparkline data with seeded randomness
+ * Data is cached to prevent "dancing" on re-renders
+ * 
+ * @param length - Number of data points (default: 20)
+ * @param trend - Direction: 'up', 'down', or 'flat'
+ * @param seed - Unique identifier for consistent data (e.g., asset ID)
+ */
+export const generateSparklineData = (
+  length: number = 20, 
+  trend: 'up' | 'down' | 'flat' = 'up',
+  seed?: string | number
+) => {
+  // Create a cache key based on parameters
+  const cacheKey = `${length}-${trend}-${seed ?? 'default'}`;
+  
+  // Return cached data if available (prevents re-generation on re-renders)
+  if (sparklineCache.has(cacheKey)) {
+    return sparklineCache.get(cacheKey)!;
+  }
+  
   const data: number[] = [];
   let value = 50;
   
+  // Use seed for deterministic random values
+  const baseSeed = typeof seed === 'string' 
+    ? seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    : (seed ?? 42);
+  
   for (let i = 0; i < length; i++) {
-    const volatility = trend === 'flat' ? 2 : 6;
-    const change = (Math.random() - 0.5) * volatility;
-    const bias = trend === 'up' ? 0.25 : trend === 'down' ? -0.25 : 0;
-    value = Math.max(15, Math.min(85, value + change + bias));
+    // Use seeded random for consistent results
+    const random = seededRandom(baseSeed + i * 7.13);
+    
+    // Low volatility for stable 6-hour interval data
+    const volatility = trend === 'flat' ? 0.5 : 1.2;
+    const change = (random - 0.5) * volatility;
+    const bias = trend === 'up' ? 0.12 : trend === 'down' ? -0.12 : 0;
+    value = Math.max(30, Math.min(70, value + change + bias));
     data.push(value);
   }
   
+  // Cache the result permanently (data won't change until page refresh)
+  sparklineCache.set(cacheKey, data);
+  
   return data;
+};
+
+/**
+ * Convert price candle data from subgraph to sparkline format
+ * Use this for real historical data from the subgraph
+ */
+export const priceCandlesToSparkline = (
+  candles: Array<{ oracleClose?: string; dmmClose?: string; periodStart?: string }>,
+  priceType: 'oracle' | 'dmm' = 'oracle'
+): number[] => {
+  if (!candles || candles.length === 0) return [];
+  
+  const prices = candles
+    .sort((a, b) => Number(a.periodStart || 0) - Number(b.periodStart || 0))
+    .map(c => {
+      const price = priceType === 'oracle' ? c.oracleClose : c.dmmClose;
+      return parseFloat(price || '0');
+    })
+    .filter(p => p > 0);
+  
+  return prices;
 };

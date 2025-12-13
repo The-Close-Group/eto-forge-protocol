@@ -1,0 +1,103 @@
+{
+  "family": "eto-subgraph",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "2048",
+  "memory": "4096",
+  "executionRoleArn": "arn:aws:iam::905418078110:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::905418078110:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "graph-node",
+      "image": "graphprotocol/graph-node:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 8020,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 8030,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "postgres_host",
+          "value": "eto-subgraph-postgres.cszsuoaycxb2.us-east-1.rds.amazonaws.com"
+        },
+        {
+          "name": "postgres_user",
+          "value": "graphnode"
+        },
+        {
+          "name": "postgres_db",
+          "value": "graphnode"
+        },
+        {
+          "name": "ipfs",
+          "value": "localhost:5001"
+        },
+        {
+          "name": "ethereum",
+          "value": "eto-l1:https://eto.ash.center/rpc"
+        },
+        {
+          "name": "GRAPH_LOG",
+          "value": "info"
+        },
+        {
+          "name": "ETHEREUM_REORG_THRESHOLD",
+          "value": "1"
+        },
+        {
+          "name": "ETHEREUM_ANCESTOR_COUNT",
+          "value": "1"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "postgres_pass",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:905418078110:secret:eto-subgraph/postgres-password-s0Cp5G"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/eto-subgraph",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "graph-node"
+        }
+      },
+      "dependsOn": [
+        {
+          "containerName": "ipfs",
+          "condition": "START"
+        }
+      ]
+    },
+    {
+      "name": "ipfs",
+      "image": "ipfs/kubo:v0.14.0",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5001,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/eto-subgraph",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ipfs"
+        }
+      }
+    }
+  ]
+}

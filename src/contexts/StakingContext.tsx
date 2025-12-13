@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
 
 // Asset types available for staking
 export interface StakingAsset {
@@ -16,6 +17,7 @@ export interface StakingAsset {
   riskLevel: 'low' | 'medium' | 'high';
   tvl: number;
   stakedByUser: number;
+  price: number; // Current price in USD (updated live)
 }
 
 // Active staking position
@@ -95,6 +97,7 @@ const defaultAssets: StakingAsset[] = [
     riskLevel: 'low',
     tvl: 45000000,
     stakedByUser: 0,
+    price: 331.03, // MAANG price in USD
   },
   {
     id: 'smaang',
@@ -110,13 +113,14 @@ const defaultAssets: StakingAsset[] = [
     riskLevel: 'low',
     tvl: 32000000,
     stakedByUser: 0,
+    price: 345.28, // sMAANG slightly higher due to staking rewards
   },
   {
     id: 'usdc',
     name: 'USD Coin',
     symbol: 'USDC',
     type: 'defi',
-    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
+    logo: '/assets/usdc-logo.svg',
     color: '#2775ca',
     baseAPY: 5.2,
     minStake: 10,
@@ -125,6 +129,7 @@ const defaultAssets: StakingAsset[] = [
     riskLevel: 'low',
     tvl: 28000000,
     stakedByUser: 0,
+    price: 1.00, // USDC pegged to USD
   },
 ];
 
@@ -155,8 +160,11 @@ const demoPositions: StakingPosition[] = [
 ];
 
 export function StakingProvider({ children }: { children: ReactNode }) {
-  // State
-  const [assets] = useState<StakingAsset[]>(defaultAssets);
+  // Get live prices from protocol store
+  const livePrices = useProtocolStore(selectPrices);
+  
+  // State - assets with live price updates
+  const [baseAssets] = useState<StakingAsset[]>(defaultAssets);
   const [selectedAssetId, setSelectedAssetId] = useState<string>('maang');
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
   const [stakeAmount, setStakeAmount] = useState(100);
@@ -164,6 +172,22 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   const [positions, setPositions] = useState<StakingPosition[]>(demoPositions);
   const [timeFilter, setTimeFilter] = useState<'24H' | '7D' | '30D'>('24H');
   const [sortOrder, setSortOrder] = useState<'apy' | 'tvl' | 'risk'>('apy');
+
+  // Update assets with live MAANG price from WebSocket
+  const assets = useMemo(() => {
+    const maangPrice = livePrices.dmmPrice > 0 ? livePrices.dmmPrice : 331.03;
+    const smaangPrice = maangPrice * 1.043; // sMAANG is ~4.3% higher due to staking rewards
+    
+    return baseAssets.map(asset => {
+      if (asset.id === 'maang') {
+        return { ...asset, price: maangPrice };
+      }
+      if (asset.id === 'smaang') {
+        return { ...asset, price: smaangPrice };
+      }
+      return asset;
+    });
+  }, [baseAssets, livePrices.dmmPrice]);
 
   // Derived state
   const selectedAsset = useMemo(() => 

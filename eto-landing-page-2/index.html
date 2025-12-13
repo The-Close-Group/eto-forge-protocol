@@ -4,8 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETO - Tokenize Everything</title>
+    
+    <!-- DNS Prefetch & Preconnect for faster resource loading -->
+    <link rel="dns-prefetch" href="https://d3js.org">
+    <link rel="preconnect" href="https://d3js.org" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical resources for globe -->
+    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script" crossorigin>
+    <link rel="preload" href="./land.json" as="fetch">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,9 +31,9 @@
                 <rect x="6" y="6" width="16" height="16" rx="2" fill="#181818"/>
                 <rect x="9" y="9" width="10" height="10" rx="1.5" fill="white"/>
             </svg>
-            <span class="logo-text">eto</span>
+            <span class="logo-text">ETO</span>
         </div>
-        <button class="launch-btn">LAUNCH MARKETS</button>
+        <button class="launch-btn" onclick="window.top.location.href='/dashboard'">LAUNCH MARKETS</button>
     </nav>
 
     <!-- Page 1: Hero Section -->
@@ -39,7 +48,7 @@
             <div class="hero-section">
                 <h1 class="hero-title">Tokenize Everything</h1>
                 <p class="hero-subtitle">Trade global markets as tokens. No barriers, no complexity.</p>
-                <button class="explore-btn">
+                <button class="explore-btn" onclick="window.top.location.href='/dashboard'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -119,7 +128,7 @@
         <div class="features-content">
             <div class="features-grid-new">
                 <!-- Card 1: Better Returns -->
-                <div class="grid-card">
+                <div class="grid-card" onclick="window.top.location.href='/vault'" style="cursor: pointer;">
                     <div class="grid-card-header">
                         <h3 class="grid-card-title">Better Returns</h3>
                         <p class="grid-card-subtitle">Earn competitive yields on your assets while maintaining full custody</p>
@@ -142,7 +151,7 @@
                 </div>
 
                 <!-- Card 2: Your Keys, Your Tokens -->
-                <div class="grid-card">
+                <div class="grid-card" onclick="window.top.location.href='/trade'" style="cursor: pointer;">
                     <div class="grid-card-header">
                         <h3 class="grid-card-title">Your Keys, Your Tokens</h3>
                         <p class="grid-card-subtitle">Real ERC-20 tokens you can use anywhere—not IOUs</p>
@@ -165,7 +174,7 @@
                 </div>
 
                 <!-- Card 3: One Click Away -->
-                <div class="grid-card">
+                <div class="grid-card" onclick="window.top.location.href='/buy-maang'" style="cursor: pointer;">
                     <div class="grid-card-header">
                         <h3 class="grid-card-title">One Click Away</h3>
                         <p class="grid-card-subtitle">From stocks to crypto, all markets in one place</p>
@@ -418,8 +427,8 @@
             <p class="maang-description">MAANG token tracks the performance of Meta, Apple, Amazon, Netflix, and Google—tradeable 24/7 as an ERC-20 token</p>
             <p class="maang-callout">No brokerage. No market hours. True ownership.</p>
             
-            <button class="explore-btn maang-btn">
-                <span>EXPLORE MARKETS</span>
+            <button class="explore-btn maang-btn" onclick="window.top.location.href='/buy-maang'">
+                <span>BUY MAANG</span>
                 <div class="btn-icon">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -455,7 +464,7 @@
                 </div>
             </div>
             
-            <button class="explore-btn taas-btn">
+            <button class="explore-btn taas-btn" onclick="window.top.location.href='/dashboard'">
                 <span>LAUNCH MARKETS</span>
                 <div class="btn-icon">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

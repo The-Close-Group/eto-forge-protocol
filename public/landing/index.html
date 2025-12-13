@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETO - Tokenize Everything</title>
+    
+    <!-- DNS Prefetch & Preconnect for faster resource loading -->
+    <link rel="dns-prefetch" href="https://d3js.org">
+    <link rel="preconnect" href="https://d3js.org" crossorigin>
+    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical resources for globe -->
+    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script" crossorigin>
+    <link rel="preload" href="https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json" as="fetch" crossorigin>
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,9 +33,9 @@
                 <rect x="6" y="6" width="16" height="16" rx="2" fill="#181818"/>
                 <rect x="9" y="9" width="10" height="10" rx="1.5" fill="white"/>
             </svg>
-            <span class="logo-text">eto</span>
+            <span class="logo-text">ETO</span>
         </div>
-        <button class="launch-btn" onclick="window.top.location.href='/signin'">LAUNCH MARKETS</button>
+        <button class="launch-btn" onclick="window.top.location.href='/dashboard'">LAUNCH MARKETS</button>
     </nav>
 
     <!-- Page 1: Hero Section -->
@@ -39,7 +50,7 @@
             <div class="hero-section">
                 <h1 class="hero-title">Tokenize Everything</h1>
                 <p class="hero-subtitle">On-Chain Index Tokens with Composability</p>
-                <button class="explore-btn" onclick="window.location.href='/signin'">
+                <button class="explore-btn" onclick="window.location.href='/dashboard'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -421,7 +432,7 @@
         <div class="taas-content">
             <p class="taas-subtitle">Tokenization as a Service</p>
             <h1 class="taas-title">Tokenize Global Markets</h1>
-            <button class="explore-btn taas-btn" onclick="window.location.href='/signin'">
+            <button class="explore-btn taas-btn" onclick="window.location.href='/dashboard'">
                 <span>GET STARTED</span>
                 <div class="btn-icon">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

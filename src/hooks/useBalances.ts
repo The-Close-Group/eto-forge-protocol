@@ -90,6 +90,20 @@ export function useBalances(enabledChains: string[] = [DEFAULT_CHAIN]) {
 
           // Fetch ERC20 token balances
           for (const token of chainConfig.tokens) {
+            // Skip tokens with zero address (placeholder/not deployed)
+            if (token.address === "0x0000000000000000000000000000000000000000") {
+              allResults.push({
+                symbol: token.symbol,
+                balance: "0.0000",
+                decimals: token.decimals,
+                isNative: false,
+                usdValue: "0.00",
+                chainName: chainConfig.name,
+                chainKey,
+              });
+              continue;
+            }
+            
             try {
               let balance: bigint;
               

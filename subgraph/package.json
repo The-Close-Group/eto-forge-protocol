@@ -1,0 +1,17 @@
+{
+  "name": "eto-protocol-subgraph",
+  "version": "1.0.0",
+  "description": "The Graph subgraph for ETO Protocol - indexes swaps, deposits, price history",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ eto-protocol/eto-mainnet",
+    "create-local": "graph create --node http://localhost:8020/ eto-protocol/eto-mainnet",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 eto-protocol/eto-mainnet"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.60.0",
+    "@graphprotocol/graph-ts": "^0.31.0"
+  }
+}
+

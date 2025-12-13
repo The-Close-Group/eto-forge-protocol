@@ -1,0 +1,191 @@
+# =============================================================================
+# ETO Protocol Subgraph Schema
+# Indexes historical data for: Swaps, Deposits, Withdrawals, Price History
+# =============================================================================
+
+# =============================================================================
+# Global Protocol Stats (Singleton)
+# =============================================================================
+
+type Protocol @entity {
+  id: ID!
+  totalSwapVolume: BigDecimal!
+  totalSwapCount: BigInt!
+  totalDeposits: BigDecimal!
+  totalWithdrawals: BigDecimal!
+  totalValueLocked: BigDecimal!
+  currentMAANGPrice: BigDecimal!
+  lastUpdatedBlock: BigInt!
+  lastUpdatedTimestamp: BigInt!
+}
+
+# =============================================================================
+# Swap Events
+# =============================================================================
+
+type Swap @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  # Trade details
+  user: Bytes!
+  tokenIn: Bytes!
+  tokenOut: Bytes!
+  amountIn: BigDecimal!
+  amountOut: BigDecimal!
+  
+  # Price at time of swap
+  priceAtSwap: BigDecimal!
+  
+  # Gas info
+  gasUsed: BigInt
+  gasPrice: BigInt
+}
+
+# =============================================================================
+# Price History (Hourly candles)
+# =============================================================================
+
+type PriceCandle @entity {
+  id: ID!
+  periodStart: BigInt!
+  periodEnd: BigInt!
+  
+  # Oracle price OHLC
+  oracleOpen: BigDecimal!
+  oracleHigh: BigDecimal!
+  oracleLow: BigDecimal!
+  oracleClose: BigDecimal!
+  
+  # DMM price OHLC
+  dmmOpen: BigDecimal!
+  dmmHigh: BigDecimal!
+  dmmLow: BigDecimal!
+  dmmClose: BigDecimal!
+  
+  # Volume during period
+  volumeUSD: BigDecimal!
+  swapCount: BigInt!
+}
+
+type OraclePriceUpdate @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  price: BigDecimal!
+  source: String!
+}
+
+# =============================================================================
+# Vault Events
+# =============================================================================
+
+type Deposit @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  sender: Bytes!
+  owner: Bytes!
+  assets: BigDecimal!
+  shares: BigDecimal!
+}
+
+type Withdrawal @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  sender: Bytes!
+  receiver: Bytes!
+  owner: Bytes!
+  assets: BigDecimal!
+  shares: BigDecimal!
+}
+
+type DripEvent @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  type: String! # "commit" or "execute"
+  keeper: Bytes!
+  
+  # For commits
+  commitment: Bytes
+  stagedMAANG: BigDecimal
+  stagedUSDC: BigDecimal
+  
+  # For executes
+  dmmMAANG: BigDecimal
+  dmmUSDC: BigDecimal
+  psmMAANG: BigDecimal
+  psmUSDC: BigDecimal
+}
+
+# =============================================================================
+# Vault Snapshots (Hourly)
+# =============================================================================
+
+type VaultSnapshot @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  
+  totalAssets: BigDecimal!
+  totalSupply: BigDecimal!
+  sharePrice: BigDecimal!
+  
+  # Cumulative stats
+  totalDeposited: BigDecimal!
+  totalWithdrawn: BigDecimal!
+  totalDripsExecuted: BigInt!
+}
+
+# =============================================================================
+# Liquidity Events
+# =============================================================================
+
+type LiquidityEvent @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  type: String! # "add" or "remove"
+  provider: Bytes!
+  
+  maangAmount: BigDecimal!
+  usdcAmount: BigDecimal!
+  liquidityTokens: BigDecimal!
+}
+
+# =============================================================================
+# User Stats (Aggregated per wallet)
+# =============================================================================
+
+type User @entity {
+  id: ID! # wallet address
+  
+  # Swap stats
+  totalSwaps: BigInt!
+  totalSwapVolumeUSD: BigDecimal!
+  
+  # Vault stats
+  totalDeposited: BigDecimal!
+  totalWithdrawn: BigDecimal!
+  currentShares: BigDecimal!
+  
+  # Activity
+  firstSeenBlock: BigInt!
+  lastSeenBlock: BigInt!
+  firstSeenTimestamp: BigInt!
+  lastSeenTimestamp: BigInt!
+}
+

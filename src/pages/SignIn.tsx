@@ -41,19 +41,19 @@ export default function SignIn() {
             try {
               // Force add the correct chain config (this will update if exists)
               if (activeWallet && typeof (activeWallet as any).request === "function") {
-                await (activeWallet as any).request({
-                  method: 'wallet_addEthereumChain',
+                  await (activeWallet as any).request({
+                    method: 'wallet_addEthereumChain',
                   params: [etoMainnetParams],
                 });
                 console.log('ETO L1 chain config updated');
               }
-            } catch (addError: any) {
+                } catch (addError: any) {
               // Ignore if already added - that's fine
               console.log('Chain add result:', addError?.message || 'success');
-            }
+                  }
 
             // Now switch to the chain
-            try {
+              try {
               await switchChain(etoMainnet);
               toast.success('Connected to ETO L1');
             } catch (error) {

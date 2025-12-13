@@ -75,9 +75,8 @@ async function loadSharedWorldData() {
     if (typeof d3 === 'undefined') return;
     
     try {
-        const response = await fetch(
-            'https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json'
-        );
+        // Use local cached GeoJSON for faster loading
+        const response = await fetch('./land.json');
         
         if (!response.ok) throw new Error('Failed to load land data');
         

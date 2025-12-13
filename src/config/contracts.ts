@@ -1,28 +1,30 @@
 import { etoMainnet } from "@/lib/thirdweb";
 
 // =============================================================================
-// ETO L1 Mainnet - V10 Paper Trading Deployment (Nov 26, 2025)
+// ETO L1 Mainnet - V67 Deployment (Dec 1, 2025)
 // Chain ID: 69420 | RPC: https://eto.ash.center/rpc
 // Features: Paper trading mode enabled, oracle staleness checks bypassed
+// Deployer: 0xE9F99D0DC9788C18F6e27a696238e0d4e0ABB329
 // =============================================================================
 export const CONTRACTS = {
   // Core tokens
-  MAANG_TOKEN: "0x5e0CBA25D4Acd25014b77E4c7908Cf1e2DA73EF8",
-  GOVMAANG_TOKEN: "0x69a8C883aAE8faE6A8756e18582568ba5c879274",
-  USDC: "0x98e3B2a66A8Bf81A716A02b1379D082772e524E5",
+  MAANG_TOKEN: "0xcDc5A61974E385d3cE5C1eEB6AA2cDcE7DFbD520",
+  GOVMAANG_TOKEN: "0x3bb00B75dE7ED537f1a822622F2003339EF33FAB",
+  USDC: "0x38b151DFa17F7b633F1DF1d15896324A25e4A75e",
   
   // DeFi Protocol Contracts  
-  DYNAMIC_MARKET_MAKER: "0x411c954D5874B2aB1d28740587AdE93a06EF05cB",
-  ORACLE_AGGREGATOR: "0xf4cef743e2a505CDFd2a2Fb138920CDaa1297C86",
-  BOOTSTRAP_MAANG_CONTROLLER: "0x6d1d273Ae139780268770Fb6D830d8BD7982D045",
-  PEG_STABILITY_MODULE: "0x4b68e8ff7A27ef299f2a8c62adE766dd6F227e0E",
+  DYNAMIC_MARKET_MAKER: "0xda1A772B83D0C71770e02E607F1eCCBaa27d911b",
+  ORACLE_AGGREGATOR: "0x3E100b518F0Fc2CC0065F129cc5663a271910238",
+  BOOTSTRAP_MAANG_CONTROLLER: "0x288f79DE46e5D731A249589214A44d69C26e2bbc",
+  PEG_STABILITY_MODULE: "0x2Cf9d2b9315781115650CF2c96Af6253d2e55784",
   
   // Vault (liquidity drip mechanism)
-  SMAANG_VAULT: "0x8DBfEEF5bf229d5Da3E2302b332F8372E81d9291",
+  SMAANG_VAULT: "0x7B084e69F730779b52cFF90cEc3aA2De1Eec5e13",
 } as const;
 
 // Legacy aliases for backwards compatibility
 export const MOCK_USDC = CONTRACTS.USDC;
+export const MOCK_USDC_ADDRESS = CONTRACTS.USDC; // V67 Mock USDC token (has faucet function)
 export const ORACLE = CONTRACTS.ORACLE_AGGREGATOR;
 
 // Individual address exports for convenience
