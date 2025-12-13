@@ -89,21 +89,27 @@ export function AutoFaucet() {
       try {
         console.log('[AutoFaucet] Claiming for:', account.address);
         
-        // Show loading toast
+        // Show loading toast (shorter duration since API is fast)
         const loadingId = toast.loading(
           <div className="flex items-center gap-2">
             <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
             <span>Sending you starter funds...</span>
           </div>,
-          { duration: 30000 }
+          { duration: 10000 }
         );
+
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
         const response = await fetch(FAUCET_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ address: account.address }),
+          signal: controller.signal,
         });
 
+        clearTimeout(timeoutId);
         const data: FaucetResponse = await response.json();
 
         // Dismiss loading toast
