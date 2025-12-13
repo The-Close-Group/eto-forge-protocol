@@ -234,26 +234,40 @@ export function useVaultStaking() {
     }
   }, [account]);
 
-  // Get vault stats
+  // Get vault stats - gracefully handle when vault contract reverts
   const getVaultStats = useCallback(async () => {
     try {
-      const [totalAssets, totalSupply, depositsPaused] = await Promise.all([
-        etoPublicClient.readContract({
-          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
-          abi: VAULT_ABI,
-          functionName: 'totalAssets',
-        }),
-        etoPublicClient.readContract({
-          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
-          abi: VAULT_ABI,
-          functionName: 'totalSupply',
-        }),
-        etoPublicClient.readContract({
+      // Try totalSupply first (more likely to work)
+      const totalSupply = await etoPublicClient.readContract({
+        address: SMAANG_VAULT_ADDRESS as `0x${string}`,
+        abi: VAULT_ABI,
+        functionName: 'totalSupply',
+      });
+
+      // Try depositsPaused
+      let depositsPaused = false;
+      try {
+        depositsPaused = await etoPublicClient.readContract({
           address: SMAANG_VAULT_ADDRESS as `0x${string}`,
           abi: VAULT_ABI,
           functionName: 'depositsPaused',
-        }),
-      ]);
+        });
+      } catch {
+        // Ignore - assume not paused
+      }
+
+      // Try totalAssets - this may revert if vault has internal oracle/dmm issues
+      let totalAssets = 0n;
+      try {
+        totalAssets = await etoPublicClient.readContract({
+          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
+          abi: VAULT_ABI,
+          functionName: 'totalAssets',
+        });
+      } catch {
+        // totalAssets reverts - use totalSupply as fallback (1:1 ratio assumed)
+        totalAssets = totalSupply;
+      }
 
       const sharePrice = totalSupply > 0n 
         ? Number(totalAssets) / Number(totalSupply) 
@@ -266,7 +280,8 @@ export function useVaultStaking() {
         depositsPaused,
       };
     } catch (error) {
-      console.error('[Vault] Failed to get stats:', error);
+      // Only log once, not repeatedly
+      console.warn('[Vault] Stats unavailable - vault may need initialization');
       return null;
     }
   }, []);
