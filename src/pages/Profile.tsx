@@ -176,13 +176,6 @@ export default function Profile() {
     }
   };
 
-  const stats = [
-    { label: 'Total Staked', value: `$${getTotalStaked().toLocaleString()}`, icon: Wallet, trend: 'up' },
-    { label: 'Total Rewards', value: `+${getTotalRewards().toFixed(4)}`, icon: TrendingUp, trend: 'up' },
-    { label: 'Active Positions', value: positions.length.toString(), icon: Zap, trend: 'up' },
-    { label: 'Member Tier', value: profile.tier, icon: Award, trend: 'up' },
-  ];
-
   // Fetch user activity from subgraph
   const { data: userSwaps } = useQuery({
     queryKey: ['user-swaps', account?.address],
