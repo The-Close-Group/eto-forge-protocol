@@ -20,6 +20,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStakingContext } from "@/contexts/StakingContext";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import SEO from "@/components/SEO";
+import { useGraphUserStats, getUserSwaps } from "@/lib/graphql";
+import { useQuery } from "@tanstack/react-query";
 
 const wallets = [
   createWallet("io.metamask"),
@@ -54,7 +56,33 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview");
   const [showFullAddress, setShowFullAddress] = useState(false);
   
-  // Wallet-based notifications
+  // Profile data - uses wallet address if available
+  const [profile, setProfile] = useState({
+    displayName: account?.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "User",
+    username: account?.address ? `@${account.address.slice(2, 10)}` : "@user",
+    email: "",
+    phone: "",
+    company: "",
+    role: "",
+    bio: "",
+    verificationStatus: "unverified",
+    kycLevel: 0,
+    riskScore: 0,
+    memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+    tier: "BASIC"
+  });
+
+  // Update profile when account changes
+  useEffect(() => {
+    if (account?.address) {
+      setProfile(prev => ({
+        ...prev,
+        displayName: `${account.address.slice(0, 6)}...${account.address.slice(-4)}`,
+        username: `@${account.address.slice(2, 10)}`,
+      }));
+    }
+  }, [account?.address]);
+
   const [notifications, setNotifications] = useState({
     transactionAlerts: true,
     stakingRewards: true,
@@ -148,52 +176,46 @@ export default function Profile() {
     }
   };
 
-  // Redirect to connect wallet if not connected
-  if (!account?.address) {
-    return (
-      <>
-        <SEO
-          title="Connect Wallet | ETO Protocol"
-          description="Connect your wallet to view your profile and manage your positions."
-        />
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
-          <div className="max-w-md w-full">
-            <div className="cta-card text-center">
-              <div className="relative z-10">
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                  <Wallet className="w-10 h-10 text-primary" />
-                </div>
-                <h1 className="text-2xl font-semibold mb-2">Connect Your Wallet</h1>
-                <p className="text-muted-foreground mb-6">
-                  Your wallet address is your identity on ETO. Connect to view your profile, positions, and transaction history.
-                </p>
-                <ConnectButton
-                  client={client}
-                  wallets={wallets}
-                  chain={etoMainnet}
-                  chains={supportedChains}
-                  connectModal={{ size: "compact" }}
-                  connectButton={{
-                    label: "Connect Wallet",
-                    style: {
-                      background: "hsl(160, 70%, 50%)",
-                      color: "hsl(var(--primary-foreground))",
-                      borderRadius: "10px",
-                      padding: "12px 24px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      width: "100%",
-                    },
-                  }}
-                />
-                <p className="text-[11px] text-muted-foreground mt-4">
-                  We never store your private keys. Your wallet, your control.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
+  const stats = [
+    { label: 'Total Staked', value: `$${getTotalStaked().toLocaleString()}`, icon: Wallet, trend: 'up' },
+    { label: 'Total Rewards', value: `+${getTotalRewards().toFixed(4)}`, icon: TrendingUp, trend: 'up' },
+    { label: 'Active Positions', value: positions.length.toString(), icon: Zap, trend: 'up' },
+    { label: 'Member Tier', value: profile.tier, icon: Award, trend: 'up' },
+  ];
+
+  // Fetch user activity from subgraph
+  const { data: userSwaps } = useQuery({
+    queryKey: ['user-swaps', account?.address],
+    queryFn: () => account?.address ? getUserSwaps(account.address, 10) : Promise.resolve([]),
+    enabled: !!account?.address,
+    staleTime: 30_000,
+  });
+
+  const { data: userStats } = useGraphUserStats(account?.address);
+
+  type ActivityType = 'stake' | 'claim' | 'wallet' | 'profile' | 'swap';
+  
+  // Transform subgraph data to activity format
+  const recentActivity: { action: string; time: string; type: ActivityType }[] = (userSwaps || []).slice(0, 4).map(swap => {
+    const timestamp = parseInt(swap.timestamp) * 1000;
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    let timeAgo = `${seconds}s ago`;
+    if (seconds >= 60) timeAgo = `${Math.floor(seconds / 60)}m ago`;
+    if (seconds >= 3600) timeAgo = `${Math.floor(seconds / 3600)}h ago`;
+    if (seconds >= 86400) timeAgo = `${Math.floor(seconds / 86400)}d ago`;
+    
+    return {
+      action: `Swapped ${parseFloat(swap.amountIn).toFixed(2)} tokens`,
+      time: timeAgo,
+      type: 'stake' as ActivityType, // Show as stake for UI styling
+    };
+  });
+
+  // Add placeholder if no activity yet
+  if (recentActivity.length === 0) {
+    recentActivity.push(
+      { action: 'No recent activity', time: 'Connect wallet to see history', type: 'wallet' }
+
     );
   }
 

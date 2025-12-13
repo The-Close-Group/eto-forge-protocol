@@ -1,76 +1,32 @@
 import { useState, useCallback } from 'react';
-import { useActiveAccount } from 'thirdweb/react';
+import { useActiveAccount, useSendTransaction } from 'thirdweb/react';
+import { prepareContractCall, getContract, readContract } from 'thirdweb';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { encodeFunctionData, parseGwei } from 'viem';
-import { etoPublicClient } from '@/lib/etoRpc';
 import { USDC_ADDRESS, DMM_ADDRESS, DRI_TOKEN_ADDRESS } from '@/config/contracts';
+import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
+import { client, etoMainnet } from '@/lib/thirdweb';
 
 const EXPLORER_URL = 'https://eto-explorer.ash.center';
 
-// Minimal ABIs for the functions we need
-const DMM_ABI = [
-  {
-    inputs: [
-      { name: 'tokenIn', type: 'address' },
-      { name: 'amountIn', type: 'uint256' },
-      { name: 'minAmountOut', type: 'uint256' }
-    ],
-    name: 'swap',
-    outputs: [{ name: 'amountOut', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      { name: 'tokenIn', type: 'address' },
-      { name: 'amountIn', type: 'uint256' }
-    ],
-    name: 'quote',
-    outputs: [{ name: 'amountOut', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'getCurrentPrice',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  }
-] as const;
+// Get contract instances using thirdweb
+const dmmContract = getContract({
+  client,
+  chain: etoMainnet,
+  address: DMM_ADDRESS,
+});
 
-const ERC20_ABI = [
-  {
-    inputs: [
-      { name: 'spender', type: 'address' },
-      { name: 'amount', type: 'uint256' }
-    ],
-    name: 'approve',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' }
-    ],
-    name: 'allowance',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'account', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  }
-] as const;
+const usdcContract = getContract({
+  client,
+  chain: etoMainnet,
+  address: USDC_ADDRESS,
+});
 
-const ETO_CHAIN_ID_HEX = '0x10F2C';
+const driContract = getContract({
+  client,
+  chain: etoMainnet,
+  address: DRI_TOKEN_ADDRESS,
+});
 
 export interface SwapQuote {
   inputAmount: string;
@@ -85,21 +41,17 @@ export function useDirectSwap() {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  
+  // Use thirdweb's sendTransaction hook
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  
+  // Get price from global store - NO MORE RPC CALLS FOR PRICE
+  const prices = useProtocolStore(selectPrices);
 
-  // Get current DMM price
+  // Get current DMM price from store (already updated via WebSocket)
   const getCurrentPrice = useCallback(async (): Promise<number> => {
-    try {
-      const price = await etoPublicClient.readContract({
-        address: DMM_ADDRESS as `0x${string}`,
-        abi: DMM_ABI,
-        functionName: 'getCurrentPrice',
-      });
-      return Number(price) / 1e18;
-    } catch (error) {
-      console.error('Error getting price:', error);
-      return 0;
-    }
-  }, []);
+    return prices.dmmPrice || 328.0;
+  }, [prices.dmmPrice]);
 
   // Get quote for buying DRI with USDC
   const getBuyQuote = useCallback(async (usdcAmount: string): Promise<SwapQuote | null> => {
@@ -108,11 +60,10 @@ export function useDirectSwap() {
     try {
       const amountIn = BigInt(Math.floor(parseFloat(usdcAmount) * 1e6));
       
-      const outputAmount = await etoPublicClient.readContract({
-        address: DMM_ADDRESS as `0x${string}`,
-        abi: DMM_ABI,
-        functionName: 'quote',
-        args: [USDC_ADDRESS as `0x${string}`, amountIn],
+      const outputAmount = await readContract({
+        contract: dmmContract,
+        method: "function quote(address tokenIn, uint256 amountIn) view returns (uint256)",
+        params: [USDC_ADDRESS as `0x${string}`, amountIn],
       });
 
       const outputNum = Number(outputAmount) / 1e18;
@@ -140,11 +91,10 @@ export function useDirectSwap() {
     try {
       const amountIn = BigInt(Math.floor(parseFloat(driAmount) * 1e18));
       
-      const outputAmount = await etoPublicClient.readContract({
-        address: DMM_ADDRESS as `0x${string}`,
-        abi: DMM_ABI,
-        functionName: 'quote',
-        args: [DRI_TOKEN_ADDRESS as `0x${string}`, amountIn],
+      const outputAmount = await readContract({
+        contract: dmmContract,
+        method: "function quote(address tokenIn, uint256 amountIn) view returns (uint256)",
+        params: [DRI_TOKEN_ADDRESS as `0x${string}`, amountIn],
       });
 
       const outputNum = Number(outputAmount) / 1e6;
@@ -165,16 +115,21 @@ export function useDirectSwap() {
     }
   }, [getCurrentPrice]);
 
-  // Check USDC allowance
+  // Check token allowance
   const checkAllowance = useCallback(async (tokenAddress: string): Promise<bigint> => {
     if (!account?.address) return 0n;
 
     try {
-      const allowance = await etoPublicClient.readContract({
-        address: tokenAddress as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'allowance',
-        args: [account.address as `0x${string}`, DMM_ADDRESS as `0x${string}`],
+      const tokenContract = getContract({
+        client,
+        chain: etoMainnet,
+        address: tokenAddress,
+      });
+
+      const allowance = await readContract({
+        contract: tokenContract,
+        method: "function allowance(address owner, address spender) view returns (uint256)",
+        params: [account.address as `0x${string}`, DMM_ADDRESS as `0x${string}`],
       });
       return allowance;
     } catch (error) {
@@ -183,75 +138,54 @@ export function useDirectSwap() {
     }
   }, [account]);
 
-  // Approve token for DMM
+  // Approve token for DMM - uses thirdweb for seamless UX
   const approveToken = useCallback(async (tokenAddress: string, amount: bigint): Promise<boolean> => {
     if (!account?.address) {
       toast.error('Please connect your wallet');
       return false;
     }
 
-    const ethereum = (window as any).ethereum;
-    if (!ethereum) {
-      toast.error('No wallet detected');
-      return false;
-    }
-
     setIsApproving(true);
     try {
-      const nonce = await etoPublicClient.getTransactionCount({
-        address: account.address as `0x${string}`,
+      const tokenContract = getContract({
+        client,
+        chain: etoMainnet,
+        address: tokenAddress,
       });
 
-      const data = encodeFunctionData({
-        abi: ERC20_ABI,
-        functionName: 'approve',
-        args: [DMM_ADDRESS as `0x${string}`, amount],
+      const transaction = prepareContractCall({
+        contract: tokenContract,
+        method: "function approve(address spender, uint256 amount) returns (bool)",
+        params: [DMM_ADDRESS as `0x${string}`, amount],
       });
 
-      toast.info('Please approve the token spending...');
+      toast.info('Approving token spending...');
 
-      const hash = await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: account.address,
-          to: tokenAddress,
-          data,
-          gas: '0x30000', // 200k gas
-          gasPrice: `0x${parseGwei('1.5').toString(16)}`,
-          nonce: `0x${nonce.toString(16)}`,
-        }],
-      });
-
-      if (!hash) throw new Error('No transaction hash returned');
-
-      toast.success('Approval sent! Waiting for confirmation...');
-
-      const receipt = await etoPublicClient.waitForTransactionReceipt({
-        hash: hash as `0x${string}`,
-        timeout: 60_000,
-      });
-
-      if (receipt.status === 'success') {
-        toast.success(`Token approved! View: ${EXPLORER_URL}/tx/${hash}`);
+      const result = await sendTransaction(transaction);
+      
+      if (result.transactionHash) {
+        toast.success(`Token approved!`);
         return true;
-      } else {
-        toast.error('Approval failed');
-        return false;
       }
+      return false;
     } catch (error: any) {
       console.error('Approval error:', error);
-      if (error.code === 4001) {
+      const errorMessage = error.message || error.shortMessage || '';
+      
+      if (errorMessage.includes('rejected') || errorMessage.includes('denied')) {
         toast.error('Approval rejected');
+      } else if (errorMessage.includes('0xe450d38c') || errorMessage.includes('ERC20InsufficientBalance')) {
+        toast.error('Insufficient token balance');
       } else {
-        toast.error(error.shortMessage || error.message || 'Approval failed');
+        toast.error(error.shortMessage || 'Approval failed. Please try again.');
       }
       return false;
     } finally {
       setIsApproving(false);
     }
-  }, [account]);
+  }, [account, sendTransaction]);
 
-  // Execute swap
+  // Execute swap using thirdweb
   const executeSwap = useCallback(async (
     tokenIn: string,
     amountIn: bigint,
@@ -262,12 +196,6 @@ export function useDirectSwap() {
       return null;
     }
 
-    const ethereum = (window as any).ethereum;
-    if (!ethereum) {
-      toast.error('No wallet detected');
-      return null;
-    }
-
     setIsLoading(true);
     try {
       // Check allowance first
@@ -275,95 +203,59 @@ export function useDirectSwap() {
       console.log(`[Swap] Current allowance: ${allowance}, needed: ${amountIn}`);
       
       if (allowance < amountIn) {
-        toast.info('Need to approve token first...');
-        const approved = await approveToken(tokenIn, amountIn * 2n); // Approve 2x for future swaps
+        toast.info('Approving token first...');
+        // Approve max uint256 for unlimited future swaps (better UX)
+        const maxApproval = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        const approved = await approveToken(tokenIn, maxApproval);
         if (!approved) return null;
         
-        // Wait a moment for RPC to update, then verify approval
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        allowance = await checkAllowance(tokenIn);
-        console.log(`[Swap] Post-approval allowance: ${allowance}`);
-        
-        if (allowance < amountIn) {
-          toast.error('Approval may not have been processed yet. Please try again.');
-          return null;
-        }
+        // Wait a moment for the approval to be indexed
+        await new Promise(resolve => setTimeout(resolve, 1500));
       }
 
-      const nonce = await etoPublicClient.getTransactionCount({
-        address: account.address as `0x${string}`,
+      // Prepare swap transaction
+      const transaction = prepareContractCall({
+        contract: dmmContract,
+        method: "function swap(address tokenIn, uint256 amountIn, uint256 minAmountOut) returns (uint256)",
+        params: [tokenIn as `0x${string}`, amountIn, minAmountOut],
       });
 
-      const data = encodeFunctionData({
-        abi: DMM_ABI,
-        functionName: 'swap',
-        args: [tokenIn as `0x${string}`, amountIn, minAmountOut],
-      });
+      toast.info('Executing swap...');
 
-      // Estimate gas
-      let gasEstimate: bigint;
-      try {
-        gasEstimate = await etoPublicClient.estimateGas({
-          account: account.address as `0x${string}`,
-          to: DMM_ADDRESS as `0x${string}`,
-          data,
-        });
-      } catch {
-        gasEstimate = 500000n; // Fallback
-      }
-
-      toast.info('Please confirm the swap in your wallet...');
-
-      const hash = await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: account.address,
-          to: DMM_ADDRESS,
-          data,
-          gas: `0x${(gasEstimate * 15n / 10n).toString(16)}`,
-          gasPrice: `0x${parseGwei('1.5').toString(16)}`,
-          nonce: `0x${nonce.toString(16)}`,
-        }],
-      });
-
-      if (!hash) throw new Error('No transaction hash returned');
-
-      toast.success('Swap sent! Waiting for confirmation...');
-
-      const receipt = await etoPublicClient.waitForTransactionReceipt({
-        hash: hash as `0x${string}`,
-        timeout: 60_000,
-      });
-
-      if (receipt.status === 'success') {
-        toast.success(`Swap successful! View: ${EXPLORER_URL}/tx/${hash}`);
+      const result = await sendTransaction(transaction);
+      
+      if (result.transactionHash) {
+        toast.success(`Swap successful! View: ${EXPLORER_URL}/tx/${result.transactionHash}`);
         queryClient.invalidateQueries({ queryKey: ['multi-chain-balances'] });
         queryClient.invalidateQueries({ queryKey: ['staking-balances'] });
-        return hash;
-      } else {
-        console.error('[Swap] Transaction reverted:', receipt);
-        // Transaction reverted - likely E37 (price band) or other DMM error
-        toast.error('Swap failed: Amount may exceed price band limits. Try a smaller amount or wait for the keeper to recenter.');
-        return null;
+        return result.transactionHash;
       }
+      return null;
     } catch (error: any) {
       console.error('[Swap] Error:', error);
-      if (error.code === 4001) {
+      const errorMessage = error.message || error.shortMessage || '';
+      const errorData = error.data || '';
+      
+      if (errorMessage.includes('rejected') || errorMessage.includes('denied')) {
         toast.error('Swap rejected by user');
-      } else if (error.message?.includes('InsufficientAllowance')) {
+      } else if (errorMessage.includes('InsufficientAllowance')) {
         toast.error('Token approval needed. Please try again.');
-      } else if (error.message?.includes('insufficient funds')) {
-        toast.error('Insufficient balance for swap');
-      } else if (error.message?.includes('E37') || error.data?.includes('E37') || error.reason?.includes('E37')) {
-        toast.error('Swap exceeds price band limits. Try a smaller amount or wait for the keeper to recenter.');
+      } else if (errorMessage.includes('0xe450d38c') || errorMessage.includes('ERC20InsufficientBalance') || errorMessage.includes('insufficient funds')) {
+        // 0xe450d38c = ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed)
+        toast.error('Insufficient token balance for this swap');
+      } else if (errorMessage.includes('E37') || errorData.includes('E37')) {
+        toast.error('Swap exceeds price band limits. Try a smaller amount.');
+      } else if (errorMessage.includes('0x') && errorMessage.length < 100) {
+        // Generic encoded error - show user-friendly message
+        toast.error('Transaction failed. Please check your balance and try again.');
       } else {
-        toast.error(error.shortMessage || error.message || 'Swap failed');
+        toast.error(error.shortMessage || 'Swap failed. Please try again.');
       }
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [account, checkAllowance, approveToken, queryClient]);
+  }, [account, checkAllowance, approveToken, sendTransaction, queryClient]);
 
   // Buy DRI with USDC
   const buyDRI = useCallback(async (usdcAmount: string, minDriOut?: string): Promise<string | null> => {
@@ -385,17 +277,15 @@ export function useDirectSwap() {
 
     try {
       const [usdcBal, driBal] = await Promise.all([
-        etoPublicClient.readContract({
-          address: USDC_ADDRESS as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'balanceOf',
-          args: [account.address as `0x${string}`],
+        readContract({
+          contract: usdcContract,
+          method: "function balanceOf(address account) view returns (uint256)",
+          params: [account.address as `0x${string}`],
         }),
-        etoPublicClient.readContract({
-          address: DRI_TOKEN_ADDRESS as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'balanceOf',
-          args: [account.address as `0x${string}`],
+        readContract({
+          contract: driContract,
+          method: "function balanceOf(address account) view returns (uint256)",
+          params: [account.address as `0x${string}`],
         }),
       ]);
 
@@ -422,4 +312,3 @@ export function useDirectSwap() {
     isApproving,
   };
 }
-

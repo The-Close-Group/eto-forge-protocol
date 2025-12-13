@@ -97,6 +97,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))',
 					muted: 'hsl(var(--sidebar-muted))'
+				},
+				neo: {
+					DEFAULT: 'hsl(var(--neo-bg))',
+					border: 'hsl(var(--neo-border))',
+					text: 'hsl(var(--neo-text))'
 				}
 			},
 			borderRadius: {
@@ -112,6 +117,14 @@ export default {
 				'glow-lg': '0 0 40px hsl(var(--primary) / 0.25)',
 				'card': '0 1px 3px hsl(0 0% 0% / 0.2)',
 				'card-hover': '0 4px 12px hsl(0 0% 0% / 0.3)',
+				'neo': '4px 4px 0px 0px hsl(var(--neo-border))',
+				'neo-sm': '3px 3px 0px 0px hsl(var(--neo-border))',
+			},
+			translate: {
+				'neo-x': '4px',
+				'neo-y': '4px',
+				'neo-sm-x': '3px',
+				'neo-sm-y': '3px',
 			},
 			keyframes: {
 				'accordion-down': {

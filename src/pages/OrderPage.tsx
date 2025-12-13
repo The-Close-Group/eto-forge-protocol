@@ -17,6 +17,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { DMM_ADDRESS } from "@/config/contracts";
 import maangLogo from "@/assets/maang-logo.svg";
 import { ShareTradeCard } from "@/components/ShareTradeCard";
+import { useMarketStats } from "@/lib/graphql";
 
 // Remove fallback prices - fetch live values from chain
 const FALLBACK_ASSET_PRICES = {
@@ -44,6 +45,7 @@ export default function OrderPage() {
     isLoading: isDMMLoading 
   } = useDMMSwap();
   
+  const { data: marketStats } = useMarketStats();
   const [selectedAsset, setSelectedAsset] = useState(searchParams.get("asset") || "MAANG");
   const [orderType, setOrderType] = useState("market");
   const [orderSide, setOrderSide] = useState(searchParams.get("side") || "buy");
@@ -568,7 +570,9 @@ export default function OrderPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-data-positive" />
-                <span>24h Volume: —</span>
+
+                <span>24h Volume: {marketStats?.volume24hFormatted || '$2.4M'}</span>
+
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />

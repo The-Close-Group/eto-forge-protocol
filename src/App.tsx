@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
 import { StakingProvider } from "@/contexts/StakingContext";
+import { DataLayerProvider } from "@/components/DataLayerProvider";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -20,7 +21,6 @@ import { RouteTransition } from "@/components/RouteTransition";
 import Pitch from "@/pages/Pitch";
 import Landing from "@/pages/Landing";
 import { Navigate } from "react-router-dom";
-import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
@@ -44,12 +44,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <PortfolioProvider>
-        <UserStateProvider>
-          <StakingProvider>
-            <TooltipProvider>
-            <Toaster />
-            <Sonner />
+      <DataLayerProvider>
+        <PortfolioProvider>
+          <UserStateProvider>
+            <StakingProvider>
+              <TooltipProvider>
+              <Toaster />
+              <Sonner />
             <BrowserRouter>
               {/* Global UX helpers */}
               <TopLoadingBar />
@@ -57,7 +58,6 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
-                <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
                   path="/*"
@@ -90,10 +90,11 @@ const App = () => (
                 />
               </Routes>
             </BrowserRouter>
-            </TooltipProvider>
-          </StakingProvider>
-        </UserStateProvider>
-      </PortfolioProvider>
+              </TooltipProvider>
+            </StakingProvider>
+          </UserStateProvider>
+        </PortfolioProvider>
+      </DataLayerProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

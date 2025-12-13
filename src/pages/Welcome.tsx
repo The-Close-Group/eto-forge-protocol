@@ -17,7 +17,7 @@ export default function Welcome() {
       if (isAuthenticated) {
         navigate("/trade");
       } else {
-        navigate("/signin");
+        navigate("/dashboard");
       }
     }, 1500);
 

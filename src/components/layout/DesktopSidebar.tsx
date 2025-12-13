@@ -21,6 +21,7 @@ import { AceternitySidebar as Sidebar, SidebarBody, useSidebarAceternity } from 
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useStakingContext } from "@/contexts/StakingContext";
+import { useProtocolStore, selectPrices } from "@/stores/protocolStore";
 
 // Protocol navigation (when Protocol tab is active)
 const protocolNavItems = [
@@ -53,6 +54,7 @@ function SidebarContentInner() {
   const { signOut } = useAuth();
   const { open, animate } = useSidebarAceternity();
   const { positions, assets, getTotalStaked, getTotalRewards } = useStakingContext();
+  const livePrices = useProtocolStore(selectPrices);
   const [activeTab, setActiveTab] = useState<'protocol' | 'shortcuts'>('protocol');
 
   const isActive = (path: string) => {
@@ -60,15 +62,26 @@ function SidebarContentInner() {
     return location.pathname.startsWith(path);
   };
 
-  // Get position display data
+  // Get live MAANG price
+  const maangPrice = livePrices.dmmPrice > 0 ? livePrices.dmmPrice : 331.03;
+
+  // Get position display data with live USD values
   const activePositions = positions.map(pos => {
     const asset = assets.find(a => a.id === pos.assetId);
+    // Calculate USD value based on live price
+    let usdValue = pos.amount;
+    if (asset?.id === 'maang' || asset?.id === 'smaang') {
+      usdValue = pos.amount * maangPrice;
+    }
+    // USDC is 1:1
     return {
       name: asset?.name || 'Unknown',
-      amount: `$${pos.amount.toLocaleString()}`,
+      amount: `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      tokenAmount: pos.amount,
       logo: asset?.logo || '',
       color: asset?.color || '#888',
       rewards: pos.earnedRewards,
+      symbol: asset?.symbol || '',
     };
   });
 
@@ -79,10 +92,18 @@ function SidebarContentInner() {
       {/* Top Section */}
       <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2.5 px-3 py-3 mb-2">
-          <div className="w-7 h-7 flex items-center justify-center">
-            <img src="/bro.svg" alt="ETO logo" className="w-6 h-6" />
-          </div>
+        <Link to="/" className="flex items-center gap-2.5 px-3 py-3 mb-2 min-h-[44px]">
+          <motion.div
+            initial={false}
+            animate={{
+              width: animate ? (open ? 28 : 20) : 28,
+              height: animate ? (open ? 28 : 20) : 28,
+            }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="flex items-center justify-center shrink-0"
+          >
+            <img src="/bro.svg" alt="ETO logo" className="w-full h-full object-contain" />
+          </motion.div>
           <motion.div
             initial={false}
             animate={{
@@ -232,7 +253,15 @@ function SidebarContentInner() {
               <div className="mt-2 px-2 py-2 rounded-lg bg-sidebar-accent/50">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-muted-foreground">Total Staked</span>
-                  <span className="font-medium">${getTotalStaked().toLocaleString()}</span>
+                  <span className="font-medium">
+                    ${positions.reduce((sum, pos) => {
+                      const asset = assets.find(a => a.id === pos.assetId);
+                      if (asset?.id === 'maang' || asset?.id === 'smaang') {
+                        return sum + (pos.amount * maangPrice);
+                      }
+                      return sum + pos.amount;
+                    }, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
                 <div className="flex justify-between text-[11px] mt-1">
                   <span className="text-muted-foreground">Total Rewards</span>

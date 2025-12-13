@@ -416,6 +416,7 @@ body {
     opacity: 0.95;
     transition: all 0.3s ease;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .partner-logo:hover {

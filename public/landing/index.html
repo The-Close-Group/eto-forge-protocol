@@ -4,9 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETO - Tokenize Everything</title>
+    
+    <!-- DNS Prefetch & Preconnect for faster resource loading -->
+    <link rel="dns-prefetch" href="https://d3js.org">
+    <link rel="preconnect" href="https://d3js.org" crossorigin>
+    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    
+    <!-- Preload critical resources for globe -->
+    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script" crossorigin>
+    <link rel="preload" href="https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json" as="fetch" crossorigin>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,9 +34,9 @@
                 <path fill="white" d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/>
                 <path fill="white" d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/>
             </svg>
-            <span class="logo-text">eto</span>
+            <span class="logo-text">ETO</span>
         </div>
-        <button class="launch-btn" onclick="window.top.location.href='/signin'">LAUNCH MARKETS</button>
+        <button class="launch-btn" onclick="window.top.location.href='/dashboard'">LAUNCH MARKETS</button>
     </nav>
 
     <!-- Page 1: Hero Section -->
@@ -37,8 +50,8 @@
             <!-- Hero Section -->
             <div class="hero-section">
                 <h1 class="hero-title">Tokenize Everything</h1>
-                <p class="hero-subtitle">On-Chain Equity Indices. Self-Custody. Instant Settlement.</p>
-                <button class="explore-btn" onclick="window.location.href='/signin'">
+                <p class="hero-subtitle">On-Chain Index Tokens with Composability</p>
+                <button class="explore-btn" onclick="window.location.href='/dashboard'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -755,7 +768,7 @@
         <div class="taas-content">
             <p class="taas-subtitle">Tokenization as a Service</p>
             <h1 class="taas-title">Tokenize Global Markets</h1>
-            <button class="explore-btn taas-btn" onclick="window.location.href='/signin'">
+            <button class="explore-btn taas-btn" onclick="window.location.href='/dashboard'">
                 <span>GET STARTED</span>
                 <div class="btn-icon">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
