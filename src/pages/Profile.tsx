@@ -555,7 +555,7 @@ export default function Profile() {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-2">
                                 <Coins className="w-5 h-5 text-primary" />
-                                <span className="font-medium">{position.asset.symbol}</span>
+                                <span className="font-medium">{position.assetId}</span>
                               </div>
                               <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
                                 Active
@@ -572,7 +572,7 @@ export default function Profile() {
                               </div>
                               <div>
                                 <span className="text-muted-foreground">Rewards</span>
-                                <p className="font-medium">+{position.rewards.toFixed(4)}</p>
+                                <p className="font-medium">+{position.earnedRewards.toFixed(4)}</p>
                               </div>
                             </div>
                           </div>

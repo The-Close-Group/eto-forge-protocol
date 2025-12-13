@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 subgraph/aws/terraform/.terraform/
+
+# Terraform
+*.tfvars
+!*.tfvars.example
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl

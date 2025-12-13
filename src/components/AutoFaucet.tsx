@@ -6,10 +6,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 import { toast } from 'sonner';
-import { Fuel, Droplets, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Fuel, CheckCircle2, ExternalLink } from 'lucide-react';
 
-// Faucet API endpoint - update with your AWS API Gateway URL
-const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || 'https://your-api-gateway.execute-api.us-east-1.amazonaws.com/claim';
+// Faucet API endpoint - set via VITE_FAUCET_API_URL env var after deploying Lambda
+const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || '';
 
 // Local storage key to track claimed addresses
 const CLAIMED_KEY = 'eto-faucet-claimed';
@@ -18,12 +18,10 @@ interface FaucetResponse {
   success?: boolean;
   error?: string;
   message?: string;
-  gasTxHash?: string;
-  usdcTxHash?: string;
-  gasAmount?: string;
-  usdcAmount?: string;
-  cooldownRemaining?: number;
-  explorerUrl?: string;
+  txHash?: string;
+  amount?: string;
+  timeRemaining?: number;
+  explorer?: string;
 }
 
 /**
@@ -66,6 +64,12 @@ export function AutoFaucet() {
 
   useEffect(() => {
     async function claimFaucet() {
+      // Skip if no API URL configured
+      if (!FAUCET_API_URL) {
+        console.log('[AutoFaucet] No FAUCET_API_URL configured, skipping');
+        return;
+      }
+      
       if (!account?.address) return;
       if (claimingRef.current) return;
       if (hasClaimed) return;
@@ -85,7 +89,7 @@ export function AutoFaucet() {
         const loadingId = toast.loading(
           <div className="flex items-center gap-2">
             <Fuel className="w-4 h-4 animate-pulse text-yellow-500" />
-            <span>Sending you starter funds...</span>
+            <span>Sending you starter gas...</span>
           </div>,
           { duration: 30000 }
         );
@@ -102,11 +106,11 @@ export function AutoFaucet() {
         toast.dismiss(loadingId);
 
         if (data.error) {
-          // Handle cooldown
-          if (data.cooldownRemaining) {
-            markClaimedLocally(account.address); // Still mark as claimed
+          // Handle cooldown (429)
+          if (data.timeRemaining) {
+            markClaimedLocally(account.address);
             setHasClaimed(true);
-            console.log('[AutoFaucet] On cooldown:', data.cooldownRemaining, 'hours');
+            console.log('[AutoFaucet] On cooldown:', data.timeRemaining, 'seconds');
             return; // Silent - don't show error for cooldown
           }
           
@@ -127,22 +131,14 @@ export function AutoFaucet() {
                 <span className="font-medium">Welcome to ETO!</span>
               </div>
               <div className="text-sm text-muted-foreground">
-                {data.gasAmount && (
-                  <div className="flex items-center gap-1">
-                    <Fuel className="w-3 h-3" />
-                    <span>{data.gasAmount} ETH for gas</span>
-                  </div>
-                )}
-                {data.usdcAmount && (
-                  <div className="flex items-center gap-1">
-                    <Droplets className="w-3 h-3" />
-                    <span>{data.usdcAmount} USDC for trading</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1">
+                  <Fuel className="w-3 h-3" />
+                  <span>{data.amount || '0.1'} ETH for gas</span>
+                </div>
               </div>
-              {data.explorerUrl && (
+              {data.explorer && (
                 <a
-                  href={data.explorerUrl}
+                  href={data.explorer}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-blue-500 hover:underline flex items-center gap-1"
