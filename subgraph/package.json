@@ -1,13 +1,21 @@
 {
   "name": "eto-protocol-subgraph",
-  "version": "1.0.0",
-  "description": "The Graph subgraph for ETO Protocol - indexes swaps, deposits, price history",
+  "version": "2.0.0",
+  "description": "The Graph subgraph for ETO Protocol (Chain ID: 69670) - indexes swaps, deposits, price history",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ eto-protocol/eto-mainnet",
+    "clean": "rm -rf build generated",
+    "prepare": "npm run codegen && npm run build",
     "create-local": "graph create --node http://localhost:8020/ eto-protocol/eto-mainnet",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 eto-protocol/eto-mainnet"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 eto-protocol/eto-mainnet",
+    "remove-local": "graph remove --node http://localhost:8020/ eto-protocol/eto-mainnet",
+    "create-aws": "graph create --node http://${GRAPH_NODE_HOST:-localhost}:8020/ eto-protocol/eto-mainnet",
+    "deploy-aws": "graph deploy --node http://${GRAPH_NODE_HOST:-localhost}:8020/ --ipfs http://${IPFS_HOST:-localhost}:5001 eto-protocol/eto-mainnet --version-label v2.0.0",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f graph-node",
+    "docker:reset": "docker-compose down -v && docker-compose up -d"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.60.0",

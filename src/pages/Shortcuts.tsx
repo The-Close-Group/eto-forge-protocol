@@ -228,7 +228,7 @@ export default function Shortcuts() {
                           <Button variant="outline" size="sm" onClick={handleCopyAddress}>
                             <Copy className="w-3.5 h-3.5" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => window.open(`https://eto.ash.center/address/${account.address}`, '_blank')}>
+                          <Button variant="outline" size="sm" onClick={() => window.open(`https://eto-explorer.ash.center/address/${account.address}`, '_blank')}>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Button>
                         </div>

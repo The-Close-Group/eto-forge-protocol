@@ -9,20 +9,23 @@
   "containerDefinitions": [
     {
       "name": "graph-node",
-      "image": "graphprotocol/graph-node:latest",
+      "image": "graphprotocol/graph-node:v0.34.1",
       "essential": true,
       "portMappings": [
         {
           "containerPort": 8000,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "name": "graphql"
         },
         {
           "containerPort": 8020,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "name": "admin"
         },
         {
           "containerPort": 8030,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "name": "index-status"
         }
       ],
       "environment": [
@@ -57,6 +60,14 @@
         {
           "name": "ETHEREUM_ANCESTOR_COUNT",
           "value": "1"
+        },
+        {
+          "name": "GRAPH_ETHEREUM_BLOCK_BATCH_SIZE",
+          "value": "100"
+        },
+        {
+          "name": "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE",
+          "value": "1000"
         }
       ],
       "secrets": [
@@ -73,6 +84,13 @@
           "awslogs-stream-prefix": "graph-node"
         }
       },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8030 || exit 1"],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 120
+      },
       "dependsOn": [
         {
           "containerName": "ipfs",
@@ -82,12 +100,19 @@
     },
     {
       "name": "ipfs",
-      "image": "ipfs/kubo:v0.14.0",
+      "image": "ipfs/kubo:v0.22.0",
       "essential": true,
       "portMappings": [
         {
           "containerPort": 5001,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "name": "ipfs-api"
+        }
+      ],
+      "environment": [
+        {
+          "name": "IPFS_PROFILE",
+          "value": "server"
         }
       ],
       "logConfiguration": {
@@ -98,6 +123,32 @@
           "awslogs-stream-prefix": "ipfs"
         }
       }
+    },
+    {
+      "name": "nginx",
+      "image": "nginx:alpine",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp",
+          "name": "http"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/eto-subgraph",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "nginx"
+        }
+      },
+      "dependsOn": [
+        {
+          "containerName": "graph-node",
+          "condition": "HEALTHY"
+        }
+      ]
     }
   ]
 }

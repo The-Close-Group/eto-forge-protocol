@@ -1,10 +1,33 @@
+# =============================================================================
+# ETO Protocol Subgraph - AWS Terraform Configuration
+# Chain ID: 69670 | RPC: https://eto.ash.center/rpc
+# =============================================================================
 # Copy this to terraform.tfvars and fill in your values
 # terraform.tfvars is gitignored - never commit secrets!
 
-aws_region         = "us-east-1"
-project_name       = "eto-subgraph"
-vpc_cidr          = "10.0.0.0/16"
-db_password        = "Namanbajpai@123"
-db_instance_class  = "db.t3.micro"
-db_allocated_storage = 20
+aws_region           = "us-east-1"
+project_name         = "eto-subgraph"
+vpc_cidr             = "10.0.0.0/16"
 
+# Database Configuration
+db_password          = "CHANGE_ME_TO_SECURE_PASSWORD"  # Use a strong 32+ char password
+db_instance_class    = "db.t3.micro"                   # Upgrade to db.t3.small for production
+db_allocated_storage = 20                              # Increase to 50-100 for production
+
+# IAM Configuration
+# Set to true if you don't have iam:CreateRole permissions
+use_existing_iam_roles          = false
+existing_ecs_execution_role_arn = ""
+existing_ecs_task_role_arn      = ""
+
+# Load Balancer
+# Set to false if you don't have iam:CreateServiceLinkedRole permissions
+create_alb = true
+
+# =============================================================================
+# Contract Addresses (Chain ID: 69670 - Dec 12, 2025 deployment)
+# =============================================================================
+# DMMv2 CLMM:        0xd14Ea79ab8B06BD5D2F4c805b3D9F6D134002648
+# SMAANG Vault:      0xed2EEd3257Ce0A9ECeeE1055b5e54E724E63c09a
+# Oracle Aggregator: 0x432edDe96fca51943b2a65b889ED50De7E51BdF7
+# =============================================================================

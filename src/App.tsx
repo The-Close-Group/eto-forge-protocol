@@ -14,6 +14,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
+import { AutoFaucet } from "@/components/AutoFaucet";
 // ThirdwebProvider is already set up in main.tsx
 
 
@@ -55,6 +56,7 @@ const App = () => (
               {/* Global UX helpers */}
               <TopLoadingBar />
               <CommandPalette />
+              <AutoFaucet /> {/* Auto-sends gas + USDC on wallet connect */}
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
