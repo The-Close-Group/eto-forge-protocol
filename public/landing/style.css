@@ -878,7 +878,7 @@ body {
 .features-label {
     display: block;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     color: #b8ff57;
     text-transform: capitalize;
     letter-spacing: 0.5px;
@@ -887,18 +887,19 @@ body {
 
 .features-title {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 48px;
-    font-weight: 700;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
     margin: 0;
 }
 
 @media (max-width: 768px) {
     .features-title {
-        font-size: 36px;
-        letter-spacing: -1px;
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
     }
     
     .features-label {
@@ -912,7 +913,8 @@ body {
 
 @media (max-width: 480px) {
     .features-title {
-        font-size: 28px;
+        font-size: 26px;
+        font-weight: 500;
     }
     
     .features-label {
@@ -957,16 +959,21 @@ body {
 
 /* Sub-box below each card */
 .grid-card-subbox {
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 20px 24px;
-    min-height: 70px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    height: 72px;
+    margin-left: 20px;
+    margin-right: -8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .grid-card-subbox p {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0 0 6px 0;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 0 0 4px 0;
     line-height: 1.4;
 }
 
@@ -975,7 +982,7 @@ body {
 }
 
 .grid-card-subbox p:empty {
-    display: none;
+    visibility: hidden;
 }
 
 .grid-card-header {
@@ -1475,7 +1482,9 @@ body {
     
     .grid-card-subbox {
         padding: 16px 20px;
-        min-height: 60px;
+        height: 64px;
+        margin-left: 16px;
+        margin-right: -4px;
     }
     
     .grid-card-title {
@@ -1534,7 +1543,9 @@ body {
     
     .grid-card-subbox {
         padding: 14px 18px;
-        min-height: 50px;
+        height: 56px;
+        margin-left: 12px;
+        margin-right: 0;
     }
     
     .grid-card-subbox p {
