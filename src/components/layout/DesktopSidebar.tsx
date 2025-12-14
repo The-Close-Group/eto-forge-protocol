@@ -79,9 +79,12 @@ function SidebarContentInner() {
       {/* Top Section */}
       <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2.5 px-3 py-3 mb-2">
-          <div className="w-7 h-7 flex items-center justify-center">
-            <img src="/bro.svg" alt="ETO logo" className="w-6 h-6" />
+        <Link 
+          to="/" 
+          className={`flex items-center py-3 mb-2 ${open ? 'px-3 gap-2.5' : 'justify-center px-0'}`}
+        >
+          <div className="w-9 h-9 flex items-center justify-center shrink-0">
+            <img src="/eto-logo.svg" alt="ETO logo" className="w-9 h-9 rounded-lg object-contain" />
           </div>
           <motion.div
             initial={false}
