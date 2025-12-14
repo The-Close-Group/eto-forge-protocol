@@ -40,6 +40,26 @@ body {
     box-sizing: border-box;
 }
 
+/* Fade transition at bottom of hero into next section */
+.page-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 400px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10, 10, 10, 0.3) 30%,
+        rgba(10, 10, 10, 0.6) 50%,
+        rgba(10, 10, 10, 0.85) 70%,
+        #0a0a0a 100%
+    );
+    pointer-events: none;
+    z-index: 50;
+}
+
 /* ========================================
    HERO GLOBE - HORIZON EFFECT
    ======================================== */
@@ -1581,33 +1601,13 @@ body {
     align-items: center;
     justify-content: center;
     padding: 150px 40px;
-    padding-top: 250px;
     min-height: 100vh;
     position: relative;
     z-index: 10;
-    margin-top: 0;
+    margin-top: -100px;
     overflow-x: hidden;
 }
 
-/* Gradient transition from hero to MAANG section */
-.page-maang::before {
-    content: '';
-    position: absolute;
-    top: -400px;
-    left: 0;
-    right: 0;
-    height: 500px;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(10, 10, 10, 0.4) 25%,
-        rgba(10, 10, 10, 0.7) 50%,
-        rgba(10, 10, 10, 0.9) 75%,
-        #0a0a0a 100%
-    );
-    pointer-events: none;
-    z-index: 100;
-}
 
 .maang-content {
     display: flex;
