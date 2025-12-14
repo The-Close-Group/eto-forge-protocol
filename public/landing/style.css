@@ -856,7 +856,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 150px 60px;
+    padding: 120px 60px;
     min-height: 100vh;
     position: relative;
     margin-top: 100px;
@@ -869,6 +869,43 @@ body {
     width: 100%;
 }
 
+/* Features Header */
+.features-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.features-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .features-title {
+        font-size: 36px;
+        letter-spacing: -1px;
+    }
+    
+    .features-header {
+        margin-bottom: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-title {
+        font-size: 28px;
+    }
+    
+    .features-header {
+        margin-bottom: 30px;
+    }
+}
+
 /* New Features Grid */
 .features-grid-new {
     display: grid;
@@ -879,9 +916,9 @@ body {
 .grid-card {
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 28px;
+    padding: 32px;
     position: relative;
-    min-height: 480px;
+    min-height: 560px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1386,7 +1423,7 @@ body {
     }
     
     .grid-card {
-        min-height: 400px;
+        min-height: 480px;
     }
     
     .grid-card:last-child {
@@ -1445,7 +1482,7 @@ body {
     
     .grid-card {
         padding: 24px;
-        min-height: 360px;
+        min-height: 420px;
     }
     
     .grid-card-title {
