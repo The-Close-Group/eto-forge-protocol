@@ -1,0 +1,49 @@
+---
+title: Background
+description: The evolution of on-chain equity exposure and the structural challenges that shaped the need for a new approach.
+---
+
+## The Diversification Problem
+
+Crypto portfolios tend to move together. When Bitcoin falls, most liquid tokens fall with it. When risk appetite returns, it often returns across the board. For investors trying to manage drawdowns, this correlation creates a structural constraint: there is limited diversification *within* the asset class.
+
+Public equities offer a partial counterweight. Large U.S. technology stocks, for example, have often exhibited lower correlation to crypto than crypto assets show to each other. Exposure to companies like Apple or Nvidia alongside ETH can reduce portfolio volatility without requiring an investor to fully exit on-chain markets.
+
+The target state is clear: preserve self-custody and composability, but add exposure to assets that do not move in lockstep with crypto. This objective drove the first wave of attempts to bring equity exposure on-chain.
+
+## Early Approaches to On-Chain Equity Exposure
+
+Two broad architectures emerged: synthetic assets and custody-backed tokens. Both can provide price exposure, but each introduces tradeoffs that become more visible under stress.
+
+### Synthetic Assets
+
+Early systems used synthetic tokens that tracked stock prices without holding the underlying shares. Protocols such as Mirror Protocol (Terra) and Synthetix allowed users to mint or trade synthetic exposure using overcollateralized positions and oracle price feeds.
+
+This approach avoided traditional intermediaries. There was no brokerage account holding shares, typically no KYC gate at the protocol level, and access was globally permissionless. Synthetic exposure could also trade continuously, independent of equity market hours.
+
+The limiting factor is that the peg depends on incentives and mechanism performance. Synthetic systems rely on liquidations and arbitrage to keep prices aligned with oracle references. Under extreme volatility or impaired liquidity, these mechanisms can lag, become expensive, or fail to clear. If the collateral underpinning the system becomes unstable, the synthetic market can unwind quickly. In May 2022, the Terra ecosystem collapse caused severe dislocations across dependent protocols, and Mirror’s synthetic assets did not regain durable, reliable pegs.
+
+Even in normal regimes, synthetics tend to carry ongoing frictions: oracle latency can create extractable arbitrage, and overcollateralization reduces capital efficiency relative to the exposure created.
+
+### Custody-Backed Tokens
+
+A second class of products issued tokens backed one-to-one by shares held with a custodian. In this model, when a user purchases tokenized equity, corresponding shares are held in off-chain accounts intended to support redemption.
+
+This architecture simplifies price tracking: redeemability anchors the token’s value to the underlying asset. The peg is not primarily maintained by an on-chain algorithm, but by a legal and operational claim on custody-held shares.
+
+The tradeoff is that the custody model reintroduces intermediaries. Users must trust the custodian and associated operators to remain solvent and to honor redemptions. Access commonly requires KYC and jurisdictional filtering. Settlement depends on traditional financial rails, so minting and redemption can take hours or days rather than seconds. In many implementations, tokens are also less composable with permissionless DeFi due to transfer restrictions or issuer controls.
+
+Custody-backed designs can deliver exposure with strong tracking, but they often weaken the properties that make on-chain assets useful: self-custody, programmability, and permissionless integration.
+
+## Why ETO Exists
+
+Taken together, these histories point to a consistent set of constraints that a “native” on-chain approach needs to satisfy simultaneously, rather than trading one property off against another.
+
+A viable design must maintain tight price reflection under stress, preserve self-custody in a standard token form, and keep settlement on-chain and immediate. It must also support sustainable liquidity—capital-efficient enough to be usable without permanent subsidies—while embedding explicit safety controls for oracle failure modes and market dislocations.
+
+ETO represents an iteration in this direction: a non-custodial model for equity-basket price exposure that is designed to reduce dependence on off-chain share custody, issuer-mediated redemption, and the operational gating that typically follows from those dependencies (such as KYC workflows, jurisdictional access controls, and slower settlement). The next section introduces ETO at a conceptual level, and the Architecture section details the mechanisms used to maintain price reflection, liquidity, and safety.
+
+
+
+
+
