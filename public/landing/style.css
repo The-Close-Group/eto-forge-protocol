@@ -873,7 +873,7 @@ body {
 .features-header {
     text-align: left;
     margin-bottom: 60px;
-    padding-left: 32px;
+    padding-left: 0;
 }
 
 .features-label {
@@ -1016,10 +1016,10 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     background: #ffffff;
-    border-radius: 0 24px 0 20px;
+    border-radius: 0 20px 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1028,8 +1028,8 @@ body {
 }
 
 .grid-card-arrow svg {
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
 }
 
 .grid-card-arrow svg path {
