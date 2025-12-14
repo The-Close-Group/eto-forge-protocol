@@ -83,8 +83,8 @@ function SidebarContentInner() {
           to="/" 
           className={`flex items-center py-3 mb-2 ${open ? 'px-3 gap-2.5' : 'justify-center px-0'}`}
         >
-          <div className="w-9 h-9 flex items-center justify-center shrink-0">
-            <img src="/eto-logo.svg" alt="ETO logo" className="w-9 h-9 rounded-lg object-contain" />
+          <div className="w-7 h-7 flex items-center justify-center shrink-0">
+            <img src="/eto-logo.svg" alt="ETO logo" className="w-7 h-7 rounded object-contain" />
           </div>
           <motion.div
             initial={false}
