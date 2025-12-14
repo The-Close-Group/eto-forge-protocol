@@ -224,12 +224,12 @@ body {
 
 .card-left {
     left: 120px;
-    bottom: 50px;
+    bottom: 280px;
 }
 
 .card-right {
     right: 120px;
-    bottom: 50px;
+    bottom: 280px;
 }
 
 .card-content {
@@ -576,12 +576,12 @@ body {
 @media (max-width: 1400px) {
     .card-left {
         left: 80px;
-        bottom: 40px;
+        bottom: 240px;
     }
     
     .card-right {
         right: 80px;
-        bottom: 40px;
+        bottom: 240px;
     }
 }
 
@@ -597,12 +597,12 @@ body {
     
     .card-left {
         left: 50px;
-        bottom: 35px;
+        bottom: 220px;
     }
     
     .card-right {
         right: 50px;
-        bottom: 35px;
+        bottom: 220px;
     }
     
     .card-left .card-content {
@@ -650,12 +650,12 @@ body {
     
     .card-left {
         left: 30px;
-        bottom: 30px;
+        bottom: 200px;
     }
     
     .card-right {
         right: 30px;
-        bottom: 30px;
+        bottom: 200px;
     }
     
     .card-left .card-content {
