@@ -873,6 +873,7 @@ body {
 .features-header {
     text-align: left;
     margin-bottom: 60px;
+    padding-left: 32px;
 }
 
 .features-label {
@@ -1013,12 +1014,12 @@ body {
 
 .grid-card-arrow {
     position: absolute;
-    bottom: 24px;
-    left: 24px;
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background: #ffffff;
+    border-radius: 0 24px 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1026,9 +1027,18 @@ body {
     transition: all 0.3s ease;
 }
 
+.grid-card-arrow svg {
+    width: 32px;
+    height: 32px;
+}
+
+.grid-card-arrow svg path {
+    stroke: #1a1a1a;
+    stroke-width: 2;
+}
+
 .grid-card-arrow:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.05);
+    background: #f0f0f0;
 }
 
 /* Hover Tooltip - Full Card Overlay */
@@ -1137,8 +1147,8 @@ body {
 
 .tokens-fan {
     position: relative;
-    width: 220px;
-    height: 180px;
+    width: 320px;
+    height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1146,14 +1156,14 @@ body {
 
 .fan-token {
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     overflow: hidden;
     box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 6px 20px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(80, 80, 80, 0.6);
+    border: 3px solid rgba(80, 80, 80, 0.6);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -1170,22 +1180,22 @@ body {
 
 .fan-token-2 {
     z-index: 4;
-    transform: translateX(-35px) translateY(-5px) rotate(-8deg);
+    transform: translateX(-55px) translateY(-8px) rotate(-8deg);
 }
 
 .fan-token-3 {
     z-index: 3;
-    transform: translateX(-65px) translateY(-15px) rotate(-16deg);
+    transform: translateX(-100px) translateY(-22px) rotate(-16deg);
 }
 
 .fan-token-4 {
     z-index: 2;
-    transform: translateX(35px) translateY(-5px) rotate(8deg);
+    transform: translateX(55px) translateY(-8px) rotate(8deg);
 }
 
 .fan-token-5 {
     z-index: 1;
-    transform: translateX(65px) translateY(-15px) rotate(16deg);
+    transform: translateX(100px) translateY(-22px) rotate(16deg);
 }
 
 /* Hover effects */
@@ -1194,19 +1204,19 @@ body {
 }
 
 .grid-card:hover .fan-token-2 {
-    transform: translateX(-45px) translateY(-8px) rotate(-10deg) scale(1.02);
+    transform: translateX(-65px) translateY(-12px) rotate(-10deg) scale(1.02);
 }
 
 .grid-card:hover .fan-token-3 {
-    transform: translateX(-85px) translateY(-18px) rotate(-18deg) scale(1.02);
+    transform: translateX(-120px) translateY(-28px) rotate(-18deg) scale(1.02);
 }
 
 .grid-card:hover .fan-token-4 {
-    transform: translateX(45px) translateY(-8px) rotate(10deg) scale(1.02);
+    transform: translateX(65px) translateY(-12px) rotate(10deg) scale(1.02);
 }
 
 .grid-card:hover .fan-token-5 {
-    transform: translateX(85px) translateY(-18px) rotate(18deg) scale(1.02);
+    transform: translateX(120px) translateY(-28px) rotate(18deg) scale(1.02);
 }
 
 /* ERC-20 Card Graphic */
@@ -1505,19 +1515,19 @@ body {
     }
     
     .tokens-fan {
-        width: 180px;
-        height: 140px;
+        width: 260px;
+        height: 200px;
     }
     
     .fan-token {
-        width: 60px;
-        height: 60px;
+        width: 90px;
+        height: 90px;
     }
     
-    .fan-token-2 { transform: translateX(-28px) translateY(-4px) rotate(-8deg); }
-    .fan-token-3 { transform: translateX(-52px) translateY(-12px) rotate(-16deg); }
-    .fan-token-4 { transform: translateX(28px) translateY(-4px) rotate(8deg); }
-    .fan-token-5 { transform: translateX(52px) translateY(-12px) rotate(16deg); }
+    .fan-token-2 { transform: translateX(-45px) translateY(-6px) rotate(-8deg); }
+    .fan-token-3 { transform: translateX(-80px) translateY(-18px) rotate(-16deg); }
+    .fan-token-4 { transform: translateX(45px) translateY(-6px) rotate(8deg); }
+    .fan-token-5 { transform: translateX(80px) translateY(-18px) rotate(16deg); }
     
     .puzzle-piece {
         width: 130px;
