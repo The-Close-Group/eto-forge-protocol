@@ -871,13 +871,23 @@ body {
 
 /* Features Header */
 .features-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 60px;
+}
+
+.features-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #b8ff57;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
 }
 
 .features-title {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 56px;
+    font-size: 48px;
     font-weight: 700;
     color: white;
     letter-spacing: -1.5px;
@@ -891,6 +901,10 @@ body {
         letter-spacing: -1px;
     }
     
+    .features-label {
+        font-size: 13px;
+    }
+    
     .features-header {
         margin-bottom: 40px;
     }
@@ -899,6 +913,10 @@ body {
 @media (max-width: 480px) {
     .features-title {
         font-size: 28px;
+    }
+    
+    .features-label {
+        font-size: 12px;
     }
     
     .features-header {
@@ -913,12 +931,19 @@ body {
     gap: 24px;
 }
 
+/* Card Wrapper for card + subbox */
+.grid-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .grid-card {
     background: #1a1a1a;
     border-radius: 20px;
     padding: 32px;
     position: relative;
-    min-height: 560px;
+    min-height: 480px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -928,6 +953,29 @@ body {
 .grid-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Sub-box below each card */
+.grid-card-subbox {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 20px 24px;
+    min-height: 70px;
+}
+
+.grid-card-subbox p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+}
+
+.grid-card-subbox p:last-child {
+    margin-bottom: 0;
+}
+
+.grid-card-subbox p:empty {
+    display: none;
 }
 
 .grid-card-header {
@@ -1396,18 +1444,17 @@ body {
 @media (max-width: 1100px) {
     .features-grid-new {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 24px;
+    }
+    
+    .grid-card-wrapper {
+        width: 100%;
+        max-width: 100%;
     }
     
     .grid-card {
         width: 100%;
         max-width: 100%;
-    }
-    
-    .grid-card:last-child {
-        grid-column: span 1;
-        max-width: 100%;
-        margin: 0;
     }
 }
 
@@ -1419,16 +1466,16 @@ body {
     
     .features-grid-new {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 24px;
     }
     
     .grid-card {
-        min-height: 480px;
+        min-height: 400px;
     }
     
-    .grid-card:last-child {
-        grid-column: span 1;
-        max-width: 100%;
+    .grid-card-subbox {
+        padding: 16px 20px;
+        min-height: 60px;
     }
     
     .grid-card-title {
@@ -1482,7 +1529,16 @@ body {
     
     .grid-card {
         padding: 24px;
-        min-height: 420px;
+        min-height: 350px;
+    }
+    
+    .grid-card-subbox {
+        padding: 14px 18px;
+        min-height: 50px;
+    }
+    
+    .grid-card-subbox p {
+        font-size: 12px;
     }
     
     .grid-card-title {
@@ -1491,15 +1547,6 @@ body {
     
     .grid-card-subtitle {
         font-size: 13px;
-    }
-    
-    .grid-card-points {
-        bottom: -50px;
-        left: 24px;
-    }
-    
-    .grid-card-points p {
-        font-size: 12px;
     }
 }
 
