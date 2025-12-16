@@ -2340,29 +2340,34 @@ body {
 }
 
 .engine-content {
-    max-width: 900px;
+    max-width: 1200px;
     width: 100%;
 }
 
 .engine-header {
-    text-align: center;
-    margin-bottom: 48px;
+    text-align: left;
+    margin-bottom: 60px;
+    padding-left: 0;
 }
 
 .engine-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
     margin-bottom: 12px;
-    text-transform: uppercase;
 }
 
 .engine-title {
-    font-size: 48px;
-    font-weight: 700;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0;
 }
 
 /* ═══════════════════════════════════════
@@ -2607,11 +2612,17 @@ body {
     }
     
     .engine-title {
-        font-size: 36px;
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
+    
+    .engine-label {
+        font-size: 13px;
     }
     
     .engine-header {
-        margin-bottom: 36px;
+        margin-bottom: 40px;
     }
     
     .stake-card-title {
@@ -2683,13 +2694,14 @@ body {
 .staking-flow-card {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 24px;
+    justify-content: space-between;
+    gap: 16px;
     background: #1a1a1a;
-    border-radius: 24px;
-    padding: 48px 64px;
-    margin-bottom: 32px;
+    border-radius: 20px;
+    padding: 40px 56px;
+    margin-bottom: 24px;
     width: 100%;
+    max-width: 800px;
 }
 
 .flow-step {
@@ -2770,16 +2782,21 @@ body {
 }
 
 .flow-label {
-    font-size: 16px;
-    font-weight: 600;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
     color: white;
     text-align: center;
+    letter-spacing: 0.02em;
 }
 
 .flow-sublabel {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
     text-align: center;
+    letter-spacing: 0.03em;
 }
 
 .flow-arrow {
@@ -2820,9 +2837,11 @@ body {
 }
 
 .benefit-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.01em;
 }
 
 /* Staking Flow Responsive */
@@ -3371,29 +3390,34 @@ body {
 }
 
 .engine-content {
-    max-width: 900px;
+    max-width: 1200px;
     width: 100%;
 }
 
 .engine-header {
-    text-align: center;
-    margin-bottom: 48px;
+    text-align: left;
+    margin-bottom: 60px;
+    padding-left: 0;
 }
 
 .engine-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
     margin-bottom: 12px;
-    text-transform: uppercase;
 }
 
 .engine-title {
-    font-size: 48px;
-    font-weight: 700;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0;
 }
 
 /* ═══════════════════════════════════════
@@ -3638,11 +3662,17 @@ body {
     }
     
     .engine-title {
-        font-size: 36px;
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
+    
+    .engine-label {
+        font-size: 13px;
     }
     
     .engine-header {
-        margin-bottom: 36px;
+        margin-bottom: 40px;
     }
     
     .stake-card-title {
@@ -3714,13 +3744,14 @@ body {
 .staking-flow-card {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 24px;
+    justify-content: space-between;
+    gap: 16px;
     background: #1a1a1a;
-    border-radius: 24px;
-    padding: 48px 64px;
-    margin-bottom: 32px;
+    border-radius: 20px;
+    padding: 40px 56px;
+    margin-bottom: 24px;
     width: 100%;
+    max-width: 800px;
 }
 
 .flow-step {
@@ -3801,16 +3832,21 @@ body {
 }
 
 .flow-label {
-    font-size: 16px;
-    font-weight: 600;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
     color: white;
     text-align: center;
+    letter-spacing: 0.02em;
 }
 
 .flow-sublabel {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
     text-align: center;
+    letter-spacing: 0.03em;
 }
 
 .flow-arrow {
@@ -3851,9 +3887,11 @@ body {
 }
 
 .benefit-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.01em;
 }
 
 /* Staking Flow Responsive */
@@ -4402,29 +4440,34 @@ body {
 }
 
 .engine-content {
-    max-width: 900px;
+    max-width: 1200px;
     width: 100%;
 }
 
 .engine-header {
-    text-align: center;
-    margin-bottom: 48px;
+    text-align: left;
+    margin-bottom: 60px;
+    padding-left: 0;
 }
 
 .engine-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
     margin-bottom: 12px;
-    text-transform: uppercase;
 }
 
 .engine-title {
-    font-size: 48px;
-    font-weight: 700;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0;
 }
 
 /* ═══════════════════════════════════════
@@ -4669,11 +4712,17 @@ body {
     }
     
     .engine-title {
-        font-size: 36px;
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
+    
+    .engine-label {
+        font-size: 13px;
     }
     
     .engine-header {
-        margin-bottom: 36px;
+        margin-bottom: 40px;
     }
     
     .stake-card-title {
@@ -4745,13 +4794,14 @@ body {
 .staking-flow-card {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 24px;
+    justify-content: space-between;
+    gap: 16px;
     background: #1a1a1a;
-    border-radius: 24px;
-    padding: 48px 64px;
-    margin-bottom: 32px;
+    border-radius: 20px;
+    padding: 40px 56px;
+    margin-bottom: 24px;
     width: 100%;
+    max-width: 800px;
 }
 
 .flow-step {
@@ -4832,16 +4882,21 @@ body {
 }
 
 .flow-label {
-    font-size: 16px;
-    font-weight: 600;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
     color: white;
     text-align: center;
+    letter-spacing: 0.02em;
 }
 
 .flow-sublabel {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
     text-align: center;
+    letter-spacing: 0.03em;
 }
 
 .flow-arrow {
@@ -4882,9 +4937,11 @@ body {
 }
 
 .benefit-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.01em;
 }
 
 /* Staking Flow Responsive */
