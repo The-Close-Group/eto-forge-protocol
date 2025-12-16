@@ -2698,7 +2698,7 @@ body {
     gap: 0;
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px 40px;
+    padding: 56px 48px;
     margin-bottom: 32px;
     width: 100%;
     transition: all 0.3s ease;
@@ -2713,8 +2713,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 0 32px;
+    gap: 20px;
+    padding: 0 40px;
     transition: transform 0.3s ease;
 }
 
@@ -2723,8 +2723,8 @@ body {
 }
 
 .flow-token {
-    width: 88px;
-    height: 88px;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2737,87 +2737,120 @@ body {
     transition: all 0.3s ease;
 }
 
-.usdc-token-flow svg {
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
-}
-
-.flow-step:hover .usdc-token-flow svg {
-    filter: drop-shadow(0 12px 32px rgba(255, 255, 255, 0.25));
-    transform: scale(1.08);
-}
-
-.protocol-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .protocol-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.08);
-}
-
-.smaang-token {
+/* Stacked Tokens (USDC + MAANG) */
+.stacked-tokens {
     position: relative;
+    width: 120px;
+    height: 100px;
 }
 
-.smaang-stack {
-    position: relative;
-    width: 88px;
-    height: 110px;
-}
-
-.smaang-layer {
+.stack-token {
     position: absolute;
-    width: 72px;
-    height: 72px;
-    left: 50%;
-    transform: translateX(-50%);
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+    width: 80px;
+    height: 80px;
     transition: all 0.3s ease;
 }
 
-.smaang-1 {
-    top: 0;
-    z-index: 3;
+.stack-token svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
 }
 
-.smaang-2 {
-    top: 16px;
-    z-index: 2;
-    opacity: 0.65;
-}
-
-.smaang-3 {
-    top: 32px;
+.stack-usdc {
+    left: 0;
+    top: 10px;
     z-index: 1;
-    opacity: 0.35;
 }
 
-.flow-step:hover .smaang-1 {
-    transform: translateX(-50%) translateY(-10px) scale(1.05);
+.stack-maang {
+    right: 0;
+    top: 10px;
+    z-index: 2;
+}
+
+.flow-step:hover .stack-usdc {
+    transform: translateX(-8px) translateY(-4px);
+}
+
+.flow-step:hover .stack-maang {
+    transform: translateX(8px) translateY(-4px) scale(1.05);
     filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-2 {
-    transform: translateX(-50%) translateY(-5px);
-    opacity: 0.75;
+.flow-step:hover .stack-maang svg {
+    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-3 {
-    opacity: 0.45;
+/* Stake Action Icon */
+.stake-action svg {
+    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
 }
 
-.rewards-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.25));
+.flow-step:hover .stake-action svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
+    transform: scale(1.05);
 }
 
-.flow-step:hover .rewards-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
+/* Earn Result (sMAANG + APY) */
+.earn-result {
+    width: 120px;
+    height: 100px;
+}
+
+.earn-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.earn-smaang {
+    width: 88px;
+    height: 88px;
+    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
+    transition: all 0.3s ease;
+}
+
+.earn-smaang svg {
+    width: 100%;
+    height: 100%;
+}
+
+.earn-apy {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background: #0d0d0d;
+    border: 1.5px solid #57FEC7;
+    border-radius: 20px;
+    padding: 4px 10px;
+    transition: all 0.3s ease;
+}
+
+.earn-apy span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #57FEC7;
+    white-space: nowrap;
+}
+
+.flow-step:hover .earn-smaang {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
+}
+
+.flow-step:hover .earn-apy {
     transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
 }
 
 .flow-label {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: white;
     text-align: center;
@@ -2828,7 +2861,7 @@ body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.5);
     text-align: center;
     letter-spacing: 0;
 }
@@ -2837,18 +2870,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    opacity: 0.4;
+    padding: 0 16px;
+    opacity: 0.5;
     transition: all 0.3s ease;
 }
 
 .flow-arrow svg {
-    width: 40px;
-    height: 16px;
+    width: 56px;
+    height: 20px;
 }
 
 .staking-flow-card:hover .flow-arrow {
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .flow-arrow svg {
@@ -2892,17 +2925,18 @@ body {
 /* Staking Flow Responsive */
 @media (max-width: 900px) {
     .staking-flow-card {
-        flex-wrap: wrap;
-        padding: 32px 24px;
-        gap: 20px;
+        flex-direction: column;
+        padding: 40px 32px;
+        gap: 32px;
     }
     
     .flow-arrow {
-        display: none;
+        transform: rotate(90deg);
+        padding: 0;
     }
     
     .flow-step {
-        flex-basis: calc(50% - 10px);
+        padding: 0;
     }
     
     .staking-benefits {
@@ -2913,22 +2947,37 @@ body {
 
 @media (max-width: 480px) {
     .staking-flow-card {
-        padding: 24px 16px;
+        padding: 32px 24px;
+        gap: 24px;
     }
     
     .flow-token {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .smaang-stack {
-        width: 60px;
+        width: 80px;
         height: 80px;
     }
     
-    .smaang-layer {
-        width: 48px;
-        height: 48px;
+    .stacked-tokens {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .stack-token {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .earn-result {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .earn-smaang {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .flow-label {
+        font-size: 16px;
     }
     
     .flow-label {
@@ -3793,7 +3842,7 @@ body {
     gap: 0;
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px 40px;
+    padding: 56px 48px;
     margin-bottom: 32px;
     width: 100%;
     transition: all 0.3s ease;
@@ -3808,8 +3857,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 0 32px;
+    gap: 20px;
+    padding: 0 40px;
     transition: transform 0.3s ease;
 }
 
@@ -3818,8 +3867,8 @@ body {
 }
 
 .flow-token {
-    width: 88px;
-    height: 88px;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3832,87 +3881,120 @@ body {
     transition: all 0.3s ease;
 }
 
-.usdc-token-flow svg {
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
-}
-
-.flow-step:hover .usdc-token-flow svg {
-    filter: drop-shadow(0 12px 32px rgba(255, 255, 255, 0.25));
-    transform: scale(1.08);
-}
-
-.protocol-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .protocol-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.08);
-}
-
-.smaang-token {
+/* Stacked Tokens (USDC + MAANG) */
+.stacked-tokens {
     position: relative;
+    width: 120px;
+    height: 100px;
 }
 
-.smaang-stack {
-    position: relative;
-    width: 88px;
-    height: 110px;
-}
-
-.smaang-layer {
+.stack-token {
     position: absolute;
-    width: 72px;
-    height: 72px;
-    left: 50%;
-    transform: translateX(-50%);
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+    width: 80px;
+    height: 80px;
     transition: all 0.3s ease;
 }
 
-.smaang-1 {
-    top: 0;
-    z-index: 3;
+.stack-token svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
 }
 
-.smaang-2 {
-    top: 16px;
-    z-index: 2;
-    opacity: 0.65;
-}
-
-.smaang-3 {
-    top: 32px;
+.stack-usdc {
+    left: 0;
+    top: 10px;
     z-index: 1;
-    opacity: 0.35;
 }
 
-.flow-step:hover .smaang-1 {
-    transform: translateX(-50%) translateY(-10px) scale(1.05);
+.stack-maang {
+    right: 0;
+    top: 10px;
+    z-index: 2;
+}
+
+.flow-step:hover .stack-usdc {
+    transform: translateX(-8px) translateY(-4px);
+}
+
+.flow-step:hover .stack-maang {
+    transform: translateX(8px) translateY(-4px) scale(1.05);
     filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-2 {
-    transform: translateX(-50%) translateY(-5px);
-    opacity: 0.75;
+.flow-step:hover .stack-maang svg {
+    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-3 {
-    opacity: 0.45;
+/* Stake Action Icon */
+.stake-action svg {
+    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
 }
 
-.rewards-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.25));
+.flow-step:hover .stake-action svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
+    transform: scale(1.05);
 }
 
-.flow-step:hover .rewards-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
+/* Earn Result (sMAANG + APY) */
+.earn-result {
+    width: 120px;
+    height: 100px;
+}
+
+.earn-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.earn-smaang {
+    width: 88px;
+    height: 88px;
+    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
+    transition: all 0.3s ease;
+}
+
+.earn-smaang svg {
+    width: 100%;
+    height: 100%;
+}
+
+.earn-apy {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background: #0d0d0d;
+    border: 1.5px solid #57FEC7;
+    border-radius: 20px;
+    padding: 4px 10px;
+    transition: all 0.3s ease;
+}
+
+.earn-apy span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #57FEC7;
+    white-space: nowrap;
+}
+
+.flow-step:hover .earn-smaang {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
+}
+
+.flow-step:hover .earn-apy {
     transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
 }
 
 .flow-label {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: white;
     text-align: center;
@@ -3923,7 +4005,7 @@ body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.5);
     text-align: center;
     letter-spacing: 0;
 }
@@ -3932,18 +4014,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    opacity: 0.4;
+    padding: 0 16px;
+    opacity: 0.5;
     transition: all 0.3s ease;
 }
 
 .flow-arrow svg {
-    width: 40px;
-    height: 16px;
+    width: 56px;
+    height: 20px;
 }
 
 .staking-flow-card:hover .flow-arrow {
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .flow-arrow svg {
@@ -3987,17 +4069,18 @@ body {
 /* Staking Flow Responsive */
 @media (max-width: 900px) {
     .staking-flow-card {
-        flex-wrap: wrap;
-        padding: 32px 24px;
-        gap: 20px;
+        flex-direction: column;
+        padding: 40px 32px;
+        gap: 32px;
     }
     
     .flow-arrow {
-        display: none;
+        transform: rotate(90deg);
+        padding: 0;
     }
     
     .flow-step {
-        flex-basis: calc(50% - 10px);
+        padding: 0;
     }
     
     .staking-benefits {
@@ -4008,22 +4091,37 @@ body {
 
 @media (max-width: 480px) {
     .staking-flow-card {
-        padding: 24px 16px;
+        padding: 32px 24px;
+        gap: 24px;
     }
     
     .flow-token {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .smaang-stack {
-        width: 60px;
+        width: 80px;
         height: 80px;
     }
     
-    .smaang-layer {
-        width: 48px;
-        height: 48px;
+    .stacked-tokens {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .stack-token {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .earn-result {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .earn-smaang {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .flow-label {
+        font-size: 16px;
     }
     
     .flow-label {
@@ -4888,7 +4986,7 @@ body {
     gap: 0;
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px 40px;
+    padding: 56px 48px;
     margin-bottom: 32px;
     width: 100%;
     transition: all 0.3s ease;
@@ -4903,8 +5001,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 0 32px;
+    gap: 20px;
+    padding: 0 40px;
     transition: transform 0.3s ease;
 }
 
@@ -4913,8 +5011,8 @@ body {
 }
 
 .flow-token {
-    width: 88px;
-    height: 88px;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4927,87 +5025,120 @@ body {
     transition: all 0.3s ease;
 }
 
-.usdc-token-flow svg {
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
-}
-
-.flow-step:hover .usdc-token-flow svg {
-    filter: drop-shadow(0 12px 32px rgba(255, 255, 255, 0.25));
-    transform: scale(1.08);
-}
-
-.protocol-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .protocol-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.08);
-}
-
-.smaang-token {
+/* Stacked Tokens (USDC + MAANG) */
+.stacked-tokens {
     position: relative;
+    width: 120px;
+    height: 100px;
 }
 
-.smaang-stack {
-    position: relative;
-    width: 88px;
-    height: 110px;
-}
-
-.smaang-layer {
+.stack-token {
     position: absolute;
-    width: 72px;
-    height: 72px;
-    left: 50%;
-    transform: translateX(-50%);
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+    width: 80px;
+    height: 80px;
     transition: all 0.3s ease;
 }
 
-.smaang-1 {
-    top: 0;
-    z-index: 3;
+.stack-token svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
 }
 
-.smaang-2 {
-    top: 16px;
-    z-index: 2;
-    opacity: 0.65;
-}
-
-.smaang-3 {
-    top: 32px;
+.stack-usdc {
+    left: 0;
+    top: 10px;
     z-index: 1;
-    opacity: 0.35;
 }
 
-.flow-step:hover .smaang-1 {
-    transform: translateX(-50%) translateY(-10px) scale(1.05);
+.stack-maang {
+    right: 0;
+    top: 10px;
+    z-index: 2;
+}
+
+.flow-step:hover .stack-usdc {
+    transform: translateX(-8px) translateY(-4px);
+}
+
+.flow-step:hover .stack-maang {
+    transform: translateX(8px) translateY(-4px) scale(1.05);
     filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-2 {
-    transform: translateX(-50%) translateY(-5px);
-    opacity: 0.75;
+.flow-step:hover .stack-maang svg {
+    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
 }
 
-.flow-step:hover .smaang-3 {
-    opacity: 0.45;
+/* Stake Action Icon */
+.stake-action svg {
+    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
 }
 
-.rewards-token svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.25));
+.flow-step:hover .stake-action svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
+    transform: scale(1.05);
 }
 
-.flow-step:hover .rewards-token svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
+/* Earn Result (sMAANG + APY) */
+.earn-result {
+    width: 120px;
+    height: 100px;
+}
+
+.earn-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.earn-smaang {
+    width: 88px;
+    height: 88px;
+    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
+    transition: all 0.3s ease;
+}
+
+.earn-smaang svg {
+    width: 100%;
+    height: 100%;
+}
+
+.earn-apy {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background: #0d0d0d;
+    border: 1.5px solid #57FEC7;
+    border-radius: 20px;
+    padding: 4px 10px;
+    transition: all 0.3s ease;
+}
+
+.earn-apy span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #57FEC7;
+    white-space: nowrap;
+}
+
+.flow-step:hover .earn-smaang {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
+}
+
+.flow-step:hover .earn-apy {
     transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
 }
 
 .flow-label {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: white;
     text-align: center;
@@ -5018,7 +5149,7 @@ body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.5);
     text-align: center;
     letter-spacing: 0;
 }
@@ -5027,18 +5158,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    opacity: 0.4;
+    padding: 0 16px;
+    opacity: 0.5;
     transition: all 0.3s ease;
 }
 
 .flow-arrow svg {
-    width: 40px;
-    height: 16px;
+    width: 56px;
+    height: 20px;
 }
 
 .staking-flow-card:hover .flow-arrow {
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .flow-arrow svg {
@@ -5082,17 +5213,18 @@ body {
 /* Staking Flow Responsive */
 @media (max-width: 900px) {
     .staking-flow-card {
-        flex-wrap: wrap;
-        padding: 32px 24px;
-        gap: 20px;
+        flex-direction: column;
+        padding: 40px 32px;
+        gap: 32px;
     }
     
     .flow-arrow {
-        display: none;
+        transform: rotate(90deg);
+        padding: 0;
     }
     
     .flow-step {
-        flex-basis: calc(50% - 10px);
+        padding: 0;
     }
     
     .staking-benefits {
@@ -5103,22 +5235,37 @@ body {
 
 @media (max-width: 480px) {
     .staking-flow-card {
-        padding: 24px 16px;
+        padding: 32px 24px;
+        gap: 24px;
     }
     
     .flow-token {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .smaang-stack {
-        width: 60px;
+        width: 80px;
         height: 80px;
     }
     
-    .smaang-layer {
-        width: 48px;
-        height: 48px;
+    .stacked-tokens {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .stack-token {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .earn-result {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .earn-smaang {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .flow-label {
+        font-size: 16px;
     }
     
     .flow-label {
