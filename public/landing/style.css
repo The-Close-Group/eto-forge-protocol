@@ -57,7 +57,7 @@ body {
         #0a0a0a 100%
     );
     pointer-events: none;
-    z-index: 50;
+    z-index: 5;
 }
 
 /* ========================================
@@ -119,7 +119,7 @@ body {
 
 .launch-btn {
     background: #57FEC7;
-    color: #1a1a1a;
+    color: #ffffff;
     border: none;
     border-radius: 25px;
     padding: 12px 20px;
@@ -416,7 +416,9 @@ body {
     max-width: 800px;
     height: 50px;
     overflow: hidden;
-    z-index: 100;
+    z-index: 50;
+    pointer-events: auto;
+    background: transparent;
 }
 
 .partners-track {
@@ -444,7 +446,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    opacity: 0.95;
+    opacity: 1;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -574,7 +576,6 @@ body {
 
 .partners-section {
     animation: fadeIn 0.8s ease 0.7s forwards;
-    opacity: 0;
 }
 
 .partners-track {
@@ -912,7 +913,7 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #b8ff57;
+    color: #57FEC7;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
@@ -1269,6 +1270,18 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
+.puzzle-svg {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.15));
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.grid-card:hover .puzzle-svg {
+    transform: scale(1.05) translateY(-5px);
+    filter: drop-shadow(0 15px 40px rgba(255, 255, 255, 0.25));
+}
+
 .puzzle-piece::before {
     content: '';
     position: absolute;
@@ -1320,6 +1333,20 @@ body {
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.wallet-icon {
+    width: 180px;
+    height: 180px;
+    color: rgba(255, 255, 255, 0.85);
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.15));
+    transition: transform 0.4s ease, filter 0.4s ease, color 0.4s ease;
+}
+
+.grid-card:hover .wallet-icon {
+    transform: scale(1.08) translateY(-8px);
+    color: #57FEC7;
+    filter: drop-shadow(0 15px 40px rgba(87, 254, 199, 0.3));
 }
 
 .glass-shape::before {
@@ -1402,6 +1429,18 @@ body {
     border-radius: 16px;
     position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.puzzle-svg {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.15));
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.grid-card:hover .puzzle-svg {
+    transform: scale(1.05) translateY(-5px);
+    filter: drop-shadow(0 15px 40px rgba(255, 255, 255, 0.25));
 }
 
 .puzzle-piece::before {
@@ -1623,16 +1662,17 @@ body {
 .maang-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 800px;
+    align-items: flex-start;
+    text-align: left;
+    max-width: 900px;
+    width: 100%;
 }
 
 /* Horizontal 3D Token Carousel - Centered 5 Tokens */
 .h-carousel-wrapper {
     width: 100%;
     max-width: 900px;
-    margin: 0 auto 40px auto;
+    margin: 0 0 40px 0;
     overflow: hidden;
     padding: 40px 0;
     position: relative;
@@ -1880,22 +1920,26 @@ body {
     z-index: 3;
 }
 
-.maang-available {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 600;
+.maang-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 48px;
-    font-weight: 800;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    max-width: 850px;
+    line-height: 1.2;
+    text-align: left;
 }
 
 .maang-subtitle {
@@ -1906,9 +1950,25 @@ body {
     line-height: 1.5;
 }
 
+.maang-trade-btn {
+    margin-bottom: 48px;
+}
+
+.maang-tagline {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: white;
+    margin-top: 48px;
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
+    text-align: left;
+}
+
 .maang-btn {
     opacity: 1;
     animation: none;
+    margin-top: 32px;
 }
 
 /* ========================================
@@ -2110,6 +2170,14 @@ body {
         font-size: 32px;
     }
     
+    .maang-label {
+        font-size: 13px;
+    }
+    
+    .maang-tagline {
+        font-size: 24px;
+    }
+    
     .maang-available {
         font-size: 14px;
     }
@@ -2162,6 +2230,83 @@ body {
     
     .maang-title {
         font-size: 26px;
+    }
+    
+    .maang-label {
+        font-size: 12px;
+    }
+    
+    .maang-tagline {
+        font-size: 20px;
+        margin-top: 32px;
+    }
+}
+
+/* ========================================
+   CTA SECTION
+   Five Giants. One Token. Call to Action
+   ======================================== */
+
+.page-cta {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px;
+    min-height: 60vh;
+    position: relative;
+}
+
+.cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 40px;
+}
+
+.cta-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: white;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.cta-btn {
+    opacity: 1;
+    animation: none;
+}
+
+@media (max-width: 768px) {
+    .page-cta {
+        padding: 80px 30px;
+        min-height: 50vh;
+    }
+    
+    .cta-title {
+        font-size: 42px;
+    }
+    
+    .cta-content {
+        gap: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-cta {
+        padding: 60px 20px;
+        min-height: 40vh;
+    }
+    
+    .cta-title {
+        font-size: 32px;
+    }
+    
+    .cta-content {
+        gap: 24px;
     }
 }
 
@@ -2304,20 +2449,58 @@ body {
     filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
 }
 
-/* sMAANG Logo */
-.smaang-logo {
-    width: 140px;
-    height: 140px;
+/* Stacked USDC Tokens */
+.usdc-stack {
+    position: relative;
+    width: 160px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
 }
 
-.smaang-logo svg {
+.usdc-stack-token {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.usdc-stack-token svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.usdc-stack-1 {
+    z-index: 3;
+    transform: translateY(0);
+}
+
+.usdc-stack-2 {
+    z-index: 2;
+    transform: translateY(-24px);
+    opacity: 0.85;
+}
+
+.usdc-stack-3 {
+    z-index: 1;
+    transform: translateY(-48px);
+    opacity: 0.7;
+}
+
+.stake-card:hover .usdc-stack-1 {
+    transform: translateY(8px);
+}
+
+.stake-card:hover .usdc-stack-2 {
+    transform: translateY(-28px);
+}
+
+.stake-card:hover .usdc-stack-3 {
+    transform: translateY(-56px);
 }
 
 
@@ -2394,9 +2577,14 @@ body {
         font-size: 56px;
     }
     
-    .smaang-logo {
-        width: 120px;
-        height: 120px;
+    .usdc-stack {
+        width: 140px;
+        height: 160px;
+    }
+    
+    .usdc-stack-token {
+        width: 90px;
+        height: 90px;
     }
 }
 
@@ -2557,22 +2745,26 @@ body {
     z-index: 3;
 }
 
-.maang-available {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 600;
+.maang-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 48px;
-    font-weight: 800;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    max-width: 850px;
+    line-height: 1.2;
+    text-align: left;
 }
 
 .maang-subtitle {
@@ -2583,9 +2775,25 @@ body {
     line-height: 1.5;
 }
 
+.maang-trade-btn {
+    margin-bottom: 48px;
+}
+
+.maang-tagline {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: white;
+    margin-top: 48px;
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
+    text-align: left;
+}
+
 .maang-btn {
     opacity: 1;
     animation: none;
+    margin-top: 32px;
 }
 
 /* ========================================
@@ -2787,6 +2995,14 @@ body {
         font-size: 32px;
     }
     
+    .maang-label {
+        font-size: 13px;
+    }
+    
+    .maang-tagline {
+        font-size: 24px;
+    }
+    
     .maang-available {
         font-size: 14px;
     }
@@ -2839,6 +3055,83 @@ body {
     
     .maang-title {
         font-size: 26px;
+    }
+    
+    .maang-label {
+        font-size: 12px;
+    }
+    
+    .maang-tagline {
+        font-size: 20px;
+        margin-top: 32px;
+    }
+}
+
+/* ========================================
+   CTA SECTION
+   Five Giants. One Token. Call to Action
+   ======================================== */
+
+.page-cta {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px;
+    min-height: 60vh;
+    position: relative;
+}
+
+.cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 40px;
+}
+
+.cta-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: white;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.cta-btn {
+    opacity: 1;
+    animation: none;
+}
+
+@media (max-width: 768px) {
+    .page-cta {
+        padding: 80px 30px;
+        min-height: 50vh;
+    }
+    
+    .cta-title {
+        font-size: 42px;
+    }
+    
+    .cta-content {
+        gap: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-cta {
+        padding: 60px 20px;
+        min-height: 40vh;
+    }
+    
+    .cta-title {
+        font-size: 32px;
+    }
+    
+    .cta-content {
+        gap: 24px;
     }
 }
 
@@ -2981,20 +3274,58 @@ body {
     filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
 }
 
-/* sMAANG Logo */
-.smaang-logo {
-    width: 140px;
-    height: 140px;
+/* Stacked USDC Tokens */
+.usdc-stack {
+    position: relative;
+    width: 160px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
 }
 
-.smaang-logo svg {
+.usdc-stack-token {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.usdc-stack-token svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.usdc-stack-1 {
+    z-index: 3;
+    transform: translateY(0);
+}
+
+.usdc-stack-2 {
+    z-index: 2;
+    transform: translateY(-24px);
+    opacity: 0.85;
+}
+
+.usdc-stack-3 {
+    z-index: 1;
+    transform: translateY(-48px);
+    opacity: 0.7;
+}
+
+.stake-card:hover .usdc-stack-1 {
+    transform: translateY(8px);
+}
+
+.stake-card:hover .usdc-stack-2 {
+    transform: translateY(-28px);
+}
+
+.stake-card:hover .usdc-stack-3 {
+    transform: translateY(-56px);
 }
 
 
@@ -3071,9 +3402,14 @@ body {
         font-size: 56px;
     }
     
-    .smaang-logo {
-        width: 120px;
-        height: 120px;
+    .usdc-stack {
+        width: 140px;
+        height: 160px;
+    }
+    
+    .usdc-stack-token {
+        width: 90px;
+        height: 90px;
     }
 }
 
@@ -3234,22 +3570,26 @@ body {
     z-index: 3;
 }
 
-.maang-available {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 600;
+.maang-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
     color: #57FEC7;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 48px;
-    font-weight: 800;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     color: white;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    max-width: 850px;
+    line-height: 1.2;
+    text-align: left;
 }
 
 .maang-subtitle {
@@ -3260,9 +3600,25 @@ body {
     line-height: 1.5;
 }
 
+.maang-trade-btn {
+    margin-bottom: 48px;
+}
+
+.maang-tagline {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: white;
+    margin-top: 48px;
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
+    text-align: left;
+}
+
 .maang-btn {
     opacity: 1;
     animation: none;
+    margin-top: 32px;
 }
 
 /* ========================================
@@ -3464,6 +3820,14 @@ body {
         font-size: 32px;
     }
     
+    .maang-label {
+        font-size: 13px;
+    }
+    
+    .maang-tagline {
+        font-size: 24px;
+    }
+    
     .maang-available {
         font-size: 14px;
     }
@@ -3516,6 +3880,83 @@ body {
     
     .maang-title {
         font-size: 26px;
+    }
+    
+    .maang-label {
+        font-size: 12px;
+    }
+    
+    .maang-tagline {
+        font-size: 20px;
+        margin-top: 32px;
+    }
+}
+
+/* ========================================
+   CTA SECTION
+   Five Giants. One Token. Call to Action
+   ======================================== */
+
+.page-cta {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px;
+    min-height: 60vh;
+    position: relative;
+}
+
+.cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 40px;
+}
+
+.cta-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: white;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.cta-btn {
+    opacity: 1;
+    animation: none;
+}
+
+@media (max-width: 768px) {
+    .page-cta {
+        padding: 80px 30px;
+        min-height: 50vh;
+    }
+    
+    .cta-title {
+        font-size: 42px;
+    }
+    
+    .cta-content {
+        gap: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-cta {
+        padding: 60px 20px;
+        min-height: 40vh;
+    }
+    
+    .cta-title {
+        font-size: 32px;
+    }
+    
+    .cta-content {
+        gap: 24px;
     }
 }
 
@@ -3658,20 +4099,58 @@ body {
     filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
 }
 
-/* sMAANG Logo */
-.smaang-logo {
-    width: 140px;
-    height: 140px;
+/* Stacked USDC Tokens */
+.usdc-stack {
+    position: relative;
+    width: 160px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
 }
 
-.smaang-logo svg {
+.usdc-stack-token {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.usdc-stack-token svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.usdc-stack-1 {
+    z-index: 3;
+    transform: translateY(0);
+}
+
+.usdc-stack-2 {
+    z-index: 2;
+    transform: translateY(-24px);
+    opacity: 0.85;
+}
+
+.usdc-stack-3 {
+    z-index: 1;
+    transform: translateY(-48px);
+    opacity: 0.7;
+}
+
+.stake-card:hover .usdc-stack-1 {
+    transform: translateY(8px);
+}
+
+.stake-card:hover .usdc-stack-2 {
+    transform: translateY(-28px);
+}
+
+.stake-card:hover .usdc-stack-3 {
+    transform: translateY(-56px);
 }
 
 
@@ -3748,9 +4227,14 @@ body {
         font-size: 56px;
     }
     
-    .smaang-logo {
-        width: 120px;
-        height: 120px;
+    .usdc-stack {
+        width: 140px;
+        height: 160px;
+    }
+    
+    .usdc-stack-token {
+        width: 90px;
+        height: 90px;
     }
 }
 
