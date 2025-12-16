@@ -2691,302 +2691,307 @@ body {
     color: #57FEC7 !important;
 }
 
-.staking-flow-card {
+/* Two-Panel Staking Visual */
+.staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 56px 48px;
-    margin-bottom: 32px;
+    gap: 60px;
+    padding: 80px 0;
     width: 100%;
-    transition: all 0.3s ease;
 }
 
-.staking-flow-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.flow-step {
+.stake-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 0 40px;
-    transition: transform 0.3s ease;
+    text-align: center;
+    flex: 0 0 auto;
+    max-width: 320px;
 }
 
-.flow-step:hover {
-    transform: translateY(-4px);
-}
-
-.flow-token {
-    width: 100px;
-    height: 100px;
+.panel-token {
+    position: relative;
+    width: 180px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    margin-bottom: 32px;
 }
 
-.flow-token svg {
-    width: 100%;
-    height: 100%;
-    transition: all 0.3s ease;
-}
-
-/* Stacked Tokens (USDC + MAANG) */
-.stacked-tokens {
-    position: relative;
-    width: 120px;
-    height: 100px;
-}
-
-.stack-token {
+/* Token Glow Effects */
+.token-glow {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    transition: all 0.3s ease;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: 0;
+    transition: all 0.4s ease;
 }
 
-.stack-token svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+.stake-glow {
+    background: linear-gradient(135deg, #2775CA 0%, #57FEC7 100%);
 }
 
-.stack-usdc {
-    left: 0;
-    top: 10px;
+.earn-glow {
+    background: linear-gradient(135deg, #57FEC7 0%, #3dd9a5 50%, #d4a855 100%);
+}
+
+.stake-panel:hover .token-glow {
+    opacity: 0.6;
+    transform: scale(1.1);
+}
+
+/* Stacked Token Visual */
+.token-stack-visual {
+    position: relative;
+    width: 140px;
+    height: 140px;
     z-index: 1;
 }
 
-.stack-maang {
+.stack-coin {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stack-coin svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+    border-radius: 50%;
+}
+
+.stack-usdc-coin {
+    left: 0;
+    top: 20px;
+    z-index: 1;
+}
+
+.stack-maang-coin {
     right: 0;
-    top: 10px;
+    top: 20px;
     z-index: 2;
 }
 
-.flow-step:hover .stack-usdc {
-    transform: translateX(-8px) translateY(-4px);
+.stake-panel:hover .stack-usdc-coin {
+    transform: translateX(-12px) translateY(-8px) rotate(-5deg);
 }
 
-.flow-step:hover .stack-maang {
-    transform: translateX(8px) translateY(-4px) scale(1.05);
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin {
+    transform: translateX(12px) translateY(-8px) rotate(5deg) scale(1.05);
 }
 
-.flow-step:hover .stack-maang svg {
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
 }
 
-/* Stake Action Icon */
-.stake-action svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .stake-action svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.05);
-}
-
-/* Earn Result (sMAANG + APY) */
-.earn-result {
-    width: 120px;
-    height: 100px;
-}
-
-.earn-stack {
+/* Earn Token Visual */
+.earn-coin {
     position: relative;
+    width: 140px;
+    height: 140px;
+    z-index: 1;
+    transition: all 0.4s ease;
+}
+
+.earn-coin svg {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    filter: drop-shadow(0 10px 30px rgba(87, 254, 199, 0.35));
+    border-radius: 50%;
 }
 
-.earn-smaang {
-    width: 88px;
-    height: 88px;
-    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
-    transition: all 0.3s ease;
-}
-
-.earn-smaang svg {
-    width: 100%;
-    height: 100%;
-}
-
-.earn-apy {
+.apy-ring {
     position: absolute;
-    bottom: -8px;
+    top: -8px;
+    left: -8px;
     right: -8px;
-    background: #0d0d0d;
-    border: 1.5px solid #57FEC7;
+    bottom: -8px;
+    border: 2px solid rgba(212, 168, 85, 0.4);
+    border-radius: 50%;
+    animation: pulseRing 2s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+}
+
+.stake-panel:hover .earn-coin {
+    transform: scale(1.05);
+}
+
+.stake-panel:hover .earn-coin svg {
+    filter: drop-shadow(0 16px 40px rgba(87, 254, 199, 0.5));
+}
+
+.stake-panel:hover .apy-ring {
+    border-color: rgba(212, 168, 85, 0.7);
+}
+
+/* APY Badge */
+.apy-badge {
+    position: absolute;
+    bottom: -12px;
+    right: -16px;
+    background: linear-gradient(135deg, #d4a855 0%, #c49540 100%);
+    color: #1a1a1a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
     border-radius: 20px;
-    padding: 4px 10px;
+    z-index: 2;
+    box-shadow: 0 4px 16px rgba(212, 168, 85, 0.4);
     transition: all 0.3s ease;
 }
 
-.earn-apy span {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: #57FEC7;
-    white-space: nowrap;
+.stake-panel:hover .apy-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(212, 168, 85, 0.6);
 }
 
-.flow-step:hover .earn-smaang {
-    transform: scale(1.05);
-    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
-}
-
-.flow-step:hover .earn-apy {
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
-}
-
-.flow-label {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 18px;
-    font-weight: 600;
+/* Panel Typography */
+.panel-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 28px;
+    font-weight: 500;
     color: white;
-    text-align: center;
-    letter-spacing: -0.01em;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
 }
 
-.flow-sublabel {
+.panel-subtitle {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    letter-spacing: 0;
+    line-height: 1.6;
+    margin: 0;
 }
 
-.flow-arrow {
+/* Dashed Arrow */
+.stake-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 16px;
-    opacity: 0.5;
+    padding: 0 20px;
+    opacity: 0.8;
     transition: all 0.3s ease;
 }
 
-.flow-arrow svg {
-    width: 56px;
-    height: 20px;
+.staking-visual:hover .stake-arrow {
+    opacity: 1;
 }
 
-.staking-flow-card:hover .flow-arrow {
-    opacity: 0.7;
-}
-
-.flow-arrow svg {
-    width: 48px;
+.stake-arrow svg {
+    width: 120px;
     height: 24px;
 }
 
-/* Staking Benefits */
-.staking-benefits {
+/* Benefits Row */
+.staking-benefits-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 48px;
-    padding: 24px 0;
+    gap: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 20px;
 }
 
-.benefit-item {
+.benefit-pill {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 100px;
+    transition: all 0.3s ease;
 }
 
-.benefit-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(87, 254, 199, 0.1);
-    border-radius: 10px;
+.benefit-pill:hover {
+    background: rgba(87, 254, 199, 0.08);
 }
 
-.benefit-text {
+.benefit-pill span {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
-    letter-spacing: 0.01em;
 }
 
-/* Staking Flow Responsive */
+.benefit-pill svg {
+    flex-shrink: 0;
+}
+
+/* Staking Visual Responsive */
 @media (max-width: 900px) {
-    .staking-flow-card {
+    .staking-visual {
         flex-direction: column;
-        padding: 40px 32px;
-        gap: 32px;
+        gap: 48px;
+        padding: 60px 0;
     }
     
-    .flow-arrow {
+    .stake-arrow {
         transform: rotate(90deg);
-        padding: 0;
+        padding: 20px 0;
     }
     
-    .flow-step {
-        padding: 0;
+    .stake-panel {
+        max-width: 280px;
     }
     
-    .staking-benefits {
-        flex-direction: column;
+    .staking-benefits-row {
+        flex-wrap: wrap;
         gap: 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .staking-flow-card {
-        padding: 32px 24px;
-        gap: 24px;
+    .staking-visual {
+        gap: 36px;
+        padding: 40px 0;
     }
     
-    .flow-token {
+    .panel-token {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .token-stack-visual {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .stack-coin {
         width: 80px;
         height: 80px;
     }
     
-    .stacked-tokens {
-        width: 100px;
-        height: 80px;
+    .earn-coin {
+        width: 120px;
+        height: 120px;
     }
     
-    .stack-token {
-        width: 64px;
-        height: 64px;
+    .panel-title {
+        font-size: 22px;
     }
     
-    .earn-result {
-        width: 100px;
-        height: 80px;
+    .panel-subtitle {
+        font-size: 13px;
     }
     
-    .earn-smaang {
-        width: 72px;
-        height: 72px;
-    }
-    
-    .flow-label {
-        font-size: 16px;
-    }
-    
-    .flow-label {
-        font-size: 14px;
-    }
-    
-    .benefit-item {
+    .staking-benefits-row {
         flex-direction: column;
-        text-align: center;
+        gap: 12px;
     }
 }
 
@@ -3835,302 +3840,307 @@ body {
     color: #57FEC7 !important;
 }
 
-.staking-flow-card {
+/* Two-Panel Staking Visual */
+.staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 56px 48px;
-    margin-bottom: 32px;
+    gap: 60px;
+    padding: 80px 0;
     width: 100%;
-    transition: all 0.3s ease;
 }
 
-.staking-flow-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.flow-step {
+.stake-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 0 40px;
-    transition: transform 0.3s ease;
+    text-align: center;
+    flex: 0 0 auto;
+    max-width: 320px;
 }
 
-.flow-step:hover {
-    transform: translateY(-4px);
-}
-
-.flow-token {
-    width: 100px;
-    height: 100px;
+.panel-token {
+    position: relative;
+    width: 180px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    margin-bottom: 32px;
 }
 
-.flow-token svg {
-    width: 100%;
-    height: 100%;
-    transition: all 0.3s ease;
-}
-
-/* Stacked Tokens (USDC + MAANG) */
-.stacked-tokens {
-    position: relative;
-    width: 120px;
-    height: 100px;
-}
-
-.stack-token {
+/* Token Glow Effects */
+.token-glow {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    transition: all 0.3s ease;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: 0;
+    transition: all 0.4s ease;
 }
 
-.stack-token svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+.stake-glow {
+    background: linear-gradient(135deg, #2775CA 0%, #57FEC7 100%);
 }
 
-.stack-usdc {
-    left: 0;
-    top: 10px;
+.earn-glow {
+    background: linear-gradient(135deg, #57FEC7 0%, #3dd9a5 50%, #d4a855 100%);
+}
+
+.stake-panel:hover .token-glow {
+    opacity: 0.6;
+    transform: scale(1.1);
+}
+
+/* Stacked Token Visual */
+.token-stack-visual {
+    position: relative;
+    width: 140px;
+    height: 140px;
     z-index: 1;
 }
 
-.stack-maang {
+.stack-coin {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stack-coin svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+    border-radius: 50%;
+}
+
+.stack-usdc-coin {
+    left: 0;
+    top: 20px;
+    z-index: 1;
+}
+
+.stack-maang-coin {
     right: 0;
-    top: 10px;
+    top: 20px;
     z-index: 2;
 }
 
-.flow-step:hover .stack-usdc {
-    transform: translateX(-8px) translateY(-4px);
+.stake-panel:hover .stack-usdc-coin {
+    transform: translateX(-12px) translateY(-8px) rotate(-5deg);
 }
 
-.flow-step:hover .stack-maang {
-    transform: translateX(8px) translateY(-4px) scale(1.05);
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin {
+    transform: translateX(12px) translateY(-8px) rotate(5deg) scale(1.05);
 }
 
-.flow-step:hover .stack-maang svg {
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
 }
 
-/* Stake Action Icon */
-.stake-action svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .stake-action svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.05);
-}
-
-/* Earn Result (sMAANG + APY) */
-.earn-result {
-    width: 120px;
-    height: 100px;
-}
-
-.earn-stack {
+/* Earn Token Visual */
+.earn-coin {
     position: relative;
+    width: 140px;
+    height: 140px;
+    z-index: 1;
+    transition: all 0.4s ease;
+}
+
+.earn-coin svg {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    filter: drop-shadow(0 10px 30px rgba(87, 254, 199, 0.35));
+    border-radius: 50%;
 }
 
-.earn-smaang {
-    width: 88px;
-    height: 88px;
-    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
-    transition: all 0.3s ease;
-}
-
-.earn-smaang svg {
-    width: 100%;
-    height: 100%;
-}
-
-.earn-apy {
+.apy-ring {
     position: absolute;
-    bottom: -8px;
+    top: -8px;
+    left: -8px;
     right: -8px;
-    background: #0d0d0d;
-    border: 1.5px solid #57FEC7;
+    bottom: -8px;
+    border: 2px solid rgba(212, 168, 85, 0.4);
+    border-radius: 50%;
+    animation: pulseRing 2s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+}
+
+.stake-panel:hover .earn-coin {
+    transform: scale(1.05);
+}
+
+.stake-panel:hover .earn-coin svg {
+    filter: drop-shadow(0 16px 40px rgba(87, 254, 199, 0.5));
+}
+
+.stake-panel:hover .apy-ring {
+    border-color: rgba(212, 168, 85, 0.7);
+}
+
+/* APY Badge */
+.apy-badge {
+    position: absolute;
+    bottom: -12px;
+    right: -16px;
+    background: linear-gradient(135deg, #d4a855 0%, #c49540 100%);
+    color: #1a1a1a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
     border-radius: 20px;
-    padding: 4px 10px;
+    z-index: 2;
+    box-shadow: 0 4px 16px rgba(212, 168, 85, 0.4);
     transition: all 0.3s ease;
 }
 
-.earn-apy span {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: #57FEC7;
-    white-space: nowrap;
+.stake-panel:hover .apy-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(212, 168, 85, 0.6);
 }
 
-.flow-step:hover .earn-smaang {
-    transform: scale(1.05);
-    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
-}
-
-.flow-step:hover .earn-apy {
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
-}
-
-.flow-label {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 18px;
-    font-weight: 600;
+/* Panel Typography */
+.panel-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 28px;
+    font-weight: 500;
     color: white;
-    text-align: center;
-    letter-spacing: -0.01em;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
 }
 
-.flow-sublabel {
+.panel-subtitle {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    letter-spacing: 0;
+    line-height: 1.6;
+    margin: 0;
 }
 
-.flow-arrow {
+/* Dashed Arrow */
+.stake-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 16px;
-    opacity: 0.5;
+    padding: 0 20px;
+    opacity: 0.8;
     transition: all 0.3s ease;
 }
 
-.flow-arrow svg {
-    width: 56px;
-    height: 20px;
+.staking-visual:hover .stake-arrow {
+    opacity: 1;
 }
 
-.staking-flow-card:hover .flow-arrow {
-    opacity: 0.7;
-}
-
-.flow-arrow svg {
-    width: 48px;
+.stake-arrow svg {
+    width: 120px;
     height: 24px;
 }
 
-/* Staking Benefits */
-.staking-benefits {
+/* Benefits Row */
+.staking-benefits-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 48px;
-    padding: 24px 0;
+    gap: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 20px;
 }
 
-.benefit-item {
+.benefit-pill {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 100px;
+    transition: all 0.3s ease;
 }
 
-.benefit-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(87, 254, 199, 0.1);
-    border-radius: 10px;
+.benefit-pill:hover {
+    background: rgba(87, 254, 199, 0.08);
 }
 
-.benefit-text {
+.benefit-pill span {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
-    letter-spacing: 0.01em;
 }
 
-/* Staking Flow Responsive */
+.benefit-pill svg {
+    flex-shrink: 0;
+}
+
+/* Staking Visual Responsive */
 @media (max-width: 900px) {
-    .staking-flow-card {
+    .staking-visual {
         flex-direction: column;
-        padding: 40px 32px;
-        gap: 32px;
+        gap: 48px;
+        padding: 60px 0;
     }
     
-    .flow-arrow {
+    .stake-arrow {
         transform: rotate(90deg);
-        padding: 0;
+        padding: 20px 0;
     }
     
-    .flow-step {
-        padding: 0;
+    .stake-panel {
+        max-width: 280px;
     }
     
-    .staking-benefits {
-        flex-direction: column;
+    .staking-benefits-row {
+        flex-wrap: wrap;
         gap: 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .staking-flow-card {
-        padding: 32px 24px;
-        gap: 24px;
+    .staking-visual {
+        gap: 36px;
+        padding: 40px 0;
     }
     
-    .flow-token {
+    .panel-token {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .token-stack-visual {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .stack-coin {
         width: 80px;
         height: 80px;
     }
     
-    .stacked-tokens {
-        width: 100px;
-        height: 80px;
+    .earn-coin {
+        width: 120px;
+        height: 120px;
     }
     
-    .stack-token {
-        width: 64px;
-        height: 64px;
+    .panel-title {
+        font-size: 22px;
     }
     
-    .earn-result {
-        width: 100px;
-        height: 80px;
+    .panel-subtitle {
+        font-size: 13px;
     }
     
-    .earn-smaang {
-        width: 72px;
-        height: 72px;
-    }
-    
-    .flow-label {
-        font-size: 16px;
-    }
-    
-    .flow-label {
-        font-size: 14px;
-    }
-    
-    .benefit-item {
+    .staking-benefits-row {
         flex-direction: column;
-        text-align: center;
+        gap: 12px;
     }
 }
 
@@ -4979,301 +4989,306 @@ body {
     color: #57FEC7 !important;
 }
 
-.staking-flow-card {
+/* Two-Panel Staking Visual */
+.staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 56px 48px;
-    margin-bottom: 32px;
+    gap: 60px;
+    padding: 80px 0;
     width: 100%;
-    transition: all 0.3s ease;
 }
 
-.staking-flow-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.flow-step {
+.stake-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 0 40px;
-    transition: transform 0.3s ease;
+    text-align: center;
+    flex: 0 0 auto;
+    max-width: 320px;
 }
 
-.flow-step:hover {
-    transform: translateY(-4px);
-}
-
-.flow-token {
-    width: 100px;
-    height: 100px;
+.panel-token {
+    position: relative;
+    width: 180px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    margin-bottom: 32px;
 }
 
-.flow-token svg {
-    width: 100%;
-    height: 100%;
-    transition: all 0.3s ease;
-}
-
-/* Stacked Tokens (USDC + MAANG) */
-.stacked-tokens {
-    position: relative;
-    width: 120px;
-    height: 100px;
-}
-
-.stack-token {
+/* Token Glow Effects */
+.token-glow {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    transition: all 0.3s ease;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: 0;
+    transition: all 0.4s ease;
 }
 
-.stack-token svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+.stake-glow {
+    background: linear-gradient(135deg, #2775CA 0%, #57FEC7 100%);
 }
 
-.stack-usdc {
-    left: 0;
-    top: 10px;
+.earn-glow {
+    background: linear-gradient(135deg, #57FEC7 0%, #3dd9a5 50%, #d4a855 100%);
+}
+
+.stake-panel:hover .token-glow {
+    opacity: 0.6;
+    transform: scale(1.1);
+}
+
+/* Stacked Token Visual */
+.token-stack-visual {
+    position: relative;
+    width: 140px;
+    height: 140px;
     z-index: 1;
 }
 
-.stack-maang {
+.stack-coin {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stack-coin svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+    border-radius: 50%;
+}
+
+.stack-usdc-coin {
+    left: 0;
+    top: 20px;
+    z-index: 1;
+}
+
+.stack-maang-coin {
     right: 0;
-    top: 10px;
+    top: 20px;
     z-index: 2;
 }
 
-.flow-step:hover .stack-usdc {
-    transform: translateX(-8px) translateY(-4px);
+.stake-panel:hover .stack-usdc-coin {
+    transform: translateX(-12px) translateY(-8px) rotate(-5deg);
 }
 
-.flow-step:hover .stack-maang {
-    transform: translateX(8px) translateY(-4px) scale(1.05);
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin {
+    transform: translateX(12px) translateY(-8px) rotate(5deg) scale(1.05);
 }
 
-.flow-step:hover .stack-maang svg {
-    filter: drop-shadow(0 10px 24px rgba(87, 254, 199, 0.3));
+.stake-panel:hover .stack-maang-coin svg {
+    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.4));
 }
 
-/* Stake Action Icon */
-.stake-action svg {
-    filter: drop-shadow(0 8px 24px rgba(87, 254, 199, 0.2));
-}
-
-.flow-step:hover .stake-action svg {
-    filter: drop-shadow(0 12px 32px rgba(87, 254, 199, 0.35));
-    transform: scale(1.05);
-}
-
-/* Earn Result (sMAANG + APY) */
-.earn-result {
-    width: 120px;
-    height: 100px;
-}
-
-.earn-stack {
+/* Earn Token Visual */
+.earn-coin {
     position: relative;
+    width: 140px;
+    height: 140px;
+    z-index: 1;
+    transition: all 0.4s ease;
+}
+
+.earn-coin svg {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    filter: drop-shadow(0 10px 30px rgba(87, 254, 199, 0.35));
+    border-radius: 50%;
 }
 
-.earn-smaang {
-    width: 88px;
-    height: 88px;
-    filter: drop-shadow(0 8px 20px rgba(87, 254, 199, 0.25));
-    transition: all 0.3s ease;
-}
-
-.earn-smaang svg {
-    width: 100%;
-    height: 100%;
-}
-
-.earn-apy {
+.apy-ring {
     position: absolute;
-    bottom: -8px;
+    top: -8px;
+    left: -8px;
     right: -8px;
-    background: #0d0d0d;
-    border: 1.5px solid #57FEC7;
+    bottom: -8px;
+    border: 2px solid rgba(212, 168, 85, 0.4);
+    border-radius: 50%;
+    animation: pulseRing 2s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+}
+
+.stake-panel:hover .earn-coin {
+    transform: scale(1.05);
+}
+
+.stake-panel:hover .earn-coin svg {
+    filter: drop-shadow(0 16px 40px rgba(87, 254, 199, 0.5));
+}
+
+.stake-panel:hover .apy-ring {
+    border-color: rgba(212, 168, 85, 0.7);
+}
+
+/* APY Badge */
+.apy-badge {
+    position: absolute;
+    bottom: -12px;
+    right: -16px;
+    background: linear-gradient(135deg, #d4a855 0%, #c49540 100%);
+    color: #1a1a1a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
     border-radius: 20px;
-    padding: 4px 10px;
+    z-index: 2;
+    box-shadow: 0 4px 16px rgba(212, 168, 85, 0.4);
     transition: all 0.3s ease;
 }
 
-.earn-apy span {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: #57FEC7;
-    white-space: nowrap;
+.stake-panel:hover .apy-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(212, 168, 85, 0.6);
 }
 
-.flow-step:hover .earn-smaang {
-    transform: scale(1.05);
-    filter: drop-shadow(0 12px 28px rgba(87, 254, 199, 0.35));
-}
-
-.flow-step:hover .earn-apy {
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(87, 254, 199, 0.3);
-}
-
-.flow-label {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 18px;
-    font-weight: 600;
+/* Panel Typography */
+.panel-title {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 28px;
+    font-weight: 500;
     color: white;
-    text-align: center;
-    letter-spacing: -0.01em;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
 }
 
-.flow-sublabel {
+.panel-subtitle {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    letter-spacing: 0;
+    line-height: 1.6;
+    margin: 0;
 }
 
-.flow-arrow {
+/* Dashed Arrow */
+.stake-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 16px;
-    opacity: 0.5;
+    padding: 0 20px;
+    opacity: 0.8;
     transition: all 0.3s ease;
 }
 
-.flow-arrow svg {
-    width: 56px;
-    height: 20px;
+.staking-visual:hover .stake-arrow {
+    opacity: 1;
 }
 
-.staking-flow-card:hover .flow-arrow {
-    opacity: 0.7;
-}
-
-.flow-arrow svg {
-    width: 48px;
+.stake-arrow svg {
+    width: 120px;
     height: 24px;
 }
 
-/* Staking Benefits */
-.staking-benefits {
+/* Benefits Row */
+.staking-benefits-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 48px;
-    padding: 24px 0;
+    gap: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 20px;
 }
 
-.benefit-item {
+.benefit-pill {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 100px;
+    transition: all 0.3s ease;
 }
 
-.benefit-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(87, 254, 199, 0.1);
-    border-radius: 10px;
+.benefit-pill:hover {
+    background: rgba(87, 254, 199, 0.08);
 }
 
-.benefit-text {
+.benefit-pill span {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
-    letter-spacing: 0.01em;
 }
 
-/* Staking Flow Responsive */
+.benefit-pill svg {
+    flex-shrink: 0;
+}
+
+/* Staking Visual Responsive */
 @media (max-width: 900px) {
-    .staking-flow-card {
+    .staking-visual {
         flex-direction: column;
-        padding: 40px 32px;
-        gap: 32px;
+        gap: 48px;
+        padding: 60px 0;
     }
     
-    .flow-arrow {
+    .stake-arrow {
         transform: rotate(90deg);
-        padding: 0;
+        padding: 20px 0;
     }
     
-    .flow-step {
-        padding: 0;
+    .stake-panel {
+        max-width: 280px;
     }
     
-    .staking-benefits {
-        flex-direction: column;
+    .staking-benefits-row {
+        flex-wrap: wrap;
         gap: 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .staking-flow-card {
-        padding: 32px 24px;
-        gap: 24px;
+    .staking-visual {
+        gap: 36px;
+        padding: 40px 0;
     }
     
-    .flow-token {
+    .panel-token {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .token-stack-visual {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .stack-coin {
         width: 80px;
         height: 80px;
     }
     
-    .stacked-tokens {
-        width: 100px;
-        height: 80px;
+    .earn-coin {
+        width: 120px;
+        height: 120px;
     }
     
-    .stack-token {
-        width: 64px;
-        height: 64px;
+    .panel-title {
+        font-size: 22px;
     }
     
-    .earn-result {
-        width: 100px;
-        height: 80px;
+    .panel-subtitle {
+        font-size: 13px;
     }
     
-    .earn-smaang {
-        width: 72px;
-        height: 72px;
-    }
-    
-    .flow-label {
-        font-size: 16px;
-    }
-    
-    .flow-label {
-        font-size: 14px;
-    }
-    
-    .benefit-item {
+    .staking-benefits-row {
         flex-direction: column;
-        text-align: center;
+        gap: 12px;
     }
 }
