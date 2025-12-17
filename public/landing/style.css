@@ -2731,7 +2731,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 32px;
+}
+
+/* Flipped panel layout - text above tokens */
+.stake-panel-flipped {
+    flex-direction: column;
+}
+
+.stake-panel-flipped .panel-title {
+    margin-bottom: 8px;
+}
+
+.stake-panel-flipped .panel-subtitle {
+    margin-bottom: 24px;
+}
+
+.stake-panel-flipped .panel-token {
+    margin-bottom: 0;
+    margin-top: 0;
 }
 
 /* Stacked Token Visual */
@@ -3871,7 +3888,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 32px;
+}
+
+/* Flipped panel layout - text above tokens */
+.stake-panel-flipped {
+    flex-direction: column;
+}
+
+.stake-panel-flipped .panel-title {
+    margin-bottom: 8px;
+}
+
+.stake-panel-flipped .panel-subtitle {
+    margin-bottom: 24px;
+}
+
+.stake-panel-flipped .panel-token {
+    margin-bottom: 0;
+    margin-top: 0;
 }
 
 /* Stacked Token Visual */
@@ -5011,7 +5045,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 32px;
+}
+
+/* Flipped panel layout - text above tokens */
+.stake-panel-flipped {
+    flex-direction: column;
+}
+
+.stake-panel-flipped .panel-title {
+    margin-bottom: 8px;
+}
+
+.stake-panel-flipped .panel-subtitle {
+    margin-bottom: 24px;
+}
+
+.stake-panel-flipped .panel-token {
+    margin-bottom: 0;
+    margin-top: 0;
 }
 
 /* Stacked Token Visual */
