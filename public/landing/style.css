@@ -2751,19 +2751,37 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 18px 22px;
+    padding: 24px 32px;
     margin-left: 40px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 48px;
 }
 
 .staking-subbox p {
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.7);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
     margin: 0;
     line-height: 1.4;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .staking-subbox {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 24px;
+        margin-left: 0;
+    }
+    
+    .staking-subbox p {
+        font-size: 14px;
+    }
 }
 
 /* Two-Panel Staking Visual */
@@ -3974,19 +3992,37 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 18px 22px;
+    padding: 24px 32px;
     margin-left: 40px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 48px;
 }
 
 .staking-subbox p {
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.7);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
     margin: 0;
     line-height: 1.4;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .staking-subbox {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 24px;
+        margin-left: 0;
+    }
+    
+    .staking-subbox p {
+        font-size: 14px;
+    }
 }
 
 /* Two-Panel Staking Visual */
@@ -5197,19 +5233,37 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 18px 22px;
+    padding: 24px 32px;
     margin-left: 40px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 48px;
 }
 
 .staking-subbox p {
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.7);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
     margin: 0;
     line-height: 1.4;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .staking-subbox {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 24px;
+        margin-left: 0;
+    }
+    
+    .staking-subbox p {
+        font-size: 14px;
+    }
 }
 
 /* Two-Panel Staking Visual */
