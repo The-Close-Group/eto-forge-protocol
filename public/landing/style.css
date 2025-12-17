@@ -2691,13 +2691,27 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Container */
+.staking-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 48px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.staking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
 /* Two-Panel Staking Visual */
 .staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 80px;
-    padding: 80px 0;
+    padding: 40px 0;
     width: 100%;
 }
 
@@ -3817,13 +3831,27 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Container */
+.staking-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 48px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.staking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
 /* Two-Panel Staking Visual */
 .staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 80px;
-    padding: 80px 0;
+    padding: 40px 0;
     width: 100%;
 }
 
@@ -4943,13 +4971,27 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Container */
+.staking-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 48px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.staking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
 /* Two-Panel Staking Visual */
 .staking-visual {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 80px;
-    padding: 80px 0;
+    padding: 40px 0;
     width: 100%;
 }
 
