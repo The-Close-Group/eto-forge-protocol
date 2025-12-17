@@ -2751,13 +2751,12 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 24px 32px;
+    padding: 24px 48px;
     margin-left: 40px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 48px;
+    justify-content: space-evenly;
 }
 
 .staking-subbox p {
@@ -3992,13 +3991,12 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 24px 32px;
+    padding: 24px 48px;
     margin-left: 40px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 48px;
+    justify-content: space-evenly;
 }
 
 .staking-subbox p {
@@ -5233,13 +5231,12 @@ body {
 .staking-subbox {
     background: #ffffff;
     border-radius: 14px;
-    padding: 24px 32px;
+    padding: 24px 48px;
     margin-left: 40px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 48px;
+    justify-content: space-evenly;
 }
 
 .staking-subbox p {
