@@ -2726,8 +2726,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2754,27 +2754,27 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 160px;
-    height: 140px;
+    width: 220px;
+    height: 160px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .stack-usdc-coin {
     left: 0;
-    top: 20px;
+    top: 10px;
     z-index: 1;
 }
 
 .stack-maang-coin {
     right: 0;
-    top: 20px;
+    top: 10px;
     z-index: 2;
 }
 
@@ -2975,18 +2975,23 @@ body {
     }
     
     .token-stack-visual {
-        width: 120px;
-        height: 120px;
+        width: 180px;
+        height: 130px;
     }
     
     .stack-coin {
-        width: 80px;
-        height: 80px;
+        width: 110px;
+        height: 110px;
     }
     
     .earn-coin {
-        width: 120px;
-        height: 120px;
+        width: 110px;
+        height: 110px;
+    }
+    
+    .staking-token-large {
+        width: 110px;
+        height: 110px;
     }
     
     .panel-title {
@@ -3883,8 +3888,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3911,27 +3916,27 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 160px;
-    height: 140px;
+    width: 220px;
+    height: 160px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .stack-usdc-coin {
     left: 0;
-    top: 20px;
+    top: 10px;
     z-index: 1;
 }
 
 .stack-maang-coin {
     right: 0;
-    top: 20px;
+    top: 10px;
     z-index: 2;
 }
 
@@ -4132,18 +4137,23 @@ body {
     }
     
     .token-stack-visual {
-        width: 120px;
-        height: 120px;
+        width: 180px;
+        height: 130px;
     }
     
     .stack-coin {
-        width: 80px;
-        height: 80px;
+        width: 110px;
+        height: 110px;
     }
     
     .earn-coin {
-        width: 120px;
-        height: 120px;
+        width: 110px;
+        height: 110px;
+    }
+    
+    .staking-token-large {
+        width: 110px;
+        height: 110px;
     }
     
     .panel-title {
@@ -5040,8 +5050,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5068,27 +5078,27 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 160px;
-    height: 140px;
+    width: 220px;
+    height: 160px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .stack-usdc-coin {
     left: 0;
-    top: 20px;
+    top: 10px;
     z-index: 1;
 }
 
 .stack-maang-coin {
     right: 0;
-    top: 20px;
+    top: 10px;
     z-index: 2;
 }
 
@@ -5289,18 +5299,23 @@ body {
     }
     
     .token-stack-visual {
-        width: 120px;
-        height: 120px;
+        width: 180px;
+        height: 130px;
     }
     
     .stack-coin {
-        width: 80px;
-        height: 80px;
+        width: 110px;
+        height: 110px;
     }
     
     .earn-coin {
-        width: 120px;
-        height: 120px;
+        width: 110px;
+        height: 110px;
+    }
+    
+    .staking-token-large {
+        width: 110px;
+        height: 110px;
     }
     
     .panel-title {
