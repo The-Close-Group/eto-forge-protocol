@@ -2691,18 +2691,79 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Wrapper */
+.staking-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
 /* Staking Card Container */
 .staking-card {
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px;
+    padding: 60px;
     width: 100%;
+    position: relative;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
 .staking-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Arrow Button */
+.staking-card-arrow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 56px;
+    height: 56px;
+    background: #ffffff;
+    border-radius: 0 14px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.staking-card-arrow svg {
+    transition: transform 0.3s ease;
+}
+
+.staking-card-arrow svg path {
+    stroke: #1a1a1a;
+}
+
+.staking-card:hover .staking-card-arrow {
+    background: #f0f0f0;
+}
+
+.staking-card:hover .staking-card-arrow svg {
+    transform: translate(2px, 2px);
+}
+
+/* Staking Sub-box */
+.staking-subbox {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.staking-subbox p {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* Two-Panel Staking Visual */
@@ -2726,8 +2787,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2754,15 +2815,15 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -2828,8 +2889,8 @@ body {
 }
 
 .staking-token-large {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
 }
 
 .stake-panel:hover .staking-token-3d {
@@ -2839,8 +2900,8 @@ body {
 /* Earn Token Visual */
 .earn-coin {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     z-index: 1;
     transition: all 0.4s ease;
 }
@@ -3853,18 +3914,79 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Wrapper */
+.staking-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
 /* Staking Card Container */
 .staking-card {
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px;
+    padding: 60px;
     width: 100%;
+    position: relative;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
 .staking-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Arrow Button */
+.staking-card-arrow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 56px;
+    height: 56px;
+    background: #ffffff;
+    border-radius: 0 14px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.staking-card-arrow svg {
+    transition: transform 0.3s ease;
+}
+
+.staking-card-arrow svg path {
+    stroke: #1a1a1a;
+}
+
+.staking-card:hover .staking-card-arrow {
+    background: #f0f0f0;
+}
+
+.staking-card:hover .staking-card-arrow svg {
+    transform: translate(2px, 2px);
+}
+
+/* Staking Sub-box */
+.staking-subbox {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.staking-subbox p {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* Two-Panel Staking Visual */
@@ -3888,8 +4010,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3916,15 +4038,15 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -3990,8 +4112,8 @@ body {
 }
 
 .staking-token-large {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
 }
 
 .stake-panel:hover .staking-token-3d {
@@ -4001,8 +4123,8 @@ body {
 /* Earn Token Visual */
 .earn-coin {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     z-index: 1;
     transition: all 0.4s ease;
 }
@@ -5015,18 +5137,79 @@ body {
     color: #57FEC7 !important;
 }
 
+/* Staking Card Wrapper */
+.staking-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
 /* Staking Card Container */
 .staking-card {
     background: #1a1a1a;
     border-radius: 20px;
-    padding: 48px;
+    padding: 60px;
     width: 100%;
+    position: relative;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
 .staking-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Arrow Button */
+.staking-card-arrow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 56px;
+    height: 56px;
+    background: #ffffff;
+    border-radius: 0 14px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.staking-card-arrow svg {
+    transition: transform 0.3s ease;
+}
+
+.staking-card-arrow svg path {
+    stroke: #1a1a1a;
+}
+
+.staking-card:hover .staking-card-arrow {
+    background: #f0f0f0;
+}
+
+.staking-card:hover .staking-card-arrow svg {
+    transform: translate(2px, 2px);
+}
+
+/* Staking Sub-box */
+.staking-subbox {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.staking-subbox p {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* Two-Panel Staking Visual */
@@ -5050,8 +5233,8 @@ body {
 
 .panel-token {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5078,15 +5261,15 @@ body {
 /* Stacked Token Visual */
 .token-stack-visual {
     position: relative;
-    width: 220px;
-    height: 160px;
+    width: 280px;
+    height: 180px;
     z-index: 1;
 }
 
 .stack-coin {
     position: absolute;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -5152,8 +5335,8 @@ body {
 }
 
 .staking-token-large {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
 }
 
 .stake-panel:hover .staking-token-3d {
@@ -5163,8 +5346,8 @@ body {
 /* Earn Token Visual */
 .earn-coin {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     z-index: 1;
     transition: all 0.4s ease;
 }
