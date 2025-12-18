@@ -20,7 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStakingContext } from "@/contexts/StakingContext";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import SEO from "@/components/SEO";
-import { useGraphUserStats, getUserSwaps } from "@/lib/graphql";
+import { useGraphUserStats, getUserSwaps } from "@/lib/rpcDataLayer";
 import { useQuery } from "@tanstack/react-query";
 
 const wallets = [

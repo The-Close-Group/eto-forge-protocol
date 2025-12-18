@@ -2,7 +2,7 @@ import { useProtocolStore, selectActivities, selectIsRefreshing, selectStats, se
 import { refreshData, getDataLayer } from '@/lib/dataLayer';
 import { useQuery } from '@tanstack/react-query';
 import { SMAANG_VAULT_ADDRESS } from '@/config/contracts';
-import { getAllProtocolActivity, type ProtocolActivityItem } from '@/lib/graphql';
+import { getAllProtocolActivity, type ProtocolActivityItem } from '@/lib/rpcDataLayer';
 
 // =============================================================================
 // Protocol Activity Hook - All Events from Subgraph with Address Exclusion

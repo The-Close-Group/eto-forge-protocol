@@ -17,7 +17,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { DMM_ADDRESS } from "@/config/contracts";
 import maangLogo from "@/assets/maang-logo.svg";
 import { ShareTradeCard } from "@/components/ShareTradeCard";
-import { useMarketStats } from "@/lib/graphql";
+import { useMarketStats } from "@/lib/rpcDataLayer";
 
 // Remove fallback prices - fetch live values from chain
 const FALLBACK_ASSET_PRICES = {

@@ -1,30 +1,30 @@
 import { etoMainnet } from "@/lib/thirdweb";
 
 // =============================================================================
-// ETO L1 Mainnet - Chain Reset (Dec 12, 2025)
+// ETO L1 Mainnet - DMMv2 Complete System (Dec 14, 2025)
 // Chain ID: 69670 | RPC: https://eto.ash.center/rpc
-// Deployer: 0xF9DCd381f0e2B491bb03B1717ee3350ee1c35e15
+// Deployer & Keeper: 0x3a7523d36935384ad1c42bb03Ac2B9d15929aca4
 // =============================================================================
 export const CONTRACTS = {
   // Core tokens
   MAANG_TOKEN: "0xdA8ac54e6a88ceC7724993Cd602168114debb510", // DRI Token
-  GOVMAANG_TOKEN: "0x735153A73b47b2f4E5a68aDfb9Da4528013150C2", // GOVDRI Token
+  GOVMAANG_TOKEN: "0xa766d01Fe9a0965400556D02382848Bb3c95e118", // GOVDRI Token
   USDC: "0x27aC6E8be60d2d7bAd2171ae6789f3fbEf9689fd", // Mock USDC
-  
-  // DeFi Protocol Contracts  
-  DYNAMIC_MARKET_MAKER: "0xd14Ea79ab8B06BD5D2F4c805b3D9F6D134002648", // DMMv2 CLMM
-  ORACLE_AGGREGATOR: "0x432edDe96fca51943b2a65b889ED50De7E51BdF7",
-  BOOTSTRAP_MAANG_CONTROLLER: "0x936D89d33AE7f78D1151C436F71d66242b603FF0", // DRI Controller
-  PEG_STABILITY_MODULE: "0x059756156294103Aeb7935e8566560A17921E30F",
-  
+
+  // DeFi Protocol Contracts
+  DYNAMIC_MARKET_MAKER: "0x95bfb9c0e9CE0fFFd528DF91E56c7e1F8123c79B", // DMMv2 CLMM
+  ORACLE_AGGREGATOR: "0x877325Dd4504C149cFdDC3E9d943c46fa30a5c31",
+  BOOTSTRAP_MAANG_CONTROLLER: "0x192878967d654d3F0dc14F78b52a93D3Bf8C745e", // DRI Controller
+  PEG_STABILITY_MODULE: "0x5011519DB4b33b8307B5A71636FC7eF92e423058",
+
   // Vault (liquidity drip mechanism)
-  SMAANG_VAULT: "0x161003CBC1803113aa227c649beb9652aFBDFe65",
-  
+  SMAANG_VAULT: "0x22be7cc41ed9e22d5f5457be5ddc5666a7853647",
+
   // DMM Adapter (bridges Uniswap V3 style to vault interface)
   DMM_ADAPTER: "0x97792d7ae3CE8FBC9ecd71B48632F6101744e695",
-  
+
   // Governor
-  GOVERNOR: "0x302714564b44c669F1678deA5a7dD541aE8a4CCc",
+  GOVERNOR: "0xA7ACbda68e060EC2517Db78552bEb9B225e0a12A",
 } as const;
 
 // Legacy aliases for backwards compatibility

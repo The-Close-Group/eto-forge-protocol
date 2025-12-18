@@ -31,7 +31,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
-import { useMarketStats } from '@/lib/graphql';
+import { useMarketStats } from '@/lib/rpcDataLayer';
 
 const wallets = [
   createWallet("io.metamask"),

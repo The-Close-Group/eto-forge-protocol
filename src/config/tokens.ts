@@ -33,7 +33,7 @@ const NATIVE_TOKENS: Record<string, TokenInfo> = {
 
 // ERC20 token definitions - ETO L1 Native Assets Only
 const ERC20_TOKENS: Record<string, TokenInfo[]> = {
-  // ETO L1 Mainnet - Chain Reset (Dec 12, 2025)
+  // ETO L1 Mainnet - DMMv2 Complete System (Dec 14, 2025)
   etoMainnet: [
     {
       symbol: "USDC",
@@ -54,7 +54,7 @@ const ERC20_TOKENS: Record<string, TokenInfo[]> = {
     {
       symbol: "sMAANG",
       name: "Staked MAANG",
-      address: "0xed2EEd3257Ce0A9ECeeE1055b5e54E724E63c09a", // SMAANG Vault
+      address: "0x22be7cc41ed9e22d5f5457be5ddc5666a7853647", // SMAANG Vault
       decimals: 18,
       coingeckoId: null,
       logoUri: "/assets/maang-logo.svg",
