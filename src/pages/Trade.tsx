@@ -6,7 +6,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useDeFiPrices } from "@/hooks/useDeFiPrices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Zap, Shield, Coins, Sparkles } from "lucide-react";
+import { ArrowRight, TrendingUp, Zap, Shield, Coins } from "lucide-react";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import maangLogo from "@/assets/maang-logo.svg";
 
@@ -63,8 +63,8 @@ export default function Trade() {
     return () => clearTimeout(timer);
   }, [setOpen]);
 
-  // Use DMM price as the live trading price
-  const livePrice = dmmPrice || oraclePrice || 1;
+  // Use DMM price as the live trading price (check > 0, not falsy)
+  const livePrice = dmmPrice > 0 ? dmmPrice : oraclePrice > 0 ? oraclePrice : 330;
   const priceSource = dmmPrice > 0 ? 'DMM' : oraclePrice > 0 ? 'Oracle' : 'N/A';
 
   // NOTE: sMAANG price should come from vault share price, using same as MAANG for now
@@ -81,11 +81,6 @@ export default function Trade() {
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">ETO L1 Native Assets</span>
-          </div>
-          
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-4">
             Token{" "}
             <span className="text-muted-foreground/40">Trading Hub</span>

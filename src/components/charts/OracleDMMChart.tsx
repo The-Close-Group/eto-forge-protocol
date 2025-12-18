@@ -3,21 +3,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { usePriceHistory } from "@/hooks/useDeFiPrices";
-import { useGraphPriceCandles, type PriceCandle } from "@/lib/graphql";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Activity, Wifi, WifiOff } from "lucide-react";
 import { useProtocolStore, selectConnection } from "@/stores/protocolStore";
 
 export function OracleDMMChart() {
   const [timeRange, setTimeRange] = useState<"1h" | "24h" | "7d" | "30d">("24h");
-  const [useGraphQL, setUseGraphQL] = useState(false);
   
   // Real-time data from WebSocket-powered store
-  const { data: realtimeHistory, isLoading: isLoadingRealtime } = usePriceHistory(timeRange);
-  
-  // Historical data from GraphQL subgraph (when available)
-  const hoursMap = { "1h": 1, "24h": 24, "7d": 168, "30d": 720 };
-  const { data: graphCandles, isLoading: isLoadingGraph } = useGraphPriceCandles(hoursMap[timeRange]);
+  const { data: realtimeHistory, isLoading } = usePriceHistory(timeRange);
   
   // Connection status
   const connection = useProtocolStore(selectConnection);
@@ -38,20 +32,8 @@ export function OracleDMMChart() {
     }
   };
 
-  // Transform data based on source
+  // Transform real-time data for chart
   const chartData = useMemo(() => {
-    if (useGraphQL && graphCandles && graphCandles.length > 0) {
-      // Use GraphQL subgraph data
-      return graphCandles.map((candle: PriceCandle) => ({
-        time: formatTimestamp(Number(candle.periodStart) * 1000),
-        timestamp: Number(candle.periodStart) * 1000,
-        "Oracle Price": parseFloat(candle.oracleClose) || 0,
-        "DMM Price": parseFloat(candle.dmmClose) || 0,
-        volume: parseFloat(candle.volumeUSD) || 0,
-      })).reverse();
-    }
-    
-    // Use real-time WebSocket data
     return realtimeHistory?.map(item => ({
       time: formatTimestamp(item.timestamp),
       timestamp: item.timestamp,
@@ -59,9 +41,7 @@ export function OracleDMMChart() {
       "DMM Price": item.dmmPrice,
       difference: Math.abs(item.oraclePrice - item.dmmPrice),
     })) || [];
-  }, [useGraphQL, graphCandles, realtimeHistory, timeRange]);
-
-  const isLoading = useGraphQL ? isLoadingGraph : isLoadingRealtime;
+  }, [realtimeHistory, timeRange]);
 
   if (isLoading && chartData.length === 0) {
     return (
@@ -109,16 +89,6 @@ export function OracleDMMChart() {
               </Button>
             ))}
           </div>
-          {/* Toggle between real-time and historical data source */}
-          <Button
-            variant={useGraphQL ? "default" : "outline"}
-            size="sm"
-            onClick={() => setUseGraphQL(!useGraphQL)}
-            className="text-xs ml-2"
-            title={useGraphQL ? "Using GraphQL subgraph (historical)" : "Using WebSocket (real-time)"}
-          >
-            {useGraphQL ? "Historical" : "Real-time"}
-          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -200,9 +170,7 @@ export function OracleDMMChart() {
           </div>
           <div className="flex items-center gap-2 ml-4">
             <span className={`w-2 h-2 rounded-full ${connection.wsConnected ? 'bg-emerald-500' : 'bg-yellow-500 animate-pulse'}`}></span>
-            <span className="text-muted-foreground">
-              {useGraphQL ? 'Subgraph Data' : 'WebSocket Live'}
-            </span>
+            <span className="text-muted-foreground">WebSocket Live</span>
           </div>
         </div>
       </CardContent>

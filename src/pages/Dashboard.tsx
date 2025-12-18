@@ -15,7 +15,7 @@ import { client, etoMainnet, supportedChains, etoMainnetParams } from "@/lib/thi
 import { createWallet } from "thirdweb/wallets";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
-import { useOraclePriceHistory, useStakingStats, useVaultSnapshotHistory, useUserStakingStats, useUserDepositsAndWithdrawals, timeFilterToHours } from "@/lib/graphql";
+import { useOraclePriceHistory, useStakingStats, useVaultSnapshotHistory, useUserStakingStats, useUserDepositsAndWithdrawals, timeFilterToHours } from "@/lib/rpcDataLayer";
 import { useQuery } from "@tanstack/react-query";
 import { etoPublicClient } from "@/lib/etoRpc";
 import { SMAANG_VAULT_ADDRESS } from "@/config/contracts";
