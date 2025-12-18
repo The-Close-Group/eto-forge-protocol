@@ -1,0 +1,20 @@
+---
+title: Reflective Price Index
+description: Understanding the Reflective Price Index mechanism
+---
+
+# Reflective Price Index
+
+ETO's token supply is fixed at genesis and never inflates. All tokens are minted once into a protocol-controlled vault. Circulating supply changes only in response to net liquidity flows in or out of the protocol's controlled pools. When users deposit stablecoins to acquire index tokens, the vault releases tokens to pair with that incoming liquidity. When users redeem tokens for stablecoins, excess tokens return to the vault.
+
+This flow-based supply mechanism means circulating supply naturally tracks the amount of stablecoin capital backing the protocol. There is no minting authority that can inflate supply, and there is no burning mechanism that permanently destroys tokens. Instead, tokens move between active circulation and vault storage based purely on user demand for exposure.
+
+Value accrual happens through the protocol's net asset value rather than through token burns or buybacks. When the PSM captures spread during stabilization operations, that value flows into the protocol's reserve composition, improving the backing ratio. When trading fees are collected, they contribute to the same pool. Token holders benefit from this value accrual proportionally through the increasing net asset value of the protocol relative to circulating supply.
+
+## Integration and Composability
+
+ETO's index tokens are standard ERC-20 assets with no special transfer restrictions or complex redemption requirements. This means they integrate naturally with existing DeFi infrastructure. The tokens can serve as collateral in lending markets, be held in multi-signature wallets, participate in liquidity pools on other protocols, or be used in structured products and derivatives.
+
+The architecture deliberately avoids mechanisms that would break composability. There are no rebasing operations that automatically change user balances. There are no whitelists that restrict which addresses can hold tokens. There are no forced redemptions that could surprise downstream integrators. The stability mechanisms operate at the protocol level through liquidity pools and reserves, not at the token level through balance manipulation.
+
+This composability extends to the protocol's cross-chain design. While the core protocol operates on an Avalanche-powered subnet, the architecture includes cross-chain messaging infrastructure that allows tokens to exist as wrapped representations on other networks. Users can bridge tokens between chains through standard interfaces, and the protocol's stability mechanisms continue to operate regardless of which chain users are trading on.
