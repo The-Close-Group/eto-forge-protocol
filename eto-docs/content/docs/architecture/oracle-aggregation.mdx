@@ -1,0 +1,12 @@
+---
+title: Oracle Aggregation
+description: How ETO aggregates oracle data
+---
+
+# Oracle Aggregation
+
+The stability mechanisms described above all depend on accurate reference pricing. ETO aggregates price data from multiple independent oracle providers including Chainlink, Pyth, and similar services. Each data source reports prices independently, and the aggregator applies median filtering to exclude outliers before calculating the reference price used by the protocol.
+
+Oracle validation includes staleness detection, which rejects data older than a defined threshold, and deviation bounds that flag any individual feed reporting prices far from the consensus median. If sufficient feeds become unavailable or stale, the system treats this as a circuit breaker condition rather than attempting to proceed with incomplete data. This conservative approach to data quality prevents the protocol from making decisions based on potentially manipulated or failed oracle feeds.
+
+The oracle-derived reference price updates on a regular cadence, typically every 15 to 30 seconds during normal conditions. Updates include built-in rate limiting that caps how much the reference price can change in a single update, preventing sudden jumps from creating exploitable arbitrage opportunities. This price smoothing through rate-limited updates balances responsiveness to real market movements with protection against oracle manipulation or failure.
