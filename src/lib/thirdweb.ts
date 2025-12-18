@@ -13,10 +13,9 @@ export const client = createThirdwebClient({
   secretKey: import.meta.env.VITE_THIRD_WEB_API_KEY
 });
 
-// ETO L1 Mainnet (Production) - Chain ID 69420
-// MUST define fully to override Thirdweb's registry (which has 69420 as dead "Condrieu" chain)
+// ETO L1 Mainnet (Production) - Chain ID 69670
 export const etoMainnet: Chain = {
-  id: 69420,
+  id: 69670,
   name: "ETO L1 Mainnet",
   rpc: "https://eto.ash.center/rpc",
   nativeCurrency: {
@@ -34,7 +33,7 @@ export const etoMainnet: Chain = {
 
 // Chain params for wallet_addEthereumChain - use this to force wallet to update
 export const etoMainnetParams = {
-  chainId: "0x10F2C", // 69420 in hex
+  chainId: "0x11026", // 69670 in hex
   chainName: "ETO L1 Mainnet",
   nativeCurrency: {
     name: "Ether",

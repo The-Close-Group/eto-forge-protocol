@@ -1,31 +1,29 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useActiveAccount, ConnectButton } from 'thirdweb/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   TrendingUp, TrendingDown, Shield, Vault, Info, Loader2, 
-  ChevronRight, RefreshCw, Zap, Lock, ArrowUpRight, Clock,
-  Sparkles, Calculator, Wallet, ChevronDown, Plus, Target,
+  ChevronRight, RefreshCw, Zap,
+  Sparkles, Calculator, Wallet, Plus, Target,
   ArrowDownUp, Check
 } from 'lucide-react';
 import { useVaultStaking } from '@/hooks/useVaultStaking';
 import { useQuery } from '@tanstack/react-query';
 import { etoPublicClient } from '@/lib/etoRpc';
 import { DRI_TOKEN_ADDRESS, USDC_ADDRESS } from '@/config/contracts';
+import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
 import { toast } from 'sonner';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
 import { Link } from 'react-router-dom';
 import maangLogo from '@/assets/maang-logo.svg';
-import { InfoButton } from '@/components/InfoButton';
-import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
+  createWallet("io.metamask"),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
 ];
@@ -40,17 +38,13 @@ const ERC20_ABI = [
   }
 ] as const;
 
-// NOTE: Staking tiers data is placeholder - real APY values should come from on-chain
-const stakingTiers = [
-  { name: 'Bronze', minStake: 0, apy: 0, color: '#CD7F32' },
-  { name: 'Silver', minStake: 1000, apy: 0, color: '#C0C0C0' },
-  { name: 'Gold', minStake: 5000, apy: 0, color: '#FFD700' },
-  { name: 'Platinum', minStake: 25000, apy: 0, color: '#E5E4E2' },
-];
-
 export default function StakingPage() {
   const account = useActiveAccount();
   const { depositUSDC, depositDRI, redeemShares, getVaultShares, getVaultStats, isLoading } = useVaultStaking();
+  
+  // Get real MAANG price from protocol store
+  const prices = useProtocolStore(selectPrices);
+  const maangPrice = prices.dmmPrice || 318;
   
   // Animation state
   const [isVisible, setIsVisible] = useState(false);
@@ -58,7 +52,6 @@ export default function StakingPage() {
   const [depositMode, setDepositMode] = useState<'usdc' | 'maang'>('usdc');
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawShares, setWithdrawShares] = useState('');
-  const [investmentPeriod, setInvestmentPeriod] = useState(6);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -99,13 +92,8 @@ export default function StakingPage() {
     queryKey: ['vault-stats'],
     queryFn: getVaultStats,
     refetchInterval: 10000,
+    retry: 2,
   });
-
-  // Calculate current tier
-  const currentTier = useMemo(() => {
-    const staked = balances?.shares ? Number(balances.shares) / 1e18 : 0;
-    return stakingTiers.reduce((acc, tier) => staked >= tier.minStake ? tier : acc, stakingTiers[0]);
-  }, [balances?.shares]);
 
   // Handlers
   const handleRefresh = async () => {
@@ -128,6 +116,7 @@ export default function StakingPage() {
       if (hash) {
         setDepositAmount('');
         refetchBalances();
+        refetchStats();
       }
     } catch (err) {
       toast.error('Deposit failed: ' + (err as Error).message);
@@ -145,6 +134,7 @@ export default function StakingPage() {
       if (hash) {
         setWithdrawShares('');
         refetchBalances();
+        refetchStats();
       }
     } catch (err) {
       toast.error('Withdrawal failed: ' + (err as Error).message);
@@ -168,8 +158,10 @@ export default function StakingPage() {
   const sharesBalance = balances ? (Number(balances.shares) / 1e18).toFixed(4) : '0';
   const sharePrice = vaultStats?.sharePrice?.toFixed(4) || '1.0000';
   const totalAssets = vaultStats?.totalAssets ? (Number(vaultStats.totalAssets) / 1e18) : 0;
-  const estimatedValue = balances?.shares ? (Number(balances.shares) / 1e18) * (vaultStats?.sharePrice || 1) : 0;
-  const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
+  
+  // Calculate estimated value in USD: shares × sharePrice (MAANG per share) × MAANG price (USD)
+  const sharesInMAANG = balances?.shares ? (Number(balances.shares) / 1e18) * (vaultStats?.sharePrice || 1) : 0;
+  const estimatedValue = sharesInMAANG * maangPrice;
 
   return (
     <div className="min-h-screen bg-background">
@@ -203,10 +195,10 @@ export default function StakingPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
                 { label: 'Total Vault Assets', value: `${totalAssets.toLocaleString()} MAANG`, icon: <Vault className="w-4 h-4" /> },
-                { label: 'Share Price', value: sharePrice, icon: <TrendingUp className="w-4 h-4" />, change: '+2.4%' },
+                { label: 'Share Price', value: sharePrice, icon: <TrendingUp className="w-4 h-4" /> },
                 { label: 'Your Shares', value: sharesBalance, icon: <Wallet className="w-4 h-4" /> },
                 { label: 'Est. Value', value: `$${estimatedValue.toFixed(2)}`, icon: <Calculator className="w-4 h-4" />, highlight: true },
-              ].map((stat, i) => (
+              ].map((stat) => (
                 <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 text-muted-foreground mb-2">
@@ -216,12 +208,6 @@ export default function StakingPage() {
                     <div className={`text-xl font-semibold ${stat.highlight ? 'text-primary' : ''}`}>
                       {stat.value}
             </div>
-                    {stat.change && (
-                      <div className="text-[11px] text-data-positive mt-1 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" />
-                        {stat.change}
-            </div>
-                    )}
         </CardContent>
       </Card>
               ))}
@@ -231,17 +217,10 @@ export default function StakingPage() {
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border pb-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="text-[16px] flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                      Vault Operations
-                    </CardTitle>
-                    <InfoButton
-                      title="Vault Operations"
-                      description="Deposit USDC or MAANG tokens into the sMAANG vault to earn yield from protocol trading fees. When you deposit, you receive sMAANG shares that represent your portion of the vault. The share price increases over time as the vault earns fees, meaning your shares become worth more. You can withdraw anytime by redeeming your shares for MAANG tokens."
-                      size="sm"
-                    />
-                  </div>
+                  <CardTitle className="text-[16px] flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    Vault Operations
+                  </CardTitle>
                   <div className="flex gap-1 p-1 bg-muted rounded-lg">
                     <button
                       className={`px-4 py-1.5 rounded-md text-[13px] font-medium transition-all ${
@@ -274,7 +253,7 @@ export default function StakingPage() {
                       ].map((token) => (
                         <button
                           key={token.id}
-                          className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                          className={`p-4 rounded-xl border-2 transition-all duration-200 text-left relative ${
                             depositMode === token.id 
                               ? 'border-primary bg-primary/5' 
                               : 'border-border hover:border-primary/50'
@@ -369,25 +348,25 @@ export default function StakingPage() {
                         }}
                       />
                     ) : (
-              <Button
+                      <Button
                         variant="cta"
                         size="xl"
-                className="w-full"
+                        className="w-full"
                         onClick={handleDeposit}
                         disabled={isLoading || !depositAmount || vaultStats?.depositsPaused}
-              >
-                {isLoading ? (
-                  <>
+                      >
+                        {isLoading ? (
+                          <>
                             <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Processing...
-                  </>
-                ) : (
+                            Processing...
+                          </>
+                        ) : (
                           <>
                             <Plus className="w-4 h-4 mr-2" />
                             Deposit {depositMode.toUpperCase()}
                           </>
-                )}
-              </Button>
+                        )}
+                      </Button>
                     )}
 
                     {/* Gas Sponsored */}
@@ -475,19 +454,12 @@ export default function StakingPage() {
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-[15px] flex items-center gap-2">
-                        <Target className="w-4 h-4 text-primary" />
-                        Your Position
-                      </CardTitle>
-                      <InfoButton
-                        title="Your Position"
-                        description="This shows your current staking position in the sMAANG vault. Your staked value is calculated by multiplying your shares by the current share price. The APY shows your current earning rate based on your tier. Pending rewards are estimated based on your position and will compound automatically into your share value."
-                        size="sm"
-                      />
-                    </div>
-                    <Badge style={{ background: currentTier.color + '20', color: currentTier.color }}>
-                      {currentTier.name} Tier
+                    <CardTitle className="text-[15px] flex items-center gap-2">
+                      <Target className="w-4 h-4 text-primary" />
+                      Your Position
+                    </CardTitle>
+                    <Badge variant="outline" className="text-primary border-primary/30">
+                      Active
                     </Badge>
                   </div>
                 </CardHeader>
@@ -498,13 +470,13 @@ export default function StakingPage() {
                       <div className="stat-value text-lg">${estimatedValue.toFixed(2)}</div>
                     </div>
                     <div className="stat-item">
-                      <div className="stat-label">Current APY</div>
-                      <div className="stat-value text-lg text-primary">{currentTier.apy}%</div>
+                      <div className="stat-label">Your Shares</div>
+                      <div className="stat-value text-lg text-primary">{sharesBalance}</div>
                     </div>
                     <div className="stat-item">
-                      <div className="stat-label">Pending Rewards</div>
+                      <div className="stat-label">MAANG Value</div>
                       <div className="stat-value text-lg text-data-positive">
-                        +{((estimatedValue * currentTier.apy / 100) / 12).toFixed(4)}
+                        {sharesInMAANG.toFixed(4)}
                       </div>
                     </div>
                   </div>
@@ -567,10 +539,11 @@ export default function StakingPage() {
                 </div>
                 
                 <div className="mb-6">
-                  <div className="text-[11px] text-muted-foreground mb-1">Current APY</div>
+                  <div className="text-[11px] text-muted-foreground mb-1">Share Price</div>
                   <div className="text-[42px] font-semibold tracking-tight leading-none text-primary">
-                    {currentTier.apy}%
+                    {sharePrice}
                   </div>
+                  <div className="text-[11px] text-muted-foreground mt-1">MAANG per share</div>
                 </div>
 
                 <div className="space-y-3">
@@ -589,105 +562,6 @@ export default function StakingPage() {
                 </div>
               </div>
             </div>
-
-            {/* Investment Period */}
-            <Card>
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-[14px] font-medium">Projection Period</h3>
-                  <span className="period-badge-active">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
-                </div>
-                <p className="text-[11px] text-muted-foreground mb-4">Estimate your returns</p>
-
-                <div className="flex gap-2 flex-wrap mb-4">
-                  {[1, 3, 6, 12].map(months => (
-                    <button
-                      key={months}
-                      className={months === investmentPeriod ? 'period-badge-active' : 'period-badge'}
-                      onClick={() => setInvestmentPeriod(months)}
-                    >
-                      {months}M
-                    </button>
-                  ))}
-                </div>
-
-                <input
-                  type="range"
-                  min="1"
-                  max="12"
-                  value={investmentPeriod}
-                  onChange={(e) => setInvestmentPeriod(parseInt(e.target.value))}
-                  className="w-full h-[3px] bg-muted rounded-full appearance-none cursor-pointer
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
-                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white 
-                    [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-primary
-                    [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, hsl(160 70% 50%) 0%, hsl(160 70% 50%) ${sliderPosition}%, hsl(240 4% 20%) ${sliderPosition}%, hsl(240 4% 20%) 100%)`
-                  }}
-                />
-
-                {balances?.shares && Number(balances.shares) > 0 && (
-                  <div className="mt-4 p-3 rounded-lg bg-muted/30">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-[12px] text-muted-foreground">Est. Rewards</span>
-                      <span className="text-[14px] font-semibold text-data-positive">
-                        +{((estimatedValue * currentTier.apy / 100) * (investmentPeriod / 12)).toFixed(4)} MAANG
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[12px] text-muted-foreground">End Value</span>
-                      <span className="text-[14px] font-semibold">
-                        ${(estimatedValue * (1 + (currentTier.apy / 100) * (investmentPeriod / 12))).toFixed(2)}
-                      </span>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-            {/* Staking Tiers */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-[14px]">Staking Tiers</CardTitle>
-                  <InfoButton
-                    title="Staking Tiers"
-                    description="Staking tiers determine your APY rate based on how much you have staked. Higher tiers unlock better rewards. As you stake more, you automatically move up to higher tiers. Each tier has a minimum stake requirement — reach the threshold to unlock the tier's APY rate."
-                    size="sm"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {stakingTiers.map((tier) => (
-                  <div 
-                    key={tier.name}
-                    className={`p-3 rounded-lg border transition-all ${
-                      currentTier.name === tier.name 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/30'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ background: tier.color }}
-                        />
-                        <span className="font-medium text-[13px]">{tier.name}</span>
-                        {currentTier.name === tier.name && (
-                          <Badge variant="outline" className="text-[9px]">Current</Badge>
-                        )}
-                      </div>
-                      <span className="text-[14px] font-semibold text-primary">{tier.apy}% APY</span>
-                    </div>
-                    <div className="text-[11px] text-muted-foreground mt-1">
-                      Min stake: {tier.minStake > 0 ? `$${tier.minStake.toLocaleString()}` : 'No minimum'}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
 
             {/* Quick Actions */}
             <Card>

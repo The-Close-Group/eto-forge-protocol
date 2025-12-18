@@ -1,28 +1,35 @@
 import { etoMainnet } from "@/lib/thirdweb";
 
 // =============================================================================
-// ETO L1 Mainnet - V10 Paper Trading Deployment (Nov 26, 2025)
-// Chain ID: 69420 | RPC: https://eto.ash.center/rpc
-// Features: Paper trading mode enabled, oracle staleness checks bypassed
+// ETO L1 Mainnet - DMMv2 Complete System (Dec 14, 2025)
+// Chain ID: 69670 | RPC: https://eto.ash.center/rpc
+// Deployer & Keeper: 0x3a7523d36935384ad1c42bb03Ac2B9d15929aca4
 // =============================================================================
 export const CONTRACTS = {
   // Core tokens
-  MAANG_TOKEN: "0x5e0CBA25D4Acd25014b77E4c7908Cf1e2DA73EF8",
-  GOVMAANG_TOKEN: "0x69a8C883aAE8faE6A8756e18582568ba5c879274",
-  USDC: "0x98e3B2a66A8Bf81A716A02b1379D082772e524E5",
-  
-  // DeFi Protocol Contracts  
-  DYNAMIC_MARKET_MAKER: "0x411c954D5874B2aB1d28740587AdE93a06EF05cB",
-  ORACLE_AGGREGATOR: "0xf4cef743e2a505CDFd2a2Fb138920CDaa1297C86",
-  BOOTSTRAP_MAANG_CONTROLLER: "0x6d1d273Ae139780268770Fb6D830d8BD7982D045",
-  PEG_STABILITY_MODULE: "0x4b68e8ff7A27ef299f2a8c62adE766dd6F227e0E",
-  
+  MAANG_TOKEN: "0xdA8ac54e6a88ceC7724993Cd602168114debb510", // DRI Token
+  GOVMAANG_TOKEN: "0xa766d01Fe9a0965400556D02382848Bb3c95e118", // GOVDRI Token
+  USDC: "0x27aC6E8be60d2d7bAd2171ae6789f3fbEf9689fd", // Mock USDC
+
+  // DeFi Protocol Contracts
+  DYNAMIC_MARKET_MAKER: "0x95bfb9c0e9CE0fFFd528DF91E56c7e1F8123c79B", // DMMv2 CLMM
+  ORACLE_AGGREGATOR: "0x877325Dd4504C149cFdDC3E9d943c46fa30a5c31",
+  BOOTSTRAP_MAANG_CONTROLLER: "0x192878967d654d3F0dc14F78b52a93D3Bf8C745e", // DRI Controller
+  PEG_STABILITY_MODULE: "0x5011519DB4b33b8307B5A71636FC7eF92e423058",
+
   // Vault (liquidity drip mechanism)
-  SMAANG_VAULT: "0x8DBfEEF5bf229d5Da3E2302b332F8372E81d9291",
+  SMAANG_VAULT: "0x22be7cc41ed9e22d5f5457be5ddc5666a7853647",
+
+  // DMM Adapter (bridges Uniswap V3 style to vault interface)
+  DMM_ADAPTER: "0x97792d7ae3CE8FBC9ecd71B48632F6101744e695",
+
+  // Governor
+  GOVERNOR: "0xA7ACbda68e060EC2517Db78552bEb9B225e0a12A",
 } as const;
 
 // Legacy aliases for backwards compatibility
 export const MOCK_USDC = CONTRACTS.USDC;
+export const MOCK_USDC_ADDRESS = CONTRACTS.USDC; // V67 Mock USDC token (has faucet function)
 export const ORACLE = CONTRACTS.ORACLE_AGGREGATOR;
 
 // Individual address exports for convenience
@@ -37,6 +44,7 @@ export const BOOTSTRAP_DRI_CONTROLLER_ADDRESS = CONTRACTS.BOOTSTRAP_MAANG_CONTRO
 export const BOOTSTRAP_MAANG_CONTROLLER_ADDRESS = CONTRACTS.BOOTSTRAP_MAANG_CONTROLLER;
 export const PEG_STABILITY_MODULE_ADDRESS = CONTRACTS.PEG_STABILITY_MODULE;
 export const SMAANG_VAULT_ADDRESS = CONTRACTS.SMAANG_VAULT;
+export const DMM_ADAPTER_ADDRESS = CONTRACTS.DMM_ADAPTER;
 
 // Contract ABIs - V10 Production
 export const ORACLE_ABI = [
@@ -269,7 +277,7 @@ export function getContractConfig(contractName: keyof typeof CONTRACTS) {
 
 // Chain configuration
 export const CHAIN_CONFIG = {
-  chainId: 69420,
+  chainId: 69670,
   rpcUrl: "https://eto.ash.center/rpc",
   name: "ETO L1",
   nativeCurrency: {

@@ -18,6 +18,9 @@ const buttonVariants = cva(
         cta: "bg-primary text-primary-foreground font-semibold hover:bg-primary/85",
         ctaDark: "bg-[hsl(240_4%_14%)] text-foreground border border-[hsl(240_4%_18%)] hover:bg-[hsl(240_4%_17%)] hover:border-[hsl(240_4%_22%)]",
         positive: "bg-[hsl(160_70%_50%)] text-black font-semibold hover:bg-[hsl(160_70%_45%)]",
+        // Neobrutalist variants with 3D shadow effect
+        neo: "bg-neo text-neo-text border-2 border-neo-border shadow-neo hover:translate-x-neo-x hover:translate-y-neo-y hover:shadow-none font-semibold",
+        neoReverse: "bg-neo text-neo-text border-2 border-neo-border hover:-translate-x-neo-x hover:-translate-y-neo-y hover:shadow-neo font-semibold",
       },
       size: {
         default: "h-9 px-4 py-2 rounded-[10px]",
@@ -25,6 +28,8 @@ const buttonVariants = cva(
         lg: "h-10 px-5 rounded-[10px]",
         xl: "h-11 px-6 rounded-xl text-[14px]",
         icon: "h-9 w-9 rounded-lg",
+        neo: "h-10 px-5 py-2 rounded-[5px]",
+        neoSm: "h-9 px-4 py-2 rounded-[5px] text-[12px]",
       },
     },
     defaultVariants: {

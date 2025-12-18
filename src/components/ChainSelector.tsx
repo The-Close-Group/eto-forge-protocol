@@ -7,7 +7,7 @@ import { useSwitchActiveWalletChain, useActiveWalletChain } from "thirdweb/react
 import { etoMainnet } from '@/lib/thirdweb';
 
 // Only ETO L1 is supported for DRI Protocol
-const ETO_CHAIN_ID = 69420;
+const ETO_CHAIN_ID = 69670;
 
 export function ChainSelector() {
   const [isSwitching, setIsSwitching] = useState(false);

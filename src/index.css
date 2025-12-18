@@ -82,6 +82,11 @@
     --sidebar-border: 240 4% 12%;
     --sidebar-ring: 160 70% 50%;
     --sidebar-muted: 240 4% 45%;
+
+    /* Neobrutalist Button */
+    --neo-bg: 160 70% 50%;
+    --neo-border: 0 0% 0%;
+    --neo-text: 0 0% 0%;
   }
 }
 

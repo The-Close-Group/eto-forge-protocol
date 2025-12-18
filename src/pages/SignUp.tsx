@@ -111,10 +111,7 @@ export default function SignUp() {
         {/* Navigation */}
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link to="/signin" className="text-primary hover:underline">
-              Sign In
-            </Link>
+            Connect your wallet to get started
           </p>
         </div>
       </div>

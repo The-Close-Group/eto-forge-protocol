@@ -1,14 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { usePriceHistory } from "@/hooks/useDeFiPrices";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Activity } from "lucide-react";
+import { Activity, Wifi, WifiOff } from "lucide-react";
+import { useProtocolStore, selectConnection } from "@/stores/protocolStore";
 
 export function OracleDMMChart() {
   const [timeRange, setTimeRange] = useState<"1h" | "24h" | "7d" | "30d">("24h");
-  const { data: priceHistory, isLoading } = usePriceHistory(timeRange);
+  
+  // Real-time data from WebSocket-powered store
+  const { data: realtimeHistory, isLoading } = usePriceHistory(timeRange);
+  
+  // Connection status
+  const connection = useProtocolStore(selectConnection);
 
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -26,15 +32,18 @@ export function OracleDMMChart() {
     }
   };
 
-  const chartData = priceHistory?.map(item => ({
-    time: formatTimestamp(item.timestamp),
-    timestamp: item.timestamp,
-    "Oracle Price": item.oraclePrice,
-    "DMM Price": item.dmmPrice,
-    difference: Math.abs(item.oraclePrice - item.dmmPrice),
-  }));
+  // Transform real-time data for chart
+  const chartData = useMemo(() => {
+    return realtimeHistory?.map(item => ({
+      time: formatTimestamp(item.timestamp),
+      timestamp: item.timestamp,
+      "Oracle Price": item.oraclePrice,
+      "DMM Price": item.dmmPrice,
+      difference: Math.abs(item.oraclePrice - item.dmmPrice),
+    })) || [];
+  }, [realtimeHistory, timeRange]);
 
-  if (isLoading) {
+  if (isLoading && chartData.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -56,19 +65,30 @@ export function OracleDMMChart() {
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5" />
           Oracle vs DMM Price History
+          {connection.wsConnected ? (
+            <span className="flex items-center gap-1 text-xs text-emerald-500 font-normal">
+              <Wifi className="h-3 w-3" /> Live
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-xs text-yellow-500 font-normal">
+              <WifiOff className="h-3 w-3" /> Connecting...
+            </span>
+          )}
         </CardTitle>
-        <div className="flex gap-1">
-          {(["1h", "24h", "7d", "30d"] as const).map((range) => (
-            <Button
-              key={range}
-              variant={timeRange === range ? "default" : "outline"}
-              size="sm"
-              onClick={() => setTimeRange(range)}
-              className="text-xs"
-            >
-              {range}
-            </Button>
-          ))}
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            {(["1h", "24h", "7d", "30d"] as const).map((range) => (
+              <Button
+                key={range}
+                variant={timeRange === range ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTimeRange(range)}
+                className="text-xs"
+              >
+                {range}
+              </Button>
+            ))}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -147,6 +167,10 @@ export function OracleDMMChart() {
           <div className="flex items-center gap-2">
             <div className="w-3 h-px bg-lime-400"></div>
             <span className="text-muted-foreground">DMM Price (Market)</span>
+          </div>
+          <div className="flex items-center gap-2 ml-4">
+            <span className={`w-2 h-2 rounded-full ${connection.wsConnected ? 'bg-emerald-500' : 'bg-yellow-500 animate-pulse'}`}></span>
+            <span className="text-muted-foreground">WebSocket Live</span>
           </div>
         </div>
       </CardContent>

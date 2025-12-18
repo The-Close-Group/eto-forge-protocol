@@ -1,479 +1,225 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Droplets, ExternalLink, Loader2, Wallet, ChevronRight, 
-  Zap, Shield, Clock, CheckCircle2, AlertCircle, Coins,
-  ArrowRight, Sparkles, RefreshCw
-} from 'lucide-react';
-import { useActiveAccount, ConnectButton } from 'thirdweb/react';
-import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
-import { createWallet } from 'thirdweb/wallets';
+import { Fuel, Loader2, CheckCircle2, AlertCircle, ExternalLink, Zap, Shield, Globe, ArrowRight } from 'lucide-react';
+import { useActiveAccount } from 'thirdweb/react';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
-import { USDC_ADDRESS } from '@/config/contracts';
-import { etoPublicClient } from '@/lib/etoRpc';
-import { encodeFunctionData, parseGwei } from 'viem';
-import { Progress } from '@/components/ui/progress';
-import metamaskLogo from '@/assets/metamask-logo.svg';
 
-const wallets = [
-  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
-  createWallet("com.coinbase.wallet"),
-  createWallet("me.rainbow"),
-  createWallet("app.phantom"),
-  createWallet("walletConnect"),
-];
+// AWS Lambda faucet endpoint
+const FAUCET_API_URL = import.meta.env.VITE_FAUCET_API_URL || '';
 
-const ETO_CHAIN_ID_HEX = '0x10F2C'; // 69420
-
-const mockUSDCABI = [
-  {
-    inputs: [],
-    name: "faucet",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-] as const;
-
-const ETO_CHAIN_PARAMS = {
-  chainId: ETO_CHAIN_ID_HEX,
-  chainName: 'ETO L1 Mainnet',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-  rpcUrls: ['https://eto.ash.center/rpc'],
-  blockExplorerUrls: ['https://eto-explorer.ash.center'],
-};
+interface FaucetResponse {
+  success?: boolean;
+  error?: string;
+  ethTxHash?: string;
+  usdcTxHash?: string;
+  ethAmount?: string;
+  usdcAmount?: string;
+  message?: string;
+  timeRemaining?: number;
+}
 
 export default function Faucet() {
   const navigate = useNavigate();
   const account = useActiveAccount();
-  const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
-  const [claimSuccess, setClaimSuccess] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [usdcTxHash, setUsdcTxHash] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [cooldownHours, setCooldownHours] = useState<number | null>(null);
 
-  const handleFaucet = async () => {
-    if (!account) {
+  const handleClaimFaucet = async () => {
+    if (!account?.address) {
       toast.error("Please connect your wallet first");
       return;
     }
 
-    const ethereum = (window as any).ethereum;
-    if (!ethereum) {
-      toast.error("No wallet detected");
+    if (!FAUCET_API_URL) {
+      toast.error("Faucet not configured");
       return;
     }
 
-    setIsLoading(true);
     setTxHash(null);
-    setClaimSuccess(false);
-    setProgress(10);
+    setUsdcTxHash(null);
+    setIsSuccess(false);
+    setIsPending(true);
+    setCooldownHours(null);
 
     try {
-      // 1. Switch/add chain
-      setProgress(20);
-      try {
-        await ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: ETO_CHAIN_ID_HEX }],
-        });
-      } catch (switchErr: any) {
-        if (switchErr.code === 4902) {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [ETO_CHAIN_PARAMS],
-          });
+      toast.info("Requesting funds from faucet...");
+
+      const response = await fetch(FAUCET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: account.address }),
+      });
+
+      const data: FaucetResponse = await response.json();
+
+      if (data.error) {
+        if (data.timeRemaining) {
+          const hours = Math.ceil(data.timeRemaining / 3600);
+          setCooldownHours(hours);
+          toast.error(`On cooldown. Try again in ${hours} hours.`);
+        } else {
+          toast.error(data.error);
         }
+        return;
       }
 
-      setProgress(40);
-      // 2. Encode the faucet() call
-      const data = encodeFunctionData({
-        abi: mockUSDCABI,
-        functionName: 'faucet',
-      });
-
-      // 3. Get correct nonce from our RPC
-      const nonce = await etoPublicClient.getTransactionCount({
-        address: account.address as `0x${string}`,
-      });
-
-      setProgress(50);
-      // 4. Estimate gas
-      let gasEstimate: bigint;
-      try {
-        gasEstimate = await etoPublicClient.estimateGas({
-          account: account.address as `0x${string}`,
-          to: USDC_ADDRESS as `0x${string}`,
-          data,
-        });
-      } catch {
-        gasEstimate = 100000n;
-      }
-
-      toast.info("Confirm the transaction in your wallet...");
-      setProgress(60);
-
-      // 5. Send transaction
-      const hash = await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: account.address,
-          to: USDC_ADDRESS,
-          data: data,
-          gas: `0x${(gasEstimate * 15n / 10n).toString(16)}`,
-          gasPrice: `0x${parseGwei('1.5').toString(16)}`,
-          nonce: `0x${nonce.toString(16)}`,
-        }],
-      });
-
-      if (!hash || typeof hash !== 'string') {
-        throw new Error("Wallet didn't return a transaction hash");
-      }
-
-      setTxHash(hash);
-      setProgress(80);
-      toast.success("Transaction sent! Waiting for confirmation...");
-
-      // 6. Wait for receipt
-      const receipt = await etoPublicClient.waitForTransactionReceipt({ 
-        hash: hash as `0x${string}`,
-        timeout: 60_000,
-      });
-
-      setProgress(100);
-      if (receipt.status === 'success') {
-        setClaimSuccess(true);
-        toast.success("Successfully claimed 10,000 mUSDC!");
-        queryClient.invalidateQueries({ queryKey: ["multi-chain-balances"] });
-      } else {
-        toast.error("Transaction failed on-chain");
+      if (data.success) {
+        setTxHash(data.ethTxHash || null);
+        setUsdcTxHash(data.usdcTxHash || null);
+        setIsSuccess(true);
+        const usdcMsg = data.usdcAmount ? ` + ${data.usdcAmount} mUSDC` : '';
+        toast.success(`Sent ${data.ethAmount || '0.1'} ETH${usdcMsg}!`);
+        
+        // Mark as onboarded and redirect to dashboard after 2 seconds
+        localStorage.setItem('eto-user-onboarded', 'true');
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
       }
     } catch (error: any) {
       console.error("Faucet error:", error);
-      setProgress(0);
-      
-      if (error.code === 4001 || error.message?.includes('rejected') || error.message?.includes('denied')) {
-        toast.error("Transaction rejected");
-      } else {
-        toast.error(error.shortMessage || error.message || "Transaction failed");
-      }
+      toast.error(error.message || "Failed to claim funds");
     } finally {
-      setIsLoading(false);
+      setIsPending(false);
     }
   };
 
-  const handleContinue = () => {
-    localStorage.setItem('eto-user-onboarded', 'true');
-    navigate('/dashboard');
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-[1200px] mx-auto p-6 pb-24 md:pb-6">
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-2">
-            <Coins className="w-4 h-4" />
-            <span>Testnet Tokens</span>
-          </div>
-          <h1 className="text-[28px] font-semibold tracking-tight mb-2">mUSDC Faucet</h1>
-          <p className="text-[14px] text-muted-foreground max-w-lg">
-            Get free Mock USDC tokens on ETO L1 to start paper trading. No real money required.
+    <div className="min-h-screen flex items-center justify-center p-6 pb-24 md:pb-6">
+      <div className="max-w-lg w-full space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold">Get Started</h1>
+          <p className="text-muted-foreground">
+            Claim free funds to start trading on ETO L1
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-          {/* Main Content */}
-          <div className="space-y-6">
-            {/* Faucet Card */}
-            <Card className="overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-              <CardHeader className="pb-4 relative">
-                <CardTitle className="flex items-center gap-3 text-[18px]">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Droplets className="w-5 h-5 text-primary" />
-                  </div>
-                  Claim mUSDC
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative space-y-6">
-                {/* Amount Display */}
-                <div className="p-6 rounded-xl bg-muted/30 border border-border/50">
-                  <div className="text-[13px] text-muted-foreground mb-2">Amount to receive</div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-[42px] font-semibold tracking-tight">10,000</span>
-                    <span className="text-[18px] text-muted-foreground">mUSDC</span>
-                  </div>
-                  <div className="text-[12px] text-muted-foreground mt-2">
-                    ≈ $10,000 USD (Paper Trading)
-                  </div>
-                </div>
 
-                {/* Progress Bar (when loading) */}
-                {isLoading && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[12px]">
-                      <span className="text-muted-foreground">Processing transaction...</span>
-                      <span className="text-primary font-medium">{progress}%</span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                  </div>
-                )}
+        {/* Single Unified Faucet Card */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader className="text-center pb-2">
+            <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Fuel className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle>Starter Faucet</CardTitle>
+            <CardDescription>
+              Get ETH for gas + mUSDC for trading - no existing balance required
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {cooldownHours && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border text-sm">
+                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                <span>You can claim again in {cooldownHours} hours</span>
+              </div>
+            )}
 
-                {/* Success State */}
-                {claimSuccess && (
-                  <div className="p-4 rounded-xl bg-data-positive/10 border border-data-positive/20 flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-data-positive shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-[14px] font-medium text-data-positive">Claim Successful!</div>
-                      <div className="text-[13px] text-muted-foreground mt-1">
-                        10,000 mUSDC has been added to your wallet. You're ready to start trading!
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Transaction Link */}
+            <Button
+              onClick={handleClaimFaucet}
+              disabled={isPending || !account || !!cooldownHours}
+              className="w-full"
+              size="lg"
+              variant={isSuccess ? "outline" : "default"}
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending funds...
+                </>
+              ) : isSuccess ? (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
+                  Success! Redirecting...
+                </>
+              ) : cooldownHours ? (
+                <>
+                  <Fuel className="mr-2 h-4 w-4" />
+                  Cooldown: {cooldownHours}h remaining
+                </>
+              ) : (
+                <>
+                  <Fuel className="mr-2 h-4 w-4" />
+                  Claim 0.1 ETH + 1,000 mUSDC
+                </>
+              )}
+            </Button>
+              
+            {(txHash || usdcTxHash) && (
+              <div className="flex justify-center gap-4 text-sm">
                 {txHash && (
                   <a 
                     href={`https://eto-explorer.ash.center/tx/${txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 hover:border-primary/30 transition-colors group"
+                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <ExternalLink className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-medium">View Transaction</div>
-                        <div className="text-[11px] text-muted-foreground font-mono">
-                          {txHash.slice(0, 10)}...{txHash.slice(-8)}
-                        </div>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    ETH tx <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
+                {usdcTxHash && (
+                  <a 
+                    href={`https://eto-explorer.ash.center/tx/${usdcTxHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                  >
+                    USDC tx <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  {!account ? (
-                    <div className="text-center py-6">
-                      <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                        <Wallet className="w-7 h-7 text-muted-foreground" />
-                      </div>
-                      <h3 className="text-[15px] font-medium mb-1">Connect Your Wallet</h3>
-                      <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
-                        Connect your wallet to claim free mUSDC tokens
-                      </p>
-                      <ConnectButton
-                        client={client}
-                        wallets={wallets}
-                        chain={etoMainnet}
-                        chains={supportedChains}
-                        connectModal={{ size: "compact" }}
-                        connectButton={{
-                          label: "Connect Wallet",
-                          style: {
-                            background: "hsl(160 70% 50%)",
-                            color: "#000",
-                            border: "none",
-                            borderRadius: "12px",
-                            padding: "14px 28px",
-                            fontSize: "14px",
-                            fontWeight: "600",
-                          },
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <Button
-                        onClick={handleFaucet}
-                        disabled={isLoading}
-                        variant="cta"
-                        size="lg"
-                        className="w-full h-14 text-[15px]"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Droplets className="mr-2 h-5 w-5" />
-                            Claim 10,000 mUSDC
-                          </>
-                        )}
-                      </Button>
-
-                      {claimSuccess && (
-          <Button 
-            onClick={handleContinue}
-                          variant="outline"
-            size="lg"
-                          className="w-full h-12"
-          >
-                          Continue to Dashboard
-                          <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-                      )}
-                    </>
-                  )}
+        {/* How it works */}
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-xs">1</span>
+            <span>Click the button above to claim funds</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-xs">2</span>
+            <span>ETH + mUSDC will be sent directly to your wallet</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-xs">3</span>
+            <span>Start trading MAANG tokens on the dashboard</span>
+          </div>
         </div>
-              </CardContent>
-            </Card>
 
-            {/* Network Info Card */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px] flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-muted-foreground" />
-                  Network Requirements
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Zap className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-[13px] font-medium">ETO L1 Network</div>
-                      <div className="text-[12px] text-muted-foreground">Chain ID: 69420</div>
-                    </div>
-                  </div>
-                  <div className="text-[12px] text-muted-foreground space-y-1.5 pt-2">
-                    <p>• Network will be automatically added if not present</p>
-                    <p>• Make sure you have some ETH for gas fees</p>
-                    <p>• If transaction gets stuck, try increasing gas price</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Skip button for returning users */}
+        <div className="flex justify-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/dashboard')}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Skip to Dashboard <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+        
+        {/* Features - Monochrome icons */}
+        <div className="grid grid-cols-4 gap-4 pt-4 border-t border-border/50">
+          <div className="text-center space-y-1">
+            <Zap className="h-4 w-4 mx-auto text-muted-foreground" />
+            <div className="text-xs text-muted-foreground">Instant</div>
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-5">
-            {/* Features Card */}
-            <Card className="overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-              <CardHeader className="pb-4 relative">
-                <CardTitle className="text-[14px] flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  Why Use the Faucet?
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative space-y-4">
-                {[
-                  {
-                    icon: Shield,
-                    title: 'Risk-Free Trading',
-                    description: 'Practice with fake money, real market conditions'
-                  },
-                  {
-                    icon: Zap,
-                    title: 'Instant Delivery',
-                    description: 'Tokens arrive in seconds after confirmation'
-                  },
-                  {
-                    icon: RefreshCw,
-                    title: 'Unlimited Claims',
-                    description: 'Come back anytime you need more tokens'
-                  },
-                  {
-                    icon: Clock,
-                    title: 'No Waiting Period',
-                    description: 'Start trading immediately after claiming'
-                  }
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                      <feature.icon className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <div className="text-[13px] font-medium">{feature.title}</div>
-                      <div className="text-[12px] text-muted-foreground">{feature.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Quick Links */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Quick Links</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-between h-10 px-3"
-                  onClick={() => navigate('/dashboard')}
-                >
-                  <span className="text-[13px]">Go to Dashboard</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-between h-10 px-3"
-                  onClick={() => navigate('/trade')}
-                >
-                  <span className="text-[13px]">Start Trading</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-between h-10 px-3"
-                  onClick={() => navigate('/staking')}
-                >
-                  <span className="text-[13px]">Explore Staking</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <a 
-                  href="https://eto-explorer.ash.center"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between w-full h-10 px-3 rounded-md hover:bg-muted/50 transition-colors"
-                >
-                  <span className="text-[13px]">Block Explorer</span>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                </a>
-              </CardContent>
-            </Card>
-
-            {/* Token Info */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Token Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Token</span>
-                  <span className="text-[13px] font-medium">mUSDC</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Network</span>
-                  <span className="text-[13px] font-medium">ETO L1</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Decimals</span>
-                  <span className="text-[13px] font-medium">6</span>
-                </div>
-                <div className="pt-2 border-t border-border/50">
-                  <div className="text-[12px] text-muted-foreground mb-1">Contract Address</div>
-                  <div className="text-[11px] font-mono text-muted-foreground break-all">
-                    {USDC_ADDRESS}
+          <div className="text-center space-y-1">
+            <Shield className="h-4 w-4 mx-auto text-muted-foreground" />
+            <div className="text-xs text-muted-foreground">Secure</div>
           </div>
+          <div className="text-center space-y-1">
+            <Fuel className="h-4 w-4 mx-auto text-muted-foreground" />
+            <div className="text-xs text-muted-foreground">No Gas</div>
           </div>
-              </CardContent>
-            </Card>
+          <div className="text-center space-y-1">
+            <Globe className="h-4 w-4 mx-auto text-muted-foreground" />
+            <div className="text-xs text-muted-foreground">ETO L1</div>
           </div>
         </div>
       </div>

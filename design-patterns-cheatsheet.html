@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Patterns UML Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            padding: 12px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #333;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid;
+        }
+        
+        .creational .section-title { color: #22c55e; border-color: #22c55e; }
+        .structural .section-title { color: #3b82f6; border-color: #3b82f6; }
+        .behavioral .section-title { color: #f59e0b; border-color: #f59e0b; }
+        .quick .section-title { color: #ec4899; border-color: #ec4899; }
+        
+        .pattern {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #252525;
+            border-radius: 6px;
+            border-left: 3px solid #444;
+        }
+        
+        .creational .pattern { border-left-color: #22c55e; }
+        .structural .pattern { border-left-color: #3b82f6; }
+        .behavioral .pattern { border-left-color: #f59e0b; }
+        .quick .pattern { border-left-color: #ec4899; }
+        
+        .pattern-name {
+            font-weight: 700;
+            font-size: 11px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .pattern-name .emoji { font-size: 12px; }
+        
+        .markers {
+            background: #1f1f1f;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin: 4px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10px;
+            color: #a3e635;
+        }
+        
+        .key-check {
+            color: #94a3b8;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        
+        .key-check strong {
+            color: #f472b6;
+        }
+        
+        .trap {
+            background: #3f1515;
+            color: #fca5a5;
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-size: 9px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+        
+        .flowchart {
+            grid-column: span 4;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #333;
+        }
+        
+        .flow-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #a78bfa;
+        }
+        
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .flow-step {
+            flex: 1;
+            background: #252525;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .step-num {
+            background: #a78bfa;
+            color: #0a0a0a;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 10px;
+            color: #e5e5e5;
+            margin-bottom: 3px;
+        }
+        
+        .step-desc {
+            font-size: 9px;
+            color: #9ca3af;
+        }
+        
+        .uml-hint {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 9px;
+            background: #1a1a2e;
+            padding: 3px 5px;
+            border-radius: 3px;
+            color: #818cf8;
+            margin-top: 3px;
+            display: block;
+        }
+        
+        .vs-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 9px;
+        }
+        
+        .vs-item {
+            padding: 4px;
+            border-radius: 4px;
+        }
+        
+        .vs-yes {
+            background: #14532d;
+            color: #86efac;
+        }
+        
+        .vs-no {
+            background: #450a0a;
+            color: #fca5a5;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                color: black;
+                font-size: 9px;
+            }
+            .section, .flowchart, .pattern, .flow-step {
+                background: #f5f5f5;
+                border-color: #ccc;
+            }
+            .markers {
+                background: #e5e5e5;
+                color: #166534;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 UML Design Pattern Identification Cheatsheet</h1>
+    
+    <!-- DECISION FLOWCHART -->
+    <div class="container">
+        <div class="flowchart">
+            <div class="flow-title">⚡ Quick Decision Flow</div>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Quick Markers?</div>
+                    <div class="step-desc">Private constructor → Singleton<br>observer/notify → Observer<br>getNext/hasNext → Iterator<br>execute/undo → Command</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Wraps Another Class?</div>
+                    <div class="step-desc">Same interface → Decorator<br>Different interface → Adapter<br>Implementation → Bridge<br>Complex system → Facade</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Abstract Methods?</div>
+                    <div class="step-desc">Independent algos → Strategy<br>Algorithm steps → Template<br>Context aggregates? → Strategy<br>Orchestrates steps? → Template</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Creates Objects?</div>
+                    <div class="step-desc">Product families → Abstract Factory<br>Single type → Factory Method<br>Step-by-step → Builder<br>Tree structure → Composite</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- QUICK IDENTIFICATION -->
+        <div class="section quick">
+            <div class="section-title">🚀 Instant ID Markers</div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">1️⃣</span> SINGLETON</div>
+                <div class="markers">- instance: Singleton<br>- Singleton()<br>+ getInstance(): Singleton</div>
+                <div class="key-check"><strong>Look for:</strong> Private constructor + static getInstance</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">👁️</span> OBSERVER</div>
+                <div class="markers">- observers: List&lt;Observer&gt;<br>+ register(o: Observer)<br>+ unregister(o: Observer)<br>+ notifyObservers()</div>
+                <div class="key-check"><strong>Look for:</strong> Collection of observers + notify method</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🔄</span> ITERATOR</div>
+                <div class="markers">+ getNext(): Element<br>+ hasNext(): boolean</div>
+                <div class="key-check"><strong>Look for:</strong> getNext + hasNext methods</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">⌨️</span> COMMAND</div>
+                <div class="markers">+ execute()<br>+ undo()<br>- receiver: Receiver</div>
+                <div class="key-check"><strong>Look for:</strong> execute() + undo() + Receiver</div>
+            </div>
+        </div>
+        
+        <!-- CREATIONAL PATTERNS -->
+        <div class="section creational">
+            <div class="section-title">🏗️ Creational Patterns</div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🏭</span> FACTORY METHOD</div>
+                <div class="markers">Creator (abstract)<br>  + createProduct(): Product<br>ConcreteCreatorA/B<br>  + createProduct(): Product</div>
+                <div class="key-check"><strong>Key:</strong> Subclasses override createProduct()</div>
+                <div class="vs-box">
+                    <div class="vs-item vs-yes">✓ Concrete products exist</div>
+                    <div class="vs-item vs-no">✗ Constructor ≠ Factory</div>
+                </div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🏢</span> ABSTRACT FACTORY</div>
+                <div class="markers">AbstractFactory<br>  + createProductA()<br>  + createProductB()<br>ConcreteFactory1/2</div>
+                <div class="key-check"><strong>Key:</strong> Creates FAMILIES of related products</div>
+                <div class="vs-box">
+                    <div class="vs-item vs-yes">✓ Factory passed as param</div>
+                    <div class="vs-item vs-no">✗ Not just inheritance</div>
+                </div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🔧</span> BUILDER</div>
+                <div class="markers">Director -builder: Builder<br>Builder:<br>  + buildPartA/B/C()<br>  + getProduct()</div>
+                <div class="key-check"><strong>Key:</strong> Director orchestrates step-by-step</div>
+                <div class="uml-hint">director.makeProduct() → builder.buildA/B/C</div>
+            </div>
+        </div>
+        
+        <!-- STRUCTURAL PATTERNS -->
+        <div class="section structural">
+            <div class="section-title">🏛️ Structural Patterns</div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🎀</span> DECORATOR</div>
+                <div class="markers">Component (interface)<br>Decorator -component: Component<br>  + operation() {<br>    component.operation()<br>  }</div>
+                <div class="key-check"><strong>Key:</strong> Contains SAME interface type</div>
+                <div class="trap">⚠️ Must add functionality dynamically</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🔌</span> ADAPTER</div>
+                <div class="markers">Target ← Adapter → Adaptee<br>Adapter -adaptee: Adaptee<br>  + targetMethod() {<br>    adaptee.specificMethod()<br>  }</div>
+                <div class="key-check"><strong>Key:</strong> Adaptee is EXTERNAL/existing code</div>
+                <div class="trap">⚠️ NOT if you wrote both classes!</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🌉</span> BRIDGE</div>
+                <div class="markers">Abstraction #impl: Implementation<br>RefinedAbstraction (branches)<br>ConcreteImpl1/2 (branches)</div>
+                <div class="key-check"><strong>Key:</strong> TWO parallel hierarchies</div>
+                <div class="uml-hint">Each impl handles ALL abstraction methods</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🏠</span> FACADE</div>
+                <div class="markers">Client → Facade → ComplexSystem<br>Facade simplifies subsystem access</div>
+                <div class="key-check"><strong>Key:</strong> LIMITED functionality, hides complexity</div>
+                <div class="trap">⚠️ NOT same functionality = just wrapper</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🌳</span> COMPOSITE</div>
+                <div class="markers">Component (interface)<br>Leaf implements Component<br>Composite -children: Component[]<br>  implements Component</div>
+                <div class="key-check"><strong>Key:</strong> Tree structure, uniform treatment</div>
+            </div>
+        </div>
+        
+        <!-- BEHAVIORAL PATTERNS -->
+        <div class="section behavioral">
+            <div class="section-title">🎭 Behavioral Patterns</div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">♟️</span> STRATEGY</div>
+                <div class="markers">Context -strategy: Strategy<br>  + setStrategy(s: Strategy)<br>  + doSomething() {<br>    strategy.execute()<br>  }<br>ConcreteStrategyA/B/C</div>
+                <div class="key-check"><strong>Key:</strong> Each strategy = ONE complete algorithm</div>
+                <div class="vs-box">
+                    <div class="vs-item vs-yes">✓ Runtime swappable</div>
+                    <div class="vs-item vs-no">✗ 3 responsibilities ≠ 1 strategy</div>
+                </div>
+                <div class="trap">⚠️ Multiple strategies in one class = aggregation abuse!</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">📋</span> TEMPLATE METHOD</div>
+                <div class="markers">AbstractClass<br>  + templateMethod() {<br>    step1(); step2(); step3()<br>  }<br>  # step1() // abstract<br>  # step2() // abstract<br>ConcreteClass overrides steps</div>
+                <div class="key-check"><strong>Key:</strong> templateMethod NOT overridden, steps ARE</div>
+                <div class="uml-hint">Algorithm skeleton in parent, details in children</div>
+            </div>
+            
+            <div class="pattern">
+                <div class="pattern-name"><span class="emoji">🔗</span> STATE</div>
+                <div class="markers">Context -state: State<br>State (interface)<br>  + handle(ctx: Context)<br>ConcreteStateA/B</div>
+                <div class="key-check"><strong>Key:</strong> State transitions, context changes state</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- COMPARISON BOXES -->
+    <div class="container" style="margin-top: 10px;">
+        <div class="section" style="grid-column: span 2; background: #1a1a2e; border-color: #4c1d95;">
+            <div class="section-title" style="color: #a78bfa; border-color: #a78bfa;">⚔️ Strategy vs Template Method</div>
+            <div class="vs-box" style="grid-template-columns: 1fr 1fr;">
+                <div class="vs-item" style="background: #1e3a5f; color: #93c5fd;">
+                    <strong>STRATEGY</strong><br>
+                    • Composition (has-a)<br>
+                    • Each strategy = complete algorithm<br>
+                    • Runtime swappable<br>
+                    • Context delegates to strategy<br>
+                    • Strategies are INDEPENDENT
+                </div>
+                <div class="vs-item" style="background: #3f2c1a; color: #fcd34d;">
+                    <strong>TEMPLATE</strong><br>
+                    • Inheritance (is-a)<br>
+                    • Subclasses override STEPS<br>
+                    • Compile-time choice<br>
+                    • Parent orchestrates algorithm<br>
+                    • Steps are PARTS of one algo
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" style="grid-column: span 2; background: #1a1a2e; border-color: #4c1d95;">
+            <div class="section-title" style="color: #a78bfa; border-color: #a78bfa;">⚔️ Factory Method vs Abstract Factory</div>
+            <div class="vs-box" style="grid-template-columns: 1fr 1fr;">
+                <div class="vs-item" style="background: #14532d; color: #86efac;">
+                    <strong>FACTORY METHOD</strong><br>
+                    • Creates SINGLE product type<br>
+                    • Subclasses override createProduct<br>
+                    • One Creator → One Product<br>
+                    • Focus: Defer instantiation
+                </div>
+                <div class="vs-item" style="background: #14532d; color: #86efac;">
+                    <strong>ABSTRACT FACTORY</strong><br>
+                    • Creates PRODUCT FAMILIES<br>
+                    • createProductA + createProductB<br>
+                    • Factory passed as parameter<br>
+                    • Focus: Related products together
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" style="grid-column: span 2; background: #1a1a2e; border-color: #4c1d95;">
+            <div class="section-title" style="color: #a78bfa; border-color: #a78bfa;">⚔️ Decorator vs Adapter</div>
+            <div class="vs-box" style="grid-template-columns: 1fr 1fr;">
+                <div class="vs-item" style="background: #1e3a5f; color: #93c5fd;">
+                    <strong>DECORATOR</strong><br>
+                    • SAME interface<br>
+                    • Adds functionality<br>
+                    • Can stack multiple<br>
+                    • You control both
+                </div>
+                <div class="vs-item" style="background: #1e3a5f; color: #93c5fd;">
+                    <strong>ADAPTER</strong><br>
+                    • DIFFERENT interfaces<br>
+                    • Converts interface<br>
+                    • Usually single adapter<br>
+                    • Adaptee is external/legacy
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" style="grid-column: span 2; background: #1a1a2e; border-color: #4c1d95;">
+            <div class="section-title" style="color: #a78bfa; border-color: #a78bfa;">🚨 Common Traps</div>
+            <div style="font-size: 10px; color: #f87171;">
+                <div style="margin-bottom: 4px;">❌ <strong>Constructor ≠ Factory Method</strong> - Need actual factory classes</div>
+                <div style="margin-bottom: 4px;">❌ <strong>Aggregation ≠ Strategy</strong> - 3 strategies for 3 responsibilities = wrong</div>
+                <div style="margin-bottom: 4px;">❌ <strong>Inheritance ≠ Template</strong> - Need templateMethod() orchestrating steps</div>
+                <div style="margin-bottom: 4px;">❌ <strong>Wrapping ≠ Decorator</strong> - Must implement SAME interface</div>
+                <div>❌ <strong>You wrote both ≠ Adapter</strong> - Adaptee must be external code</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,17 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   ExternalLink, Wallet, ArrowUpRight, Clock, RefreshCw, ChevronRight, 
-  ChevronDown, Zap, Lock, Search, Settings, Bell, Plus, BarChart3,
+  ChevronDown, Zap, Lock, Bell, Plus, BarChart3,
   Menu, User, LogOut, TrendingUp, TrendingDown, Check, X, Copy,
   Calculator, PieChart, Shield, AlertTriangle, Sparkles, Target
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useActiveAccount, ConnectButton } from "thirdweb/react";
-import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
+import { useActiveAccount, ConnectButton, useSwitchActiveWalletChain, useActiveWallet } from "thirdweb/react";
+import { client, etoMainnet, supportedChains, etoMainnetParams } from "@/lib/thirdweb";
 import { createWallet } from "thirdweb/wallets";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
+import { useOraclePriceHistory, useStakingStats, useVaultSnapshotHistory, useUserStakingStats, useUserDepositsAndWithdrawals, timeFilterToHours } from "@/lib/rpcDataLayer";
+import { useQuery } from "@tanstack/react-query";
+import { etoPublicClient } from "@/lib/etoRpc";
+import { SMAANG_VAULT_ADDRESS } from "@/config/contracts";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import { toast } from "sonner";
 import { useStakingContext } from "@/contexts/StakingContext";
@@ -37,10 +41,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
+  createWallet("io.metamask"),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),
@@ -51,6 +54,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const account = useActiveAccount();
   const { signOut } = useAuth();
+  const switchChain = useSwitchActiveWalletChain();
+  const activeWallet = useActiveWallet();
   
   // Staking context
   const { 
@@ -78,10 +83,6 @@ export default function Dashboard() {
   } = useStakingContext();
   
   // UI states
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [walletAddressOpen, setWalletAddressOpen] = useState(false);
-  const [walletAddressInput, setWalletAddressInput] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [unstakeDialogOpen, setUnstakeDialogOpen] = useState(false);
@@ -93,6 +94,72 @@ export default function Dashboard() {
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
+  
+  // Convert time filter to hours for data queries
+  const timeFilterHours = useMemo(() => timeFilterToHours(timeFilter), [timeFilter]);
+  
+  // Subgraph data for sparklines - real oracle price history (responds to time filter)
+  const { data: oraclePriceData, isLoading: isLoadingPriceHistory } = useOraclePriceHistory(timeFilterHours);
+  
+  // Subgraph staking stats - real data from vault snapshots (responds to time filter)
+  const { data: stakingStats, isLoading: isLoadingStakingStats } = useStakingStats(timeFilterHours);
+  const { data: vaultHistory } = useVaultSnapshotHistory(timeFilterHours);
+  
+  // User-specific staking stats from subgraph (live data for connected wallet)
+  const { data: userStakingStats, isLoading: isLoadingUserStats } = useUserStakingStats(account?.address);
+  
+  // Real user deposits/withdrawals from subgraph (actual staking positions)
+  const { data: userStakingData, isLoading: isLoadingUserStaking } = useUserDepositsAndWithdrawals(account?.address);
+  
+  // On-chain vault balance - fallback when subgraph is unavailable
+  const VAULT_ABI = [
+    { inputs: [{ name: 'account', type: 'address' }], name: 'balanceOf', outputs: [{ name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
+    { inputs: [], name: 'totalAssets', outputs: [{ name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
+    { inputs: [], name: 'totalSupply', outputs: [{ name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  ] as const;
+  
+  const { data: onChainVaultData, isLoading: isLoadingOnChainVault, refetch: refetchOnChainVault } = useQuery({
+    queryKey: ['on-chain-vault-balance', account?.address],
+    queryFn: async () => {
+      if (!account?.address) return null;
+      
+      const [shares, totalAssets, totalSupply] = await Promise.all([
+        etoPublicClient.readContract({
+          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
+          abi: VAULT_ABI,
+          functionName: 'balanceOf',
+          args: [account.address as `0x${string}`],
+        }),
+        etoPublicClient.readContract({
+          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
+          abi: VAULT_ABI,
+          functionName: 'totalAssets',
+        }),
+        etoPublicClient.readContract({
+          address: SMAANG_VAULT_ADDRESS as `0x${string}`,
+          abi: VAULT_ABI,
+          functionName: 'totalSupply',
+        }),
+      ]);
+      
+      const sharePrice = totalSupply > 0n ? Number(totalAssets) / Number(totalSupply) : 1;
+      const sharesFormatted = Number(shares) / 1e18;
+      const assetsValue = sharesFormatted * sharePrice;
+      
+      return {
+        shares,
+        sharesFormatted,
+        totalAssets,
+        totalSupply,
+        sharePrice,
+        assetsValue, // Value in MAANG
+        hasPosition: shares > 0n,
+      };
+    },
+    enabled: !!account?.address,
+    staleTime: 10_000, // 10 seconds
+    refetchInterval: 30_000, // 30 seconds
+  });
   
   const hasWallet = !!account?.address;
 
@@ -126,7 +193,7 @@ export default function Dashboard() {
     toast.loading("Refreshing data...", { id: "refresh" });
     
     try {
-      await Promise.all([refetchStats(), refetchActivity()]);
+      await Promise.all([refetchStats(), refetchActivity(), refetchOnChainVault()]);
       await new Promise(resolve => setTimeout(resolve, 800));
       toast.success("Data refreshed successfully", { id: "refresh" });
     } catch (error) {
@@ -173,20 +240,6 @@ export default function Dashboard() {
     toast.success("All notifications marked as read");
   };
 
-  const handleWalletAddressSubmit = () => {
-    if (!walletAddressInput.trim()) {
-      toast.error("Please enter a wallet address");
-      return;
-    }
-    if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddressInput)) {
-      toast.error("Invalid Ethereum address format");
-      return;
-    }
-    toast.success(`Viewing portfolio for ${walletAddressInput.slice(0, 6)}...${walletAddressInput.slice(-4)}`);
-    setWalletAddressOpen(false);
-    setWalletAddressInput('');
-  };
-
   const handleCopyAddress = () => {
     if (account?.address) {
       navigator.clipboard.writeText(account.address);
@@ -208,89 +261,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Search Dialog */}
-      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Search Assets</DialogTitle>
-            <DialogDescription>Find staking assets by name or symbol</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, symbol..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-                autoFocus
-              />
-            </div>
-            <div className="space-y-1 max-h-64 overflow-y-auto">
-              {assets
-                .filter(a => 
-                  a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  a.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-                .map(asset => (
-                  <button
-                    key={asset.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left group"
-                    onClick={() => {
-                      setSearchOpen(false);
-                      setSearchQuery('');
-                      navigate('/buy-maang', { state: { selectedToken: asset.symbol } });
-                    }}
-                  >
-                    <div 
-                      className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
-                      style={{ background: `${asset.color}15` }}
-                    >
-                      <img src={asset.logo} alt="" className="w-full h-full object-contain" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[13px] font-medium">{asset.name}</div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {getEffectiveAPY(asset.baseAPY, investmentPeriod, autoCompound).toFixed(2)}% APY
-                      </div>
-                    </div>
-                    <div className={`text-[12px] font-medium ${asset.riskLevel === 'low' ? 'text-data-positive' : asset.riskLevel === 'high' ? 'text-data-negative' : 'text-warning'}`}>
-                      {asset.riskLevel}
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </button>
-                ))}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Wallet Address Dialog */}
-      <Dialog open={walletAddressOpen} onOpenChange={setWalletAddressOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>View Portfolio</DialogTitle>
-            <DialogDescription>Enter any Ethereum wallet address to view its staking portfolio</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="0x..."
-              value={walletAddressInput}
-              onChange={(e) => setWalletAddressInput(e.target.value)}
-              className="font-mono"
-            />
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setWalletAddressOpen(false)}>
-                Cancel
-              </Button>
-              <Button variant="cta" className="flex-1" onClick={handleWalletAddressSubmit}>
-                View Portfolio
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Stake Dialog */}
       <Dialog open={stakeDialogOpen} onOpenChange={setStakeDialogOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -325,7 +295,7 @@ export default function Dashboard() {
               </div>
 
               {/* Amount Input */}
-              <div className="space-y-2">
+        <div className="space-y-2">
                 <Label>Stake Amount ({selectedAsset.symbol})</Label>
                 <Input
                   type="number"
@@ -525,45 +495,109 @@ export default function Dashboard() {
       {/* Top Header Bar */}
       <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
         <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="user-avatar" />
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-muted-foreground">@ryan997</span>
-                  <span className="pro-badge">PRO</span>
-                </div>
-                <span className="text-[14px] font-medium">Ryan Crawford</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52">
-              <DropdownMenuItem onClick={() => navigate('/profile')}>
-                <User className="w-4 h-4 mr-2" />
-                My Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/staking')}>
-                <Wallet className="w-4 h-4 mr-2" />
-                My Stakings
-              </DropdownMenuItem>
-              {account?.address && (
-                <DropdownMenuItem onClick={handleCopyAddress}>
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Address
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {hasWallet ? (
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div className="user-avatar" />
+                    <div className="flex items-center gap-2">
+                      {account?.address && (
+                        <span className="text-[13px] text-muted-foreground">
+                          {account.address.slice(0, 6)}...{account.address.slice(-4)}
+                        </span>
+                      )}
+                    </div>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-52">
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <User className="w-4 h-4 mr-2" />
+                    My Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/staking')}>
+                    <Wallet className="w-4 h-4 mr-2" />
+                    My Stakings
+                  </DropdownMenuItem>
+                  {account?.address && (
+                    <DropdownMenuItem onClick={handleCopyAddress}>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Address
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-          <button className="deposit-btn ml-4" onClick={handleStake}>
-            Deposit
-            <Lock className="w-3.5 h-3.5" />
-          </button>
+              <button className="deposit-btn ml-4" onClick={handleStake}>
+                Deposit
+                <Lock className="w-3.5 h-3.5" />
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center justify-center">
+              <ConnectButton
+                client={client}
+                wallets={wallets}
+                chain={etoMainnet}
+                chains={supportedChains}
+                connectModal={{ size: "wide" }}
+                connectButton={{
+                  label: "Connect Wallet",
+                  style: {
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "hsl(160 70% 50%)",
+                    color: "#000",
+                    border: "2px solid #000",
+                    borderRadius: "5px",
+                    padding: "10px 20px",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    boxShadow: "4px 4px 0px 0px #000",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  },
+                }}
+                onConnect={async (wallet) => {
+                  console.log('Wallet connected:', wallet);
+                  const address = wallet.getAccount()?.address;
+                  if (address) {
+                    try {
+                      if (activeWallet && typeof (activeWallet as any).request === "function") {
+                        await (activeWallet as any).request({
+                          method: 'wallet_addEthereumChain',
+                          params: [etoMainnetParams],
+                        });
+                        console.log('ETO L1 chain config updated');
+                      }
+                    } catch (addError: any) {
+                      console.log('Chain add result:', addError?.message || 'success');
+                    }
+
+                    try {
+                      await switchChain(etoMainnet);
+                      toast.success('Connected to ETO L1');
+                    } catch (error) {
+                      console.error('Failed to switch chain:', error);
+                      toast.error('Please switch to ETO L1 manually in your wallet');
+                    }
+
+                    const isNewUser = !localStorage.getItem('eto-user-onboarded');
+                    if (isNewUser) {
+                      navigate('/faucet');
+                    }
+                  }
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -608,11 +642,6 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <button className="search-input" onClick={() => setSearchOpen(true)}>
-            <Search className="w-3.5 h-3.5" />
-            <span>Search...</span>
-          </button>
-
           <button className="icon-btn" onClick={() => setCalculatorOpen(true)}>
             <Calculator className="w-4 h-4" />
           </button>
@@ -624,27 +653,6 @@ export default function Dashboard() {
           >
             <RefreshCw className="w-4 h-4" />
           </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="icon-btn flex items-center gap-1.5">
-                <span className="text-[13px]">Settings</span>
-                <Settings className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => toast.info("Appearance settings coming soon")}>
-                Appearance
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Notification settings coming soon")}>
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/system-health')}>
-                System Health
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </header>
 
@@ -670,15 +678,15 @@ export default function Dashboard() {
                 onClick={() => { setTimeFilter(time); toast.info(`Showing ${time} data`); }}
               >
                 {time}
-            </button>
+              </button>
             ))}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-            <button className="filter-dropdown">
+                <button className="filter-dropdown">
                   {sortOrder === 'apy' ? 'APY' : sortOrder === 'tvl' ? 'TVL' : 'Risk'}
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setSortOrder('apy')}>
@@ -699,7 +707,7 @@ export default function Dashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+                       </div>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
@@ -709,71 +717,95 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {sortedAssets.map((asset) => {
                 const effectiveAPY = getEffectiveAPY(asset.baseAPY, investmentPeriod, autoCompound);
-                const sparkData = generateSparklineData(30, asset.riskLevel === 'high' ? 'down' : 'up');
+                // Use real subgraph data for MAANG price history, fallback to seeded generated data
+                const hasRealData = asset.symbol === 'MAANG' && oraclePriceData?.sparklineData && oraclePriceData.sparklineData.length > 5;
+                const sparkData = hasRealData 
+                  ? oraclePriceData.sparklineData 
+                  : generateSparklineData(30, asset.riskLevel === 'high' ? 'down' : 'up', asset.id);
                 const isSelected = selectedAsset?.id === asset.id;
                 
-                return (
-                <div 
-                  key={asset.id}
-                    className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
-                    onClick={() => selectAsset(asset.id)}
-                    onDoubleClick={() => navigate('/buy-maang', { state: { selectedToken: asset.symbol } })}
+                // Handle click - navigate directly to the relevant page
+                const handleCardClick = () => {
+                  selectAsset(asset.id);
+                  // Navigate to the appropriate page
+                  if (asset.id === 'smaang') {
+                    navigate('/staking');
+                  } else {
+                    // MAANG and USDC both go to buy-maang
+                    navigate('/buy-maang');
+                  }
+                };
+                     
+                    return (
+                  <div 
+                    key={asset.id}
+
+                    className={`staking-asset-card cursor-pointer group ${isSelected ? 'ring-2 ring-primary' : ''}`}
+                    onClick={handleCardClick}
                   >
-                    {/* Hover tooltip */}
-                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                      <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
-                      </div>
-                    </div>
-                    
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-between mb-3">
+
+                      <div className="flex items-center gap-2.5">
                         <div 
                           className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
                           style={{ background: `${asset.color}15` }}
                         >
-                        <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div>
-                          <div className="text-[11px] text-muted-foreground">{asset.type.toUpperCase()}</div>
-                        <div className="text-[13px] font-medium">{asset.name}</div>
-                      </div>
-                    </div>
+                          <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-muted-foreground">{asset.type.toUpperCase()}</div>
+                          <div className="text-[13px] font-medium">{asset.name}</div>
+                        </div>
+                                </div>
                       {isSelected && <Check className="w-4 h-4 text-primary" />}
-                  </div>
-                  
-                  <div className="mb-3">
-                    <div className="reward-rate-label">Reward Rate</div>
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="reward-rate">{effectiveAPY.toFixed(2)}</span>
-                        <span className="text-xl text-muted-foreground font-normal">%</span>
+                                </div>
+                    
+                    {/* Price Display */}
+                    <div className="mb-2 pb-2 border-b border-border/30">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Price</div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[18px] font-semibold tracking-tight">
+                          ${asset.price >= 1 ? asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : asset.price.toFixed(4)}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">USD</span>
+                      </div>
                     </div>
-                  </div>
-                  
-                    <div className={`status-badge ${asset.riskLevel === 'low' ? 'status-badge-positive' : asset.riskLevel === 'high' ? 'status-badge-negative' : ''} mb-4`}>
-                      <span className="w-[6px] h-[6px] rounded-full bg-current" />
+                    
+                    <div className="mb-2">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Reward Rate</div>
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-[24px] font-semibold tracking-tight">{effectiveAPY.toFixed(2)}</span>
+                        <span className="text-base text-muted-foreground font-normal">%</span>
+                                </div>
+                              </div>
+                    
+                    <div className={`status-badge ${asset.riskLevel === 'low' ? 'status-badge-positive' : asset.riskLevel === 'high' ? 'status-badge-negative' : ''} mb-3`}>
+                      <span className="w-[5px] h-[5px] rounded-full bg-current" />
                       {asset.riskLevel} risk
-                  </div>
-                  
-                  <div className="relative">
-                    <Sparkline 
+                    </div>
+                    
+                    <div className="relative">
+                      <Sparkline 
                         data={sparkData} 
-                        height={60}
+                        height={55}
                         variant={asset.riskLevel !== 'high' ? 'positive' : 'negative'}
-                      showArea={true}
-                      showEndValue={true}
+                        showArea={true}
+                        showEndValue={true}
                         endValue={`$${(asset.tvl / 1000000).toFixed(1)}M TVL`}
-                    />
-                  </div>
-                </div>
+                      />
+                    </div>
+                          </div>
                 );
               })}
             </div>
 
-            {/* Your Active Stakings */}
+            {/* Your Active Stakings - Using Real Subgraph Data */}
             <div className="active-staking-card">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-[15px] font-medium">Your active stakings ({positions.length})</h2>
+                <h2 className="text-[15px] font-medium flex items-center gap-2">
+                  Your active stakings ({userStakingData?.activePositionCount ?? (onChainVaultData?.hasPosition ? 1 : positions.length)})
+                  {(userStakingData || onChainVaultData?.hasPosition) && <span className="text-[8px] text-primary/60 uppercase">live</span>}
+                </h2>
                 <div className="flex items-center gap-0.5">
                   <button className={`icon-btn ${showChart ? 'bg-muted' : ''}`} onClick={() => setShowChart(!showChart)}>
                     <BarChart3 className="w-4 h-4" />
@@ -781,7 +813,7 @@ export default function Dashboard() {
                   <button className="icon-btn" onClick={handleStake}>
                     <Plus className="w-4 h-4" />
                   </button>
-                  <button className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
+                  <button className={`icon-btn ${isRefreshing || isLoadingUserStaking ? 'animate-spin' : ''}`} onClick={handleRefresh}>
                     <RefreshCw className="w-4 h-4" />
                   </button>
                 </div>
@@ -805,18 +837,30 @@ export default function Dashboard() {
                     connectButton={{
                       label: "Connect Wallet",
                       style: {
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         background: "hsl(160 70% 50%)",
                         color: "#000",
-                        border: "none",
-                        borderRadius: "10px",
-                        padding: "11px 24px",
+                        border: "2px solid #000",
+                        borderRadius: "5px",
+                        padding: "10px 20px",
                         fontSize: "13px",
                         fontWeight: "600",
+                        boxShadow: "4px 4px 0px 0px #000",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
                       },
                     }}
                   />
                 </div>
-              ) : positions.length === 0 ? (
+              ) : isLoadingUserStaking || isLoadingOnChainVault ? (
+                <div className="space-y-4 py-6">
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-12 w-full rounded-xl" />
+                </div>
+              ) : ((userStakingData?.activePositionCount ?? 0) === 0 && !onChainVaultData?.hasPosition && positions.length === 0) ? (
                 <div className="text-center py-12">
                   <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
                     <Target className="w-7 h-7 text-muted-foreground" />
@@ -834,102 +878,188 @@ export default function Dashboard() {
                   {showChart && (
                     <div className="p-4 rounded-xl bg-muted/30 mb-4">
                       <div className="text-[13px] text-muted-foreground mb-2">Portfolio Performance</div>
-                      <Sparkline data={generateSparklineData(50, 'up')} height={100} variant="accent" showArea={true} />
-                      </div>
+                      <Sparkline data={generateSparklineData(50, 'up', 'portfolio-performance')} height={100} variant="accent" showArea={true} />
+                    </div>
                   )}
 
-                  {activePosition && activeAsset && (
+                  {/* Active Position - Using Real Subgraph Data or On-Chain Fallback */}
+                  {(userStakingData?.netStaked ?? 0) > 0 || onChainVaultData?.hasPosition || (activePosition && activeAsset) ? (
                     <div className="pb-5 border-b border-border-subtle">
                       <div className="flex items-start gap-3 mb-4">
                         <div 
                           className="w-11 h-11 rounded-xl flex items-center justify-center"
-                          style={{ background: `${activeAsset.color}15` }}
+                          style={{ background: `${activeAsset?.color || '#4dd4ac'}15` }}
                         >
-                          <img src={activeAsset.logo} alt="" className="w-6 h-6" />
+                          <img src={activeAsset?.logo || '/assets/maang-logo.svg'} alt="" className="w-6 h-6" />
                         </div>
                         <div className="flex-1">
-                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-0.5">
-                            <span>Last Update — {Math.floor((Date.now() - activePosition.startDate.getTime()) / (1000 * 60))} minutes ago</span>
-                          <Clock className="w-3 h-3" />
-                        </div>
+                          <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-0.5">
+                            <span>
+                              {onChainVaultData?.hasPosition 
+                                ? 'On-chain balance'
+                                : `Last Update — ${userStakingData?.positions?.[0] 
+                                    ? Math.floor((Date.now() - userStakingData.positions[0].timestamp) / (1000 * 60)) 
+                                    : activePosition 
+                                      ? Math.floor((Date.now() - activePosition.startDate.getTime()) / (1000 * 60))
+                                      : 0} minutes ago`}
+                            </span>
+                            <Clock className="w-3 h-3" />
+                            {(userStakingData || onChainVaultData?.hasPosition) && <span className="text-[8px] text-primary/60 uppercase ml-1">live</span>}
+                          </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-[18px] font-semibold">Stake {activeAsset.name} ({activeAsset.symbol})</h3>
+                            <h3 className="text-[18px] font-semibold">Stake {activeAsset?.name || 'MAANG'} ({activeAsset?.symbol || 'MAANG'})</h3>
                             <div 
                               className="w-5 h-5 rounded-full flex items-center justify-center"
-                              style={{ background: activeAsset.color }}
+                              style={{ background: activeAsset?.color || '#4dd4ac' }}
                             >
-                              <img src={activeAsset.logo} alt="" className="w-3 h-3 brightness-0 invert" />
+                              <img src={activeAsset?.logo || '/assets/maang-logo.svg'} alt="" className="w-3 h-3 brightness-0 invert" />
                             </div>
-                          <button className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 ml-2">
-                            View Profile <ArrowUpRight className="w-3.5 h-3.5" />
-                          </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div>
-                        <div className="text-[13px] text-muted-foreground mb-1">Current Reward Balance, {activeAsset.symbol}</div>
+                      <div>
+                        <div className="text-[13px] text-muted-foreground mb-1">
+                          {onChainVaultData?.hasPosition ? 'Staked Balance, sMAANG' : `Current Reward Balance, ${activeAsset?.symbol || 'MAANG'}`}
+                          {(userStakingData || onChainVaultData?.hasPosition) && <span className="text-[8px] text-primary/60 uppercase ml-1">live</span>}
+                        </div>
                         <div className="flex items-center gap-4">
                           <span className="text-[46px] font-medium tracking-tight leading-none tabular-nums">
-                            {activePosition.earnedRewards.toFixed(5)}
-                      </span>
-                          <Button variant="cta" size="default" onClick={handleStake}>
-                        Upgrade
-                      </Button>
-                          <Button variant="outline" size="default" onClick={() => handleUnstake(activePosition.id)}>
-                        Unstake
-                      </Button>
+                            {onChainVaultData?.hasPosition 
+                              ? onChainVaultData.sharesFormatted.toFixed(2)
+                              : (userStakingData?.estimatedRewards ?? activePosition?.earnedRewards ?? 0).toFixed(5)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                    </div>
-                  )}
+                  ) : null}
 
-                  {/* Stats Grid */}
+                  {/* Stats Grid - Using Real User Subgraph Data or On-Chain Fallback */}
                   <div className="grid grid-cols-4 gap-6">
                     {[
-                      { label: 'Total Staked', value: `$${getTotalStaked().toLocaleString()}` },
-                      { label: 'Total Rewards', value: `+${getTotalRewards().toFixed(4)}` },
-                      { label: 'Active Positions', value: positions.length.toString() },
-                      { label: 'Avg APY', value: `${(positions.reduce((sum, p) => sum + p.apy, 0) / positions.length || 0).toFixed(2)}%` },
+                      { 
+                        label: 'Total Staked', 
+                        value: userStakingData?.netStaked && userStakingData.netStaked > 0
+                          ? `$${userStakingData.netStaked.toLocaleString(undefined, { maximumFractionDigits: 2 })}` 
+                          : onChainVaultData?.hasPosition
+                            ? `${onChainVaultData.sharesFormatted.toLocaleString(undefined, { maximumFractionDigits: 2 })} sMAANG`
+                            : stakingStats 
+                              ? `$${stakingStats.totalStaked.toLocaleString(undefined, { maximumFractionDigits: 1 })}` 
+                              : `$${getTotalStaked().toLocaleString()}`,
+                        live: !!userStakingData || !!onChainVaultData?.hasPosition || !!stakingStats
+                      },
+                      { 
+                        label: 'Total Rewards', 
+                        value: userStakingData?.estimatedRewards && userStakingData.estimatedRewards > 0
+                          ? `+${userStakingData.estimatedRewards.toFixed(4)}` 
+                          : onChainVaultData?.hasPosition
+                            ? `+${((onChainVaultData.assetsValue - onChainVaultData.sharesFormatted) > 0 ? (onChainVaultData.assetsValue - onChainVaultData.sharesFormatted) : 0).toFixed(4)}`
+                            : stakingStats 
+                              ? `+${stakingStats.totalRewards.toFixed(4)}` 
+                              : `+${getTotalRewards().toFixed(4)}`,
+                        live: !!userStakingData || !!onChainVaultData?.hasPosition || !!stakingStats
+                      },
+                      { 
+                        label: 'Active Positions', 
+                        value: userStakingData?.activePositionCount && userStakingData.activePositionCount > 0
+                          ? userStakingData.activePositionCount.toString() 
+                          : onChainVaultData?.hasPosition
+                            ? '1'
+                            : stakingStats 
+                              ? stakingStats.activePositions.toString() 
+                              : positions.length.toString(),
+                        live: !!userStakingData || !!onChainVaultData?.hasPosition || !!stakingStats
+                      },
+                      { 
+                        label: 'Avg APY', 
+                        value: stakingStats 
+                          ? `${stakingStats.avgAPY.toFixed(2)}%` 
+                          : `${(positions.reduce((sum, p) => sum + p.apy, 0) / positions.length || 7.5).toFixed(2)}%`,
+                        live: !!stakingStats
+                      },
                     ].map((stat) => (
                       <div key={stat.label} className="stat-item">
-                        <div className="stat-label">{stat.label}</div>
-                        <div className="stat-value">{stat.value}</div>
+                        <div className="stat-label flex items-center gap-1">
+                          {stat.label}
+                          {stat.live && <span className="text-[8px] text-primary/60 uppercase">live</span>}
+                        </div>
+                        <div className="stat-value">{(isLoadingStakingStats || isLoadingUserStaking) ? <Skeleton className="h-5 w-16" /> : stat.value}</div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Bottom Stats */}
+                  {/* Bottom Stats - Using Subgraph Data */}
                   <div className="grid grid-cols-4 gap-6 pt-5 border-t border-border-subtle">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-[13px] text-muted-foreground">Staked Tokens Trend</span>
-                        <span className="period-badge">24H</span>
+                        <span className="period-badge">{timeFilter}</span>
+                        {vaultHistory?.sparklineData && vaultHistory.sparklineData.length > 0 && (
+                          <span className="text-[8px] text-primary/60 uppercase">live</span>
+                        )}
                       </div>
-                      <Sparkline data={generateSparklineData(18, 'up')} height={36} variant="positive" showArea={false} />
+                      <Sparkline 
+                        data={vaultHistory?.sparklineData && vaultHistory.sparklineData.length > 5 
+                          ? vaultHistory.sparklineData.slice(-18) 
+                          : generateSparklineData(18, 'up', 'staked-tokens-trend')} 
+                        height={36} 
+                        variant="positive" 
+                        showArea={false} 
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-[13px] text-muted-foreground">Price</span>
-                        <span className="period-badge">24H</span>
+                        <span className="period-badge">{timeFilter}</span>
+                        {oraclePriceData?.sparklineData && oraclePriceData.sparklineData.length > 0 && (
+                          <span className="text-[8px] text-primary/60 uppercase">live</span>
+                        )}
                       </div>
-                      <Sparkline data={generateSparklineData(18, 'up')} height={36} variant="positive" showArea={false} />
+                      <Sparkline 
+                        data={oraclePriceData?.sparklineData && oraclePriceData.sparklineData.length > 5 
+                          ? oraclePriceData.sparklineData.slice(-18) 
+                          : generateSparklineData(18, 'up', 'price-trend')} 
+                        height={36} 
+                        variant="positive" 
+                        showArea={false} 
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-[13px] text-muted-foreground">Staking Ratio</span>
-                        <span className="period-badge">24H</span>
+                        <span className="period-badge">{timeFilter}</span>
+                        {stakingStats && <span className="text-[8px] text-primary/60 uppercase">live</span>}
                       </div>
-                      <div className="text-[26px] font-semibold tracking-tight">60.6%</div>
+                      <div className="text-[26px] font-semibold tracking-tight">
+                        {isLoadingStakingStats ? (
+                          <Skeleton className="h-8 w-20" />
+                        ) : (
+                          `${(stakingStats?.stakingRatio ?? 60.6).toFixed(1)}%`
+                        )}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-[13px] text-muted-foreground mb-2">Reward Rate</div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[13px] text-muted-foreground">Reward Rate</span>
+                        {stakingStats && <span className="text-[8px] text-primary/60 uppercase">live</span>}
+                      </div>
                       <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-[26px] font-semibold tracking-tight">{currentProjection.effectiveAPY.toFixed(2)}%</span>
-                        <span className="text-[11px] text-muted-foreground">24H Avg</span>
+                        <span className="text-[26px] font-semibold tracking-tight">
+                          {isLoadingStakingStats ? (
+                            <Skeleton className="h-8 w-20" />
+                          ) : (
+                            `${(stakingStats?.rewardRate ?? currentProjection.effectiveAPY).toFixed(2)}%`
+                          )}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">{timeFilter} Avg</span>
                       </div>
                       <div className="slider-track">
-                        <div className="slider-fill" style={{ width: `${Math.min(currentProjection.effectiveAPY * 5, 100)}%` }} />
+                        <div 
+                          className="slider-fill" 
+                          style={{ 
+                            width: `${Math.min((stakingStats?.rewardRate ?? currentProjection.effectiveAPY) * 5, 100)}%` 
+                          }} 
+                        />
                       </div>
                     </div>
                   </div>
@@ -942,8 +1072,8 @@ export default function Dashboard() {
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center justify-between text-[15px]">
                   <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
-                  Protocol Activity
+                    <Zap className="h-4 w-4 text-primary" />
+                    Protocol Activity
                   </div>
                   <button 
                     className={`text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -989,7 +1119,7 @@ export default function Dashboard() {
                           </div>
                           {activity.txHash && (
                             <a 
-                              href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
+                              href={`https://eto.ash.center/tx/${activity.txHash}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="icon-btn p-1.5"
@@ -1009,7 +1139,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-
+          
           {/* Right Sidebar */}
           <div className="space-y-5">
             {/* Liquid Staking Portfolio CTA */}
@@ -1019,7 +1149,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span className="text-[14px] font-medium">Stakent</span>
                     <span className="text-[9px] align-super text-muted-foreground">®</span>
-                  </div>
+        </div>
                   <span className="new-badge">New</span>
                 </div>
                 <h3 className="text-[18px] font-semibold mb-2 leading-tight">Liquid Staking Portfolio</h3>
@@ -1035,91 +1165,33 @@ export default function Dashboard() {
                     chains={supportedChains}
                     connectModal={{ size: "compact" }}
                     connectButton={{
-                      label: "Connect with Wallet  🦊",
+                      label: "Connect Wallet  🦊",
                       style: {
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         width: "100%",
                         background: "hsl(160 70% 50%)",
                         color: "#000",
-                        border: "none",
-                        borderRadius: "12px",
-                        padding: "13px 18px",
+                        border: "2px solid #000",
+                        borderRadius: "5px",
+                        padding: "10px 16px",
                         fontSize: "13px",
                         fontWeight: "600",
+                        boxShadow: "4px 4px 0px 0px #000",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
                       },
                     }}
                   />
                   
-                  <Button variant="ctaDark" className="w-full h-11" onClick={() => setWalletAddressOpen(true)}>
-                    Enter a Wallet Address
-                    <Lock className="w-3.5 h-3.5 ml-1" />
-                  </Button>
                 </div>
               </div>
-            </div>
+        </div>
 
-            {/* Investment Period - Fully Interactive */}
-            <Card className="overflow-hidden">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-[14px] font-medium">Investment Period</h3>
-                  <span className="period-badge-active">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
-                </div>
-                <p className="text-[11px] text-muted-foreground mb-5">Contribution Period (Month)</p>
-                
-                <div className="flex gap-2 flex-wrap mb-4">
-                  {[1, 3, 6, 12].map(months => (
-                    <button
-                      key={months}
-                      className={months === investmentPeriod ? 'period-badge-active' : 'period-badge'}
-                      onClick={() => {
-                        setInvestmentPeriod(months);
-                        toast.info(`Investment period set to ${months} month${months > 1 ? 's' : ''}`);
-                      }}
-                    >
-                      {months} Month{months > 1 ? 's' : ''}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="1"
-                    max="12"
-                    value={investmentPeriod}
-                    onChange={(e) => setInvestmentPeriod(parseInt(e.target.value))}
-                    className="w-full h-[3px] bg-muted rounded-full appearance-none cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
-                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white 
-                      [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-primary
-                      [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
-                    style={{
-                      background: `linear-gradient(to right, hsl(160 70% 50%) 0%, hsl(160 70% 50%) ${sliderPosition}%, hsl(240 4% 20%) ${sliderPosition}%, hsl(240 4% 20%) 100%)`
-                    }}
-                  />
-                </div>
-
-                {/* APY Preview */}
-                {selectedAsset && (
-                  <div className="mt-4 p-3 rounded-lg bg-muted/30">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[12px] text-muted-foreground">Effective APY</span>
-                      <span className="text-[14px] font-semibold text-primary">
-                        {currentProjection.effectiveAPY.toFixed(2)}%
-                      </span>
-                    </div>
-                    {autoCompound && (
-                      <div className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                        <RefreshCw className="w-3 h-3" /> Auto-compound enabled
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
+          
             {/* Protocol Stats */}
-            <Card>
+          <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-[14px] flex items-center justify-between">
                   Protocol Stats
@@ -1127,7 +1199,7 @@ export default function Dashboard() {
                     <RefreshCw className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
                   </button>
                 </CardTitle>
-              </CardHeader>
+            </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-[13px] text-muted-foreground">Total Value Locked</span>
@@ -1138,25 +1210,43 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Your Total Staked</span>
+                  <span className="text-[13px] text-muted-foreground flex items-center gap-1.5">
+                    Your Total Staked
+                    {userStakingStats && <span className="text-[8px] text-primary/60 uppercase">live</span>}
+                  </span>
                   <span className="text-[13px] font-medium">
-                    ${getTotalStaked().toLocaleString()}
+                    {isLoadingUserStats ? (
+                      <Skeleton className="h-4 w-16" />
+                    ) : hasWallet && userStakingStats ? (
+                      `$${userStakingStats.netStaked.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                    ) : (
+                      '$0'
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Pending Rewards</span>
-                  <span className="text-[13px] font-medium text-primary">
-                    +{getTotalRewards().toFixed(4)}
+                  <span className="text-[13px] text-muted-foreground flex items-center gap-1.5">
+                    Pending Rewards
+                    {userStakingStats && <span className="text-[8px] text-primary/60 uppercase">live</span>}
                   </span>
-                </div>
-              </CardContent>
-            </Card>
-
+                  <span className="text-[13px] font-medium text-primary">
+                    {isLoadingUserStats ? (
+                      <Skeleton className="h-4 w-12" />
+                    ) : hasWallet && userStakingStats ? (
+                      `+${userStakingStats.estimatedRewards.toFixed(4)}`
+                    ) : (
+                      '+0'
+                    )}
+                  </span>
+              </div>
+            </CardContent>
+          </Card>
+          
             {/* Quick Actions */}
-            <Card>
+          <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-              </CardHeader>
+            </CardHeader>
               <CardContent className="space-y-0.5">
                 <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
                   <Link to="/trade">
@@ -1174,10 +1264,10 @@ export default function Dashboard() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
+            </CardContent>
+          </Card>
         </div>
+            </div>
       </div>
     </div>
   );

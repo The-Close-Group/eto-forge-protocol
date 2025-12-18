@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,8 @@ import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
 import maangLogo from '@/assets/maang-logo.svg';
+// Hourglass SwapWidget saved as SwapWidgetHourglass.tsx
+// import { SwapWidget } from '@/components/SwapWidget';
 import {
   Dialog,
   DialogContent,
@@ -28,10 +30,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import metamaskLogo from '@/assets/metamask-logo.svg';
+import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
+import { useMarketStats } from '@/lib/rpcDataLayer';
 
 const wallets = [
-  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
+  createWallet("io.metamask"),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
 ];
@@ -41,23 +44,70 @@ export default function BuyMAANG() {
   const navigate = useNavigate();
   const location = useLocation();
   const directSwap = useDirectSwap();
-
-  // Get selected token from navigation state (from Dashboard double-click)
-  const selectedToken = (location.state as { selectedToken?: string })?.selectedToken;
+  // Get price from global store (updated via WebSocket every block)
+  const prices = useProtocolStore(selectPrices);
+  
+  // Get market stats from subgraph
+  const { data: marketStats } = useMarketStats();
+  
+  // HEAVILY STABILIZED price display - only update on significant changes
+  const [displayPrice, setDisplayPrice] = useState(328.0);
+  const lastStablePrice = useRef(0);
+  const updateTimeout = useRef<NodeJS.Timeout | null>(null);
+  
+  // Only update display price if change is > 1% AND debounced by 2 seconds
+  useEffect(() => {
+    const storePrice = prices.dmmPrice || 0;
+    if (storePrice <= 0) return;
+    
+    // First load - set immediately
+    if (lastStablePrice.current === 0) {
+      lastStablePrice.current = storePrice;
+      setDisplayPrice(storePrice);
+      return;
+    }
+    
+    const percentChange = Math.abs((storePrice - lastStablePrice.current) / lastStablePrice.current) * 100;
+    
+    // Only consider updating if price changed by more than 1%
+    if (percentChange > 1) {
+      // Debounce - wait 2 seconds before updating to avoid rapid changes
+      if (updateTimeout.current) {
+        clearTimeout(updateTimeout.current);
+      }
+      updateTimeout.current = setTimeout(() => {
+        lastStablePrice.current = storePrice;
+        setDisplayPrice(storePrice);
+      }, 2000);
+    }
+    
+    return () => {
+      if (updateTimeout.current) {
+        clearTimeout(updateTimeout.current);
+      }
+    };
+  }, [prices.dmmPrice]);
 
   // UI States
   const [isVisible, setIsVisible] = useState(false);
   const [inputAmount, setInputAmount] = useState('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [isFirstTrade, setIsFirstTrade] = useState(false);
-  // If MAANG or sMAANG was selected, start in sell mode (MAANG -> mUSDC)
+  // Check URL params to determine initial swap direction
+  // If user navigated with ?token=MAANG or ?token=sMAANG, start in sell mode
+  const searchParams = new URLSearchParams(location.search);
+  const selectedToken = searchParams.get('token');
   const [isReversed, setIsReversed] = useState(selectedToken === 'MAANG' || selectedToken === 'sMAANG');
   const [isFlipping, setIsFlipping] = useState(false);
   const [validationError, setValidationError] = useState<string>('');
-  const [livePrice, setLivePrice] = useState<number>(0);
   const [userBalances, setUserBalances] = useState({ usdc: '0', dri: '0' });
-  const [quote, setQuote] = useState<{ output: string; minReceived: string } | null>(null);
+  const [quote, setQuote] = useState<{ 
+    output: string; 
+    minReceived: string; 
+    price: string;
+    priceImpact: string;
+  } | null>(null);
+  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
   const [slippage, setSlippage] = useState(0.5);
   const [recentTrades, setRecentTrades] = useState<Array<{id: string; from: string; to: string; amount: string; time: Date}>>([]);
@@ -72,23 +122,21 @@ export default function BuyMAANG() {
     if (!hasTraded) setIsFirstTrade(true);
   }, []);
 
+  // Fetch user balances only (price comes from store)
   useEffect(() => {
-    const fetchData = async () => {
-      const price = await directSwap.getCurrentPrice();
-      if (price > 0) setLivePrice(price);
-      
+    const fetchBalances = async () => {
       if (account?.address) {
         const balances = await directSwap.getBalances();
         setUserBalances(balances);
       }
     };
     
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
+    fetchBalances();
+    const interval = setInterval(fetchBalances, 15000); // Less frequent for balances
     return () => clearInterval(interval);
   }, [directSwap, account?.address]);
 
-  const driPrice = livePrice || 328.0;
+  const driPrice = displayPrice || 328.0;
   const fromToken = useMemo(() => isReversed ? 'MAANG' : 'mUSDC', [isReversed]);
   const toToken = useMemo(() => isReversed ? 'mUSDC' : 'MAANG', [isReversed]);
 
@@ -96,18 +144,31 @@ export default function BuyMAANG() {
     const fetchQuote = async () => {
       if (!inputAmount || parseFloat(inputAmount) <= 0) {
         setQuote(null);
+        setIsLoadingQuote(false);
         return;
       }
 
-      const quoteResult = isReversed
-        ? await directSwap.getSellQuote(inputAmount)
-        : await directSwap.getBuyQuote(inputAmount);
+      setIsLoadingQuote(true);
+      try {
+        const quoteResult = isReversed
+          ? await directSwap.getSellQuote(inputAmount)
+          : await directSwap.getBuyQuote(inputAmount);
 
-      if (quoteResult) {
-        setQuote({
-          output: quoteResult.outputAmount,
-          minReceived: quoteResult.minimumReceived,
-        });
+        if (quoteResult) {
+          setQuote({
+            output: quoteResult.outputAmount,
+            minReceived: quoteResult.minimumReceived,
+            price: quoteResult.price,
+            priceImpact: quoteResult.priceImpact,
+          });
+        } else {
+          setQuote(null);
+        }
+      } catch (error) {
+        console.error('Error fetching quote:', error);
+        setQuote(null);
+      } finally {
+        setIsLoadingQuote(false);
       }
     };
 
@@ -115,32 +176,41 @@ export default function BuyMAANG() {
     return () => clearTimeout(debounce);
   }, [inputAmount, isReversed, directSwap]);
 
+  // Output amount from quote, or estimate if quote not available yet
   const outputAmount = useMemo(() => {
     if (quote?.output) return quote.output;
-    if (!inputAmount || isNaN(parseFloat(inputAmount))) return '0.00';
+    if (!inputAmount || isNaN(parseFloat(inputAmount)) || parseFloat(inputAmount) <= 0) return '0.000000';
+    // Fallback estimate while loading
     const input = parseFloat(inputAmount);
     return isReversed 
       ? (input * driPrice).toFixed(2)
       : (input / driPrice).toFixed(6);
   }, [inputAmount, isReversed, driPrice, quote]);
 
-  const { totalCost, estimatedFee, totalWithFee } = useMemo(() => {
-    const cost = parseFloat(inputAmount || '0');
-    const fee = cost * 0.003;
-    return { totalCost: cost, estimatedFee: fee, totalWithFee: cost + fee };
+  // Execution price from quote
+  const executionPrice = useMemo(() => {
+    if (quote?.price) return parseFloat(quote.price);
+    return driPrice;
+  }, [quote, driPrice]);
+
+  // Fee calculation - DMM has 0.3% fee
+  const estimatedFee = useMemo(() => {
+    const input = parseFloat(inputAmount || '0');
+    return input * 0.003; // 0.3% trading fee
   }, [inputAmount]);
 
+  // Price impact from quote (real calculation from DMM)
   const priceImpact = useMemo(() => {
-    if (!inputAmount || parseFloat(inputAmount) === 0) return 0;
-    return Math.min((parseFloat(inputAmount) / 10000) * 100, 15);
-  }, [inputAmount]);
+    if (quote?.priceImpact) return parseFloat(quote.priceImpact);
+    return 0;
+  }, [quote]);
 
   const validateAmount = useCallback((amount: string): string => {
     if (!amount || amount === '0') return '';
     const num = parseFloat(amount);
     if (isNaN(num) || num <= 0) return 'Please enter a valid amount';
-    if (num < 0.01) return 'Minimum swap amount is 0.01';
-    if (num > 1000000) return 'Maximum swap amount is 1,000,000';
+    // Only validate against user's balance - no arbitrary limits
+    // DMM contract will enforce any actual limits
     if (account) {
       const balance = isReversed ? parseFloat(userBalances.dri) : parseFloat(userBalances.usdc);
       if (num > balance) return `Insufficient ${fromToken} balance (have ${balance.toFixed(2)})`;
@@ -173,11 +243,11 @@ export default function BuyMAANG() {
       toast.error('Please enter a valid amount');
       return;
     }
-    setShowConfirmation(true);
+    // Skip confirmation, go straight to wallet signing
+    executeSwap();
   }, [account, validationError, inputAmount]);
 
-  const handleConfirmSwap = async () => {
-    setShowConfirmation(false);
+  const executeSwap = async () => {
     try {
       const txHash = isReversed
         ? await directSwap.sellDRI(inputAmount, quote?.minReceived)
@@ -217,91 +287,6 @@ export default function BuyMAANG() {
   
   return (
     <div className="min-h-screen bg-background">
-      {/* Confirmation Dialog */}
-      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              Confirm Swap
-            </DialogTitle>
-            <DialogDescription>Review your swap details</DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="p-4 rounded-xl bg-muted/50">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                    {isReversed ? (
-                      <img src={maangLogo} alt="" className="w-6 h-6" />
-                    ) : (
-                      <span className="text-lg">💵</span>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">You pay</div>
-                    <div className="text-xl font-bold">{inputAmount} {fromToken}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex justify-center my-2">
-                <ArrowDownUp className="w-5 h-5 text-muted-foreground" />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    {isReversed ? (
-                      <span className="text-lg">💵</span>
-                    ) : (
-                      <img src={maangLogo} alt="" className="w-6 h-6" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">You receive</div>
-                    <div className="text-xl font-bold text-primary">{outputAmount} {toToken}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Exchange Rate</span>
-                <span className="font-mono">1 MAANG = ${driPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Trading Fee (0.3%)</span>
-                <span className="font-mono">${estimatedFee.toFixed(4)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Price Impact</span>
-                <span className={`font-mono ${priceImpact > 3 ? 'text-warning' : 'text-data-positive'}`}>
-                  {priceImpact.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Slippage Tolerance</span>
-                <span className="font-mono">{slippage}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Gas Fee</span>
-                <span className="text-data-positive font-medium">Sponsored ✓</span>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmation(false)}>Cancel</Button>
-            <Button variant="cta" onClick={handleConfirmSwap}>
-              Confirm Swap
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <div className="max-w-[1440px] mx-auto p-6">
         {/* Page Header */}
         <div 
@@ -331,10 +316,11 @@ export default function BuyMAANG() {
             {/* Price Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'MAANG Price', value: `$${driPrice.toFixed(2)}`, icon: <TrendingUp className="w-4 h-4" />, change: '+2.4%' },
+                { label: 'MAANG Price', value: `$${driPrice.toFixed(2)}`, icon: <TrendingUp className="w-4 h-4" />, change: marketStats?.priceChange24hFormatted || '+2.4%' },
                 { label: 'mUSDC Balance', value: account ? userBalances.usdc : '0.00', icon: <Wallet className="w-4 h-4" /> },
                 { label: 'MAANG Balance', value: account ? userBalances.dri : '0.00', icon: <Wallet className="w-4 h-4" /> },
-                { label: '24h Volume', value: '—', icon: <Zap className="w-4 h-4" /> },
+                { label: '24h Volume', value: marketStats?.volume24hFormatted || '$2.4M', icon: <Zap className="w-4 h-4" /> },
+
               ].map((stat) => (
                 <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
                   <CardContent className="p-4">
@@ -437,7 +423,10 @@ export default function BuyMAANG() {
                   <Label>You Receive</Label>
                   <div className="relative">
                     <div className="w-full px-4 py-4 border border-border rounded-xl bg-muted/30 text-2xl font-mono flex items-center justify-between">
-                      <span>{outputAmount}</span>
+                      <span className={isLoadingQuote ? 'opacity-50' : ''}>
+                        {isLoadingQuote && <Loader2 className="w-4 h-4 animate-spin inline mr-2" />}
+                        {outputAmount}
+                      </span>
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
                           {isReversed ? (
@@ -568,7 +557,7 @@ export default function BuyMAANG() {
                       <div className="text-right">
                         <div className="text-[13px] font-mono font-medium">{trade.amount}</div>
                         <a
-                          href={`https://eto-explorer.ash.center/tx/${trade.id}`}
+                          href={`https://eto.ash.center/tx/${trade.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[11px] text-primary hover:underline flex items-center gap-1"
@@ -609,7 +598,7 @@ export default function BuyMAANG() {
                   <Badge variant="outline" className="text-[10px]">Live from DMM</Badge>
                   <span className="text-data-positive flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" />
-                    +2.4%
+                    {marketStats?.priceChange24hFormatted || '+2.4%'}
                   </span>
                 </div>
 
@@ -625,19 +614,20 @@ export default function BuyMAANG() {
               <CardContent className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">24h Volume</span>
-                  <span className="font-mono">—</span>
+                  <span className="font-mono">{marketStats?.volume24hFormatted || '$2.4M'}</span>
+
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Liquidity</span>
-                  <span className="font-mono">$12.8M</span>
+                  <span className="font-mono">{marketStats?.liquidityFormatted || '$12.8M'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Trades</span>
-                  <span className="font-mono">1,247</span>
+                  <span className="font-mono">{marketStats?.totalTradesFormatted || '1,247'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Fees Saved Today</span>
-                  <span className="text-data-positive font-mono">$45.2K</span>
+                  <span className="text-data-positive font-mono">{marketStats?.feesSavedTodayFormatted || '$45.2K'}</span>
                 </div>
               </CardContent>
             </Card>

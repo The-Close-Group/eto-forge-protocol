@@ -1,0 +1,109 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"sns:*",
+				"rds:*",
+				"logs:*",
+				"servicediscovery:*",
+				"secretsmanager:*",
+				"cloudwatch:*",
+				"ecs:*",
+				"lambda:*",
+				"ec2:*",
+				"ecr:*",
+				"tag:*",
+				"sts:GetCallerIdentity",
+				"elasticache:*",
+				"dynamodb:*",
+				"apigateway:*",
+				"elasticloadbalancing:*",
+				"iam:CreateServiceLinkedRole"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "VisualEditor1",
+			"Effect": "Allow",
+			"Action": [
+				"iam:ListRoleTags",
+				"iam:UntagRole",
+				"dynamodb:DeleteItem",
+				"iam:TagRole",
+				"iam:CreateRole",
+				"iam:AttachRolePolicy",
+				"s3:ListBucket",
+				"iam:PutRolePolicy",
+				"iam:PassRole",
+				"iam:DetachRolePolicy",
+				"dynamodb:DescribeTable",
+				"iam:ListAttachedRolePolicies",
+				"iam:DeleteRolePolicy",
+				"dynamodb:GetItem",
+				"iam:ListRolePolicies",
+				"s3:DeleteObject",
+				"s3:PutBucketVersioning",
+				"iam:GetRole",
+				"dynamodb:PutItem",
+				"iam:DeleteRole",
+				"s3:GetBucketVersioning",
+				"dynamodb:CreateTable",
+				"s3:PutObject",
+				"s3:GetObject",
+				"iam:GetRolePolicy"
+			],
+			"Resource": [
+				"arn:aws:iam::*:role/pyth-oracle-task-exec-role-*",
+				"arn:aws:iam::*:role/pyth-oracle-task-role-*",
+				"arn:aws:iam::*:role/lambda-aurora-rotation-role",
+				"arn:aws:iam::905418078110:role/ecsTaskExecutionRole",
+				"arn:aws:iam::905418078110:role/eto-gas-faucet-role",
+				"arn:aws:iam::905418078110:role/eto-*",
+				"arn:aws:dynamodb:*:*:table/terraform-state-lock",
+				"arn:aws:dynamodb:*:*:table/gas-faucet-requests",
+				"arn:aws:s3:::pyth-oracle-terraform-state",
+				"arn:aws:s3:::pyth-oracle-terraform-state/*"
+			]
+		},
+		{
+			"Sid": "VisualEditor2",
+			"Effect": "Allow",
+			"Action": [
+				"s3:PutObject",
+				"s3:GetObject",
+				"s3:DeleteObject"
+			],
+			"Resource": "arn:aws:s3:::pyth-oracle-logs-archive-*/*"
+		},
+		{
+			"Sid": "VisualEditor3",
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetBucketTagging",
+				"s3:PutBucketTagging",
+				"s3:CreateBucket",
+				"s3:ListBucket",
+				"s3:GetBucketVersioning",
+				"s3:GetBucketLocation",
+				"s3:DeleteBucket",
+				"s3:PutBucketVersioning"
+			],
+			"Resource": "arn:aws:s3:::pyth-oracle-logs-archive-*"
+		},
+		{
+			"Sid": "VisualEditor4",
+			"Effect": "Allow",
+			"Action": "iam:ListAccountAliases",
+			"Resource": [
+				"arn:aws:iam::*:role/pyth-oracle-task-exec-role-*",
+				"arn:aws:iam::*:role/pyth-oracle-task-role-*",
+				"arn:aws:iam::*:role/lambda-aurora-rotation-role",
+				"arn:aws:iam::905418078110:role/ecsTaskExecutionRole",
+				"arn:aws:iam::905418078110:role/eto-gas-faucet-role"
+			]
+		}
+	]
+}

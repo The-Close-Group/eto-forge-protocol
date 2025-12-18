@@ -1,0 +1,15 @@
+{
+  "name": "eto-gas-faucet",
+  "version": "1.0.0",
+  "description": "ETO Gas Faucet - Sends 0.1 ETH with 24h cooldown (Chain ID: 69670)",
+  "main": "index.js",
+  "scripts": {
+    "zip": "zip -r function.zip index.js node_modules package.json",
+    "deploy": "./deploy.sh"
+  },
+  "dependencies": {
+    "ethers": "^6.9.0",
+    "@aws-sdk/client-dynamodb": "^3.450.0",
+    "@aws-sdk/lib-dynamodb": "^3.450.0"
+  }
+}
