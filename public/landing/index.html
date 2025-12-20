@@ -949,6 +949,85 @@
         </div>
     </section>
 
+    <!-- Page 6: FAQ Section -->
+    <section class="page page-faq fade-in-section" id="faq">
+        <div class="faq-container">
+            <div class="faq-grid">
+                <!-- Left Column - Header -->
+                <div class="faq-header">
+                    <span class="faq-label">FAQ</span>
+                    <h2 class="faq-title">The Answers to All Your Questions</h2>
+                    <a href="https://docs.eto.finance" target="_blank" rel="noopener noreferrer" class="faq-docs-btn">
+                        <span>Read the Docs</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <!-- Right Column - Accordion -->
+                <div class="faq-accordion">
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is ETO Protocol?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is a decentralized platform that tokenizes traditional assets, enabling users to trade, stake, and earn yield on U.S. capital markets on-chain with full transparency and self-custody.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is MAANG Token?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>MAANG is a tokenized index representing the five largest tech companies: Meta, Apple, Amazon, Netflix, and Google. It allows you to gain diversified exposure to these giants through a single on-chain asset.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How does staking work?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>When you stake MAANG tokens, you receive sMAANG which earns yield over time. There are no lock-up periods, and you can unstake at any time while maintaining full custody of your assets.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>Is ETO Protocol audited?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Yes, ETO Protocol maintains 100% on-chain verified reserves with real-time auditing. All smart contracts are fully audited by leading security firms, and reserves are transparently verifiable at any time.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What networks does ETO support?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is built on Avalanche and leverages LayerZero for cross-chain interoperability. This enables frictionless transfers and composability across multiple blockchain networks.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How do I get started?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Connect your wallet, acquire USDC, and you can immediately start trading MAANG tokens or stake them to earn yield. No KYC required, no intermediaries—just permissionless DeFi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer Section -->
     <footer class="site-footer" id="footer">
         <div class="footer-container">
@@ -1053,6 +1132,31 @@
                     }
                 });
             }
+        })();
+    </script>
+    <!-- FAQ Accordion Script -->
+    <script>
+        (function() {
+            const faqItems = document.querySelectorAll(".faq-item");
+            faqItems.forEach(item => {
+                const trigger = item.querySelector(".faq-trigger");
+                trigger.addEventListener("click", function() {
+                    const isOpen = item.classList.contains("open");
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove("open");
+                            otherItem.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
+                        }
+                    });
+                    if (isOpen) {
+                        item.classList.remove("open");
+                        trigger.setAttribute("aria-expanded", "false");
+                    } else {
+                        item.classList.add("open");
+                        trigger.setAttribute("aria-expanded", "true");
+                    }
+                });
+            });
         })();
     </script>
 </body>
