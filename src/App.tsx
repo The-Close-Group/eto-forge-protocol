@@ -8,13 +8,12 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
 import { StakingProvider } from "@/contexts/StakingContext";
-import { DataLayerProvider } from "@/components/DataLayerProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
-import { AutoFaucet } from "@/components/AutoFaucet";
 // ThirdwebProvider is already set up in main.tsx
 
 
@@ -22,6 +21,7 @@ import { AutoFaucet } from "@/components/AutoFaucet";
 import Pitch from "@/pages/Pitch";
 import Landing from "@/pages/Landing";
 import { Navigate } from "react-router-dom";
+import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
@@ -44,8 +44,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <DataLayerProvider>
+    <ThemeProvider>
+      <AuthProvider>
         <PortfolioProvider>
           <UserStateProvider>
             <StakingProvider>
@@ -56,10 +56,10 @@ const App = () => (
               {/* Global UX helpers */}
               <TopLoadingBar />
               <CommandPalette />
-              <AutoFaucet /> {/* Auto-sends gas + USDC on wallet connect */}
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
+                <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
                   path="/*"
@@ -96,8 +96,8 @@ const App = () => (
             </StakingProvider>
           </UserStateProvider>
         </PortfolioProvider>
-      </DataLayerProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

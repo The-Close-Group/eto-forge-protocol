@@ -1,0 +1,255 @@
+import { useState, useMemo } from 'react';
+
+interface WalletValueCardProps {
+  totalValue: number;
+  changePercent: number;
+  realizedPL: number;
+  unrealizedPL: number;
+  projectedGrowth: number;
+  netChange: number;
+  className?: string;
+}
+
+const generateChartData = (points: number = 50) => {
+  const data = [];
+  let price = 39000;
+  
+  for (let i = 0; i < points; i++) {
+    const wave = Math.sin(i * 0.12) * 1200;
+    const trend = i * 40;
+    const noise = (Math.random() - 0.5) * 200;
+    price = 38000 + wave + trend + noise;
+    
+    data.push({
+      price,
+      volume: 25 + Math.random() * 65,
+    });
+  }
+  return data;
+};
+
+const timeFilters = ['1h', '8h', '1d', '1w', '1m', '6m', '1y'] as const;
+type TimeFilter = typeof timeFilters[number];
+
+export function WalletValueCard({
+  totalValue,
+  changePercent,
+  realizedPL,
+  unrealizedPL,
+  projectedGrowth,
+  netChange,
+  className = '',
+}: WalletValueCardProps) {
+  const [activeFilter, setActiveFilter] = useState<TimeFilter>('6m');
+  const chartData = useMemo(() => generateChartData(50), []);
+
+  const prices = chartData.map(d => d.price);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const priceRange = maxPrice - minPrice || 1;
+  const peakIndex = prices.indexOf(maxPrice);
+
+  const formatCurrency = (value: number, showSign = false) => {
+    const abs = Math.abs(value);
+    const formatted = abs.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    });
+    if (showSign) return value >= 0 ? `+${formatted}` : `-${formatted}`;
+    return formatted;
+  };
+
+  // SVG dimensions - use percentage-based viewBox
+  const svgWidth = 1000;
+  const svgHeight = 300;
+  const margin = { top: 50, right: 30, bottom: 40, left: 30 };
+  const plotW = svgWidth - margin.left - margin.right;
+  const plotH = svgHeight - margin.top - margin.bottom;
+
+  // Calculate positions
+  const getX = (i: number) => margin.left + (i / (chartData.length - 1)) * plotW;
+  const getY = (p: number) => margin.top + plotH - ((p - minPrice) / priceRange) * plotH;
+
+  // Generate line path
+  const linePath = chartData.map((d, i) => 
+    `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.price).toFixed(1)}`
+  ).join(' ');
+
+  // Area path
+  const areaPath = `${linePath} L ${svgWidth - margin.right} ${margin.top + plotH} L ${margin.left} ${margin.top + plotH} Z`;
+
+  // Peak position  
+  const peakX = getX(peakIndex);
+  const peakY = getY(maxPrice);
+
+  // Bar dimensions
+  const barW = (plotW / chartData.length) * 0.65;
+
+  return (
+    <div className={`wvc ${className}`}>
+      {/* Header */}
+      <div className="wvc-head">
+        <div className="wvc-info">
+          <div className="wvc-title">Wallet Value</div>
+          <div className="wvc-amount-line">
+            <span className="wvc-amount">{formatCurrency(totalValue)}</span>
+            <span className="wvc-pct">
+              <span className="wvc-pct-icon">◐</span>
+              {changePercent.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+        
+        <div className="wvc-controls">
+          <div className="wvc-actions">
+            <button className="wvc-action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+            <button className="wvc-action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+              </svg>
+            </button>
+            <button className="wvc-action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </button>
+          </div>
+          <div className="wvc-time-btns">
+            {timeFilters.map((f) => (
+              <button
+                key={f}
+                className={`wvc-time-btn ${activeFilter === f ? 'active' : ''}`}
+                onClick={() => setActiveFilter(f)}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Chart Container */}
+      <div className="wvc-chart-wrap">
+        <svg 
+          className="wvc-svg" 
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#CDFF00" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#CDFF00" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* Volume Bars */}
+          {chartData.map((d, i) => {
+            const x = margin.left + (i / chartData.length) * plotW;
+            const h = (d.volume / 100) * plotH * 0.7;
+            const y = margin.top + plotH - h;
+            
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={y}
+                width={barW}
+                height={h}
+                fill="currentColor"
+                className="wvc-vol-bar"
+              />
+            );
+          })}
+
+          {/* Area */}
+          <path d={areaPath} fill="url(#chartAreaGrad)" />
+
+          {/* Line */}
+          <path 
+            d={linePath} 
+            fill="none" 
+            stroke="#CDFF00" 
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Peak Circle */}
+          <circle
+            cx={peakX}
+            cy={peakY}
+            r="8"
+            fill="#CDFF00"
+            stroke="hsl(var(--card))"
+            strokeWidth="4"
+          />
+        </svg>
+
+        {/* Peak Label */}
+        <div 
+          className="wvc-peak-tooltip"
+          style={{
+            left: `${(peakX / svgWidth) * 100}%`,
+            top: `${(peakY / svgHeight) * 100}%`,
+          }}
+        >
+          +$1,859.48
+        </div>
+
+        {/* Time Axis */}
+        <div className="wvc-x-axis">
+          <span>8:00 AM</span>
+          <span>9:00 AM</span>
+          <span>10:00 AM</span>
+          <span>11:00 AM</span>
+          <span>12:00 PM</span>
+          <span>1:00 PM</span>
+          <span>2:00 PM</span>
+        </div>
+      </div>
+
+      {/* Bottom Stats */}
+      <div className="wvc-bottom">
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-name">Realized PL</div>
+          <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
+            {formatCurrency(realizedPL, true)}
+          </div>
+          <div className="wvc-stat-meta">◐ +27% Today</div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-name">Unrealized PL</div>
+          <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
+            {formatCurrency(unrealizedPL, true)}
+          </div>
+          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-name">Projected Growth</div>
+          <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
+            {formatCurrency(projectedGrowth, true)}
+          </div>
+          <div className="wvc-stat-meta">◐ +3.2% Today</div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-name">Net Change</div>
+          <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
+            {formatCurrency(netChange, true)}
+          </div>
+          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default WalletValueCard;
