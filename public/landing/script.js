@@ -195,6 +195,9 @@ function initHeroGlobe() {
     
     const path = d3.geoPath().projection(projection).context(context);
     
+    // Cache graticule to avoid recreating every frame
+    const graticule = d3.geoGraticule()();
+    
     function render() {
         context.clearRect(0, 0, size, size);
         
@@ -211,10 +214,9 @@ function initHeroGlobe() {
         context.stroke();
         
         if (sharedLandFeatures) {
-            // Draw graticule
-            const graticule = d3.geoGraticule();
+            // Draw graticule (cached)
             context.beginPath();
-            path(graticule());
+            path(graticule);
             context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             context.lineWidth = 1 * scaleFactor;
             context.stroke();
@@ -250,23 +252,22 @@ function initHeroGlobe() {
     // Rotation
     const rotation = [0, -20]; // Start tilted slightly
     let autoRotate = true;
-    const rotationSpeed = 0.15; // Slower, more majestic rotation
+    const rotationSpeed = 0.012; // Degrees per millisecond (smooth rotation)
     
-    function rotate() {
+    // Animation loop with delta time for smooth 60fps animation
+    let lastTime = performance.now();
+    
+    function animationLoop(currentTime) {
+        const deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+        
         if (autoRotate) {
-            rotation[0] += rotationSpeed;
+            // Smooth rotation based on elapsed time
+            rotation[0] += rotationSpeed * deltaTime;
             projection.rotate(rotation);
             render();
         }
-    }
-    
-    // Animation loop
-    let lastTime = 0;
-    function animationLoop(currentTime) {
-        if (currentTime - lastTime >= 40) {
-            rotate();
-            lastTime = currentTime;
-        }
+        
         requestAnimationFrame(animationLoop);
     }
     

@@ -7,6 +7,9 @@
 /* Stakent-style Dark Theme - Flat Design */
 
 @layer base {
+  /* ========================================
+     DARK THEME (Default)
+     ======================================== */
   :root {
     /* Background - Deep black */
     --background: 240 6% 6%;
@@ -83,6 +86,76 @@
     --sidebar-ring: 160 70% 50%;
     --sidebar-muted: 240 4% 45%;
   }
+
+  /* ========================================
+     LIGHT THEME - Refined Color Grading
+     ======================================== */
+  .light {
+    /* Background - Pure white with subtle off-white secondary */
+    --background: 0 0% 100%;
+    --background-secondary: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    
+    /* Cards - White with clear definition */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --card-elevated: 210 20% 99%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Primary - ETO Green (optimized for light backgrounds) */
+    --primary: 158 64% 42%;
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 158 45% 48%;
+    --primary-glow: 158 60% 50%;
+    
+    /* Secondary - Light gray for containers */
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 47% 20%;
+    
+    /* Muted - Slightly darker for better contrast */
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Accent - Subtle highlight */
+    --accent: 210 16% 93%;
+    --accent-foreground: 222 47% 11%;
+    
+    /* Data Colors - Vivid for visibility */
+    --success: 158 64% 42%;
+    --success-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    
+    /* Chart Colors - Clear distinction */
+    --data-positive: 158 64% 42%;
+    --data-negative: 0 84% 60%;
+    --data-neutral: 215 16% 47%;
+    --chart-accent: 158 64% 42%;
+    
+    /* Borders - Visible but subtle gray */
+    --border: 214 32% 91%;
+    --border-subtle: 214 20% 94%;
+    --border-card: 214 32% 88%;
+    --input: 214 32% 91%;
+    --ring: 158 64% 42%;
+    
+    /* Sidebar - Light with clear hierarchy */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 25%;
+    --sidebar-primary: 158 64% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 158 64% 42%;
+    --sidebar-muted: 215 16% 47%;
+  }
 }
 
 @layer base {
@@ -139,11 +212,875 @@
     background: hsl(var(--card-elevated));
   }
 
+  /* ========================================
+     BALANCE CARD - Wide Dashboard Card
+     ======================================== */
+  .balance-card {
+    @apply relative w-full p-6 transition-all duration-200;
+    display: flex;
+    flex-direction: column;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 14px;
+  }
+
+  .balance-card:hover {
+    border-color: hsl(var(--border));
+    background: hsl(var(--card-elevated));
+  }
+
+  .balance-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .balance-card-label {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .balance-card-timeframe {
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+    padding: 4px 10px;
+    background: hsl(var(--muted));
+    border-radius: 6px;
+  }
+
+  .balance-card-amount {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 2.75rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+    margin-bottom: 8px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .balance-card-pnl {
+    margin-bottom: 20px;
+  }
+
+  .balance-pnl-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .balance-pnl-indicator.positive {
+    color: hsl(var(--data-positive));
+  }
+
+  .balance-pnl-indicator.negative {
+    color: hsl(var(--data-negative));
+  }
+
+  .balance-pnl-triangle {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .balance-pnl-triangle.rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  .balance-pnl-amount {
+    font-weight: 600;
+  }
+
+  .balance-pnl-percentage {
+    font-weight: 400;
+    opacity: 0.85;
+  }
+
+  .balance-card-chart {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    overflow: hidden;
+  }
+
+  .balance-card-chart > div {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .balance-card-chart svg {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* ========================================
+     WALLET VALUE CARD - Screenshot Match
+     ======================================== */
+  .wvc {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wvc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .wvc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .wvc-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    letter-spacing: -0.01em;
+  }
+
+  .wvc-amount-line {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .wvc-amount {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 52px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: hsl(var(--foreground));
+  }
+
+  .wvc-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .wvc-pct-icon {
+    font-size: 16px;
+    opacity: 0.5;
+  }
+
+  .wvc-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .wvc-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .wvc-action-btn {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: hsl(var(--muted));
+    border: none;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .wvc-action-btn:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--foreground));
+  }
+
+  .wvc-time-btns {
+    display: flex;
+    gap: 2px;
+  }
+
+  .wvc-time-btn {
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .wvc-time-btn:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .wvc-time-btn.active {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+  }
+
+  /* Chart */
+  .wvc-chart-wrap {
+    position: relative;
+    height: 340px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .wvc-svg {
+    display: block;
+    width: 100%;
+    height: calc(100% - 36px);
+    color: hsl(var(--muted));
+  }
+
+  .wvc-vol-bar {
+    opacity: 0.35;
+  }
+
+  .wvc-peak-tooltip {
+    position: absolute;
+    transform: translate(-50%, -150%);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .wvc-x-axis {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Stats */
+  .wvc-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .wvc-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 16px;
+  }
+
+  .wvc-stat-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .wvc-stat-num {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  .wvc-stat-num.green {
+    color: #CDFF00;
+  }
+
+  .wvc-stat-num.red {
+    color: hsl(var(--data-negative));
+  }
+
+  .wvc-stat-meta {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  @media (max-width: 900px) {
+    .wvc-bottom {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .wvc-amount {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .wvc-time-btns {
+      display: none;
+    }
+    
+    .wvc-bottom {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ========================================
+     PORTFOLIO RISK SCORE CARD - Exact Match
+     ======================================== */
+  .risk-score-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 20px;
+    padding: 20px 24px;
+  }
+
+  .risk-score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .risk-score-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    line-height: 1.2;
+  }
+
+  .risk-score-updated {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+  }
+
+  .updated-label {
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .updated-time {
+    font-size: 11px;
+    color: hsl(var(--foreground));
+  }
+
+  .risk-score-bar-container {
+    margin-top: 16px;
+  }
+
+  .risk-score-bar {
+    position: relative;
+    height: 10px;
+    background: linear-gradient(to right, 
+      #57FEC7 0%, 
+      #FACC15 50%, 
+      #EF4444 100%
+    );
+    border-radius: 5px;
+  }
+
+  .risk-score-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #57FEC7;
+    border: 4px solid hsl(var(--card));
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .risk-score-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* ========================================
+     TRANSACTIONS CARD - Screenshot Match
+     ======================================== */
+  .txn-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 20px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .txn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .txn-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  .txn-link {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #CDFF00;
+    text-decoration: none;
+  }
+
+  .txn-link:hover {
+    opacity: 0.8;
+  }
+
+  .txn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    flex: 1;
+  }
+
+  .txn-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: hsl(var(--muted) / 0.35);
+    border-radius: 16px;
+    transition: all 0.15s ease;
+    min-height: 130px;
+  }
+
+  .txn-item:hover {
+    background: hsl(var(--muted) / 0.5);
+  }
+
+  .txn-item.highlighted {
+    background: #CDFF00;
+  }
+
+  .txn-item.highlighted .txn-type,
+  .txn-item.highlighted .txn-time,
+  .txn-item.highlighted .txn-symbol,
+  .txn-item.highlighted .txn-amount,
+  .txn-item.highlighted .txn-status,
+  .txn-item.highlighted .txn-status span {
+    color: #000 !important;
+  }
+
+  .txn-item.highlighted .txn-dot {
+    background: #000 !important;
+  }
+
+  .txn-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .txn-icon-wrap {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .txn-token-svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .txn-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .txn-type {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  .txn-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .txn-chart-area {
+    height: 30px;
+    margin: 4px 0;
+  }
+
+  .txn-mini-chart {
+    width: 100%;
+    height: 100%;
+  }
+
+  .txn-data {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+  }
+
+  .txn-symbol {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .txn-amount {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+    line-height: 1;
+  }
+
+  .txn-amount.negative {
+    color: hsl(var(--foreground));
+  }
+
+  .txn-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+    margin-top: 4px;
+  }
+
+  .txn-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: hsl(var(--muted-foreground));
+  }
+
+  .txn-status.pending .txn-dot {
+    background: #FACC15;
+  }
+
+  .txn-status.confirmed .txn-dot {
+    background: #CDFF00;
+  }
+
+  .txn-status.failed .txn-dot {
+    background: #EF4444;
+  }
+
+  .txn-status.failed {
+    color: #EF4444;
+  }
+
+  @media (max-width: 480px) {
+    .txn-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .wallet-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .wallet-filters {
+      display: none;
+    }
+
+    .txns-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ========================================
+     DASHBOARD LAYOUT - Exact Screenshot Match
+     ======================================== */
+  .dashboard-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .dashboard-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (max-width: 1200px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr 320px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-right {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    
+    .dashboard-right > * {
+      flex: 1;
+      min-width: 280px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .dashboard-container {
+      padding: 16px;
+    }
+    
+    .dashboard-right {
+      flex-direction: column;
+    }
+  }
+
+  /* ========================================
+     HOLDINGS CARD - Portfolio Table
+     ======================================== */
+  .holdings-card {
+    @apply w-full transition-all duration-200;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .holdings-card:hover {
+    border-color: hsl(var(--border));
+  }
+
+  .holdings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid hsl(var(--border-subtle));
+  }
+
+  .holdings-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  .holdings-count {
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    padding: 4px 8px;
+    background: hsl(var(--muted));
+    border-radius: 6px;
+  }
+
+  .holdings-columns {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr;
+    gap: 8px;
+    padding: 12px 20px;
+    border-bottom: 1px solid hsl(var(--border-subtle));
+    background: hsl(var(--muted) / 0.3);
+  }
+
+  .holdings-col {
+    font-size: 11px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .holdings-col-price,
+  .holdings-col-paid,
+  .holdings-col-pnl,
+  .holdings-col-pnl-percent,
+  .holdings-col-balance {
+    text-align: right;
+  }
+
+  .holdings-list {
+    /* No padding - rows handle their own */
+  }
+
+  .holdings-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr;
+    gap: 8px;
+    padding: 14px 20px;
+    align-items: center;
+    border-bottom: 1px solid hsl(var(--border-subtle) / 0.5);
+    transition: background 0.15s ease;
+  }
+
+  .holdings-row:last-child {
+    border-bottom: none;
+  }
+
+  .holdings-row:hover {
+    background: hsl(var(--muted) / 0.3);
+  }
+
+  .holdings-asset {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .holdings-asset-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .holdings-asset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .holdings-asset-symbol {
+    font-size: 13px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  .holdings-asset-name {
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .holdings-value {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .holdings-percent {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .holdings-positive {
+    color: hsl(var(--data-positive));
+  }
+
+  .holdings-negative {
+    color: hsl(var(--data-negative));
+  }
+
+  .holdings-percent.holdings-positive {
+    background: hsl(var(--data-positive) / 0.1);
+  }
+
+  .holdings-percent.holdings-negative {
+    background: hsl(var(--data-negative) / 0.1);
+  }
+
+  .holdings-balance {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .holdings-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: hsl(var(--muted-foreground));
+    font-size: 13px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .holdings-columns,
+    .holdings-row {
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    }
+
+    .holdings-col-paid,
+    .holdings-row .holdings-col-paid {
+      display: none;
+    }
+
+    .holdings-col-balance,
+    .holdings-row .holdings-col-balance {
+      display: none;
+    }
+  }
+
   /* CTA Card - Flat with subtle glow */
   .cta-card {
     @apply relative p-6 overflow-hidden;
-    background: hsl(240 5% 9%);
-    border: 1px solid hsl(240 4% 14%);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
     border-radius: 14px;
   }
 
