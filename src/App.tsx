@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
 import { StakingProvider } from "@/contexts/StakingContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -43,13 +44,14 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <PortfolioProvider>
-        <UserStateProvider>
-          <StakingProvider>
-            <TooltipProvider>
-            <Toaster />
-            <Sonner />
+    <ThemeProvider>
+      <AuthProvider>
+        <PortfolioProvider>
+          <UserStateProvider>
+            <StakingProvider>
+              <TooltipProvider>
+              <Toaster />
+              <Sonner />
             <BrowserRouter>
               {/* Global UX helpers */}
               <TopLoadingBar />
@@ -90,11 +92,12 @@ const App = () => (
                 />
               </Routes>
             </BrowserRouter>
-            </TooltipProvider>
-          </StakingProvider>
-        </UserStateProvider>
-      </PortfolioProvider>
-    </AuthProvider>
+              </TooltipProvider>
+            </StakingProvider>
+          </UserStateProvider>
+        </PortfolioProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

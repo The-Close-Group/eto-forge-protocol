@@ -8,6 +8,10 @@ import {
   Menu, User, LogOut, TrendingUp, TrendingDown, Check, X, Copy,
   Calculator, PieChart, Shield, AlertTriangle, Sparkles, Target
 } from "lucide-react";
+import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
+import { HoldingsCard } from "@/components/dashboard/HoldingsCard";
+import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
+import maangLogo from "@/assets/maang-logo.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useActiveAccount, ConnectButton } from "thirdweb/react";
@@ -88,8 +92,15 @@ export default function Dashboard() {
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   // NOTE: Notifications are empty - real notifications should come from backend/events
   const [notifications, setNotifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
+  
+  // Trigger fade-in animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
@@ -648,534 +659,51 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="max-w-[1440px] mx-auto p-6 space-y-6">
-        {/* Header Row */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-1.5">
-              <span>Recommended coins for {timeFilter.toLowerCase()}</span>
-              <Clock className="w-3.5 h-3.5" />
-              <span className="px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium">
-                {assets.length} Assets
-              </span>
-            </div>
-            <h1 className="text-[28px] font-semibold tracking-tight">Top Staking Assets</h1>
+      <div 
+        className={`dashboard-container transition-all duration-700 ease-out ${
+          isVisible 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-6'
+        }`}
+      >
+        {/* Main Dashboard Grid - Full Width Chart + Bottom Row */}
+        <div className="dashboard-grid">
+          {/* Full Width - Wallet Value Card with Chart */}
+          <div 
+            className={`transition-all duration-700 ease-out delay-100 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
+            <WalletValueCard
+              totalValue={getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14}
+              changePercent={4.6}
+              realizedPL={1429.00}
+              unrealizedPL={-521.10}
+              projectedGrowth={1864.04}
+              netChange={495.68}
+            />
           </div>
-          
-          <div className="flex items-center gap-2">
-            {(['24H', '7D', '30D'] as const).map(time => (
-              <button 
-                key={time}
-                className={`filter-pill ${timeFilter === time ? 'filter-pill-active' : ''}`}
-                onClick={() => { setTimeFilter(time); toast.info(`Showing ${time} data`); }}
-              >
-                {time}
-            </button>
-            ))}
+
+          {/* Bottom Row - Holdings + Transactions */}
+          <div 
+            className={`dashboard-bottom-row transition-all duration-700 ease-out delay-200 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
+            {/* Holdings Card - MAANG, sMAANG, Cash */}
+            <HoldingsCard />
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-            <button className="filter-dropdown">
-                  {sortOrder === 'apy' ? 'APY' : sortOrder === 'tvl' ? 'TVL' : 'Risk'}
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortOrder('apy')}>
-                  {sortOrder === 'apy' && <Check className="w-4 h-4 mr-2" />}
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Highest APY
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('tvl')}>
-                  {sortOrder === 'tvl' && <Check className="w-4 h-4 mr-2" />}
-                  <PieChart className="w-4 h-4 mr-2" />
-                  Highest TVL
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('risk')}>
-                  {sortOrder === 'risk' && <Check className="w-4 h-4 mr-2" />}
-                  <Shield className="w-4 h-4 mr-2" />
-                  Lowest Risk
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            {/* Asset Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {sortedAssets.map((asset) => {
-                const effectiveAPY = getEffectiveAPY(asset.baseAPY, investmentPeriod, autoCompound);
-                const sparkData = generateSparklineData(30, asset.riskLevel === 'high' ? 'down' : 'up');
-                const isSelected = selectedAsset?.id === asset.id;
-                
-                return (
-                <div 
-                  key={asset.id}
-                    className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
-                    onClick={() => selectAsset(asset.id)}
-                    onDoubleClick={() => navigate('/buy-maang', { state: { selectedToken: asset.symbol } })}
-                  >
-                    {/* Hover tooltip */}
-                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                      <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
-                      </div>
-                    </div>
-                    
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2.5">
-                        <div 
-                          className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
-                          style={{ background: `${asset.color}15` }}
-                        >
-                        <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div>
-                          <div className="text-[11px] text-muted-foreground">{asset.type.toUpperCase()}</div>
-                        <div className="text-[13px] font-medium">{asset.name}</div>
-                      </div>
-                    </div>
-                      {isSelected && <Check className="w-4 h-4 text-primary" />}
-                  </div>
-                  
-                  <div className="mb-3">
-                    <div className="reward-rate-label">Reward Rate</div>
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="reward-rate">{effectiveAPY.toFixed(2)}</span>
-                        <span className="text-xl text-muted-foreground font-normal">%</span>
-                    </div>
-                  </div>
-                  
-                    <div className={`status-badge ${asset.riskLevel === 'low' ? 'status-badge-positive' : asset.riskLevel === 'high' ? 'status-badge-negative' : ''} mb-4`}>
-                      <span className="w-[6px] h-[6px] rounded-full bg-current" />
-                      {asset.riskLevel} risk
-                  </div>
-                  
-                  <div className="relative">
-                    <Sparkline 
-                        data={sparkData} 
-                        height={60}
-                        variant={asset.riskLevel !== 'high' ? 'positive' : 'negative'}
-                      showArea={true}
-                      showEndValue={true}
-                        endValue={`$${(asset.tvl / 1000000).toFixed(1)}M TVL`}
-                    />
-                  </div>
-                </div>
-                );
-              })}
-            </div>
-
-            {/* Your Active Stakings */}
-            <div className="active-staking-card">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-[15px] font-medium">Your active stakings ({positions.length})</h2>
-                <div className="flex items-center gap-0.5">
-                  <button className={`icon-btn ${showChart ? 'bg-muted' : ''}`} onClick={() => setShowChart(!showChart)}>
-                    <BarChart3 className="w-4 h-4" />
-                  </button>
-                  <button className="icon-btn" onClick={handleStake}>
-                    <Plus className="w-4 h-4" />
-                  </button>
-                  <button className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
-                    <RefreshCw className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {!hasWallet ? (
-                <div className="text-center py-12">
-                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                    <Wallet className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-[15px] font-medium mb-1">Connect Wallet</h3>
-                  <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
-                    Connect your wallet to view and manage your staking positions
-                  </p>
-                  <ConnectButton
-                    client={client}
-                    wallets={wallets}
-                    chain={etoMainnet}
-                    chains={supportedChains}
-                    connectModal={{ size: "compact" }}
-                    connectButton={{
-                      label: "Connect Wallet",
-                      style: {
-                        background: "hsl(160 70% 50%)",
-                        color: "#000",
-                        border: "none",
-                        borderRadius: "10px",
-                        padding: "11px 24px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                      },
-                    }}
-                  />
-                </div>
-              ) : positions.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                    <Target className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-[15px] font-medium mb-1">No Active Positions</h3>
-                  <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
-                    Start staking to earn rewards on your crypto assets
-                  </p>
-                  <Button variant="cta" onClick={handleStake}>
-                    Start Staking
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  {showChart && (
-                    <div className="p-4 rounded-xl bg-muted/30 mb-4">
-                      <div className="text-[13px] text-muted-foreground mb-2">Portfolio Performance</div>
-                      <Sparkline data={generateSparklineData(50, 'up')} height={100} variant="accent" showArea={true} />
-                      </div>
-                  )}
-
-                  {activePosition && activeAsset && (
-                    <div className="pb-5 border-b border-border-subtle">
-                      <div className="flex items-start gap-3 mb-4">
-                        <div 
-                          className="w-11 h-11 rounded-xl flex items-center justify-center"
-                          style={{ background: `${activeAsset.color}15` }}
-                        >
-                          <img src={activeAsset.logo} alt="" className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1">
-                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-0.5">
-                            <span>Last Update — {Math.floor((Date.now() - activePosition.startDate.getTime()) / (1000 * 60))} minutes ago</span>
-                          <Clock className="w-3 h-3" />
-                        </div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-[18px] font-semibold">Stake {activeAsset.name} ({activeAsset.symbol})</h3>
-                            <div 
-                              className="w-5 h-5 rounded-full flex items-center justify-center"
-                              style={{ background: activeAsset.color }}
-                            >
-                              <img src={activeAsset.logo} alt="" className="w-3 h-3 brightness-0 invert" />
-                            </div>
-                          <button className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 ml-2">
-                            View Profile <ArrowUpRight className="w-3.5 h-3.5" />
-                          </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                        <div className="text-[13px] text-muted-foreground mb-1">Current Reward Balance, {activeAsset.symbol}</div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-[46px] font-medium tracking-tight leading-none tabular-nums">
-                            {activePosition.earnedRewards.toFixed(5)}
-                      </span>
-                          <Button variant="cta" size="default" onClick={handleStake}>
-                        Upgrade
-                      </Button>
-                          <Button variant="outline" size="default" onClick={() => handleUnstake(activePosition.id)}>
-                        Unstake
-                      </Button>
-                    </div>
-                  </div>
-                    </div>
-                  )}
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-4 gap-6">
-                    {[
-                      { label: 'Total Staked', value: `$${getTotalStaked().toLocaleString()}` },
-                      { label: 'Total Rewards', value: `+${getTotalRewards().toFixed(4)}` },
-                      { label: 'Active Positions', value: positions.length.toString() },
-                      { label: 'Avg APY', value: `${(positions.reduce((sum, p) => sum + p.apy, 0) / positions.length || 0).toFixed(2)}%` },
-                    ].map((stat) => (
-                      <div key={stat.label} className="stat-item">
-                        <div className="stat-label">{stat.label}</div>
-                        <div className="stat-value">{stat.value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Bottom Stats */}
-                  <div className="grid grid-cols-4 gap-6 pt-5 border-t border-border-subtle">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[13px] text-muted-foreground">Staked Tokens Trend</span>
-                        <span className="period-badge">24H</span>
-                      </div>
-                      <Sparkline data={generateSparklineData(18, 'up')} height={36} variant="positive" showArea={false} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[13px] text-muted-foreground">Price</span>
-                        <span className="period-badge">24H</span>
-                      </div>
-                      <Sparkline data={generateSparklineData(18, 'up')} height={36} variant="positive" showArea={false} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[13px] text-muted-foreground">Staking Ratio</span>
-                        <span className="period-badge">24H</span>
-                      </div>
-                      <div className="text-[26px] font-semibold tracking-tight">60.6%</div>
-                    </div>
-                    <div>
-                      <div className="text-[13px] text-muted-foreground mb-2">Reward Rate</div>
-                      <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-[26px] font-semibold tracking-tight">{currentProjection.effectiveAPY.toFixed(2)}%</span>
-                        <span className="text-[11px] text-muted-foreground">24H Avg</span>
-                      </div>
-                      <div className="slider-track">
-                        <div className="slider-fill" style={{ width: `${Math.min(currentProjection.effectiveAPY * 5, 100)}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Protocol Activity */}
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center justify-between text-[15px]">
-                  <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
-                  Protocol Activity
-                  </div>
-                  <button 
-                    className={`text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
-                    onClick={handleRefresh}
-                  >
-                    <RefreshCw className="w-3 h-3" />
-                    Refresh
-                  </button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  {isLoadingActivity ? (
-                    <>
-                      <Skeleton className="h-14 w-full rounded-lg" />
-                      <Skeleton className="h-14 w-full rounded-lg" />
-                    </>
-                  ) : protocolActivity && protocolActivity.length > 0 ? (
-                    protocolActivity.slice(0, 4).map((activity) => (
-                      <div key={activity.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-medium ${
-                            activity.type === 'drip_execute' ? 'bg-data-positive/10 text-data-positive' :
-                            activity.type === 'drip_commit' ? 'bg-primary/10 text-primary' :
-                            activity.type === 'deposit' ? 'bg-blue-500/10 text-blue-400' :
-                            'bg-muted text-muted-foreground'
-                          }`}>
-                            {activity.type === 'drip_execute' ? '⚡' :
-                             activity.type === 'drip_commit' ? '📝' :
-                             activity.type === 'deposit' ? '+' : '?'}
-                          </div>
-                          <div>
-                            <div className="text-[13px] font-medium">{activity.description}</div>
-                            {activity.amount && (
-                              <div className="text-[11px] text-muted-foreground">{activity.amount}</div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right flex items-center gap-2">
-                          <div>
-                            <div className="text-[11px] text-muted-foreground">{activity.timeAgo}</div>
-                            <div className="text-[10px] text-muted-foreground">Block #{activity.blockNumber}</div>
-                          </div>
-                          {activity.txHash && (
-                            <a 
-                              href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="icon-btn p-1.5"
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center text-muted-foreground py-10 text-[13px]">
-                      No recent protocol activity
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-5">
-            {/* Liquid Staking Portfolio CTA */}
-            <div className="cta-card">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[14px] font-medium">Stakent</span>
-                    <span className="text-[9px] align-super text-muted-foreground">®</span>
-                  </div>
-                  <span className="new-badge">New</span>
-                </div>
-                <h3 className="text-[18px] font-semibold mb-2 leading-tight">Liquid Staking Portfolio</h3>
-                <p className="text-[13px] text-muted-foreground mb-6 leading-relaxed">
-                  An all-in-one portfolio that helps you make smarter investments into Ethereum Liquid Staking
-                </p>
-                
-                <div className="space-y-2.5">
-                  <ConnectButton
-                    client={client}
-                    wallets={wallets}
-                    chain={etoMainnet}
-                    chains={supportedChains}
-                    connectModal={{ size: "compact" }}
-                    connectButton={{
-                      label: "Connect with Wallet  🦊",
-                      style: {
-                        width: "100%",
-                        background: "hsl(160 70% 50%)",
-                        color: "#000",
-                        border: "none",
-                        borderRadius: "12px",
-                        padding: "13px 18px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                      },
-                    }}
-                  />
-                  
-                  <Button variant="ctaDark" className="w-full h-11" onClick={() => setWalletAddressOpen(true)}>
-                    Enter a Wallet Address
-                    <Lock className="w-3.5 h-3.5 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Investment Period - Fully Interactive */}
-            <Card className="overflow-hidden">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-[14px] font-medium">Investment Period</h3>
-                  <span className="period-badge-active">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
-                </div>
-                <p className="text-[11px] text-muted-foreground mb-5">Contribution Period (Month)</p>
-                
-                <div className="flex gap-2 flex-wrap mb-4">
-                  {[1, 3, 6, 12].map(months => (
-                    <button
-                      key={months}
-                      className={months === investmentPeriod ? 'period-badge-active' : 'period-badge'}
-                      onClick={() => {
-                        setInvestmentPeriod(months);
-                        toast.info(`Investment period set to ${months} month${months > 1 ? 's' : ''}`);
-                      }}
-                    >
-                      {months} Month{months > 1 ? 's' : ''}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="1"
-                    max="12"
-                    value={investmentPeriod}
-                    onChange={(e) => setInvestmentPeriod(parseInt(e.target.value))}
-                    className="w-full h-[3px] bg-muted rounded-full appearance-none cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
-                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white 
-                      [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-primary
-                      [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
-                    style={{
-                      background: `linear-gradient(to right, hsl(160 70% 50%) 0%, hsl(160 70% 50%) ${sliderPosition}%, hsl(240 4% 20%) ${sliderPosition}%, hsl(240 4% 20%) 100%)`
-                    }}
-                  />
-                </div>
-
-                {/* APY Preview */}
-                {selectedAsset && (
-                  <div className="mt-4 p-3 rounded-lg bg-muted/30">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[12px] text-muted-foreground">Effective APY</span>
-                      <span className="text-[14px] font-semibold text-primary">
-                        {currentProjection.effectiveAPY.toFixed(2)}%
-                      </span>
-                    </div>
-                    {autoCompound && (
-                      <div className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                        <RefreshCw className="w-3 h-3" /> Auto-compound enabled
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Protocol Stats */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px] flex items-center justify-between">
-                  Protocol Stats
-                  <button className={`${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
-                    <RefreshCw className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
-                  </button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Total Value Locked</span>
-                  <span className="text-[13px] font-medium">
-                    {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
-                      `$${(protocolStats?.tvl || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-                    }
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Your Total Staked</span>
-                  <span className="text-[13px] font-medium">
-                    ${getTotalStaked().toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] text-muted-foreground">Pending Rewards</span>
-                  <span className="text-[13px] font-medium text-primary">
-                    +{getTotalRewards().toFixed(4)}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-0.5">
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/trade">
-                    <span className="text-[13px]">Start Trading</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" className="w-full justify-between h-9 px-3" onClick={() => setCalculatorOpen(true)}>
-                  <span className="text-[13px]">Staking Calculator</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/faucet">
-                    <span className="text-[13px]">Get mUSDC</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Transactions with MAANG design language */}
+            <TransactionsCard
+              transactions={[
+                { id: '1', type: 'receive', token: 'MAANG', amount: 125.50, time: '08:21 AM', status: 'confirmed', showChart: true },
+                { id: '2', type: 'send', token: 'USDC', amount: -500.00, time: '05.12.2024', status: 'confirmed' },
+                { id: '3', type: 'reward', token: 'sMAANG', amount: 12.34, time: '05:19 AM', status: 'confirmed', showChart: true },
+                { id: '4', type: 'receive', token: 'MAANG', amount: 250.00, time: '05.12.2024', status: 'confirmed', highlighted: true },
+                { id: '5', type: 'receive', token: 'USDC', amount: 1500.00, time: '05.12.2024', status: 'confirmed', showChart: true },
+                { id: '6', type: 'send', token: 'sMAANG', amount: -45.00, time: '04.12.2024', status: 'pending' },
+              ]}
+            />
           </div>
         </div>
       </div>

@@ -1,50 +1,50 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate, Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useDeFiPrices } from "@/hooks/useDeFiPrices";
+import { useProtocolStats } from "@/hooks/useProtocolStats";
+import { useProtocolActivity } from "@/hooks/useProtocolActivity";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Zap, Shield, Coins, Sparkles } from "lucide-react";
-import Sparkline, { generateSparklineData } from "@/components/Sparkline";
+import { Shield, Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink } from "lucide-react";
+import { AssetCard } from "@/components/AssetCard";
 import maangLogo from "@/assets/maang-logo.svg";
 
-// Asset data for L1 native tokens
-const assets = [
+// Asset data for staking cards (original Dashboard style)
+const stakingAssets = [
   {
     id: 'maang',
     name: 'MAANG',
     symbol: 'MAANG',
-    description: 'Dynamic Reflective Index Token',
+    type: 'defi',
     logo: maangLogo,
-    color: 'from-emerald-500/20 to-teal-500/20',
-    borderColor: 'hover:border-emerald-500/50',
-    accentColor: 'text-emerald-400',
-    trend: 'up' as const,
+    color: '#10b981',
+    rewardRate: 1.51,
+    riskLevel: 'low' as const,
+    tvl: 850000,
   },
   {
     id: 'smaang',
     name: 'Staked MAANG',
     symbol: 'sMAANG',
-    description: 'Yield-bearing MAANG Receipt',
+    type: 'liquid',
     logo: maangLogo,
-    color: 'from-violet-500/20 to-purple-500/20',
-    borderColor: 'hover:border-violet-500/50',
-    accentColor: 'text-violet-400',
-    trend: 'up' as const,
+    color: '#8b5cf6',
+    rewardRate: 1.51,
+    riskLevel: 'low' as const,
+    tvl: 420000,
   },
   {
-    id: 'musdc',
-    name: 'Mock USDC',
-    symbol: 'mUSDC',
-    description: 'Paper Trading Stablecoin',
-    logoUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
-    color: 'from-blue-500/20 to-cyan-500/20',
-    borderColor: 'hover:border-blue-500/50',
-    accentColor: 'text-blue-400',
-    trend: 'flat' as const,
-    isStable: true,
+    id: 'usdc',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    type: 'defi',
+    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
+    color: '#2775ca',
+    rewardRate: 1.51,
+    riskLevel: 'low' as const,
+    tvl: 1200000,
   },
 ];
 
@@ -54,6 +54,13 @@ export default function Trade() {
   const { setOpen } = useSidebar();
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [investmentPeriod, setInvestmentPeriod] = useState(6);
+  
+  const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
+  const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
+
+  const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
 
   // Close sidebar when component mounts
   useEffect(() => {
@@ -63,12 +70,11 @@ export default function Trade() {
     return () => clearTimeout(timer);
   }, [setOpen]);
 
-  // Use DMM price as the live trading price
-  const livePrice = dmmPrice || oraclePrice || 1;
-  const priceSource = dmmPrice > 0 ? 'DMM' : oraclePrice > 0 ? 'Oracle' : 'N/A';
-
-  // NOTE: sMAANG price should come from vault share price, using same as MAANG for now
-  const smaangPrice = livePrice;
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await Promise.all([refetchStats(), refetchActivity()]);
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
 
   return (
     <div className="min-h-screen p-6 md:p-8 bg-background overflow-hidden">
@@ -95,164 +101,158 @@ export default function Trade() {
           </p>
         </div>
 
-        {/* Asset Cards Grid */}
+        {/* Asset Cards Grid - Dashboard Style */}
         <div 
-          className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 delay-150 ease-out ${
+          className={`grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 transition-all duration-700 delay-150 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-12'
           }`}
         >
-          {assets.map((asset, index) => (
-            <Card 
+          {stakingAssets.map((asset, index) => (
+            <div
               key={asset.id}
-              className={`relative overflow-hidden transition-all duration-500 ease-out cursor-pointer group
-                ${asset.borderColor}
-                ${hoveredCard === asset.id ? 'scale-[1.02] shadow-xl shadow-black/20' : 'scale-100'}
-              `}
               style={{ 
                 transitionDelay: `${index * 75}ms`,
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
               }}
-              onMouseEnter={() => setHoveredCard(asset.id)}
-              onMouseLeave={() => setHoveredCard(null)}
+              className="transition-all duration-500 ease-out"
             >
-              {/* Gradient Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${asset.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <CardContent className="relative p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${asset.color} flex items-center justify-center p-2 
-                      transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}
-                    >
-                      <img 
-                        src={asset.logo || asset.logoUrl} 
-                        alt={asset.name} 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold font-mono">{asset.symbol}</h3>
-                      <p className="text-xs text-muted-foreground">{asset.description}</p>
-                    </div>
-                  </div>
-                  
-                  {!asset.isStable && (
-                    <Badge variant="outline" className={`${asset.accentColor} border-current/30`}>
-                      <TrendingUp className="w-3 h-3 mr-1" />
-                      —%
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Price */}
-                <div className="mb-4">
-                  <div className={`text-3xl font-bold font-mono ${asset.accentColor} transition-all duration-300 
-                    group-hover:scale-105 group-hover:translate-x-1`}
-                  >
-                    {isLoading && !asset.isStable ? (
-                      <Skeleton className="h-9 w-28" />
-                    ) : asset.isStable ? (
-                      '$1.00'
-                    ) : asset.id === 'smaang' ? (
-                      `$${smaangPrice.toFixed(2)}`
-                    ) : (
-                      `$${livePrice.toFixed(2)}`
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                      {asset.isStable ? 'Pegged to USD' : `Live from ${priceSource}`}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Sparkline */}
-                <div className="h-12 mb-6 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-                  <Sparkline 
-                    data={generateSparklineData(24, asset.trend)} 
-                    height={48}
-                    variant={asset.trend === 'up' ? 'positive' : 'default'}
-                    showArea={true}
-                  />
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-2">
-                  {asset.id === 'maang' && (
-                    <>
-                      <Button 
-                        variant="cta" 
-                        size="lg" 
-                        className="w-full group/btn"
-                        onClick={() => navigate('/buy-maang')}
-                      >
-                        <span>Buy MAANG</span>
-                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => navigate('/buy-maang')}
-                      >
-                        Sell MAANG
-                      </Button>
-                    </>
-                  )}
-                  
-                  {asset.id === 'smaang' && (
-                    <>
-                      <Button 
-                        variant="cta" 
-                        size="lg" 
-                        className="w-full group/btn"
-                        onClick={() => navigate('/staking')}
-                      >
-                        <Zap className="w-4 h-4 mr-2" />
-                        <span>Stake MAANG</span>
-                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => navigate('/staking')}
-                      >
-                        Unstake & Redeem
-                      </Button>
-                    </>
-                  )}
-                  
-                  {asset.id === 'musdc' && (
-                    <>
-                      <Button 
-                        variant="cta" 
-                        size="lg" 
-                        className="w-full group/btn"
-                        onClick={() => navigate('/buy-maang')}
-                      >
-                        <span>Swap to MAANG</span>
-                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => navigate('/faucet')}
-                      >
-                        <Coins className="w-4 h-4 mr-2" />
-                        Get mUSDC (Faucet)
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              <AssetCard
+                id={asset.id}
+                name={asset.name}
+                symbol={asset.symbol}
+                type={asset.type}
+                logo={asset.logo}
+                color={asset.color}
+                rewardRate={asset.rewardRate}
+                riskLevel={asset.riskLevel}
+                tvl={asset.tvl}
+                isSelected={hoveredCard === asset.id}
+                onClick={() => setHoveredCard(asset.id)}
+                onDoubleClick={() => {
+                  if (asset.id === 'maang') navigate('/buy-maang');
+                  else if (asset.id === 'smaang') navigate('/staking');
+                  else navigate('/faucet');
+                }}
+              />
+            </div>
           ))}
         </div>
 
-        {/* Bottom Stats Bar - Animated */}
+        {/* Secondary Cards Grid */}
+        <div 
+          className={`grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 transition-all duration-700 delay-200 ease-out ${
+            isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-8'
+          }`}
+        >
+          {/* Investment Period */}
+          <Card className="overflow-hidden">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-[14px] font-medium">Investment Period</h3>
+                <span className="period-badge-active">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
+              </div>
+              <p className="text-[11px] text-muted-foreground mb-5">Contribution Period</p>
+              
+              <div className="flex gap-2 flex-wrap mb-4">
+                {[1, 3, 6, 12].map(months => (
+                  <button
+                    key={months}
+                    className={months === investmentPeriod ? 'period-badge-active' : 'period-badge'}
+                    onClick={() => setInvestmentPeriod(months)}
+                  >
+                    {months}M
+                  </button>
+                ))}
+              </div>
+
+              <div className="relative">
+                <input
+                  type="range"
+                  min="1"
+                  max="12"
+                  value={investmentPeriod}
+                  onChange={(e) => setInvestmentPeriod(parseInt(e.target.value))}
+                  className="w-full h-[3px] bg-muted rounded-full appearance-none cursor-pointer
+                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
+                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white 
+                    [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-primary
+                    [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, hsl(160 70% 50%) 0%, hsl(160 70% 50%) ${sliderPosition}%, hsl(var(--muted)) ${sliderPosition}%, hsl(var(--muted)) 100%)`
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Protocol Stats */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-[14px] flex items-center justify-between">
+                Protocol Stats
+                <button className={`${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
+                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                </button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] text-muted-foreground">Total Value Locked</span>
+                <span className="text-[13px] font-medium">
+                  {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
+                    `$${(protocolStats?.tvl || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                  }
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] text-muted-foreground">Oracle Price</span>
+                <span className="text-[13px] font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-16" /> : `$${oraclePrice.toFixed(2)}`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] text-muted-foreground">DMM Price</span>
+                <span className="text-[13px] font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-16" /> : `$${dmmPrice.toFixed(2)}`}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-[14px]">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-0.5">
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                <Link to="/buy-maang">
+                  <span className="text-[13px]">Buy MAANG</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                <Link to="/staking">
+                  <span className="text-[13px]">Stake Assets</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+                <Link to="/faucet">
+                  <span className="text-[13px]">Get mUSDC</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Protocol Activity */}
         <div 
           className={`transition-all duration-700 delay-300 ease-out ${
             isVisible 
@@ -260,43 +260,73 @@ export default function Trade() {
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <Card className="bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center md:text-left">
-                  <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1 justify-center md:justify-start">
-                    <Shield className="w-3 h-3" />
-                    Oracle Price
-                  </div>
-                  <div className="text-lg font-mono font-semibold">
-                    {isLoading ? <Skeleton className="h-6 w-20 mx-auto md:mx-0" /> : `$${oraclePrice.toFixed(2)}`}
-                  </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center justify-between text-[15px]">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  Protocol Activity
                 </div>
-                
-                <div className="text-center md:text-left">
-                  <div className="text-xs text-muted-foreground mb-1">DMM Price</div>
-                  <div className="text-lg font-mono font-semibold">
-                    {isLoading ? <Skeleton className="h-6 w-20 mx-auto md:mx-0" /> : `$${dmmPrice.toFixed(2)}`}
+                <button 
+                  className={`text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
+                  onClick={handleRefresh}
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  Refresh
+                </button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {isLoadingActivity ? (
+                  <>
+                    <Skeleton className="h-14 w-full rounded-lg" />
+                    <Skeleton className="h-14 w-full rounded-lg" />
+                  </>
+                ) : protocolActivity && protocolActivity.length > 0 ? (
+                  protocolActivity.slice(0, 4).map((activity) => (
+                    <div key={activity.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-medium ${
+                          activity.type === 'drip_execute' ? 'bg-data-positive/10 text-data-positive' :
+                          activity.type === 'drip_commit' ? 'bg-primary/10 text-primary' :
+                          activity.type === 'deposit' ? 'bg-blue-500/10 text-blue-400' :
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          {activity.type === 'drip_execute' ? '⚡' :
+                           activity.type === 'drip_commit' ? '📝' :
+                           activity.type === 'deposit' ? '+' : '?'}
+                        </div>
+                        <div>
+                          <div className="text-[13px] font-medium">{activity.description}</div>
+                          {activity.amount && (
+                            <div className="text-[11px] text-muted-foreground">{activity.amount}</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right flex items-center gap-2">
+                        <div>
+                          <div className="text-[11px] text-muted-foreground">{activity.timeAgo}</div>
+                          <div className="text-[10px] text-muted-foreground">Block #{activity.blockNumber}</div>
+                        </div>
+                        {activity.txHash && (
+                          <a 
+                            href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="icon-btn p-1.5"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-10 text-[13px]">
+                    No recent protocol activity
                   </div>
-                </div>
-                
-                <div className="text-center md:text-left">
-                  <div className="text-xs text-muted-foreground mb-1">Price Deviation</div>
-                  <div className="text-lg font-mono font-semibold text-data-positive">
-                    {isLoading ? (
-                      <Skeleton className="h-6 w-16 mx-auto md:mx-0" />
-                    ) : (
-                      `${Math.abs(((dmmPrice - oraclePrice) / oraclePrice) * 10000).toFixed(2)} bps`
-                    )}
-                  </div>
-                </div>
-                
-                <div className="text-center md:text-left">
-                  <div className="text-xs text-muted-foreground mb-1">sMAANG Yield</div>
-                  <div className="text-lg font-mono font-semibold text-primary">
-                    —% APY
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
