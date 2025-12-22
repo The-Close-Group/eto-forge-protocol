@@ -506,10 +506,10 @@ export default function Execution() {
                     </button>
                   </div>
 
-                  {/* Network Badge */}
-                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-muted/40 border border-border/40">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-[11px] font-medium text-foreground">ETO L1</span>
+                  {/* Network Indicator */}
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[11px] font-medium text-muted-foreground">ETO L1</span>
                   </div>
                 </div>
 
