@@ -34,6 +34,7 @@ import a16zLogo from "@/assets/a16z-logo.svg";
 import ycLogo from "@/assets/ycombinator-logo.svg";
 import sequoiaLogo from "@/assets/sequoia-logo.svg";
 import lightspeedLogo from "@/assets/lightspeed-logo.svg";
+import etoLogo from "/eto-logo.svg";
 
 // Asset configurations
 const assetConfigs: Record<string, {
@@ -433,8 +434,8 @@ export default function Execution() {
                   <div>
                     <div className="text-xs text-muted-foreground mb-1">Network</div>
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-primary">E</span>
+                      <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center">
+                        <img src={etoLogo} alt="ETO" className="w-3 h-3" />
                       </div>
                       <span className="text-sm font-medium">ETO L1</span>
                     </div>
@@ -507,9 +508,11 @@ export default function Execution() {
                   </div>
 
                   {/* Network Indicator */}
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[11px] font-medium text-muted-foreground">ETO L1</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center">
+                      <img src={etoLogo} alt="ETO" className="w-3 h-3" />
+                    </div>
+                    <span className="text-[12px] font-medium text-foreground">ETO L1</span>
                   </div>
                 </div>
 
