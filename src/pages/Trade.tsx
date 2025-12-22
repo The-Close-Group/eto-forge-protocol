@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { useDeFiPrices } from "@/hooks/useDeFiPrices";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Shield, Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink } from "lucide-react";
+import { Shield, Sparkles, ChevronRight, ChevronLeft, RefreshCw, Zap, ExternalLink } from "lucide-react";
 import { AssetCard } from "@/components/AssetCard";
 import maangLogo from "@/assets/maang-logo.svg";
 
@@ -39,12 +39,57 @@ const stakingAssets = [
     id: 'usdc',
     name: 'USD Coin',
     symbol: 'USDC',
-    type: 'defi',
+    type: 'stablecoin',
     logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
     color: '#2775ca',
     rewardRate: 1.51,
     riskLevel: 'low' as const,
     tvl: 1200000,
+  },
+  // Thematic Index Cards
+  {
+    id: 'ycombinator',
+    name: 'Y Combinator',
+    symbol: 'YC',
+    type: 'index',
+    logo: 'https://www.ycombinator.com/assets/ycdc/ycombinator-logo-b603b0a270e12b1d42b7cca9d4527a9b206adf8293a77f9f3e8b6cb542fcbfa7.png',
+    color: '#FF6600',
+    rewardRate: 2.34,
+    riskLevel: 'medium' as const,
+    tvl: 2500000,
+  },
+  {
+    id: 'sequoia',
+    name: 'Sequoia Capital',
+    symbol: 'SEQ',
+    type: 'index',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Sequoia_Capital_logo.svg/2560px-Sequoia_Capital_logo.svg.png',
+    color: '#00A651',
+    rewardRate: 2.18,
+    riskLevel: 'medium' as const,
+    tvl: 3200000,
+  },
+  {
+    id: 'lightspeed',
+    name: 'Lightspeed',
+    symbol: 'LSVP',
+    type: 'index',
+    logo: 'https://lsvp.com/wp-content/uploads/2021/03/lightspeed-logo.svg',
+    color: '#0066CC',
+    rewardRate: 1.95,
+    riskLevel: 'medium' as const,
+    tvl: 1800000,
+  },
+  {
+    id: 'a16z',
+    name: 'a16z',
+    symbol: 'A16Z',
+    type: 'index',
+    logo: 'https://a16z.com/wp-content/themes/developer/a16z/assets/images/a16z-logo.svg',
+    color: '#000000',
+    rewardRate: 2.45,
+    riskLevel: 'medium' as const,
+    tvl: 4100000,
   },
 ];
 
@@ -56,11 +101,67 @@ export default function Trade() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
 
   const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
+
+  // Check scroll position for carousel arrows
+  const checkScroll = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = 320; // Card width + gap
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Auto-scroll infinite loop
+  useEffect(() => {
+    if (!isVisible || isPaused) return;
+
+    const startAutoScroll = () => {
+      autoScrollRef.current = setInterval(() => {
+        if (carouselRef.current) {
+          const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+          const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+          
+          if (isAtEnd) {
+            // Reset to beginning smoothly
+            carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            // Scroll by 1 pixel for smooth continuous motion
+            carouselRef.current.scrollLeft += 1;
+          }
+        }
+      }, 30); // ~33fps for smooth scrolling
+    };
+
+    // Start auto-scroll after a short delay
+    const delayTimer = setTimeout(startAutoScroll, 2000);
+
+    return () => {
+      clearTimeout(delayTimer);
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+      }
+    };
+  }, [isVisible, isPaused]);
 
   // Close sidebar when component mounts
   useEffect(() => {
@@ -70,6 +171,13 @@ export default function Trade() {
     return () => clearTimeout(timer);
   }, [setOpen]);
 
+  // Check scroll on mount and resize
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [isVisible]);
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await Promise.all([refetchStats(), refetchActivity()]);
@@ -77,76 +185,109 @@ export default function Trade() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-8 bg-background overflow-hidden">
-      <div className="max-w-6xl mx-auto">
-        {/* Page Header - Animated */}
+    <div className="min-h-screen bg-background overflow-hidden">
+      {/* Page Header - Upper Left Corner */}
+      <div className="px-6 md:px-8 pt-6 md:pt-8">
         <div 
-          className={`text-center mb-12 transition-all duration-700 ease-out ${
+          className={`mb-8 transition-all duration-700 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">ETO L1 Native Assets</span>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Assets
+            </h1>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium text-primary">ETO L1</span>
+            </div>
           </div>
-          
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-4">
-            Token{" "}
-            <span className="text-muted-foreground/40">Trading Hub</span>
-          </h1>
-          <p className="text-lg text-muted-foreground font-light max-w-2xl mx-auto">
+          <p className="text-sm text-muted-foreground">
             Trade and stake native L1 assets on the ETO Dynamic Market Maker
           </p>
         </div>
+      </div>
 
-        {/* Asset Cards Grid - Dashboard Style */}
-        <div 
-          className={`grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 transition-all duration-700 delay-150 ease-out ${
-            isVisible 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-12'
+      {/* Asset Cards Carousel - Full Width Edge to Edge */}
+      <div 
+        className={`relative mb-8 transition-all duration-700 delay-100 ease-out ${
+          isVisible 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-8'
+        }`}
+      >
+        {/* Left Arrow */}
+        <button
+          onClick={() => scrollCarousel('left')}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted ${
+            canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
+        >
+          <ChevronLeft className="w-5 h-5 text-foreground" />
+        </button>
+
+        {/* Right Arrow */}
+        <button
+          onClick={() => scrollCarousel('right')}
+          className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted ${
+            canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <ChevronRight className="w-5 h-5 text-foreground" />
+        </button>
+
+        {/* Carousel Container - Full viewport width with pause on hover */}
+        <div 
+          ref={carouselRef}
+          onScroll={checkScroll}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          className="flex gap-4 overflow-x-auto scrollbar-hide pl-6 md:pl-8 pr-6 md:pr-8 py-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {stakingAssets.map((asset, index) => (
             <div
               key={asset.id}
               style={{ 
-                transitionDelay: `${index * 75}ms`,
+                transitionDelay: `${index * 50}ms`,
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
               }}
-              className="transition-all duration-500 ease-out"
+              className="flex-shrink-0 w-[280px] transition-all duration-500 ease-out"
             >
               <AssetCard
-                id={asset.id}
-                name={asset.name}
-                symbol={asset.symbol}
-                type={asset.type}
-                logo={asset.logo}
-                color={asset.color}
-                rewardRate={asset.rewardRate}
-                riskLevel={asset.riskLevel}
-                tvl={asset.tvl}
-                isSelected={hoveredCard === asset.id}
-                onClick={() => setHoveredCard(asset.id)}
-                onDoubleClick={() => {
-                  if (asset.id === 'maang') navigate('/buy-maang');
-                  else if (asset.id === 'smaang') navigate('/staking');
-                  else navigate('/faucet');
-                }}
-              />
-            </div>
-          ))}
+                  id={asset.id}
+                  name={asset.name}
+                  symbol={asset.symbol}
+                  type={asset.type}
+                  logo={asset.logo}
+                  color={asset.color}
+                  rewardRate={asset.rewardRate}
+                  riskLevel={asset.riskLevel}
+                  tvl={asset.tvl}
+                  isSelected={hoveredCard === asset.id}
+                  onClick={() => setHoveredCard(asset.id)}
+                  onDoubleClick={() => navigate(`/execute/${asset.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Gradient Fade Edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent pointer-events-none" />
         </div>
 
+      {/* Content Container with padding */}
+      <div className="px-6 md:px-8 pb-6 md:pb-8">
         {/* Secondary Cards Grid */}
         <div 
-          className={`grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 transition-all duration-700 delay-200 ease-out ${
+          className={`grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 transition-all duration-700 delay-150 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-8'
+              : 'opacity-0 translate-y-6'
           }`}
         >
           {/* Investment Period */}
@@ -254,10 +395,10 @@ export default function Trade() {
 
         {/* Protocol Activity */}
         <div 
-          className={`transition-all duration-700 delay-300 ease-out ${
+          className={`transition-all duration-700 delay-200 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-8'
+              : 'opacity-0 translate-y-6'
           }`}
         >
           <Card>

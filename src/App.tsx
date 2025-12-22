@@ -39,6 +39,7 @@ import Faucet from "@/pages/Faucet";
 import SidebarDemoPage from "@/pages/SidebarDemoPage";
 import Profile from "@/pages/Profile";
 import PointsDashboard from "@/pages/PointsDashboard";
+import Execution from "@/pages/Execution";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
                         <RouteTransition>
                           <Routes>
                             <Route path="/trade" element={<Trade />} />
+                            <Route path="/execute/:assetId" element={<Execution />} />
                             {/* <Route path="/bridge" element={<Bridge />} /> */} {/* Temporarily removed */}
                             <Route path="/buy-maang" element={<BuyMAANG />} />
                             <Route path="/order" element={<OrderPage />} />

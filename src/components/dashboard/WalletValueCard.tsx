@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { TrendingUp, TrendingDown, Grid3X3, Settings2, Plus } from 'lucide-react';
 
 interface WalletValueCardProps {
   totalValue: number;
@@ -95,32 +96,26 @@ export function WalletValueCard({
           <div className="wvc-amount-line">
             <span className="wvc-amount">{formatCurrency(totalValue)}</span>
             <span className="wvc-pct">
-              <span className="wvc-pct-icon">◐</span>
-              {changePercent.toFixed(1)}%
+              {changePercent >= 0 ? (
+                <TrendingUp className="w-3.5 h-3.5" />
+              ) : (
+                <TrendingDown className="w-3.5 h-3.5" />
+              )}
+              {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(1)}%
             </span>
           </div>
         </div>
         
         <div className="wvc-controls">
           <div className="wvc-actions">
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+            <button className="wvc-action-btn" title="Add funds">
+              <Plus className="w-[18px] h-[18px]" />
             </button>
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-              </svg>
+            <button className="wvc-action-btn" title="Grid view">
+              <Grid3X3 className="w-[18px] h-[18px]" />
             </button>
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
+            <button className="wvc-action-btn" title="Chart settings">
+              <Settings2 className="w-[18px] h-[18px]" />
             </button>
           </div>
           <div className="wvc-time-btns">
@@ -209,32 +204,44 @@ export function WalletValueCard({
       {/* Bottom Stats */}
       <div className="wvc-bottom">
         <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Realized PL</div>
+          <div className="wvc-stat-name">Realized P&L</div>
           <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
             {formatCurrency(realizedPL, true)}
           </div>
-          <div className="wvc-stat-meta">◐ +27% Today</div>
+          <div className="wvc-stat-meta">
+            <TrendingUp className="w-3 h-3 inline mr-1" />
+            +27% Today
+          </div>
         </div>
         <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Unrealized PL</div>
+          <div className="wvc-stat-name">Unrealized P&L</div>
           <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
             {formatCurrency(unrealizedPL, true)}
           </div>
-          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+          <div className="wvc-stat-meta">
+            <TrendingDown className="w-3 h-3 inline mr-1" />
+            -11.8% Today
+          </div>
         </div>
         <div className="wvc-stat-card">
           <div className="wvc-stat-name">Projected Growth</div>
           <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
             {formatCurrency(projectedGrowth, true)}
           </div>
-          <div className="wvc-stat-meta">◐ +3.2% Today</div>
+          <div className="wvc-stat-meta">
+            <TrendingUp className="w-3 h-3 inline mr-1" />
+            +3.2% Today
+          </div>
         </div>
         <div className="wvc-stat-card">
           <div className="wvc-stat-name">Net Change</div>
           <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
             {formatCurrency(netChange, true)}
           </div>
-          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+          <div className="wvc-stat-meta">
+            <TrendingDown className="w-3 h-3 inline mr-1" />
+            -11.8% Today
+          </div>
         </div>
       </div>
     </div>

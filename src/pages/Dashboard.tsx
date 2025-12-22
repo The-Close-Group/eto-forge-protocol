@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   ExternalLink, Wallet, ArrowUpRight, Clock, RefreshCw, ChevronRight, 
-  ChevronDown, Zap, Lock, Search, Settings, Bell, Plus, BarChart3,
-  Menu, User, LogOut, TrendingUp, TrendingDown, Check, X, Copy,
-  Calculator, PieChart, Shield, AlertTriangle, Sparkles, Target
+  ChevronDown, Zap, Search, Settings, Bell, Plus, BarChart3,
+  User, LogOut, TrendingUp, TrendingDown, Copy,
+  Calculator, Shield, AlertTriangle, Sparkles
 } from "lucide-react";
 import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
 import { HoldingsCard } from "@/components/dashboard/HoldingsCard";
@@ -533,134 +533,148 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Top Header Bar */}
-      <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-        <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="user-avatar" />
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-muted-foreground">@ryan997</span>
-                  <span className="pro-badge">PRO</span>
+      {/* Fixed Top Header Bar - All elements aligned right */}
+      <header className="fixed top-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border-subtle left-0 md:left-[60px]">
+        <div className="flex items-center justify-end gap-4 px-6 py-3">
+          {/* Action Icons Group */}
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="icon-btn relative">
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full text-[9px] font-bold flex items-center justify-center text-black">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <div className="p-3 border-b border-border flex items-center justify-between">
+                  <span className="text-[13px] font-medium">Notifications</span>
+                  {unreadCount > 0 && (
+                    <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
+                      Mark all read
+                    </button>
+                  )}
                 </div>
-                <span className="text-[14px] font-medium">Ryan Crawford</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52">
-              <DropdownMenuItem onClick={() => navigate('/profile')}>
-                <User className="w-4 h-4 mr-2" />
-                My Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/staking')}>
-                <Wallet className="w-4 h-4 mr-2" />
-                My Stakings
-              </DropdownMenuItem>
-              {account?.address && (
-                <DropdownMenuItem onClick={handleCopyAddress}>
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Address
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <button className="deposit-btn ml-4" onClick={handleStake}>
-            Deposit
-            <Lock className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="icon-btn relative">
-                <Bell className="w-4 h-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full text-[9px] font-bold flex items-center justify-center text-black">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <div className="p-3 border-b border-border flex items-center justify-between">
-                <span className="text-[13px] font-medium">Notifications</span>
-                {unreadCount > 0 && (
-                  <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
-                    Mark all read
-                  </button>
-                )}
-              </div>
-              <div className="max-h-80 overflow-y-auto">
-                {notifications.map(notif => (
-                  <div 
-                    key={notif.id} 
-                    className="p-3 hover:bg-muted/50 cursor-pointer border-b border-border/50 last:border-0"
-                    onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
-                  >
-                    <div className="flex gap-3">
-                      <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium">{notif.title}</div>
-                        <div className="text-[12px] text-muted-foreground">{notif.message}</div>
-                        <div className="text-[11px] text-muted-foreground mt-1">{notif.time}</div>
-                      </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center text-[13px] text-muted-foreground">
+                      No notifications yet
                     </div>
+                  ) : (
+                    notifications.map(notif => (
+                      <div 
+                        key={notif.id} 
+                        className="p-3 hover:bg-muted/50 cursor-pointer border-b border-border/50 last:border-0"
+                        onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
+                      >
+                        <div className="flex gap-3">
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] font-medium">{notif.title}</div>
+                            <div className="text-[12px] text-muted-foreground">{notif.message}</div>
+                            <div className="text-[11px] text-muted-foreground mt-1">{notif.time}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <button className="search-input" onClick={() => setSearchOpen(true)}>
+              <Search className="w-3.5 h-3.5" />
+              <span>Search...</span>
+            </button>
+
+            <button className="icon-btn" onClick={() => setCalculatorOpen(true)}>
+              <Calculator className="w-4 h-4" />
+            </button>
+
+            <button 
+              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="icon-btn flex items-center gap-1.5">
+                  <span className="text-[13px]">Settings</span>
+                  <Settings className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => toast.info("Appearance settings coming soon")}>
+                  Appearance
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast.info("Notification settings coming soon")}>
+                  Notifications
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/system-health')}>
+                  System Health
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-border-subtle" />
+
+          {/* Account Info Group - Deposit | Name | Avatar */}
+          <div className="flex items-center gap-4">
+            <button className="deposit-btn" onClick={handleStake}>
+              Deposit
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  <span className="text-[14px] font-medium">Ryan Crawford</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] text-muted-foreground">@ryan997</span>
+                    <span className="pro-badge">PRO</span>
                   </div>
-                ))}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <button className="search-input" onClick={() => setSearchOpen(true)}>
-            <Search className="w-3.5 h-3.5" />
-            <span>Search...</span>
-          </button>
-
-          <button className="icon-btn" onClick={() => setCalculatorOpen(true)}>
-            <Calculator className="w-4 h-4" />
-          </button>
-
-          <button 
-            className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="icon-btn flex items-center gap-1.5">
-                <span className="text-[13px]">Settings</span>
-                <Settings className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => toast.info("Appearance settings coming soon")}>
-                Appearance
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Notification settings coming soon")}>
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/system-health')}>
-                System Health
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <div className="user-avatar" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="w-4 h-4 mr-2" />
+                  My Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/staking')}>
+                  <Wallet className="w-4 h-4 mr-2" />
+                  My Stakings
+                </DropdownMenuItem>
+                {account?.address && (
+                  <DropdownMenuItem onClick={handleCopyAddress}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Address
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
+      {/* Scrollable Dashboard Content - offset for fixed header */}
       <div 
-        className={`dashboard-container transition-all duration-700 ease-out ${
+        className={`dashboard-container pt-16 transition-all duration-700 ease-out ${
           isVisible 
             ? 'opacity-100 translate-y-0' 
             : 'opacity-0 translate-y-6'
@@ -684,16 +698,21 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Bottom Row - Holdings + Transactions */}
+          {/* Holdings Card - Full Width Row */}
           <div 
-            className={`dashboard-bottom-row transition-all duration-700 ease-out delay-200 ${
+            className={`transition-all duration-700 ease-out delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}
           >
-            {/* Holdings Card - MAANG, sMAANG, Cash */}
             <HoldingsCard />
-            
-            {/* Transactions with MAANG design language */}
+          </div>
+          
+          {/* Transactions Card - Full Width Row Below */}
+          <div 
+            className={`transition-all duration-700 ease-out delay-300 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
             <TransactionsCard
               transactions={[
                 { id: '1', type: 'receive', token: 'MAANG', amount: 125.50, time: '08:21 AM', status: 'confirmed', showChart: true },

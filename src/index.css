@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scrollbar Hide Utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Stakent-style Dark Theme - Flat Design */
 
 @layer base {
@@ -322,15 +331,15 @@
   }
 
   /* ========================================
-     WALLET VALUE CARD - Design Language Aligned
+     WALLET VALUE CARD - Refined Design
      ======================================== */
   .wvc {
     display: flex;
     flex-direction: column;
     background: hsl(var(--card));
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 14px;
-    padding: 24px;
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 20px;
+    padding: 28px;
     transition: border-color 0.2s ease;
   }
 
@@ -342,35 +351,35 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .wvc-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .wvc-title {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: hsl(var(--muted-foreground));
-    letter-spacing: 0.02em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
   .wvc-amount-line {
     display: flex;
-    align-items: baseline;
-    gap: 14px;
+    align-items: center;
+    gap: 16px;
   }
 
   .wvc-amount {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 44px;
-    font-weight: 600;
-    letter-spacing: -0.035em;
+    font-size: 2.75rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
     line-height: 1;
     color: hsl(var(--foreground));
     font-variant-numeric: tabular-nums;
@@ -379,65 +388,66 @@
   .wvc-pct {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     color: hsl(var(--primary));
     background: hsl(var(--primary) / 0.1);
-    padding: 5px 10px;
-    border-radius: 6px;
-  }
-
-  .wvc-pct-icon {
-    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    letter-spacing: -0.01em;
   }
 
   .wvc-controls {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 12px;
+    gap: 16px;
   }
 
   .wvc-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
   }
 
   .wvc-action-btn {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: hsl(var(--muted));
-    border: none;
+    background: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
     color: hsl(var(--muted-foreground));
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
   }
 
   .wvc-action-btn:hover {
-    background: hsl(var(--accent));
+    background: hsl(var(--muted));
+    border-color: hsl(var(--border));
     color: hsl(var(--foreground));
   }
 
   .wvc-time-btns {
     display: flex;
     gap: 2px;
+    background: hsl(var(--muted) / 0.3);
+    padding: 3px;
+    border-radius: 10px;
   }
 
   .wvc-time-btn {
-    padding: 10px 14px;
+    padding: 8px 12px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: hsl(var(--muted-foreground));
     background: transparent;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
   }
@@ -447,8 +457,9 @@
   }
 
   .wvc-time-btn.active {
-    background: hsl(var(--muted));
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.1);
   }
 
   /* Chart - Full Width Edge-to-Edge */
@@ -493,40 +504,42 @@
   .wvc-bottom {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    gap: 16px;
   }
 
   .wvc-stat-card {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 16px 18px;
-    background: hsl(var(--muted) / 0.3);
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
+    gap: 8px;
+    padding: 18px 20px;
+    background: hsl(var(--muted) / 0.25);
+    border: 1px solid hsl(var(--border) / 0.4);
+    border-radius: 14px;
     transition: all 0.2s ease;
   }
 
   .wvc-stat-card:hover {
-    background: hsl(var(--muted) / 0.5);
-    border-color: hsl(var(--border));
+    background: hsl(var(--muted) / 0.45);
+    border-color: hsl(var(--border) / 0.7);
+    transform: translateY(-2px);
   }
 
   .wvc-stat-name {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: hsl(var(--muted-foreground));
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
   }
 
   .wvc-stat-num {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
+    line-height: 1;
     color: hsl(var(--foreground));
   }
 
@@ -539,9 +552,11 @@
   }
 
   .wvc-stat-meta {
+    display: flex;
+    align-items: center;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 500;
     color: hsl(var(--muted-foreground));
   }
 
@@ -680,9 +695,21 @@
   }
 
   .holdings-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .holdings-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .holdings-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Individual Holding Item - MAANG Style */
@@ -690,17 +717,19 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 16px;
+    padding: 20px;
     background: hsl(var(--muted) / 0.3);
     border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
+    border-radius: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
+    min-height: 180px;
   }
 
   .holding-item:hover {
     background: hsl(var(--muted) / 0.5);
     border-color: hsl(var(--border));
+    transform: translateY(-2px);
   }
 
   .holding-header {
@@ -774,8 +803,8 @@
 
   .holding-amount {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 28px;
-    font-weight: 600;
+    font-size: 1.75rem;
+    font-weight: 500;
     color: hsl(var(--foreground));
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
@@ -873,27 +902,40 @@
 
   .txn-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
     flex: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .txn-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .txn-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .txn-item {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 14px;
+    padding: 16px;
     background: hsl(var(--muted) / 0.3);
     border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
+    border-radius: 14px;
     transition: all 0.2s ease;
-    min-height: 120px;
+    min-height: 140px;
     cursor: pointer;
   }
 
   .txn-item:hover {
     background: hsl(var(--muted) / 0.5);
     border-color: hsl(var(--border));
+    transform: translateY(-2px);
   }
 
   .txn-item.highlighted {
@@ -994,8 +1036,8 @@
 
   .txn-amount {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 1.375rem;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
     color: hsl(var(--foreground));
@@ -1062,18 +1104,18 @@
   }
 
   /* ========================================
-     DASHBOARD LAYOUT - Full Width Chart + Bottom Row
+     DASHBOARD LAYOUT - Refined Spacing
      ======================================== */
   .dashboard-container {
-    max-width: 1440px;
+    max-width: 1480px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 28px 32px;
   }
 
   .dashboard-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
   }
 
   /* WalletValueCard takes full width */
@@ -1084,20 +1126,24 @@
   /* Bottom row with Holdings + Transactions */
   .dashboard-bottom-row {
     display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 20px;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
     align-items: stretch;
   }
 
   .dashboard-right {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
   }
 
   @media (max-width: 1200px) {
     .dashboard-bottom-row {
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 340px 1fr;
+    }
+    
+    .dashboard-container {
+      padding: 24px;
     }
   }
 
@@ -1113,7 +1159,7 @@
     
     .dashboard-right > * {
       flex: 1;
-      min-width: 280px;
+      min-width: 300px;
     }
   }
 
