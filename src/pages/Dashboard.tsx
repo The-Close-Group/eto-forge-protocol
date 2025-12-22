@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { 
   ExternalLink, Wallet, ArrowUpRight, Clock, RefreshCw, ChevronRight, 
   ChevronDown, Zap, Search, Settings, Bell, Plus, BarChart3,
-  User, LogOut, TrendingUp, TrendingDown, Copy,
-  Calculator, Shield, AlertTriangle, Sparkles
+  User, LogOut, TrendingUp, TrendingDown, Copy, Check,
+  Calculator, Shield, AlertTriangle, Sparkles, Globe, ChevronUp
 } from "lucide-react";
 import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
 import { HoldingsCard } from "@/components/dashboard/HoldingsCard";
@@ -93,8 +93,19 @@ export default function Dashboard() {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [addressCopied, setAddressCopied] = useState(false);
   // NOTE: Notifications are empty - real notifications should come from backend/events
   const [notifications, setNotifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
+
+  // Format wallet address for display
+  const formatAddress = (address: string) => {
+    if (!address) return '';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  // Wallet display address (use connected account or fallback)
+  const displayAddress = account?.address || '0x1234...5678';
+  const shortAddress = account?.address ? formatAddress(account.address) : '0x12...5678';
   
   // Trigger fade-in animation on mount
   useEffect(() => {
@@ -199,9 +210,12 @@ export default function Dashboard() {
   };
 
   const handleCopyAddress = () => {
-    if (account?.address) {
-      navigator.clipboard.writeText(account.address);
+    const address = account?.address || displayAddress;
+    if (address) {
+      navigator.clipboard.writeText(address);
+      setAddressCopied(true);
       toast.success("Address copied to clipboard");
+      setTimeout(() => setAddressCopied(false), 2000);
     }
   };
 
@@ -533,162 +547,209 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Top Navigation Bar - Clean Professional Design */}
-      <header className="header-bar fixed top-0 right-0 z-40 bg-background/98 backdrop-blur-sm border-b border-border/40 left-0 md:left-[60px]">
-        <div className="flex items-center gap-4">
-          {/* Page Context */}
+      {/* Top Navigation Bar - Professional Financial Dashboard */}
+      <nav className="fixed top-0 right-0 left-0 md:left-[60px] z-40 h-14 bg-background border-b border-border/50">
+        <div className="h-full px-4 md:px-6 flex items-center justify-between">
+          
+          {/* Left Section - Network & Wallet */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-foreground" />
+            {/* Network Indicator */}
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/40 border border-border/40">
+              <div className="w-2 h-2 rounded-full bg-primary" />
+              <span className="text-[11px] font-medium text-foreground">ETO L1</span>
             </div>
-            <div>
-              <h1 className="text-[14px] font-medium text-foreground">Overview</h1>
-              <p className="text-[11px] text-muted-foreground">Portfolio Dashboard</p>
-            </div>
+
+            {/* Wallet Address */}
+            <button 
+              onClick={handleCopyAddress}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
+            >
+              <Wallet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+              <span className="text-[12px] font-mono text-foreground">{shortAddress}</span>
+              {addressCopied ? (
+                <Check className="w-3 h-3 text-primary" />
+              ) : (
+                <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+              )}
+            </button>
           </div>
-        </div>
 
-        {/* Right Side Actions */}
-        <div className="flex items-center gap-2">
-          {/* Search Button */}
-          <button 
-            className="h-8 px-3 flex items-center gap-2 text-[12px] text-muted-foreground bg-muted/40 hover:bg-muted/60 rounded-md transition-colors"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Search</span>
-            <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 px-1.5 text-[10px] font-mono text-muted-foreground/70 bg-background/60 rounded border border-border/40">
-              ⌘K
-            </kbd>
-          </button>
+          {/* Center Section - Search (hidden on mobile) */}
+          <div className="hidden md:flex flex-1 justify-center max-w-md mx-4">
+            <button 
+              onClick={() => setSearchOpen(true)}
+              className="w-full max-w-xs flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 text-muted-foreground hover:text-foreground transition-all"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span className="text-[12px] flex-1 text-left">Search assets, transactions...</span>
+              <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground/60 bg-background/50 rounded border border-border/30">
+                ⌘K
+              </kbd>
+            </button>
+          </div>
 
-          {/* Icon Actions */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors relative">
-                <Bell className="w-4 h-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72">
-              <div className="px-3 py-2 border-b border-border/50 flex items-center justify-between">
-                <span className="text-[12px] font-medium">Notifications</span>
-                {unreadCount > 0 && (
-                  <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
-                    Mark all read
-                  </button>
-                )}
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                {notifications.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <p className="text-[12px] text-muted-foreground">No notifications</p>
-                  </div>
-                ) : (
-                  notifications.map(notif => (
-                    <div 
-                      key={notif.id} 
-                      className="px-3 py-2.5 hover:bg-muted/50 cursor-pointer border-b border-border/30 last:border-0"
-                      onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
-                    >
-                      <div className="flex gap-2.5">
-                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[12px] font-medium">{notif.title}</div>
-                          <div className="text-[11px] text-muted-foreground line-clamp-1">{notif.message}</div>
+          {/* Right Section - Actions & Account */}
+          <div className="flex items-center gap-1">
+            {/* Mobile Search */}
+            <button 
+              onClick={() => setSearchOpen(true)}
+              className="md:hidden h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+
+            {/* Notifications */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors relative">
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full" />
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72">
+                <div className="px-3 py-2 border-b border-border/50 flex items-center justify-between">
+                  <span className="text-[12px] font-medium">Notifications</span>
+                  {unreadCount > 0 && (
+                    <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="py-6 text-center">
+                      <Bell className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1.5" />
+                      <p className="text-[11px] text-muted-foreground">No notifications</p>
+                    </div>
+                  ) : (
+                    notifications.map(notif => (
+                      <div 
+                        key={notif.id} 
+                        className="px-3 py-2 hover:bg-muted/50 cursor-pointer border-b border-border/20 last:border-0"
+                        onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
+                      >
+                        <div className="flex gap-2">
+                          <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[11px] font-medium">{notif.title}</div>
+                            <div className="text-[10px] text-muted-foreground line-clamp-1">{notif.message}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                    ))
+                  )}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <button 
-            className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
-            onClick={() => setCalculatorOpen(true)}
-          >
-            <Calculator className="w-4 h-4" />
-          </button>
+            {/* Refresh */}
+            <button 
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
 
-          <button 
-            className={`h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors">
-                <Settings className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
-                Appearance
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/system-health')}>
-                System Health
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Separator */}
-          <div className="w-px h-5 bg-border/50 mx-1" />
-
-          {/* Deposit CTA */}
-          <button 
-            className="h-8 px-3.5 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
-            onClick={handleStake}
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Deposit
-          </button>
-
-          {/* User Avatar & Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-[11px] font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-                RC
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <div className="px-3 py-2 border-b border-border/50">
-                <div className="text-[12px] font-medium">Ryan Crawford</div>
-                <div className="text-[11px] text-muted-foreground">@ryan997</div>
-              </div>
-              <DropdownMenuItem onClick={() => navigate('/profile')}>
-                <User className="w-3.5 h-3.5 mr-2" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/staking')}>
-                <Wallet className="w-3.5 h-3.5 mr-2" />
-                Staking
-              </DropdownMenuItem>
-              {account?.address && (
-                <DropdownMenuItem onClick={handleCopyAddress}>
-                  <Copy className="w-3.5 h-3.5 mr-2" />
-                  Copy Address
+            {/* Settings */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                  <Settings className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
+                  Appearance
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                <LogOut className="w-3.5 h-3.5 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
+                  Notifications
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/system-health')}>
+                  System Health
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Divider */}
+            <div className="hidden sm:block w-px h-5 bg-border/40 mx-2" />
+
+            {/* Deposit Button */}
+            <button 
+              onClick={handleStake}
+              className="hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-md text-[12px] font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Deposit</span>
+            </button>
+
+            {/* Account Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="ml-1 flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted/50 transition-colors">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[10px] font-semibold text-primary-foreground">
+                    RC
+                  </div>
+                  <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {/* Account Header */}
+                <div className="px-3 py-2.5 border-b border-border/50">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[11px] font-semibold text-primary-foreground">
+                      RC
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium">Ryan Crawford</div>
+                      <div className="text-[11px] text-muted-foreground font-mono">{shortAddress}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Wallet Balance Preview */}
+                <div className="px-3 py-2 border-b border-border/50 bg-muted/20">
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Portfolio Value</div>
+                  <div className="text-[14px] font-semibold">${(getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                </div>
+
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="py-2">
+                  <User className="w-4 h-4 mr-2.5 text-muted-foreground" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/staking')} className="py-2">
+                  <Wallet className="w-4 h-4 mr-2.5 text-muted-foreground" />
+                  My Positions
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCalculatorOpen(true)} className="py-2">
+                  <Calculator className="w-4 h-4 mr-2.5 text-muted-foreground" />
+                  Calculator
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyAddress} className="py-2">
+                  {addressCopied ? (
+                    <Check className="w-4 h-4 mr-2.5 text-primary" />
+                  ) : (
+                    <Copy className="w-4 h-4 mr-2.5 text-muted-foreground" />
+                  )}
+                  {addressCopied ? 'Copied!' : 'Copy Address'}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open(`https://eto-explorer.ash.center/address/${displayAddress}`, '_blank')} className="py-2">
+                  <ExternalLink className="w-4 h-4 mr-2.5 text-muted-foreground" />
+                  View on Explorer
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="py-2 text-destructive focus:text-destructive">
+                  <LogOut className="w-4 h-4 mr-2.5" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </header>
+      </nav>
 
       {/* Scrollable Dashboard Content - offset for fixed header */}
       <div 
