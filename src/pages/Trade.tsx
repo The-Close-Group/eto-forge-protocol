@@ -7,9 +7,13 @@ import { useDeFiPrices } from "@/hooks/useDeFiPrices";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Shield, Sparkles, ChevronRight, ChevronLeft, RefreshCw, Zap, ExternalLink } from "lucide-react";
+import { Sparkles, ChevronRight, ChevronLeft, RefreshCw, Zap, ExternalLink } from "lucide-react";
 import { AssetCard } from "@/components/AssetCard";
 import maangLogo from "@/assets/maang-logo.svg";
+import a16zLogo from "@/assets/a16z-logo.svg";
+import ycLogo from "@/assets/ycombinator-logo.svg";
+import sequoiaLogo from "@/assets/sequoia-logo.svg";
+import lightspeedLogo from "@/assets/lightspeed-logo.svg";
 
 // Asset data for staking cards (original Dashboard style)
 const stakingAssets = [
@@ -52,8 +56,8 @@ const stakingAssets = [
     name: 'Y Combinator',
     symbol: 'YC',
     type: 'index',
-    logo: 'https://www.ycombinator.com/assets/ycdc/ycombinator-logo-b603b0a270e12b1d42b7cca9d4527a9b206adf8293a77f9f3e8b6cb542fcbfa7.png',
-    color: '#FF6600',
+    logo: ycLogo,
+    color: '#E87136',
     rewardRate: 2.34,
     riskLevel: 'medium' as const,
     tvl: 2500000,
@@ -63,8 +67,8 @@ const stakingAssets = [
     name: 'Sequoia Capital',
     symbol: 'SEQ',
     type: 'index',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Sequoia_Capital_logo.svg/2560px-Sequoia_Capital_logo.svg.png',
-    color: '#00A651',
+    logo: sequoiaLogo,
+    color: '#00713A',
     rewardRate: 2.18,
     riskLevel: 'medium' as const,
     tvl: 3200000,
@@ -74,8 +78,8 @@ const stakingAssets = [
     name: 'Lightspeed',
     symbol: 'LSVP',
     type: 'index',
-    logo: 'https://lsvp.com/wp-content/uploads/2021/03/lightspeed-logo.svg',
-    color: '#0066CC',
+    logo: lightspeedLogo,
+    color: '#DE7564',
     rewardRate: 1.95,
     riskLevel: 'medium' as const,
     tvl: 1800000,
@@ -85,13 +89,16 @@ const stakingAssets = [
     name: 'a16z',
     symbol: 'A16Z',
     type: 'index',
-    logo: 'https://a16z.com/wp-content/themes/developer/a16z/assets/images/a16z-logo.svg',
-    color: '#000000',
+    logo: a16zLogo,
+    color: '#5E1D23',
     rewardRate: 2.45,
     riskLevel: 'medium' as const,
     tvl: 4100000,
   },
 ];
+
+// Duplicate assets for seamless infinite scroll
+const infiniteAssets = [...stakingAssets, ...stakingAssets];
 
 export default function Trade() {
   const navigate = useNavigate();
@@ -101,67 +108,24 @@ export default function Trade() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
 
   const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
 
-  // Check scroll position for carousel arrows
-  const checkScroll = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
+  // Manual scroll function for arrow buttons
   const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = 320; // Card width + gap
-      carouselRef.current.scrollBy({
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300; // Card width + gap
+      scrollContainerRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
     }
   };
-
-  // Auto-scroll infinite loop
-  useEffect(() => {
-    if (!isVisible || isPaused) return;
-
-    const startAutoScroll = () => {
-      autoScrollRef.current = setInterval(() => {
-        if (carouselRef.current) {
-          const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-          const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
-          
-          if (isAtEnd) {
-            // Reset to beginning smoothly
-            carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            // Scroll by 1 pixel for smooth continuous motion
-            carouselRef.current.scrollLeft += 1;
-          }
-        }
-      }, 30); // ~33fps for smooth scrolling
-    };
-
-    // Start auto-scroll after a short delay
-    const delayTimer = setTimeout(startAutoScroll, 2000);
-
-    return () => {
-      clearTimeout(delayTimer);
-      if (autoScrollRef.current) {
-        clearInterval(autoScrollRef.current);
-      }
-    };
-  }, [isVisible, isPaused]);
 
   // Close sidebar when component mounts
   useEffect(() => {
@@ -170,13 +134,6 @@ export default function Trade() {
     const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, [setOpen]);
-
-  // Check scroll on mount and resize
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener('resize', checkScroll);
-    return () => window.removeEventListener('resize', checkScroll);
-  }, [isVisible]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -210,7 +167,7 @@ export default function Trade() {
         </div>
       </div>
 
-      {/* Asset Cards Carousel - Full Width Edge to Edge */}
+      {/* Asset Cards Carousel - Infinite with Manual Scroll */}
       <div 
         className={`relative mb-8 transition-all duration-700 delay-100 ease-out ${
           isVisible 
@@ -220,44 +177,49 @@ export default function Trade() {
       >
         {/* Left Arrow */}
         <button
-          onClick={() => scrollCarousel('left')}
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted ${
-            canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+          onClick={() => { setIsPaused(true); scrollCarousel('left'); }}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted hover:scale-105"
         >
           <ChevronLeft className="w-5 h-5 text-foreground" />
         </button>
 
         {/* Right Arrow */}
         <button
-          onClick={() => scrollCarousel('right')}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted ${
-            canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+          onClick={() => { setIsPaused(true); scrollCarousel('right'); }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted hover:scale-105"
         >
           <ChevronRight className="w-5 h-5 text-foreground" />
         </button>
 
-        {/* Carousel Container - Full viewport width with pause on hover */}
+        {/* Scrollable Container */}
         <div 
-          ref={carouselRef}
-          onScroll={checkScroll}
+          ref={scrollContainerRef}
+          className="overflow-x-auto scrollbar-hide"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pl-6 md:pl-8 pr-6 md:pr-8 py-2"
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setTimeout(() => setIsPaused(false), 3000)}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {stakingAssets.map((asset, index) => (
-            <div
-              key={asset.id}
-              style={{ 
-                transitionDelay: `${index * 50}ms`,
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-              }}
-              className="flex-shrink-0 w-[280px] transition-all duration-500 ease-out"
-            >
-              <AssetCard
+          {/* Carousel Track - CSS Animation */}
+          <div 
+            className="flex gap-4 py-2 pl-14 pr-14"
+            style={{
+              animation: isPaused ? 'none' : 'carousel-scroll 50s linear infinite',
+              width: 'fit-content',
+            }}
+          >
+            {infiniteAssets.map((asset, index) => (
+              <div
+                key={`${asset.id}-${index}`}
+                style={{ 
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                  transition: `all 0.5s ease-out ${Math.min(index, 6) * 50}ms`,
+                }}
+                className="flex-shrink-0 w-[280px]"
+              >
+                <AssetCard
                   id={asset.id}
                   name={asset.name}
                   symbol={asset.symbol}
@@ -274,11 +236,12 @@ export default function Trade() {
               </div>
             ))}
           </div>
-
-          {/* Gradient Fade Edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent pointer-events-none" />
         </div>
+
+        {/* Gradient Fade Edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+      </div>
 
       {/* Content Container with padding */}
       <div className="px-6 md:px-8 pb-6 md:pb-8">

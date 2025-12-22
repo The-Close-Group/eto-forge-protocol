@@ -533,142 +533,160 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Fixed Top Header Bar - All elements aligned right */}
-      <header className="fixed top-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border-subtle left-0 md:left-[60px]">
-        <div className="flex items-center justify-end gap-4 px-6 py-3">
-          {/* Action Icons Group */}
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="icon-btn relative">
-                  <Bell className="w-4 h-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full text-[9px] font-bold flex items-center justify-center text-black">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="p-3 border-b border-border flex items-center justify-between">
-                  <span className="text-[13px] font-medium">Notifications</span>
-                  {unreadCount > 0 && (
-                    <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
-                      Mark all read
-                    </button>
-                  )}
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {notifications.length === 0 ? (
-                    <div className="p-6 text-center text-[13px] text-muted-foreground">
-                      No notifications yet
-                    </div>
-                  ) : (
-                    notifications.map(notif => (
-                      <div 
-                        key={notif.id} 
-                        className="p-3 hover:bg-muted/50 cursor-pointer border-b border-border/50 last:border-0"
-                        onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
-                      >
-                        <div className="flex gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-medium">{notif.title}</div>
-                            <div className="text-[12px] text-muted-foreground">{notif.message}</div>
-                            <div className="text-[11px] text-muted-foreground mt-1">{notif.time}</div>
-                          </div>
+      {/* Top Navigation Bar - Clean Professional Design */}
+      <header className="header-bar fixed top-0 right-0 z-40 bg-background/98 backdrop-blur-sm border-b border-border/40 left-0 md:left-[60px]">
+        <div className="flex items-center gap-4">
+          {/* Page Context */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
+              <Wallet className="w-4 h-4 text-foreground" />
+            </div>
+            <div>
+              <h1 className="text-[14px] font-medium text-foreground">Overview</h1>
+              <p className="text-[11px] text-muted-foreground">Portfolio Dashboard</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side Actions */}
+        <div className="flex items-center gap-2">
+          {/* Search Button */}
+          <button 
+            className="h-8 px-3 flex items-center gap-2 text-[12px] text-muted-foreground bg-muted/40 hover:bg-muted/60 rounded-md transition-colors"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Search</span>
+            <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 px-1.5 text-[10px] font-mono text-muted-foreground/70 bg-background/60 rounded border border-border/40">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Icon Actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors relative">
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-72">
+              <div className="px-3 py-2 border-b border-border/50 flex items-center justify-between">
+                <span className="text-[12px] font-medium">Notifications</span>
+                {unreadCount > 0 && (
+                  <button className="text-[11px] text-primary hover:underline" onClick={handleMarkAllRead}>
+                    Mark all read
+                  </button>
+                )}
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className="text-[12px] text-muted-foreground">No notifications</p>
+                  </div>
+                ) : (
+                  notifications.map(notif => (
+                    <div 
+                      key={notif.id} 
+                      className="px-3 py-2.5 hover:bg-muted/50 cursor-pointer border-b border-border/30 last:border-0"
+                      onClick={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
+                    >
+                      <div className="flex gap-2.5">
+                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${notif.read ? 'bg-muted-foreground/30' : 'bg-primary'}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-medium">{notif.title}</div>
+                          <div className="text-[11px] text-muted-foreground line-clamp-1">{notif.message}</div>
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <button className="search-input" onClick={() => setSearchOpen(true)}>
-              <Search className="w-3.5 h-3.5" />
-              <span>Search...</span>
-            </button>
-
-            <button className="icon-btn" onClick={() => setCalculatorOpen(true)}>
-              <Calculator className="w-4 h-4" />
-            </button>
-
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="icon-btn flex items-center gap-1.5">
-                  <span className="text-[13px]">Settings</span>
-                  <Settings className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => toast.info("Appearance settings coming soon")}>
-                  Appearance
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info("Notification settings coming soon")}>
-                  Notifications
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/system-health')}>
-                  System Health
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Divider */}
-          <div className="w-px h-6 bg-border-subtle" />
-
-          {/* Account Info Group - Deposit | Name | Avatar */}
-          <div className="flex items-center gap-4">
-            <button className="deposit-btn" onClick={handleStake}>
-              Deposit
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                  <span className="text-[14px] font-medium">Ryan Crawford</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] text-muted-foreground">@ryan997</span>
-                    <span className="pro-badge">PRO</span>
-                  </div>
-                  <div className="user-avatar" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
-                  <User className="w-4 h-4 mr-2" />
-                  My Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/staking')}>
-                  <Wallet className="w-4 h-4 mr-2" />
-                  My Stakings
-                </DropdownMenuItem>
-                {account?.address && (
-                  <DropdownMenuItem onClick={handleCopyAddress}>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy Address
-                  </DropdownMenuItem>
+                    </div>
+                  ))
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <button 
+            className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+            onClick={() => setCalculatorOpen(true)}
+          >
+            <Calculator className="w-4 h-4" />
+          </button>
+
+          <button 
+            className={`h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors">
+                <Settings className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
+                Appearance
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info("Coming soon")}>
+                Notifications
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/system-health')}>
+                System Health
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Separator */}
+          <div className="w-px h-5 bg-border/50 mx-1" />
+
+          {/* Deposit CTA */}
+          <button 
+            className="h-8 px-3.5 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
+            onClick={handleStake}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Deposit
+          </button>
+
+          {/* User Avatar & Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-[11px] font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
+                RC
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <div className="px-3 py-2 border-b border-border/50">
+                <div className="text-[12px] font-medium">Ryan Crawford</div>
+                <div className="text-[11px] text-muted-foreground">@ryan997</div>
+              </div>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
+                <User className="w-3.5 h-3.5 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/staking')}>
+                <Wallet className="w-3.5 h-3.5 mr-2" />
+                Staking
+              </DropdownMenuItem>
+              {account?.address && (
+                <DropdownMenuItem onClick={handleCopyAddress}>
+                  <Copy className="w-3.5 h-3.5 mr-2" />
+                  Copy Address
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                <LogOut className="w-3.5 h-3.5 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

@@ -54,13 +54,29 @@ export function AssetCard({
       
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div 
-            className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
-            style={{ background: `${color}15` }}
-          >
-            <img src={logo} alt={name} className="w-full h-full object-contain" />
-          </div>
+        <div className="flex items-center gap-3">
+          {type === 'index' ? (
+            // Index cards: circular token logos fill the entire space
+            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+              <img 
+                src={logo} 
+                alt={name} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            // Other cards: vector logos with padding and background
+            <div 
+              className="w-10 h-10 rounded-full flex items-center justify-center p-1.5 flex-shrink-0"
+              style={{ background: `${color}20` }}
+            >
+              <img 
+                src={logo} 
+                alt={name} 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
           <div>
             <div className="text-[11px] text-muted-foreground">{type.toUpperCase()}</div>
             <div className="text-[13px] font-medium">{name}</div>

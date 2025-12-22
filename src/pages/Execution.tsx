@@ -1,23 +1,39 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useDeFiPrices, usePriceHistory } from "@/hooks/useDeFiPrices";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useDeFiPrices } from "@/hooks/useDeFiPrices";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   ArrowLeft, 
   ArrowDown, 
-  ChevronDown, 
-  ExternalLink,
+  ChevronDown,
+  ChevronUp,
   TrendingUp,
   TrendingDown,
   HelpCircle,
   Copy,
-  Check
+  Check,
+  Loader2,
+  AlertCircle,
+  Wallet,
+  ArrowUpDown
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { ResponsiveContainer, Area, AreaChart, XAxis, YAxis, Tooltip } from 'recharts';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import maangLogo from "@/assets/maang-logo.svg";
+import a16zLogo from "@/assets/a16z-logo.svg";
+import ycLogo from "@/assets/ycombinator-logo.svg";
+import sequoiaLogo from "@/assets/sequoia-logo.svg";
+import lightspeedLogo from "@/assets/lightspeed-logo.svg";
 
 // Asset configurations
 const assetConfigs: Record<string, {
@@ -29,6 +45,7 @@ const assetConfigs: Record<string, {
   contractAddress: string;
   underlyingAsset: string;
   underlyingTicker: string;
+  basePrice: number;
 }> = {
   maang: {
     name: 'MAANG',
@@ -39,6 +56,7 @@ const assetConfigs: Record<string, {
     contractAddress: '0x2d1f...bdee',
     underlyingAsset: 'ETO Protocol Token',
     underlyingTicker: 'MAANG',
+    basePrice: 12.50,
   },
   smaang: {
     name: 'Staked MAANG',
@@ -49,6 +67,7 @@ const assetConfigs: Record<string, {
     contractAddress: '0x8f3a...c421',
     underlyingAsset: 'Staked MAANG Token',
     underlyingTicker: 'sMAANG',
+    basePrice: 13.25,
   },
   usdc: {
     name: 'USD Coin',
@@ -59,47 +78,51 @@ const assetConfigs: Record<string, {
     contractAddress: '0x1c7d...9a12',
     underlyingAsset: 'USD Coin',
     underlyingTicker: 'USDC',
+    basePrice: 1.00,
   },
-  // Thematic Index Funds
   ycombinator: {
     name: 'Y Combinator',
     symbol: 'YC',
-    logo: 'https://www.ycombinator.com/assets/ycdc/ycombinator-logo-b603b0a270e12b1d42b7cca9d4527a9b206adf8293a77f9f3e8b6cb542fcbfa7.png',
-    color: '#FF6600',
-    description: 'The Y Combinator Index tracks the performance of top YC-backed companies that have tokenized their equity on the ETO Protocol. This thematic index provides exposure to high-growth startups across AI, fintech, and enterprise software sectors. Holdings are rebalanced quarterly based on market cap and trading volume.',
+    logo: ycLogo,
+    color: '#E87136',
+    description: 'The Y Combinator Index tracks the performance of top YC-backed companies that have tokenized their equity on the ETO Protocol. This thematic index provides exposure to high-growth startups across AI, fintech, and enterprise software sectors.',
     contractAddress: '0x4a2b...7f31',
     underlyingAsset: 'YC Portfolio Index',
     underlyingTicker: 'YC',
+    basePrice: 156.80,
   },
   sequoia: {
     name: 'Sequoia Capital',
     symbol: 'SEQ',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Sequoia_Capital_logo.svg/2560px-Sequoia_Capital_logo.svg.png',
-    color: '#00A651',
-    description: 'The Sequoia Index provides tokenized exposure to Sequoia Capital portfolio companies available on ETO. This prestigious fund tracks companies across consumer, enterprise, and crypto sectors that have received Sequoia backing. The index offers diversified exposure to Silicon Valley top-tier venture investments.',
+    logo: sequoiaLogo,
+    color: '#00713A',
+    description: 'The Sequoia Index provides tokenized exposure to Sequoia Capital portfolio companies available on ETO. This prestigious fund tracks companies across consumer, enterprise, and crypto sectors.',
     contractAddress: '0x6c3d...8e42',
     underlyingAsset: 'Sequoia Portfolio Index',
     underlyingTicker: 'SEQ',
+    basePrice: 234.50,
   },
   lightspeed: {
     name: 'Lightspeed',
     symbol: 'LSVP',
-    logo: 'https://lsvp.com/wp-content/uploads/2021/03/lightspeed-logo.svg',
-    color: '#0066CC',
-    description: 'The Lightspeed Venture Partners Index tracks tokenized equity from LSVP portfolio companies on ETO. This fund focuses on consumer internet, enterprise technology, and cleantech sectors. Lightspeed has backed companies like Snap, Affirm, and Mulesoft, providing exposure to proven growth strategies.',
+    logo: lightspeedLogo,
+    color: '#DE7564',
+    description: 'The Lightspeed Venture Partners Index tracks tokenized equity from LSVP portfolio companies on ETO. This fund focuses on consumer internet, enterprise technology, and cleantech sectors.',
     contractAddress: '0x9d4e...2a53',
     underlyingAsset: 'Lightspeed Portfolio Index',
     underlyingTicker: 'LSVP',
+    basePrice: 89.25,
   },
   a16z: {
     name: 'a16z',
     symbol: 'A16Z',
-    logo: 'https://a16z.com/wp-content/themes/developer/a16z/assets/images/a16z-logo.svg',
-    color: '#000000',
-    description: 'The Andreessen Horowitz Index offers exposure to a16z portfolio companies tokenized on ETO Protocol. This flagship fund tracks investments across crypto, bio, fintech, and enterprise software. a16z pioneering approach to venture capital is now accessible through decentralized markets.',
+    logo: a16zLogo,
+    color: '#5E1D23',
+    description: 'The Andreessen Horowitz Index offers exposure to a16z portfolio companies tokenized on ETO Protocol. This flagship fund tracks investments across crypto, bio, fintech, and enterprise software.',
     contractAddress: '0x1f5a...6b64',
     underlyingAsset: 'a16z Portfolio Index',
     underlyingTicker: 'A16Z',
+    basePrice: 312.00,
   },
 };
 
@@ -126,7 +149,8 @@ export default function Execution() {
   const { assetId } = useParams<{ assetId: string }>();
   const navigate = useNavigate();
   const { setOpen } = useSidebar();
-  const { dmmPrice, oraclePrice, isLoading: isPriceLoading } = useDeFiPrices();
+  const { dmmPrice } = useDeFiPrices();
+  const { isAuthenticated } = useAuth();
   
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
@@ -135,18 +159,24 @@ export default function Execution() {
   const [receiveAmount, setReceiveAmount] = useState('');
   const [copied, setCopied] = useState(false);
   const [showMoreDescription, setShowMoreDescription] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const asset = assetConfigs[assetId || 'maang'] || assetConfigs.maang;
   
   // Calculate current price based on asset
   const currentPrice = useMemo(() => {
     if (assetId === 'usdc') return 1.00;
-    return dmmPrice || 12.50;
-  }, [assetId, dmmPrice]);
+    if (assetId === 'maang' || assetId === 'smaang') return dmmPrice || asset.basePrice;
+    return asset.basePrice;
+  }, [assetId, dmmPrice, asset.basePrice]);
 
   const priceChange = useMemo(() => {
     if (assetId === 'usdc') return { value: 0, percent: 0 };
-    return { value: 0.25, percent: 2.0144 };
+    const change = (Math.random() * 4 - 1).toFixed(4);
+    return { value: parseFloat(change) * 0.1, percent: parseFloat(change) };
   }, [assetId]);
 
   // Generate chart data based on time range
@@ -175,6 +205,13 @@ export default function Execution() {
     return () => clearTimeout(timer);
   }, [setOpen]);
 
+  // Reset form when switching tabs
+  useEffect(() => {
+    setPayAmount('');
+    setReceiveAmount('');
+    setOrderError(null);
+  }, [activeTab]);
+
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(asset.contractAddress);
     setCopied(true);
@@ -185,12 +222,66 @@ export default function Execution() {
     return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  const handleSwapDirection = () => {
+    setActiveTab(activeTab === 'buy' ? 'sell' : 'buy');
+  };
+
+  const validateOrder = (): boolean => {
+    if (!payAmount || parseFloat(payAmount) <= 0) {
+      setOrderError('Please enter a valid amount');
+      return false;
+    }
+    if (parseFloat(payAmount) < 1) {
+      setOrderError('Minimum order amount is 1 USDC');
+      return false;
+    }
+    setOrderError(null);
+    return true;
+  };
+
+  const handleExecuteOrder = async () => {
+    if (!isAuthenticated) {
+      navigate('/signin');
+      return;
+    }
+
+    if (!validateOrder()) return;
+
+    setShowConfirmation(true);
+  };
+
+  const confirmOrder = async () => {
+    setIsProcessing(true);
+    
+    // Simulate order processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsProcessing(false);
+    setShowConfirmation(false);
+    
+    // Navigate to order confirmation page
+    navigate('/transaction-complete', {
+      state: {
+        type: activeTab,
+        asset: asset.symbol,
+        payAmount: payAmount,
+        receiveAmount: receiveAmount,
+        price: currentPrice,
+      }
+    });
+  };
+
+  const estimatedFee = useMemo(() => {
+    const amount = parseFloat(payAmount) || 0;
+    return (amount * 0.003).toFixed(2); // 0.3% fee
+  }, [payAmount]);
+
   return (
-    <div className="min-h-screen p-6 md:p-8 bg-background">
-      <div className="max-w-7xl">
+    <div className="min-h-screen p-4 md:p-6 lg:p-8 bg-background">
+      <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <div 
-          className={`mb-6 transition-all duration-500 ease-out ${
+          className={`mb-4 md:mb-6 transition-all duration-500 ease-out ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
@@ -198,7 +289,7 @@ export default function Execution() {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/trade')}
-            className="gap-2 text-muted-foreground hover:text-foreground"
+            className="gap-2 text-muted-foreground hover:text-foreground -ml-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Assets
@@ -206,33 +297,33 @@ export default function Execution() {
         </div>
 
         {/* Main Layout - Chart Left, Swap Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-6 lg:gap-8">
           {/* Left Column - Asset Info & Chart */}
           <div 
-            className={`space-y-6 transition-all duration-700 ease-out delay-100 ${
+            className={`space-y-4 md:space-y-6 transition-all duration-700 ease-out delay-100 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
             {/* Asset Header */}
             <div className="flex items-center gap-3">
               <div 
-                className="w-10 h-10 rounded-xl flex items-center justify-center p-2"
-                style={{ background: `${asset.color}15` }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden"
+                style={{ background: `${asset.color}20` }}
               >
-                <img src={asset.logo} alt={asset.name} className="w-full h-full object-contain" />
+                <img src={asset.logo} alt={asset.name} className="w-8 h-8 object-contain" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold">{asset.name}</h1>
+                <h1 className="text-xl md:text-2xl font-semibold">{asset.name}</h1>
                 <span className="text-sm text-muted-foreground">{asset.symbol}</span>
               </div>
             </div>
 
             {/* Price Card with Chart */}
             <Card className="overflow-hidden border-border-subtle">
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 {/* Price Header */}
-                <div className="mb-6">
-                  <div className="text-4xl font-semibold tracking-tight mb-2">
+                <div className="mb-4 md:mb-6">
+                  <div className="text-3xl md:text-4xl font-semibold tracking-tight mb-1">
                     ${formatPrice(currentPrice)}
                   </div>
                   <div className="flex items-center gap-2">
@@ -242,19 +333,19 @@ export default function Execution() {
                       <TrendingDown className="w-4 h-4 text-data-negative" />
                     )}
                     <span className={`text-sm font-medium ${priceChange.percent >= 0 ? 'text-data-positive' : 'text-data-negative'}`}>
-                      ${priceChange.value.toFixed(2)} ({priceChange.percent.toFixed(4)}%)
+                      {priceChange.percent >= 0 ? '+' : ''}{priceChange.percent.toFixed(2)}%
                     </span>
                     <span className="text-sm text-muted-foreground">24H</span>
                   </div>
                 </div>
 
                 {/* Time Range Selector */}
-                <div className="flex gap-1 mb-6">
+                <div className="flex gap-1 mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
                   {(['1D', '1W', '1M', '3M', '1Y', 'ALL'] as const).map((range) => (
                     <button
                       key={range}
                       onClick={() => setTimeRange(range)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
                         timeRange === range
                           ? 'bg-foreground text-background'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -266,7 +357,7 @@ export default function Execution() {
                 </div>
 
                 {/* Chart */}
-                <div className="h-80">
+                <div className="h-64 md:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                       <defs>
@@ -279,7 +370,7 @@ export default function Execution() {
                         dataKey="time" 
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                        tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                         tickFormatter={(value) => {
                           const date = new Date(value);
                           if (timeRange === '1D') return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -292,10 +383,10 @@ export default function Execution() {
                         domain={['dataMin - 0.5', 'dataMax + 0.5']}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                        tickFormatter={(value) => `${value.toFixed(2)}`}
+                        tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                        tickFormatter={(value) => `$${value.toFixed(0)}`}
                         orientation="right"
-                        width={60}
+                        width={50}
                       />
                       <Tooltip
                         content={({ active, payload }) => {
@@ -325,12 +416,12 @@ export default function Execution() {
 
             {/* About Section */}
             <Card className="border-border-subtle">
-              <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4">About</h2>
+              <CardContent className="p-4 md:p-6">
+                <h2 className="text-base md:text-lg font-semibold mb-3">About {asset.name}</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 200)}...`}
+                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 180)}...`}
                   <button 
-                    className="text-primary ml-1 hover:underline"
+                    className="text-primary ml-1 hover:underline font-medium"
                     onClick={() => setShowMoreDescription(!showMoreDescription)}
                   >
                     {showMoreDescription ? 'Show Less' : 'Show More'}
@@ -338,9 +429,9 @@ export default function Execution() {
                 </p>
 
                 {/* Asset Details Grid */}
-                <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-border-subtle">
+                <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-border-subtle">
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Supported Chains</div>
+                    <div className="text-xs text-muted-foreground mb-1">Network</div>
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                         <span className="text-[10px] font-bold text-primary">E</span>
@@ -349,29 +440,26 @@ export default function Execution() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Underlying Asset Name</div>
+                    <div className="text-xs text-muted-foreground mb-1">Asset Type</div>
                     <div className="text-sm font-medium">{asset.underlyingAsset}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Onchain Address</div>
+                    <div className="text-xs text-muted-foreground mb-1">Contract</div>
                     <button 
                       className="flex items-center gap-2 text-sm font-medium group"
                       onClick={handleCopyAddress}
                     >
-                      <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-primary">E</span>
-                      </div>
-                      <span>{asset.contractAddress}</span>
+                      <span className="font-mono">{asset.contractAddress}</span>
                       {copied ? (
                         <Check className="w-3.5 h-3.5 text-data-positive" />
                       ) : (
-                        <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground" />
+                        <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                       )}
                     </button>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Underlying Asset Ticker</div>
-                    <div className="text-sm font-medium">{asset.underlyingTicker}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Ticker</div>
+                    <div className="text-sm font-medium font-mono">{asset.underlyingTicker}</div>
                   </div>
                 </div>
               </CardContent>
@@ -384,16 +472,16 @@ export default function Execution() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <Card className="border-border-subtle sticky top-24">
-              <CardContent className="p-6">
+            <Card className="border-border-subtle sticky top-20">
+              <CardContent className="p-4 md:p-5">
                 {/* Buy/Sell Toggle */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-5">
                   <div className="flex bg-muted rounded-lg p-1">
                     <button
                       onClick={() => setActiveTab('buy')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
                         activeTab === 'buy'
-                          ? 'bg-background text-foreground shadow-sm'
+                          ? 'bg-data-positive text-white shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -401,9 +489,9 @@ export default function Execution() {
                     </button>
                     <button
                       onClick={() => setActiveTab('sell')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
                         activeTab === 'sell'
-                          ? 'bg-background text-foreground shadow-sm'
+                          ? 'bg-data-negative text-white shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -419,121 +507,208 @@ export default function Execution() {
                 </div>
 
                 {/* Pay Input */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="text-xs text-muted-foreground mb-2 block">Pay</label>
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border-subtle">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs text-muted-foreground">You Pay</label>
+                      <button className="text-xs text-primary hover:underline flex items-center gap-1">
+                        <Wallet className="w-3 h-3" />
+                        Balance: $0.00
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/30 border border-border-subtle focus-within:border-primary/50 transition-colors">
                       <input
                         type="number"
-                        placeholder="0"
+                        placeholder="0.00"
                         value={payAmount}
                         onChange={(e) => setPayAmount(e.target.value)}
-                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/50"
+                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle hover:border-border transition-colors">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
                         <img 
                           src={activeTab === 'buy' ? 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040' : asset.logo} 
                           alt={activeTab === 'buy' ? 'USDC' : asset.symbol}
                           className="w-5 h-5"
                         />
                         <span className="text-sm font-medium">{activeTab === 'buy' ? 'USDC' : asset.symbol}</span>
-                      </button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Swap Arrow */}
-                  <div className="flex justify-center">
-                    <div className="w-10 h-10 rounded-full bg-muted/50 border border-border-subtle flex items-center justify-center">
-                      <ArrowDown className="w-4 h-4 text-muted-foreground" />
-                    </div>
+                  {/* Swap Direction Button */}
+                  <div className="flex justify-center -my-1 relative z-10">
+                    <button 
+                      onClick={handleSwapDirection}
+                      className="w-10 h-10 rounded-full bg-muted border-4 border-background flex items-center justify-center hover:bg-muted/80 transition-colors"
+                    >
+                      <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+                    </button>
                   </div>
 
                   {/* Receive Input */}
                   <div>
-                    <label className="text-xs text-muted-foreground mb-2 block">Receive</label>
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border-subtle">
+                    <label className="text-xs text-muted-foreground mb-2 block">You Receive</label>
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/30 border border-border-subtle">
                       <input
                         type="text"
-                        placeholder="0"
+                        placeholder="0.00"
                         value={receiveAmount}
                         readOnly
-                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/50"
+                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40"
                       />
-                      <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle hover:border-border transition-colors">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
                         <img 
                           src={activeTab === 'buy' ? asset.logo : 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040'} 
                           alt={activeTab === 'buy' ? asset.symbol : 'USDC'}
                           className="w-5 h-5"
                         />
                         <span className="text-sm font-medium">{activeTab === 'buy' ? asset.symbol : 'USDC'}</span>
-                        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Order Error */}
+                {orderError && (
+                  <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                    <span className="text-xs text-destructive">{orderError}</span>
+                  </div>
+                )}
+
                 {/* Rate Info */}
-                <div className="mt-6 p-4 rounded-xl bg-muted/20 border border-border-subtle space-y-3">
+                <div className="mt-5 p-4 rounded-xl bg-muted/20 border border-border-subtle space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">Rate</span>
-                    <span className="text-xs font-medium">
-                      1 {asset.symbol} = {formatPrice(currentPrice)} USDC (${formatPrice(currentPrice)})
+                    <span className="text-xs font-medium font-mono">
+                      1 {asset.symbol} = ${formatPrice(currentPrice)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-muted-foreground">Shares Per Token</span>
-                      <HelpCircle className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                    <span className="text-xs font-medium">1 {asset.symbol} = 1.00 {asset.underlyingTicker}</span>
+                    <span className="text-xs text-muted-foreground">Network Fee</span>
+                    <span className="text-xs font-medium text-data-positive">Free</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Platform Fee (0.3%)</span>
+                    <span className="text-xs font-medium font-mono">${estimatedFee}</span>
                   </div>
                 </div>
 
                 {/* Action Button */}
                 <Button 
-                  className="w-full mt-6 h-12 rounded-xl font-semibold"
+                  className={`w-full mt-5 h-12 rounded-xl font-semibold text-base ${
+                    activeTab === 'buy' 
+                      ? 'bg-data-positive hover:bg-data-positive/90' 
+                      : 'bg-data-negative hover:bg-data-negative/90'
+                  }`}
                   size="lg"
-                  onClick={() => navigate('/signin')}
+                  onClick={handleExecuteOrder}
+                  disabled={isProcessing || !payAmount}
                 >
-                  Sign In to Continue
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : !isAuthenticated ? (
+                    'Connect Wallet to Trade'
+                  ) : !payAmount ? (
+                    'Enter Amount'
+                  ) : (
+                    `${activeTab === 'buy' ? 'Buy' : 'Sell'} ${asset.symbol}`
+                  )}
                 </Button>
 
-                {/* Disclaimer */}
-                <p className="text-[10px] text-muted-foreground mt-4 leading-relaxed">
-                  Join the waitlist after signing up to be among the first to experience the platform.
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
-                  ETO Protocol tokens have not been registered under the US Securities Act of 1933, as amended, or the securities or other laws of any other jurisdiction, and may not be offered or sold in the US or to US persons unless registered under the Act or exempt therefrom. The tokens are offered and sold in the EEA and UK solely to qualified investors, and in Switzerland solely to professional clients. Other prohibitions and restrictions apply. See additional information below.*
-                </p>
-
-                {/* Also Available On */}
-                <div className="mt-6 pt-6 border-t border-border-subtle">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Also Available On</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="text-[9px] font-bold text-primary">E</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">& 2 more</span>
-                      <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Need Help */}
-                <button className="w-full mt-4 flex items-center justify-between p-3 rounded-xl hover:bg-muted/30 transition-colors">
+                {/* Help Section */}
+                <button 
+                  onClick={() => setShowHelp(!showHelp)}
+                  className="w-full mt-4 flex items-center justify-between p-3 rounded-xl hover:bg-muted/30 transition-colors"
+                >
                   <div className="flex items-center gap-2">
                     <HelpCircle className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">Need help?</span>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  {showHelp ? (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  )}
                 </button>
+                
+                {showHelp && (
+                  <div className="px-3 pb-3 text-xs text-muted-foreground space-y-2">
+                    <p>• Enter the amount you want to trade in the "You Pay" field</p>
+                    <p>• The receive amount is calculated automatically based on current rates</p>
+                    <p>• Click the swap button to switch between buying and selling</p>
+                    <p>• Review your order details before confirming</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Order Confirmation Dialog */}
+      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Order</DialogTitle>
+            <DialogDescription>
+              Review your order details before confirming
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">You Pay</div>
+                <div className="text-lg font-semibold">{payAmount} {activeTab === 'buy' ? 'USDC' : asset.symbol}</div>
+              </div>
+              <ArrowDown className="w-5 h-5 text-muted-foreground" />
+              <div className="text-right">
+                <div className="text-xs text-muted-foreground mb-1">You Receive</div>
+                <div className="text-lg font-semibold">{receiveAmount} {activeTab === 'buy' ? asset.symbol : 'USDC'}</div>
+              </div>
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rate</span>
+                <span className="font-medium">1 {asset.symbol} = ${formatPrice(currentPrice)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Platform Fee</span>
+                <span className="font-medium">${estimatedFee}</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-border-subtle">
+                <span className="font-medium">Total</span>
+                <span className="font-semibold">${(parseFloat(payAmount || '0') + parseFloat(estimatedFee)).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowConfirmation(false)} disabled={isProcessing}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmOrder} 
+              disabled={isProcessing}
+              className={activeTab === 'buy' ? 'bg-data-positive hover:bg-data-positive/90' : 'bg-data-negative hover:bg-data-negative/90'}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                `Confirm ${activeTab === 'buy' ? 'Buy' : 'Sell'}`
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-

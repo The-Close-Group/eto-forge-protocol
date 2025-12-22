@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowDownLeft, ArrowUpRight, Gift, ExternalLink, Clock, CheckCircle2, XCircle, ChevronRight } from 'lucide-react';
 import maangLogo from '@/assets/maang-logo.svg';
 
 interface Transaction {
@@ -87,12 +88,44 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
     return `${sign}${amount >= 0 ? '' : '-'}${formatted}`;
   };
 
+  const getTypeIcon = (type: string, amount: number) => {
+    switch (type) {
+      case 'receive':
+        return <ArrowDownLeft className="w-3.5 h-3.5" />;
+      case 'send':
+        return <ArrowUpRight className="w-3.5 h-3.5" />;
+      case 'reward':
+        return <Gift className="w-3.5 h-3.5" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return <CheckCircle2 className="w-3 h-3" />;
+      case 'pending':
+        return <Clock className="w-3 h-3" />;
+      case 'failed':
+        return <XCircle className="w-3 h-3" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={`txn-card ${className}`}>
       {/* Header */}
       <div className="txn-header">
-        <h3 className="txn-title">Transactions</h3>
-        <Link to="/dashboard" className="txn-link">View All</Link>
+        <div className="txn-header-left">
+          <h3 className="txn-title">Recent Transactions</h3>
+          <span className="txn-count">{transactions.length} total</span>
+        </div>
+        <Link to="/dashboard" className="txn-link">
+          View All
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
       
       {/* Grid - MAANG Design Language */}
@@ -100,13 +133,21 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
         {transactions.slice(0, 6).map((tx) => (
           <div 
             key={tx.id} 
-            className={`txn-item ${tx.highlighted ? 'highlighted' : ''}`}
+            className={`txn-item group ${tx.highlighted ? 'highlighted' : ''}`}
           >
+            {/* Quick action on hover */}
+            <div className="txn-quick-action">
+              <ExternalLink className="w-3 h-3" />
+            </div>
+
             {/* Top Row: Icon + Type + Time */}
             <div className="txn-top">
+              <div className={`txn-type-icon ${tx.type}`}>
+                {getTypeIcon(tx.type, tx.amount)}
+              </div>
               <TokenIcon token={tx.token} />
               <div className="txn-info">
-                <span className="txn-type">{tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
+                <span className="txn-type-label">{tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
                 <span className="txn-time">{tx.time}</span>
               </div>
             </div>
@@ -121,14 +162,14 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
             {/* Token + Amount */}
             <div className="txn-data">
               <span className="txn-symbol">{tx.token}</span>
-              <span className={`txn-amount ${tx.amount >= 0 ? '' : 'negative'}`}>
+              <span className={`txn-amount ${tx.amount >= 0 ? 'positive' : 'negative'}`}>
                 {formatAmount(tx.amount)}
               </span>
             </div>
 
             {/* Status */}
             <div className={`txn-status ${tx.status}`}>
-              <span className="txn-dot" />
+              {getStatusIcon(tx.status)}
               <span>{tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}</span>
             </div>
           </div>

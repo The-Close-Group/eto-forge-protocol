@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { TrendingUp, TrendingDown, Grid3X3, Settings2, Plus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Grid3X3, Settings2, Plus, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
 
 interface WalletValueCardProps {
   totalValue: number;
@@ -92,14 +92,20 @@ export function WalletValueCard({
       {/* Header */}
       <div className="wvc-head">
         <div className="wvc-info">
-          <div className="wvc-title">Wallet Value</div>
+          <div className="wvc-title-line">
+            <span className="wvc-title">Portfolio Value</span>
+            <span className="wvc-live-badge">
+              <span className="wvc-live-dot" />
+              Live
+            </span>
+          </div>
           <div className="wvc-amount-line">
             <span className="wvc-amount">{formatCurrency(totalValue)}</span>
-            <span className="wvc-pct">
+            <span className={`wvc-pct ${changePercent >= 0 ? 'positive' : 'negative'}`}>
               {changePercent >= 0 ? (
-                <TrendingUp className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-4 h-4" />
               ) : (
-                <TrendingDown className="w-3.5 h-3.5" />
+                <ArrowDownRight className="w-4 h-4" />
               )}
               {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(1)}%
             </span>
@@ -111,10 +117,13 @@ export function WalletValueCard({
             <button className="wvc-action-btn" title="Add funds">
               <Plus className="w-[18px] h-[18px]" />
             </button>
+            <button className="wvc-action-btn" title="Analytics">
+              <BarChart3 className="w-[18px] h-[18px]" />
+            </button>
             <button className="wvc-action-btn" title="Grid view">
               <Grid3X3 className="w-[18px] h-[18px]" />
             </button>
-            <button className="wvc-action-btn" title="Chart settings">
+            <button className="wvc-action-btn" title="Settings">
               <Settings2 className="w-[18px] h-[18px]" />
             </button>
           </div>
@@ -204,43 +213,63 @@ export function WalletValueCard({
       {/* Bottom Stats */}
       <div className="wvc-bottom">
         <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Realized P&L</div>
-          <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(realizedPL, true)}
+          <div className="wvc-stat-icon-wrap positive">
+            <TrendingUp className="w-4 h-4" />
           </div>
-          <div className="wvc-stat-meta">
-            <TrendingUp className="w-3 h-3 inline mr-1" />
-            +27% Today
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Realized P&L</div>
+            <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(realizedPL, true)}
+            </div>
           </div>
-        </div>
-        <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Unrealized P&L</div>
-          <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(unrealizedPL, true)}
-          </div>
-          <div className="wvc-stat-meta">
-            <TrendingDown className="w-3 h-3 inline mr-1" />
-            -11.8% Today
+          <div className="wvc-stat-trend positive">
+            <ArrowUpRight className="w-3 h-3" />
+            +27%
           </div>
         </div>
         <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Projected Growth</div>
-          <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(projectedGrowth, true)}
+          <div className="wvc-stat-icon-wrap negative">
+            <TrendingDown className="w-4 h-4" />
           </div>
-          <div className="wvc-stat-meta">
-            <TrendingUp className="w-3 h-3 inline mr-1" />
-            +3.2% Today
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Unrealized P&L</div>
+            <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(unrealizedPL, true)}
+            </div>
+          </div>
+          <div className="wvc-stat-trend negative">
+            <ArrowDownRight className="w-3 h-3" />
+            -11.8%
           </div>
         </div>
         <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Net Change</div>
-          <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(netChange, true)}
+          <div className="wvc-stat-icon-wrap positive">
+            <Sparkles className="w-4 h-4" />
           </div>
-          <div className="wvc-stat-meta">
-            <TrendingDown className="w-3 h-3 inline mr-1" />
-            -11.8% Today
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Projected Growth</div>
+            <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(projectedGrowth, true)}
+            </div>
+          </div>
+          <div className="wvc-stat-trend positive">
+            <ArrowUpRight className="w-3 h-3" />
+            +3.2%
+          </div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-icon-wrap neutral">
+            <BarChart3 className="w-4 h-4" />
+          </div>
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Net Change</div>
+            <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(netChange, true)}
+            </div>
+          </div>
+          <div className={`wvc-stat-trend ${netChange >= 0 ? 'positive' : 'negative'}`}>
+            {netChange >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {netChange >= 0 ? '+' : ''}{(netChange / totalValue * 100).toFixed(1)}%
           </div>
         </div>
       </div>
