@@ -474,35 +474,42 @@ export default function Execution() {
           >
             <Card className="border-border-subtle sticky top-20">
               <CardContent className="p-4 md:p-5">
-                {/* Buy/Sell Toggle */}
+                {/* Buy/Sell Toggle & Network */}
                 <div className="flex items-center justify-between mb-5">
-                  <div className="flex bg-muted rounded-lg p-1">
+                  {/* Toggle */}
+                  <div className="inline-flex p-0.5 rounded-lg bg-muted/60 border border-border/40">
                     <button
                       onClick={() => setActiveTab('buy')}
-                      className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+                      className={`relative px-6 py-2 rounded-md text-[13px] font-medium transition-all duration-200 ${
                         activeTab === 'buy'
-                          ? 'bg-data-positive text-white shadow-sm'
+                          ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
+                      {activeTab === 'buy' && (
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
+                      )}
                       Buy
                     </button>
                     <button
                       onClick={() => setActiveTab('sell')}
-                      className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+                      className={`relative px-6 py-2 rounded-md text-[13px] font-medium transition-all duration-200 ${
                         activeTab === 'sell'
-                          ? 'bg-data-negative text-white shadow-sm'
+                          ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
+                      {activeTab === 'sell' && (
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-destructive" />
+                      )}
                       Sell
                     </button>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                    <div className="w-4 h-4 rounded-full bg-primary/30 flex items-center justify-center">
-                      <span className="text-[8px] font-bold text-primary">E</span>
-                    </div>
-                    <span className="text-xs font-medium text-primary">ETO L1</span>
+
+                  {/* Network Badge */}
+                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-muted/40 border border-border/40">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="text-[11px] font-medium text-foreground">ETO L1</span>
                   </div>
                 </div>
 
