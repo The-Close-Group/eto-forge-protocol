@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { useDeFiPrices } from "@/hooks/useDeFiPrices";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles, ChevronRight, ChevronLeft, RefreshCw, Zap, ExternalLink } from "lucide-react";
+import { Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink } from "lucide-react";
 import { AssetCard } from "@/components/AssetCard";
 import maangLogo from "@/assets/maang-logo.svg";
 import a16zLogo from "@/assets/a16z-logo.svg";
@@ -97,9 +97,6 @@ const stakingAssets = [
   },
 ];
 
-// Duplicate assets for seamless infinite scroll
-const infiniteAssets = [...stakingAssets, ...stakingAssets];
-
 export default function Trade() {
   const navigate = useNavigate();
   const { dmmPrice, oraclePrice, isLoading } = useDeFiPrices();
@@ -108,24 +105,11 @@ export default function Trade() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
-  const [isPaused, setIsPaused] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
 
   const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
-
-  // Manual scroll function for arrow buttons
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300; // Card width + gap
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   // Close sidebar when component mounts
   useEffect(() => {
@@ -167,80 +151,41 @@ export default function Trade() {
         </div>
       </div>
 
-      {/* Asset Cards Carousel - Infinite with Manual Scroll */}
+      {/* Asset Cards Grid - 3 columns on lg */}
       <div 
-        className={`relative mb-8 transition-all duration-700 delay-100 ease-out ${
+        className={`px-6 md:px-8 mb-6 transition-all duration-700 delay-100 ease-out ${
           isVisible 
             ? 'opacity-100 translate-y-0' 
             : 'opacity-0 translate-y-8'
         }`}
       >
-        {/* Left Arrow */}
-        <button
-          onClick={() => { setIsPaused(true); scrollCarousel('left'); }}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted hover:scale-105"
-        >
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </button>
-
-        {/* Right Arrow */}
-        <button
-          onClick={() => { setIsPaused(true); scrollCarousel('right'); }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg flex items-center justify-center transition-all hover:bg-muted hover:scale-105"
-        >
-          <ChevronRight className="w-5 h-5 text-foreground" />
-        </button>
-
-        {/* Scrollable Container */}
-        <div 
-          ref={scrollContainerRef}
-          className="overflow-x-auto scrollbar-hide"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setTimeout(() => setIsPaused(false), 3000)}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {/* Carousel Track - CSS Animation */}
-          <div 
-            className="flex gap-4 py-2 pl-14 pr-14"
-            style={{
-              animation: isPaused ? 'none' : 'carousel-scroll 50s linear infinite',
-              width: 'fit-content',
-            }}
-          >
-            {infiniteAssets.map((asset, index) => (
-              <div
-                key={`${asset.id}-${index}`}
-                style={{ 
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-                  transition: `all 0.5s ease-out ${Math.min(index, 6) * 50}ms`,
-                }}
-                className="flex-shrink-0 w-[340px] lg:w-[380px]"
-              >
-                <AssetCard
-                  id={asset.id}
-                  name={asset.name}
-                  symbol={asset.symbol}
-                  type={asset.type}
-                  logo={asset.logo}
-                  color={asset.color}
-                  rewardRate={asset.rewardRate}
-                  riskLevel={asset.riskLevel}
-                  tvl={asset.tvl}
-                  isSelected={hoveredCard === asset.id}
-                  onClick={() => setHoveredCard(asset.id)}
-                  onDoubleClick={() => navigate(`/execute/${asset.id}`)}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {stakingAssets.map((asset, index) => (
+            <div
+              key={asset.id}
+              style={{ 
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                transition: `all 0.5s ease-out ${index * 50}ms`,
+              }}
+            >
+              <AssetCard
+                id={asset.id}
+                name={asset.name}
+                symbol={asset.symbol}
+                type={asset.type}
+                logo={asset.logo}
+                color={asset.color}
+                rewardRate={asset.rewardRate}
+                riskLevel={asset.riskLevel}
+                tvl={asset.tvl}
+                isSelected={hoveredCard === asset.id}
+                onClick={() => setHoveredCard(asset.id)}
+                onDoubleClick={() => navigate(`/execute/${asset.id}`)}
+              />
+            </div>
+          ))}
         </div>
-
-        {/* Gradient Fade Edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
       </div>
 
       {/* Content Container with padding */}
