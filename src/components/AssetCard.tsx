@@ -58,8 +58,8 @@ export function AssetCard({
         </div>
       </div>
       
-      {/* Header Row - Logo, Name/Symbol, Price */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Header Row - Logo, Name/Symbol, Price + Change */}
+      <div className="flex items-start justify-between mb-5">
         {/* Left: Logo + Name */}
         <div className="flex items-center gap-3">
           {/* Circular Logo with white/light background */}
@@ -82,28 +82,26 @@ export function AssetCard({
           </div>
         </div>
 
-        {/* Right: Price */}
+        {/* Right: Price + Change underneath */}
         <div className="text-right">
-          <div className="text-[18px] font-semibold">${price}</div>
+          <div className="text-[18px] font-semibold mb-1.5">${price}</div>
+          <div className="flex items-center gap-1.5 justify-end">
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${isPositive ? 'bg-primary/10' : 'bg-data-negative/10'}`}>
+              {isPositive ? (
+                <TrendingUp className="w-3 h-3 text-primary" />
+              ) : (
+                <TrendingDown className="w-3 h-3 text-data-negative" />
+              )}
+              <span className={`text-[11px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+                {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
+              </span>
+            </div>
+            <span className={`text-[11px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+              {isPositive ? '+' : '-'}${Math.abs(parseFloat(changeValue)).toFixed(2)}
+            </span>
+            <span className="text-[10px] text-muted-foreground">Today</span>
+          </div>
         </div>
-      </div>
-      
-      {/* Change Row */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-md ${isPositive ? 'bg-primary/10' : 'bg-data-negative/10'}`}>
-          {isPositive ? (
-            <TrendingUp className="w-3.5 h-3.5 text-primary" />
-          ) : (
-            <TrendingDown className="w-3.5 h-3.5 text-data-negative" />
-          )}
-          <span className={`text-[12px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
-            {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
-          </span>
-        </div>
-        <span className={`text-[12px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
-          {isPositive ? '+' : '-'}${Math.abs(parseFloat(changeValue)).toFixed(2)}
-        </span>
-        <span className="text-[11px] text-muted-foreground">Today</span>
       </div>
       
       {/* Sparkline - Full Width */}
