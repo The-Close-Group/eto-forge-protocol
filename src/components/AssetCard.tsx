@@ -76,7 +76,7 @@ export function AssetCard({
               className={
                 (type === 'index' || type === 'stablecoin')
                   ? 'w-full h-full object-cover rounded-full'  // Fill container
-                  : 'w-full h-full object-contain'  // Fill for MAANG/sMAANG
+                  : 'w-[140%] h-[140%] object-contain'  // Scale up to fill visible area
               }
             />
           </div>
