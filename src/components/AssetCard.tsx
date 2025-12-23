@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { useMemo } from 'react';
 
@@ -39,6 +39,12 @@ export function AssetCard({
     [riskLevel]
   );
 
+  // Calculate mock price and change based on TVL
+  const price = (tvl / 10000).toFixed(2);
+  const changePercent = riskLevel === 'high' ? -rewardRate : rewardRate;
+  const changeValue = ((tvl / 10000) * (changePercent / 100)).toFixed(2);
+  const isPositive = changePercent >= 0;
+
   return (
     <div 
       className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
@@ -52,63 +58,61 @@ export function AssetCard({
         </div>
       </div>
       
-      {/* Header */}
+      {/* Header Row - Logo, Name/Symbol, Price */}
       <div className="flex items-center justify-between mb-4">
+        {/* Left: Logo + Name */}
         <div className="flex items-center gap-3">
-          {type === 'index' ? (
-            // Index cards: circular token logos fill the entire space
-            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-              <img 
-                src={logo} 
-                alt={name} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            // Other cards: vector logos with padding and background
-            <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center p-1.5 flex-shrink-0"
-              style={{ background: `${color}20` }}
-            >
-              <img 
-                src={logo} 
-                alt={name} 
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
+          {/* Circular Logo with white/light background */}
+          <div 
+            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+            style={{ 
+              background: type === 'index' ? 'white' : `${color}15`,
+              border: type === 'index' ? 'none' : `1px solid ${color}30`
+            }}
+          >
+            <img 
+              src={logo} 
+              alt={name} 
+              className={type === 'index' ? 'w-full h-full object-cover' : 'w-7 h-7 object-contain'}
+            />
+          </div>
           <div>
-            <div className="text-[11px] text-muted-foreground">{type.toUpperCase()}</div>
-            <div className="text-[13px] font-medium">{name}</div>
+            <div className="text-[15px] font-semibold">{name}</div>
+            <div className="text-[12px] text-muted-foreground">{symbol.toLowerCase()}.inc</div>
           </div>
         </div>
-        {isSelected && <Check className="w-4 h-4 text-primary" />}
-      </div>
-      
-      {/* Reward Rate */}
-      <div className="mb-3">
-        <div className="reward-rate-label">Reward Rate</div>
-        <div className="flex items-baseline gap-0.5">
-          <span className="reward-rate">{rewardRate.toFixed(2)}</span>
-          <span className="text-xl text-muted-foreground font-normal">%</span>
+
+        {/* Right: Price */}
+        <div className="text-right">
+          <div className="text-[18px] font-semibold">${price}</div>
         </div>
       </div>
       
-      {/* Risk Badge */}
-      <div className={`status-badge ${riskLevel === 'low' ? 'status-badge-positive' : riskLevel === 'high' ? 'status-badge-negative' : ''} mb-4`}>
-        <span className="w-[6px] h-[6px] rounded-full bg-current" />
-        {riskLevel} risk
+      {/* Change Row */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className={`flex items-center gap-1 px-2 py-1 rounded-md ${isPositive ? 'bg-primary/10' : 'bg-data-negative/10'}`}>
+          {isPositive ? (
+            <TrendingUp className="w-3.5 h-3.5 text-primary" />
+          ) : (
+            <TrendingDown className="w-3.5 h-3.5 text-data-negative" />
+          )}
+          <span className={`text-[12px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+            {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
+          </span>
+        </div>
+        <span className={`text-[12px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+          {isPositive ? '+' : '-'}${Math.abs(parseFloat(changeValue)).toFixed(2)}
+        </span>
+        <span className="text-[11px] text-muted-foreground">Today</span>
       </div>
       
-      {/* Sparkline */}
-      <div className="relative">
+      {/* Sparkline - Full Width */}
+      <div className="relative -mx-1">
         <Sparkline 
           data={sparkData} 
-          height={60}
-          variant={riskLevel !== 'high' ? 'positive' : 'negative'}
+          height={70}
+          variant={isPositive ? 'positive' : 'negative'}
           showArea={true}
-          showEndValue={true}
-          endValue={`$${(tvl / 1000000).toFixed(1)}M TVL`}
         />
       </div>
     </div>

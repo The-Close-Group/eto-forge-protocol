@@ -217,7 +217,7 @@ export default function Trade() {
                   transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
                   transition: `all 0.5s ease-out ${Math.min(index, 6) * 50}ms`,
                 }}
-                className="flex-shrink-0 w-[280px]"
+                className="flex-shrink-0 w-[340px] lg:w-[380px]"
               >
                 <AssetCard
                   id={asset.id}
