@@ -62,16 +62,17 @@ export function AssetCard({
       <div className="flex items-start justify-between mb-5">
         {/* Left: Logo + Name */}
         <div className="flex items-center gap-3">
-          {/* Circular Logo Container */}
+          {/* Logo Container - Rounded rectangle for MAANG, circular for index */}
           <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+            className={`w-12 h-12 flex items-center justify-center flex-shrink-0 overflow-hidden ${
+              (type === 'defi' || type === 'liquid') 
+                ? 'rounded-xl'  // Rounded rectangle for MAANG/sMAANG
+                : 'rounded-full'  // Circular for index/stablecoin
+            }`}
             style={{ 
               background: (type === 'index' || type === 'stablecoin') 
-                ? 'transparent'  // Index/Stablecoin: logo has its own circular background
-                : color,  // MAANG/sMAANG: solid color bg (logo is white)
-              boxShadow: (type === 'index' || type === 'stablecoin') 
-                ? 'none' 
-                : `0 0 0 1px ${color}30, 0 2px 8px ${color}20`  // Subtle glow
+                ? 'transparent'  // Index/Stablecoin: logo has its own background
+                : color,  // MAANG/sMAANG: solid brand color
             }}
           >
             <img 
@@ -80,7 +81,7 @@ export function AssetCard({
               className={
                 (type === 'index' || type === 'stablecoin')
                   ? 'w-full h-full object-cover rounded-full'  // Fill container
-                  : 'w-6 h-6 object-contain'  // Smaller for better proportion
+                  : 'w-7 h-7 object-contain'  // White logo on colored bg
               }
             />
           </div>
