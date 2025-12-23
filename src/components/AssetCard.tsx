@@ -66,16 +66,20 @@ export function AssetCard({
           <div 
             className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
             style={{ 
-              background: type === 'index' ? 'transparent' : 'white'
+              background: (type === 'defi' || type === 'liquid') 
+                ? color  // MAANG/sMAANG: colored background (logo is white)
+                : (type === 'index' || type === 'stablecoin') 
+                  ? 'transparent'  // Index/Stablecoin: logo has its own background
+                  : 'white'
             }}
           >
             <img 
               src={logo} 
               alt={name} 
               className={
-                type === 'index' 
-                  ? 'w-full h-full object-cover rounded-full' 
-                  : 'w-7 h-7 object-contain'
+                (type === 'index' || type === 'stablecoin')
+                  ? 'w-full h-full object-cover rounded-full'  // Fill container
+                  : 'w-7 h-7 object-contain'  // Contained with padding
               }
             />
           </div>
