@@ -230,14 +230,14 @@ export default function Trade() {
             {/* Wallet Address */}
             <button 
               onClick={handleCopyAddress}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
             >
               <Wallet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
-              <span className="text-[12px] font-mono text-foreground">{shortAddress}</span>
+              <span className="text-[11px] sm:text-[12px] font-mono text-foreground max-w-[80px] sm:max-w-none truncate">{shortAddress}</span>
               {addressCopied ? (
-                <Check className="w-3 h-3 text-primary" />
+                <Check className="w-3 h-3 text-primary flex-shrink-0" />
               ) : (
-                <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
               )}
             </button>
           </div>
@@ -402,24 +402,24 @@ export default function Trade() {
       {/* Page Content - offset for fixed navbar */}
       <div className="pt-14">
         {/* Page Header - Upper Left Corner */}
-        <div className="px-6 md:px-8 pt-6 md:pt-8">
+        <div className="px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-8">
         <div 
-          className={`mb-8 transition-all duration-700 ease-out ${
+          className={`mb-6 sm:mb-8 transition-all duration-700 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
               Assets
             </h1>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-primary/10 border border-primary/20 w-fit">
               <Sparkles className="w-3 h-3 text-primary" />
-              <span className="text-xs font-medium text-primary">ETO L1</span>
+              <span className="text-[11px] sm:text-xs font-medium text-primary">ETO L1</span>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Trade and stake native L1 assets on the ETO Dynamic Market Maker
           </p>
         </div>
@@ -427,13 +427,13 @@ export default function Trade() {
 
       {/* Asset Cards Grid - 3 columns on lg */}
         <div 
-        className={`px-6 md:px-8 mb-6 transition-all duration-700 delay-100 ease-out ${
+        className={`px-4 sm:px-6 md:px-8 mb-4 sm:mb-6 transition-all duration-700 delay-100 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
             : 'opacity-0 translate-y-8'
           }`}
         >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {stakingAssets.map((asset, index) => (
             <div
               key={asset.id}
@@ -463,10 +463,10 @@ export default function Trade() {
         </div>
 
       {/* Content Container with padding */}
-      <div className="px-6 md:px-8 pb-6 md:pb-8">
+      <div className="px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
         {/* Secondary Cards Grid */}
         <div 
-          className={`grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 transition-all duration-700 delay-150 ease-out ${
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-700 delay-150 ease-out ${
             isVisible 
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-6'
@@ -474,18 +474,18 @@ export default function Trade() {
         >
           {/* Investment Period */}
           <Card className="overflow-hidden">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-center justify-between mb-1">
-                <h3 className="text-[14px] font-medium">Investment Period</h3>
-                <span className="period-badge-active">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
+                <h3 className="text-[13px] sm:text-[14px] font-medium">Investment Period</h3>
+                <span className="period-badge-active text-[10px] sm:text-xs">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
               </div>
-              <p className="text-[11px] text-muted-foreground mb-5">Contribution Period</p>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground mb-4 sm:mb-5">Contribution Period</p>
               
-              <div className="flex gap-2 flex-wrap mb-4">
+              <div className="flex gap-1.5 sm:gap-2 flex-wrap mb-3 sm:mb-4">
                 {[1, 3, 6, 12].map(months => (
                   <button
                     key={months}
-                    className={months === investmentPeriod ? 'period-badge-active' : 'period-badge'}
+                    className={`${months === investmentPeriod ? 'period-badge-active' : 'period-badge'} text-[11px] sm:text-xs px-2.5 sm:px-3`}
                     onClick={() => setInvestmentPeriod(months)}
                   >
                     {months}M
@@ -515,32 +515,32 @@ export default function Trade() {
 
           {/* Protocol Stats */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-[14px] flex items-center justify-between">
+            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+              <CardTitle className="text-[13px] sm:text-[14px] flex items-center justify-between">
                 Protocol Stats
                 <button className={`${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
                   <RefreshCw className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
                 </button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2.5 sm:space-y-3 px-4 sm:px-6">
               <div className="flex justify-between items-center">
-                <span className="text-[13px] text-muted-foreground">Total Value Locked</span>
-                <span className="text-[13px] font-medium">
+                <span className="text-[12px] sm:text-[13px] text-muted-foreground">Total Value Locked</span>
+                <span className="text-[12px] sm:text-[13px] font-medium">
                   {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
                     `$${(protocolStats?.tvl || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
                   }
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[13px] text-muted-foreground">Oracle Price</span>
-                <span className="text-[13px] font-medium">
+                <span className="text-[12px] sm:text-[13px] text-muted-foreground">Oracle Price</span>
+                <span className="text-[12px] sm:text-[13px] font-medium">
                   {isLoading ? <Skeleton className="h-4 w-16" /> : `$${oraclePrice.toFixed(2)}`}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[13px] text-muted-foreground">DMM Price</span>
-                <span className="text-[13px] font-medium">
+                <span className="text-[12px] sm:text-[13px] text-muted-foreground">DMM Price</span>
+                <span className="text-[12px] sm:text-[13px] font-medium">
                   {isLoading ? <Skeleton className="h-4 w-16" /> : `$${dmmPrice.toFixed(2)}`}
                 </span>
               </div>
@@ -548,26 +548,26 @@ export default function Trade() {
           </Card>
 
           {/* Quick Actions */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-[14px]">Quick Actions</CardTitle>
+          <Card className="sm:col-span-2 lg:col-span-1">
+            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+              <CardTitle className="text-[13px] sm:text-[14px]">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-0.5">
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+            <CardContent className="space-y-0.5 px-4 sm:px-6">
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
                 <Link to="/buy-maang">
-                  <span className="text-[13px]">Buy MAANG</span>
+                  <span className="text-[12px] sm:text-[13px]">Buy MAANG</span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Link>
               </Button>
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
                 <Link to="/staking">
-                  <span className="text-[13px]">Stake Assets</span>
+                  <span className="text-[12px] sm:text-[13px]">Stake Assets</span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Link>
               </Button>
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
+              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
                 <Link to="/faucet">
-                  <span className="text-[13px]">Get mUSDC</span>
+                  <span className="text-[12px] sm:text-[13px]">Get mUSDC</span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Link>
               </Button>
@@ -584,22 +584,22 @@ export default function Trade() {
           }`}
         >
           <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center justify-between text-[15px]">
+            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+              <CardTitle className="flex items-center justify-between text-[14px] sm:text-[15px]">
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-primary" />
-                  Protocol Activity
+                  <span className="hidden xs:inline">Protocol</span> Activity
                 </div>
                 <button 
-                  className={`text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
+                  className={`text-[10px] sm:text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
                   onClick={handleRefresh}
                 >
                   <RefreshCw className="w-3 h-3" />
-                  Refresh
+                  <span className="hidden sm:inline">Refresh</span>
                 </button>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               <div className="space-y-1">
                 {isLoadingActivity ? (
                   <>
@@ -608,9 +608,9 @@ export default function Trade() {
                   </>
                 ) : protocolActivity && protocolActivity.length > 0 ? (
                   protocolActivity.slice(0, 4).map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-medium ${
+                    <div key={activity.id} className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-[10px] sm:text-[11px] font-medium flex-shrink-0 ${
                           activity.type === 'drip_execute' ? 'bg-data-positive/10 text-data-positive' :
                           activity.type === 'drip_commit' ? 'bg-primary/10 text-primary' :
                           activity.type === 'deposit' ? 'bg-blue-500/10 text-blue-400' :
@@ -620,33 +620,33 @@ export default function Trade() {
                            activity.type === 'drip_commit' ? '📝' :
                            activity.type === 'deposit' ? '+' : '?'}
                         </div>
-                        <div>
-                          <div className="text-[13px] font-medium">{activity.description}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[12px] sm:text-[13px] font-medium truncate">{activity.description}</div>
                           {activity.amount && (
-                            <div className="text-[11px] text-muted-foreground">{activity.amount}</div>
+                            <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{activity.amount}</div>
                           )}
                         </div>
                       </div>
-                      <div className="text-right flex items-center gap-2">
+                      <div className="text-right flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
                         <div>
-                          <div className="text-[11px] text-muted-foreground">{activity.timeAgo}</div>
-                          <div className="text-[10px] text-muted-foreground">Block #{activity.blockNumber}</div>
+                          <div className="text-[10px] sm:text-[11px] text-muted-foreground">{activity.timeAgo}</div>
+                          <div className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:block">Block #{activity.blockNumber}</div>
                         </div>
                         {activity.txHash && (
                           <a 
                             href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="icon-btn p-1.5"
+                            className="icon-btn p-1 sm:p-1.5"
                           >
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <ExternalLink className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </a>
                         )}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center text-muted-foreground py-10 text-[13px]">
+                  <div className="text-center text-muted-foreground py-8 sm:py-10 text-[12px] sm:text-[13px]">
                     No recent protocol activity
                   </div>
                 )}

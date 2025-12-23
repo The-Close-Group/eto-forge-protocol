@@ -562,14 +562,14 @@ export default function Dashboard() {
             {/* Wallet Address */}
             <button 
               onClick={handleCopyAddress}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
             >
               <Wallet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
-              <span className="text-[12px] font-mono text-foreground">{shortAddress}</span>
+              <span className="text-[11px] sm:text-[12px] font-mono text-foreground max-w-[80px] sm:max-w-none truncate">{shortAddress}</span>
               {addressCopied ? (
-                <Check className="w-3 h-3 text-primary" />
+                <Check className="w-3 h-3 text-primary flex-shrink-0" />
               ) : (
-                <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
               )}
             </button>
           </div>

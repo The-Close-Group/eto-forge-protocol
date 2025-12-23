@@ -2216,3 +2216,461 @@
   transform: translateY(-4px);
   box-shadow: 0 12px 40px -12px hsl(0 0% 0% / 0.4);
 }
+
+/* ========================================
+   MOBILE RESPONSIVENESS - Comprehensive
+   ======================================== */
+
+/* --- WalletValueCard Mobile Fixes --- */
+@media (max-width: 768px) {
+  .wvc {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .wvc-head {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .wvc-amount {
+    font-size: 2rem;
+  }
+
+  .wvc-amount-line {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wvc-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .wvc-actions {
+    order: 2;
+  }
+
+  .wvc-time-btns {
+    order: 1;
+  }
+
+  .wvc-chart-wrap {
+    height: 200px;
+    margin: 0 -20px;
+  }
+
+  .wvc-bottom {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .wvc-stat-card {
+    padding: 12px;
+  }
+
+  .wvc-stat-num {
+    font-size: 1rem;
+  }
+
+  .wvc-stat-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wvc {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .wvc-amount {
+    font-size: 1.75rem;
+  }
+
+  .wvc-pct {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .wvc-actions {
+    gap: 4px;
+  }
+
+  .wvc-action-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .wvc-time-btns {
+    display: none;
+  }
+
+  .wvc-chart-wrap {
+    height: 160px;
+    margin: 0 -16px;
+  }
+
+  .wvc-bottom {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .wvc-stat-card {
+    padding: 10px 12px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .wvc-stat-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wvc-stat-name {
+    margin-bottom: 0;
+  }
+
+  .wvc-stat-trend {
+    margin-left: auto;
+  }
+}
+
+/* --- Holdings Card Mobile Fixes --- */
+@media (max-width: 640px) {
+  .holdings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .holdings-header-left {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .holdings-header-right {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .holdings-grid {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .holding-item {
+    padding: 14px;
+  }
+
+  .holding-header {
+    margin-bottom: 10px;
+  }
+
+  .holding-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .holding-icon img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .holding-name {
+    font-size: 13px;
+  }
+
+  .holding-chart {
+    height: 40px;
+    margin-top: 10px;
+  }
+}
+
+/* --- Asset Card Mobile Fixes --- */
+@media (max-width: 480px) {
+  .staking-asset-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .staking-asset-card .text-\[15px\] {
+    font-size: 14px;
+  }
+
+  .staking-asset-card .text-\[18px\] {
+    font-size: 16px;
+  }
+
+  .staking-asset-card .text-\[12px\] {
+    font-size: 11px;
+  }
+
+  .staking-asset-card .text-\[11px\] {
+    font-size: 10px;
+  }
+
+  .staking-asset-card .w-12 {
+    width: 40px;
+    height: 40px;
+  }
+
+  .staking-asset-card .w-8 {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* --- Transactions Card Mobile Fixes --- */
+@media (max-width: 640px) {
+  .txn-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .txn-filters {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .txn-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .txn-grid {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .txn-item {
+    padding: 12px;
+    min-width: 0;
+  }
+
+  .txn-item-header {
+    gap: 8px;
+  }
+
+  .txn-icon-wrap {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+
+  .txn-icon-wrap img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .txn-token {
+    font-size: 12px;
+  }
+
+  .txn-type {
+    font-size: 10px;
+  }
+
+  .txn-amount {
+    font-size: 14px;
+  }
+
+  .txn-chart {
+    height: 32px;
+    margin: 8px 0;
+  }
+}
+
+/* --- Dashboard Container Mobile --- */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .dashboard-grid {
+    gap: 16px;
+  }
+}
+
+/* --- Navigation Bar Mobile Fixes --- */
+@media (max-width: 480px) {
+  nav.fixed {
+    height: 56px;
+  }
+
+  nav .px-4 {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  nav .gap-3 {
+    gap: 8px;
+  }
+
+  nav .gap-1 {
+    gap: 2px;
+  }
+
+  /* Hide wallet address on very small screens */
+  nav button[class*="font-mono"] span {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* --- Trade Page Mobile Fixes --- */
+@media (max-width: 640px) {
+  /* Period selector */
+  .period-badge,
+  .period-badge-active {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* Card padding reduction */
+  .px-6 {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .px-8 {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Protocol Activity items */
+  .protocol-activity .flex.items-center.gap-3 {
+    gap: 8px;
+  }
+}
+
+/* --- Execution Page Mobile Fixes --- */
+@media (max-width: 768px) {
+  /* Swap widget sticky positioning */
+  .sticky.top-20 {
+    position: relative;
+    top: 0;
+  }
+
+  /* Input fields */
+  input[type="number"].text-2xl {
+    font-size: 1.25rem;
+  }
+
+  /* Token selector buttons */
+  .rounded-full.bg-background {
+    padding: 6px 10px;
+  }
+
+  .rounded-full.bg-background span {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Time range buttons scrollable */
+  .flex.gap-1.overflow-x-auto {
+    padding-bottom: 4px;
+    margin-bottom: -4px;
+  }
+
+  /* Chart height reduction */
+  .h-64 {
+    height: 200px;
+  }
+
+  /* About section grid */
+  .grid.grid-cols-2.gap-4 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Rate info card */
+  .rounded-xl.bg-muted\/20 {
+    padding: 12px;
+  }
+
+  /* Buy/Sell toggle */
+  .inline-flex.p-0\.5 button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+/* --- Dialog/Modal Mobile Fixes --- */
+@media (max-width: 640px) {
+  [role="dialog"] > div {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    margin: 16px;
+  }
+
+  .sm\:max-w-md,
+  .sm\:max-w-lg {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+/* --- Scrollbar Hide Utility --- */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Touch-friendly tap targets --- */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 36px;
+  }
+
+  /* Ensure proper spacing for touch */
+  .gap-1 {
+    gap: 6px;
+  }
+}
+
+/* --- Safe area insets for notched devices --- */
+@supports (padding: max(0px)) {
+  .min-h-screen {
+    min-height: calc(100vh - env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  nav.fixed {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+}
+
+/* --- Prevent horizontal overflow --- */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .overflow-hidden {
+    overflow-x: hidden;
+  }
+}

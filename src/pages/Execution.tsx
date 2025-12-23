@@ -278,11 +278,11 @@ export default function Execution() {
   }, [payAmount]);
 
   return (
-    <div className="min-h-screen p-4 md:p-6 lg:p-8 bg-background">
+    <div className="min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <div 
-          className={`mb-4 md:mb-6 transition-all duration-500 ease-out ${
+          className={`mb-3 sm:mb-4 md:mb-6 transition-all duration-500 ease-out ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
@@ -290,15 +290,15 @@ export default function Execution() {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/trade')}
-            className="gap-2 text-muted-foreground hover:text-foreground -ml-2"
+            className="gap-1.5 sm:gap-2 text-muted-foreground hover:text-foreground -ml-2 text-[13px] sm:text-sm"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Assets
+            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Back to</span> Assets
           </Button>
         </div>
 
         {/* Main Layout - Chart Left, Swap Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-4 sm:gap-6 lg:gap-8">
           {/* Left Column - Asset Info & Chart */}
           <div 
             className={`space-y-4 md:space-y-6 transition-all duration-700 ease-out delay-100 ${
@@ -306,47 +306,47 @@ export default function Execution() {
             }`}
           >
             {/* Asset Header */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0"
                 style={{ background: `${asset.color}20` }}
               >
-                <img src={asset.logo} alt={asset.name} className="w-8 h-8 object-contain" />
+                <img src={asset.logo} alt={asset.name} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-semibold">{asset.name}</h1>
-                <span className="text-sm text-muted-foreground">{asset.symbol}</span>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">{asset.name}</h1>
+                <span className="text-xs sm:text-sm text-muted-foreground">{asset.symbol}</span>
               </div>
             </div>
 
             {/* Price Card with Chart */}
             <Card className="overflow-hidden border-border-subtle">
-              <CardContent className="p-4 md:p-6">
+              <CardContent className="p-3 sm:p-4 md:p-6">
                 {/* Price Header */}
-                <div className="mb-4 md:mb-6">
-                  <div className="text-3xl md:text-4xl font-semibold tracking-tight mb-1">
+                <div className="mb-3 sm:mb-4 md:mb-6">
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-1">
                     ${formatPrice(currentPrice)}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     {priceChange.percent >= 0 ? (
-                      <TrendingUp className="w-4 h-4 text-data-positive" />
+                      <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-data-positive" />
                     ) : (
-                      <TrendingDown className="w-4 h-4 text-data-negative" />
+                      <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-data-negative" />
                     )}
-                    <span className={`text-sm font-medium ${priceChange.percent >= 0 ? 'text-data-positive' : 'text-data-negative'}`}>
+                    <span className={`text-xs sm:text-sm font-medium ${priceChange.percent >= 0 ? 'text-data-positive' : 'text-data-negative'}`}>
                       {priceChange.percent >= 0 ? '+' : ''}{priceChange.percent.toFixed(2)}%
                     </span>
-                    <span className="text-sm text-muted-foreground">24H</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">24H</span>
                   </div>
                 </div>
 
                 {/* Time Range Selector */}
-                <div className="flex gap-1 mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-1 mb-3 sm:mb-4 md:mb-6 overflow-x-auto scrollbar-hide pb-1 -mb-1">
                   {(['1D', '1W', '1M', '3M', '1Y', 'ALL'] as const).map((range) => (
                     <button
                       key={range}
                       onClick={() => setTimeRange(range)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
+                      className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-medium transition-all flex-shrink-0 ${
                         timeRange === range
                           ? 'bg-foreground text-background'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -358,7 +358,7 @@ export default function Execution() {
                 </div>
 
                 {/* Chart */}
-                <div className="h-64 md:h-80">
+                <div className="h-48 sm:h-64 md:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                       <defs>
@@ -417,10 +417,10 @@ export default function Execution() {
 
             {/* About Section */}
             <Card className="border-border-subtle">
-              <CardContent className="p-4 md:p-6">
-                <h2 className="text-base md:text-lg font-semibold mb-3">About {asset.name}</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 180)}...`}
+              <CardContent className="p-3 sm:p-4 md:p-6">
+                <h2 className="text-sm sm:text-base md:text-lg font-semibold mb-2 sm:mb-3">About {asset.name}</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 140)}...`}
                   <button 
                     className="text-primary ml-1 hover:underline font-medium"
                     onClick={() => setShowMoreDescription(!showMoreDescription)}
@@ -430,37 +430,37 @@ export default function Execution() {
                 </p>
 
                 {/* Asset Details Grid */}
-                <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-border-subtle">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-border-subtle">
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Network</div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center">
-                        <img src={etoLogo} alt="ETO" className="w-3 h-3" />
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Network</div>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/15 flex items-center justify-center">
+                        <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       </div>
-                      <span className="text-sm font-medium">ETO L1</span>
+                      <span className="text-xs sm:text-sm font-medium">ETO L1</span>
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Asset Type</div>
-                    <div className="text-sm font-medium">{asset.underlyingAsset}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Asset Type</div>
+                    <div className="text-xs sm:text-sm font-medium truncate">{asset.underlyingAsset}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Contract</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Contract</div>
                     <button 
-                      className="flex items-center gap-2 text-sm font-medium group"
+                      className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium group"
                       onClick={handleCopyAddress}
                     >
                       <span className="font-mono">{asset.contractAddress}</span>
                       {copied ? (
-                        <Check className="w-3.5 h-3.5 text-data-positive" />
+                        <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-data-positive flex-shrink-0" />
                       ) : (
-                        <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                       )}
                     </button>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Ticker</div>
-                    <div className="text-sm font-medium font-mono">{asset.underlyingTicker}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Ticker</div>
+                    <div className="text-xs sm:text-sm font-medium font-mono">{asset.underlyingTicker}</div>
                   </div>
                 </div>
               </CardContent>
@@ -473,106 +473,106 @@ export default function Execution() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <Card className="border-border-subtle sticky top-20">
-              <CardContent className="p-4 md:p-5">
+            <Card className="border-border-subtle lg:sticky lg:top-20">
+              <CardContent className="p-3 sm:p-4 md:p-5">
                 {/* Buy/Sell Toggle & Network */}
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-4 sm:mb-5 gap-2">
                   {/* Toggle */}
                   <div className="inline-flex p-0.5 rounded-lg bg-muted/60 border border-border/40">
                     <button
                       onClick={() => setActiveTab('buy')}
-                      className={`relative px-6 py-2 rounded-md text-[13px] font-medium transition-all duration-200 ${
+                      className={`relative px-4 sm:px-6 py-1.5 sm:py-2 rounded-md text-[12px] sm:text-[13px] font-medium transition-all duration-200 ${
                         activeTab === 'buy'
                           ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {activeTab === 'buy' && (
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span className="absolute left-1.5 sm:left-2 top-1/2 -translate-y-1/2 w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-primary" />
                       )}
                       Buy
                     </button>
                     <button
                       onClick={() => setActiveTab('sell')}
-                      className={`relative px-6 py-2 rounded-md text-[13px] font-medium transition-all duration-200 ${
+                      className={`relative px-4 sm:px-6 py-1.5 sm:py-2 rounded-md text-[12px] sm:text-[13px] font-medium transition-all duration-200 ${
                         activeTab === 'sell'
                           ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {activeTab === 'sell' && (
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-destructive" />
+                        <span className="absolute left-1.5 sm:left-2 top-1/2 -translate-y-1/2 w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-destructive" />
                       )}
                       Sell
                     </button>
                   </div>
 
                   {/* Network Indicator */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center">
-                      <img src={etoLogo} alt="ETO" className="w-3 h-3" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/15 flex items-center justify-center">
+                      <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     </div>
-                    <span className="text-[12px] font-medium text-foreground">ETO L1</span>
+                    <span className="text-[11px] sm:text-[12px] font-medium text-foreground">ETO L1</span>
                   </div>
                 </div>
 
                 {/* Pay Input */}
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-muted-foreground">You Pay</label>
-                      <button className="text-xs text-primary hover:underline flex items-center gap-1">
-                        <Wallet className="w-3 h-3" />
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                      <label className="text-[11px] sm:text-xs text-muted-foreground">You Pay</label>
+                      <button className="text-[10px] sm:text-xs text-primary hover:underline flex items-center gap-1">
+                        <Wallet className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         Balance: $0.00
                       </button>
                     </div>
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/30 border border-border-subtle focus-within:border-primary/50 transition-colors">
+                    <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border-subtle focus-within:border-primary/50 transition-colors">
                       <input
                         type="number"
                         placeholder="0.00"
                         value={payAmount}
                         onChange={(e) => setPayAmount(e.target.value)}
-                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="bg-transparent text-xl sm:text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
                         <img 
                           src={activeTab === 'buy' ? 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040' : asset.logo} 
                           alt={activeTab === 'buy' ? 'USDC' : asset.symbol}
-                          className="w-5 h-5"
+                          className="w-4 h-4 sm:w-5 sm:h-5"
                         />
-                        <span className="text-sm font-medium">{activeTab === 'buy' ? 'USDC' : asset.symbol}</span>
+                        <span className="text-xs sm:text-sm font-medium">{activeTab === 'buy' ? 'USDC' : asset.symbol}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Swap Direction Button */}
-                  <div className="flex justify-center -my-1 relative z-10">
+                  <div className="flex justify-center -my-0.5 sm:-my-1 relative z-10">
                     <button 
                       onClick={handleSwapDirection}
-                      className="w-10 h-10 rounded-full bg-muted border-4 border-background flex items-center justify-center hover:bg-muted/80 transition-colors"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted border-3 sm:border-4 border-background flex items-center justify-center hover:bg-muted/80 transition-colors"
                     >
-                      <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+                      <ArrowUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                     </button>
                   </div>
 
                   {/* Receive Input */}
                   <div>
-                    <label className="text-xs text-muted-foreground mb-2 block">You Receive</label>
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/30 border border-border-subtle">
+                    <label className="text-[11px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2 block">You Receive</label>
+                    <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border-subtle">
                       <input
                         type="text"
                         placeholder="0.00"
                         value={receiveAmount}
                         readOnly
-                        className="bg-transparent text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40"
+                        className="bg-transparent text-xl sm:text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40"
                       />
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
                         <img 
                           src={activeTab === 'buy' ? asset.logo : 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040'} 
                           alt={activeTab === 'buy' ? asset.symbol : 'USDC'}
-                          className="w-5 h-5"
+                          className="w-4 h-4 sm:w-5 sm:h-5"
                         />
-                        <span className="text-sm font-medium">{activeTab === 'buy' ? asset.symbol : 'USDC'}</span>
+                        <span className="text-xs sm:text-sm font-medium">{activeTab === 'buy' ? asset.symbol : 'USDC'}</span>
                       </div>
                     </div>
                   </div>
@@ -580,33 +580,33 @@ export default function Execution() {
 
                 {/* Order Error */}
                 {orderError && (
-                  <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
-                    <span className="text-xs text-destructive">{orderError}</span>
+                  <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive flex-shrink-0" />
+                    <span className="text-[11px] sm:text-xs text-destructive">{orderError}</span>
                   </div>
                 )}
 
                 {/* Rate Info */}
-                <div className="mt-5 p-4 rounded-xl bg-muted/20 border border-border-subtle space-y-2.5">
+                <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border-subtle space-y-2 sm:space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Rate</span>
-                    <span className="text-xs font-medium font-mono">
+                    <span className="text-[11px] sm:text-xs text-muted-foreground">Rate</span>
+                    <span className="text-[11px] sm:text-xs font-medium font-mono">
                       1 {asset.symbol} = ${formatPrice(currentPrice)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Network Fee</span>
-                    <span className="text-xs font-medium text-data-positive">Free</span>
+                    <span className="text-[11px] sm:text-xs text-muted-foreground">Network Fee</span>
+                    <span className="text-[11px] sm:text-xs font-medium text-data-positive">Free</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Platform Fee (0.3%)</span>
-                    <span className="text-xs font-medium font-mono">${estimatedFee}</span>
+                    <span className="text-[11px] sm:text-xs text-muted-foreground">Platform Fee (0.3%)</span>
+                    <span className="text-[11px] sm:text-xs font-medium font-mono">${estimatedFee}</span>
                   </div>
                 </div>
 
                 {/* Action Button */}
                 <Button 
-                  className={`w-full mt-5 h-12 rounded-xl font-semibold text-base ${
+                  className={`w-full mt-4 sm:mt-5 h-10 sm:h-12 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base ${
                     activeTab === 'buy' 
                       ? 'bg-data-positive hover:bg-data-positive/90' 
                       : 'bg-data-negative hover:bg-data-negative/90'
@@ -617,11 +617,11 @@ export default function Execution() {
                 >
                   {isProcessing ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 animate-spin" />
                       Processing...
                     </>
                   ) : !isAuthenticated ? (
-                    'Connect Wallet to Trade'
+                    'Connect Wallet'
                   ) : !payAmount ? (
                     'Enter Amount'
                   ) : (
@@ -632,23 +632,23 @@ export default function Execution() {
                 {/* Help Section */}
                 <button 
                   onClick={() => setShowHelp(!showHelp)}
-                  className="w-full mt-4 flex items-center justify-between p-3 rounded-xl hover:bg-muted/30 transition-colors"
+                  className="w-full mt-3 sm:mt-4 flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl hover:bg-muted/30 transition-colors"
                 >
-                  <div className="flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Need help?</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                    <span className="text-xs sm:text-sm text-muted-foreground">Need help?</span>
                   </div>
                   {showHelp ? (
-                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                   )}
                 </button>
                 
                 {showHelp && (
-                  <div className="px-3 pb-3 text-xs text-muted-foreground space-y-2">
+                  <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3 text-[11px] sm:text-xs text-muted-foreground space-y-1.5 sm:space-y-2">
                     <p>• Enter the amount you want to trade in the "You Pay" field</p>
-                    <p>• The receive amount is calculated automatically based on current rates</p>
+                    <p>• The receive amount is calculated automatically</p>
                     <p>• Click the swap button to switch between buying and selling</p>
                     <p>• Review your order details before confirming</p>
                   </div>
