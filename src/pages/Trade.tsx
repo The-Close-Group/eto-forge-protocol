@@ -39,17 +39,7 @@ const stakingAssets = [
     riskLevel: 'low' as const,
     tvl: 420000,
   },
-  {
-    id: 'usdc',
-    name: 'USD Coin',
-    symbol: 'USDC',
-    type: 'stablecoin',
-    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
-    color: '#2775ca',
-    rewardRate: 1.51,
-    riskLevel: 'low' as const,
-    tvl: 1200000,
-  },
+  // NOTE: USDC card hidden - see src/components/_scrap/hidden-assets.ts
   // Thematic Index Cards
   {
     id: 'ycombinator',
