@@ -69,11 +69,6 @@ export function AssetCard({
                 ? 'rounded-xl'  // Rounded rectangle for MAANG/sMAANG
                 : 'rounded-full'  // Circular for index/stablecoin
             }`}
-            style={{ 
-              background: (type === 'index' || type === 'stablecoin') 
-                ? 'transparent'  // Index/Stablecoin: logo has its own background
-                : color,  // MAANG/sMAANG: solid brand color
-            }}
           >
             <img 
               src={logo} 
@@ -81,7 +76,7 @@ export function AssetCard({
               className={
                 (type === 'index' || type === 'stablecoin')
                   ? 'w-full h-full object-cover rounded-full'  // Fill container
-                  : 'w-7 h-7 object-contain'  // White logo on colored bg
+                  : 'w-full h-full object-contain'  // Fill for MAANG/sMAANG
               }
             />
           </div>
