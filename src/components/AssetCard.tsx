@@ -66,11 +66,12 @@ export function AssetCard({
           <div 
             className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
             style={{ 
-              background: (type === 'defi' || type === 'liquid') 
-                ? color  // MAANG/sMAANG: colored background (logo is white)
-                : (type === 'index' || type === 'stablecoin') 
-                  ? 'transparent'  // Index/Stablecoin: logo has its own background
-                  : 'white'
+              background: (type === 'index' || type === 'stablecoin') 
+                ? 'transparent'  // Index/Stablecoin: logo has its own circular background
+                : color,  // MAANG/sMAANG: solid color bg (logo is white)
+              boxShadow: (type === 'index' || type === 'stablecoin') 
+                ? 'none' 
+                : `0 0 0 1px ${color}30, 0 2px 8px ${color}20`  // Subtle glow
             }}
           >
             <img 
@@ -79,7 +80,7 @@ export function AssetCard({
               className={
                 (type === 'index' || type === 'stablecoin')
                   ? 'w-full h-full object-cover rounded-full'  // Fill container
-                  : 'w-7 h-7 object-contain'  // Contained with padding
+                  : 'w-6 h-6 object-contain'  // Smaller for better proportion
               }
             />
           </div>
