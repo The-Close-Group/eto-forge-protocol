@@ -62,14 +62,21 @@ export function AssetCard({
       <div className="flex items-start justify-between mb-5">
         {/* Left: Logo + Name */}
         <div className="flex items-center gap-3">
-          {/* Circular Logo with white background */}
+          {/* Circular Logo Container */}
           <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white"
+            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+            style={{ 
+              background: type === 'index' ? 'transparent' : 'white'
+            }}
           >
             <img 
               src={logo} 
               alt={name} 
-              className="w-8 h-8 object-contain"
+              className={
+                type === 'index' 
+                  ? 'w-full h-full object-cover rounded-full' 
+                  : 'w-7 h-7 object-contain'
+              }
             />
           </div>
           <div>
