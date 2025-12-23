@@ -8,7 +8,7 @@ import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink, Copy, Check, Share,
+  Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink, Copy, Check,
   Search, Settings, Bell, Plus, Wallet, User, LogOut, Calculator, ChevronDown
 } from "lucide-react";
 import { AssetCard } from "@/components/AssetCard";
@@ -118,14 +118,10 @@ export default function Trade() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [investmentPeriod, setInvestmentPeriod] = useState(6);
-  const [referralCopied, setReferralCopied] = useState(false);
   const [addressCopied, setAddressCopied] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
-  
-  // Referral code (would come from user account in production)
-  const referralCode = "eto.l1/r/x7k9m";
   
   // Wallet address formatting
   const displayAddress = account?.address || "0x44A5...50B3";
@@ -414,38 +410,13 @@ export default function Trade() {
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex items-center justify-between mb-2">
-            {/* Left: Title + Badge */}
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Assets
-              </h1>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-                <Sparkles className="w-3 h-3 text-primary" />
-                <span className="text-xs font-medium text-primary">ETO L1</span>
-              </div>
-            </div>
-
-            {/* Right: Referral Code */}
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/50 border border-border/50">
-                <span className="text-sm text-muted-foreground font-mono">{referralCode}</span>
-              </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(`https://${referralCode}`);
-                  setReferralCopied(true);
-                  setTimeout(() => setReferralCopied(false), 2000);
-                }}
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                title="Copy referral link"
-              >
-                {referralCopied ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Share className="w-4 h-4" />
-                )}
-              </button>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Assets
+            </h1>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium text-primary">ETO L1</span>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
