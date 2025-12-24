@@ -31,10 +31,10 @@ export function DesktopSidebar() {
 
   return (
     <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-[90px] flex-col bg-sidebar border-r border-sidebar-border z-50">
-      {/* Logo */}
-      <div className="flex justify-center py-6">
+      {/* Logo - matches TopNavBar height */}
+      <div className="h-14 flex items-center justify-center border-b border-border/50">
         <Link to="/" className="flex items-center justify-center">
-          <img src="/eto-logo.svg" alt="ETO" className="w-9 h-9 object-contain" />
+          <img src="/eto-logo.svg" alt="ETO" className="w-8 h-8 object-contain" />
         </Link>
       </div>
 
