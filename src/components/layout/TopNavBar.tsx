@@ -51,11 +51,6 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
     setTimeout(() => setAddressCopied(false), 2000);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Signed out successfully");
-  };
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     if (onRefresh) {
