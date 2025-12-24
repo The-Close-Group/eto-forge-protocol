@@ -21,8 +21,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import maangLogo from "@/assets/maang-logo.svg";
+import a16zLogo from "@/assets/a16z-logo.svg";
+import ycLogo from "@/assets/ycombinator-logo.svg";
+import sequoiaLogo from "@/assets/sequoia-logo.svg";
+import lightspeedLogo from "@/assets/lightspeed-logo.svg";
 
-// Searchable assets
+// Searchable assets - all available trading assets
 const SEARCHABLE_ASSETS = [
   {
     id: 'maang',
@@ -32,6 +36,7 @@ const SEARCHABLE_ASSETS = [
     logo: maangLogo,
     price: 12.50,
     change: 4.6,
+    category: 'protocol',
   },
   {
     id: 'smaang',
@@ -41,15 +46,57 @@ const SEARCHABLE_ASSETS = [
     logo: maangLogo,
     price: 13.25,
     change: 3.2,
+    category: 'protocol',
   },
   {
     id: 'usdc',
     symbol: 'USDC',
     name: 'USD Coin',
-    description: 'Stablecoin',
+    description: 'Stablecoin pegged to USD',
     logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
     price: 1.00,
     change: 0.0,
+    category: 'stablecoin',
+  },
+  {
+    id: 'ycombinator',
+    symbol: 'YC',
+    name: 'Y Combinator Index',
+    description: 'YC portfolio companies index',
+    logo: ycLogo,
+    price: 145.80,
+    change: 2.34,
+    category: 'index',
+  },
+  {
+    id: 'sequoia',
+    symbol: 'SEQ',
+    name: 'Sequoia Capital Index',
+    description: 'Sequoia portfolio index',
+    logo: sequoiaLogo,
+    price: 238.50,
+    change: 2.18,
+    category: 'index',
+  },
+  {
+    id: 'lightspeed',
+    symbol: 'LSVP',
+    name: 'Lightspeed Index',
+    description: 'Lightspeed Ventures portfolio',
+    logo: lightspeedLogo,
+    price: 98.25,
+    change: 1.95,
+    category: 'index',
+  },
+  {
+    id: 'a16z',
+    symbol: 'A16Z',
+    name: 'a16z Index',
+    description: 'Andreessen Horowitz portfolio',
+    logo: a16zLogo,
+    price: 312.40,
+    change: 3.15,
+    category: 'index',
   },
 ];
 
