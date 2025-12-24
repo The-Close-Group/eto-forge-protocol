@@ -113,7 +113,7 @@ export function AssetCard({
 
       {/* Trade Button - Always visible */}
       <div className="mt-4 pt-3 border-t border-border-subtle">
-        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground font-medium text-[13px] transition-all duration-200 group/btn">
+        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-[13px] transition-all duration-200 group/btn">
           <span>Trade {symbol}</span>
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
         </button>
