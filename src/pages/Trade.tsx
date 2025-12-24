@@ -216,7 +216,7 @@ export default function Trade() {
       </Dialog>
 
       {/* Top Navigation Bar - Same as Dashboard */}
-      <nav className="fixed top-0 right-0 left-0 md:left-[60px] z-40 h-14 bg-background border-b border-border/50">
+      <nav className="fixed top-0 right-0 left-0 md:left-[200px] z-40 h-14 bg-background border-b border-border/50">
         <div className="h-full pl-1 pr-4 md:pl-1 md:pr-6 flex items-center justify-between">
           
           {/* Left Section - Paper Trading, Network & Wallet */}
