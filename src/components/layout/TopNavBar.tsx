@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Search, Settings, Bell, Plus, Wallet, User, LogOut, 
-  Calculator, ChevronDown, Copy, Check, ExternalLink, RefreshCw,
-  FlaskConical
+  Search, Settings, Bell, Plus, Wallet,
+  Copy, Check, RefreshCw, FlaskConical
 } from "lucide-react";
 import { useActiveAccount } from "thirdweb/react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useStakingContext } from "@/contexts/StakingContext";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,8 +31,6 @@ interface TopNavBarProps {
 export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
   const navigate = useNavigate();
   const account = useActiveAccount();
-  const { signOut } = useAuth();
-  const { getTotalStaked, getTotalRewards } = useStakingContext();
   
   const [addressCopied, setAddressCopied] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -55,11 +50,6 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
     setAddressCopied(true);
     toast.success("Address copied to clipboard");
     setTimeout(() => setAddressCopied(false), 2000);
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Signed out successfully");
   };
 
   const handleRefresh = async () => {
@@ -229,9 +219,6 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Divider */}
-            <div className="hidden sm:block w-px h-5 bg-border/40 mx-2" />
-
             {/* Deposit Button */}
             <button 
               onClick={handleDeposit}
@@ -240,68 +227,6 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
               <Plus className="w-3.5 h-3.5" />
               <span>Deposit</span>
             </button>
-
-            {/* Account Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="ml-1 flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted/50 transition-colors">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[10px] font-semibold text-primary-foreground">
-                    RC
-                  </div>
-                  <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-muted-foreground" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {/* Account Header */}
-                <div className="px-3 py-2.5 border-b border-border/50">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[11px] font-semibold text-primary-foreground">
-                      RC
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-medium">Ryan Crawford</div>
-                      <div className="text-[11px] text-muted-foreground font-mono">{shortAddress}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Wallet Balance Preview */}
-                <div className="px-3 py-2 border-b border-border/50 bg-muted/20">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Portfolio Value</div>
-                  <div className="text-[14px] font-semibold">${(getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                </div>
-
-                <DropdownMenuItem onClick={() => navigate('/profile')} className="py-2">
-                  <User className="w-4 h-4 mr-2.5 text-muted-foreground" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/staking')} className="py-2">
-                  <Wallet className="w-4 h-4 mr-2.5 text-muted-foreground" />
-                  My Positions
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info("Calculator coming soon")} className="py-2">
-                  <Calculator className="w-4 h-4 mr-2.5 text-muted-foreground" />
-                  Calculator
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleCopyAddress} className="py-2">
-                  {addressCopied ? (
-                    <Check className="w-4 h-4 mr-2.5 text-primary" />
-                  ) : (
-                    <Copy className="w-4 h-4 mr-2.5 text-muted-foreground" />
-                  )}
-                  {addressCopied ? 'Copied!' : 'Copy Address'}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.open(`https://eto-explorer.ash.center/address/${displayAddress}`, '_blank')} className="py-2">
-                  <ExternalLink className="w-4 h-4 mr-2.5 text-muted-foreground" />
-                  View on Explorer
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="py-2 text-destructive focus:text-destructive">
-                  <LogOut className="w-4 h-4 mr-2.5" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </nav>
