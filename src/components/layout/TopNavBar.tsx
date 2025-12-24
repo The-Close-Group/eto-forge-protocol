@@ -107,7 +107,7 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
 
       {/* Top Navigation Bar */}
       <nav className="fixed top-0 right-0 left-0 z-40 h-14 bg-background border-b border-border/50">
-        <div className="h-full px-4 md:pl-[102px] md:pr-6 flex items-center justify-between">
+        <div className="h-full px-4 md:pl-[94px] md:pr-5 flex items-center justify-between">
           
           {/* Left Section - Paper Trading, Network & Wallet */}
           <div className="flex items-center gap-3">
