@@ -257,34 +257,9 @@ export default function PointsDashboard() {
         <TopNavBar />
 
         <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
-          {/* Page Title */}
-          <div className="flex items-center gap-4 mb-2">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Trophy className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-[15px] font-semibold">Season 1</h1>
-                <p className="text-[11px] text-muted-foreground">Points Dashboard</p>
-              </div>
-            </div>
-            <button className="deposit-btn ml-4" onClick={() => setReferralDialogOpen(true)}>
-              Invite Friends
-              <Users className="w-3.5 h-3.5" />
-            </button>
-          </div>
           {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-1.5">
-                <span>Point categories for Season 1</span>
-                <Clock className="w-3.5 h-3.5" />
-                <span className="px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium">
-                  3 Ways to Earn
-                </span>
-              </div>
-              <h1 className="text-[28px] font-semibold tracking-tight">Points Dashboard</h1>
-            </div>
+            <h1 className="text-[28px] font-semibold tracking-tight">Points Dashboard</h1>
             
             <div className="flex items-center gap-2">
               {(['24H', '7D', '30D'] as const).map(time => (

@@ -9,7 +9,6 @@ import {
   Bell,
   ArrowUpRight,
   MoreHorizontal,
-  Plus,
 } from "lucide-react";
 
 // Main navigation items
@@ -36,16 +35,6 @@ export function DesktopSidebar() {
       <div className="flex justify-center py-6">
         <Link to="/" className="flex items-center justify-center">
           <img src="/eto-logo.svg" alt="ETO" className="w-9 h-9 object-contain" />
-        </Link>
-      </div>
-
-      {/* Add Button */}
-      <div className="flex justify-center py-4">
-        <Link
-          to="/trade"
-          className="w-11 h-11 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all"
-        >
-          <Plus className="w-5 h-5" />
         </Link>
       </div>
 
