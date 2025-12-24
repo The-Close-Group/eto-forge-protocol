@@ -9,7 +9,7 @@ import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Network, Shield, Target,
   Clock, RefreshCw, ChevronRight, Zap, Server, Database, Cpu, Wifi,
-  TrendingUp, ExternalLink, Bell, Settings
+  TrendingUp, ExternalLink, Bell, Settings, Wallet
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
@@ -59,6 +59,76 @@ const oracleFeeds = [
   { name: 'Redstone', freshness: 4.2, status: 'synced' },
   { name: 'Chainlink', freshness: 2.9, status: 'synced' },
 ];
+
+// Asset data for the tracking table
+// NOTE: All values are placeholders - real values should come from on-chain data
+const assetData = [
+  { 
+    ticker: 'MAANG', 
+    name: 'MAANG Index',
+    oraclePrice: 85.00, 
+    swapPrice: 85.02, 
+    deviation: 0.02,
+    tvl: 850000, 
+    circulatingSupply: 10000,
+    marketCap: 850000 
+  },
+  { 
+    ticker: 'sMAANG', 
+    name: 'Staked MAANG',
+    oraclePrice: 87.50, 
+    swapPrice: 87.48, 
+    deviation: -0.02,
+    tvl: 420000, 
+    circulatingSupply: 4800,
+    marketCap: 420000 
+  },
+  { 
+    ticker: 'YC', 
+    name: 'Y Combinator',
+    oraclePrice: 250.00, 
+    swapPrice: 250.15, 
+    deviation: 0.06,
+    tvl: 2500000, 
+    circulatingSupply: 10000,
+    marketCap: 2500000 
+  },
+  { 
+    ticker: 'SEQ', 
+    name: 'Sequoia Capital',
+    oraclePrice: 320.00, 
+    swapPrice: 319.85, 
+    deviation: -0.05,
+    tvl: 3200000, 
+    circulatingSupply: 10000,
+    marketCap: 3200000 
+  },
+  { 
+    ticker: 'LSVP', 
+    name: 'Lightspeed',
+    oraclePrice: 180.00, 
+    swapPrice: 180.10, 
+    deviation: 0.06,
+    tvl: 1800000, 
+    circulatingSupply: 10000,
+    marketCap: 1800000 
+  },
+  { 
+    ticker: 'A16Z', 
+    name: 'a16z',
+    oraclePrice: 410.00, 
+    swapPrice: 410.25, 
+    deviation: 0.06,
+    tvl: 4100000, 
+    circulatingSupply: 10000,
+    marketCap: 4100000 
+  },
+];
+
+// Calculate totals
+const totalTVL = assetData.reduce((sum, a) => sum + a.tvl, 0);
+const totalCirculating = assetData.reduce((sum, a) => sum + a.circulatingSupply, 0);
+const totalMarketCap = assetData.reduce((sum, a) => sum + a.marketCap, 0);
 
 export default function SystemHealth() {
   const canonical = typeof window !== "undefined" ? window.location.href : "";
@@ -202,10 +272,10 @@ export default function SystemHealth() {
             }`}
           >
             {[
-              { label: 'Oracle Price', value: `$${(protocolStats?.oraclePrice || 0).toFixed(2)}`, icon: Target, positive: true },
-              { label: 'DMM Price', value: `$${(protocolStats?.dmmPrice || 0).toFixed(2)}`, icon: Zap, positive: true },
-              { label: 'Price Deviation', value: `${(protocolStats?.priceDeviation || 0).toFixed(2)} bps`, icon: TrendingUp, positive: Math.abs(protocolStats?.priceDeviation || 0) < 10 },
-              { label: 'Total Value Locked', value: `$${((protocolStats?.tvl || 0) / 1000000).toFixed(2)}M`, icon: Database, positive: true },
+              { label: 'Total Value Locked', value: `$${(totalTVL / 1000000).toFixed(2)}M`, icon: Database, positive: true },
+              { label: 'Fully Diluted Value', value: `$${(totalMarketCap / 1000000).toFixed(2)}M`, icon: BarChart3, positive: true },
+              { label: 'Circulating Supply', value: `${(totalCirculating / 1000).toFixed(1)}K`, icon: Zap, positive: true },
+              { label: 'System Uptime', value: '99.99%', icon: Activity, positive: true },
             ].map((stat, index) => (
               <div 
                 key={stat.label}
@@ -229,6 +299,96 @@ export default function SystemHealth() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Asset Data Table */}
+          <div 
+            className={`transition-all duration-700 delay-100 ease-out ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[15px] flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-primary" />
+                    Asset Metrics
+                  </CardTitle>
+                  <span className="text-[11px] text-muted-foreground">{assetData.length} assets tracked</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border/50">
+                        <th className="text-left text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Ticker</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Oracle Price</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Swap Price</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Deviation</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">TVL</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Circulating</th>
+                        <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Market Cap</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {assetData.map((asset, index) => (
+                        <tr 
+                          key={asset.ticker} 
+                          className="border-b border-border/30 hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[13px] font-semibold">{asset.ticker}</span>
+                              <span className="text-[11px] text-muted-foreground">{asset.name}</span>
+                            </div>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-medium font-mono">${asset.oraclePrice.toFixed(2)}</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-medium font-mono">${asset.swapPrice.toFixed(2)}</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className={`text-[13px] font-medium font-mono ${asset.deviation >= 0 ? 'text-data-positive' : 'text-data-negative'}`}>
+                              {asset.deviation >= 0 ? '+' : ''}{asset.deviation.toFixed(2)}%
+                            </span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-medium font-mono">${(asset.tvl / 1000000).toFixed(2)}M</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-medium font-mono">{asset.circulatingSupply.toLocaleString()}</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-medium font-mono">${(asset.marketCap / 1000000).toFixed(2)}M</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="bg-muted/20">
+                        <td className="px-4 py-3">
+                          <span className="text-[13px] font-semibold">Total</span>
+                        </td>
+                        <td className="text-right px-4 py-3">—</td>
+                        <td className="text-right px-4 py-3">—</td>
+                        <td className="text-right px-4 py-3">—</td>
+                        <td className="text-right px-4 py-3">
+                          <span className="text-[13px] font-semibold font-mono">${(totalTVL / 1000000).toFixed(2)}M</span>
+                        </td>
+                        <td className="text-right px-4 py-3">
+                          <span className="text-[13px] font-semibold font-mono">{totalCirculating.toLocaleString()}</span>
+                        </td>
+                        <td className="text-right px-4 py-3">
+                          <span className="text-[13px] font-semibold font-mono">${(totalMarketCap / 1000000).toFixed(2)}M</span>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Main Grid */}
