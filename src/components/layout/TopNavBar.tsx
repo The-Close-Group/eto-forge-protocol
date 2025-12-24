@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Search, Settings, Bell, Plus, Wallet, User, LogOut, 
-  Calculator, ChevronDown, Copy, Check, ExternalLink, RefreshCw 
+  Calculator, ChevronDown, Copy, Check, ExternalLink, RefreshCw,
+  FlaskConical
 } from "lucide-react";
 import { useActiveAccount } from "thirdweb/react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -118,8 +119,15 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
       <nav className="fixed top-0 right-0 left-0 md:left-[60px] z-40 h-14 bg-background border-b border-border/50">
         <div className="h-full px-4 md:px-6 flex items-center justify-between">
           
-          {/* Left Section - Network & Wallet */}
-          <div className="flex items-center gap-3">
+          {/* Left Section - Paper Trading, Network & Wallet */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Paper Trading Indicator */}
+            <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/30">
+              <FlaskConical className="w-3 h-3 text-amber-500" />
+              <span className="hidden sm:inline text-[10px] sm:text-[11px] font-medium text-amber-500">Paper Trading</span>
+              <span className="sm:hidden text-[10px] font-medium text-amber-500">Paper</span>
+            </div>
+
             {/* Network Indicator */}
             <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/40 border border-border/40">
               <div className="w-2 h-2 rounded-full bg-primary" />
