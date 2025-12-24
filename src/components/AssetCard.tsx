@@ -47,29 +47,10 @@ export function AssetCard({
 
   return (
     <div 
-      className={`staking-asset-card cursor-pointer group relative overflow-hidden ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
+      className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
     >
-      {/* Hover Overlay with Trade CTA */}
-      <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-        {/* Gradient overlay - darker at bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-        
-        {/* Trade CTA Button */}
-        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] font-semibold text-foreground">{symbol}</span>
-            <span className="text-[13px] font-medium text-muted-foreground">•</span>
-            <span className="text-[13px] font-semibold text-foreground">${price}</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-medium text-[12px] shadow-lg">
-            Trade
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
-      </div>
-      
       {/* Header Row - Logo, Name/Symbol, Price + Change */}
       <div className="flex items-start justify-between mb-4 sm:mb-5 gap-2">
         {/* Left: Logo + Name */}
@@ -128,6 +109,14 @@ export function AssetCard({
           variant={isPositive ? 'positive' : 'negative'}
           showArea={true}
         />
+      </div>
+
+      {/* Trade Button - Always visible */}
+      <div className="mt-4 pt-3 border-t border-border-subtle">
+        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground font-medium text-[13px] transition-all duration-200 group/btn">
+          <span>Trade {symbol}</span>
+          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+        </button>
       </div>
     </div>
   );
