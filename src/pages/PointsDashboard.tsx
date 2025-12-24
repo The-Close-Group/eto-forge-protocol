@@ -204,7 +204,7 @@ export default function PointsDashboard() {
           <DialogHeader>
             <DialogTitle>Invite Friends</DialogTitle>
             <DialogDescription>
-              Share your referral link and earn {POINT_VALUES.referral} points for each friend who joins. They also get {POINT_VALUES.referral} bonus points!
+              Share your referral link to gift friends 20% off trading fees. You'll earn 20% too, plus {POINT_VALUES.referral} points per referral.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
@@ -279,20 +279,17 @@ export default function PointsDashboard() {
             </div>
           </div>
 
-          {/* Season 1 Referral Banner */}
+          {/* Referral Banner */}
           <div className="cta-card mb-6">
             <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[14px] font-medium">ETO</span>
-                    <span className="text-[9px] align-super text-muted-foreground">®</span>
-                  </div>
-                  <span className="new-badge">Season 1</span>
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-[14px] font-medium">ETO</span>
+                  <span className="text-[9px] align-super text-muted-foreground">®</span>
                 </div>
                 <h3 className="text-[18px] font-semibold mb-1 leading-tight">Referral Program</h3>
                 <p className="text-[13px] text-muted-foreground leading-relaxed max-w-lg">
-                  Invite friends and both of you earn {POINT_VALUES.referral} points. The more you refer, the higher you climb.
+                  Refer friends to gift them 20% off trading fees and earn 20% yourself. Plus, earn {POINT_VALUES.referral} points per referral.
                 </p>
               </div>
               
