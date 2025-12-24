@@ -279,10 +279,41 @@ export default function PointsDashboard() {
             </div>
           </div>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
+          {/* Season 1 Referral Banner */}
+          <div className="cta-card mb-6">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[14px] font-medium">ETO</span>
+                    <span className="text-[9px] align-super text-muted-foreground">®</span>
+                  </div>
+                  <span className="new-badge">Season 1</span>
+                </div>
+                <h3 className="text-[18px] font-semibold mb-1 leading-tight">Referral Program</h3>
+                <p className="text-[13px] text-muted-foreground leading-relaxed max-w-lg">
+                  Invite friends and both of you earn {POINT_VALUES.referral} points. The more you refer, the higher you climb.
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2.5">
+                <Button variant="cta" className="h-10" onClick={() => setReferralDialogOpen(true)}>
+                  Get Referral Link
+                  <Users className="w-3.5 h-3.5 ml-1.5" />
+                </Button>
+                
+                <Button variant="ctaDark" className="h-10" asChild>
+                  <Link to="/staking">
+                    Stake to Earn
+                    <Lock className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-6">
               {/* Featured Point Categories - Top 3 highest value */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {featuredCategories.map((category) => {
@@ -726,105 +757,6 @@ export default function PointsDashboard() {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="space-y-5">
-              {/* Season 1 CTA Card */}
-              <div className="cta-card">
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-[14px] font-medium">ETO</span>
-                      <span className="text-[9px] align-super text-muted-foreground">®</span>
-                    </div>
-                    <span className="new-badge">Season 1</span>
-                  </div>
-                  <h3 className="text-[18px] font-semibold mb-2 leading-tight">Referral Program</h3>
-                  <p className="text-[13px] text-muted-foreground mb-6 leading-relaxed">
-                    Invite friends and both of you earn {POINT_VALUES.referral} points. The more you refer, the higher you climb.
-                  </p>
-                  
-                  <div className="space-y-2.5">
-                    <Button variant="cta" className="w-full h-11" onClick={() => setReferralDialogOpen(true)}>
-                      Get Referral Link
-                      <Users className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                    
-                    <Button variant="ctaDark" className="w-full h-11" asChild>
-                      <Link to="/staking">
-                        Stake to Earn Points
-                        <Lock className="w-3.5 h-3.5 ml-1" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Season Rewards */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-[14px] flex items-center justify-between">
-                    Season Rewards
-                    <button className="text-muted-foreground hover:text-foreground">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {[
-                    { tier: 'Diamond', points: '2,000+', color: '#b9f2ff' },
-                    { tier: 'Gold', points: '1,000+', color: '#ffd700' },
-                    { tier: 'Silver', points: '500+', color: '#c0c0c0' },
-                    { tier: 'Bronze', points: '0+', color: '#cd7f32' },
-                  ].map((item) => (
-                    <div key={item.tier} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-6 h-6 rounded-md flex items-center justify-center"
-                          style={{ backgroundColor: `${item.color}15` }}
-                        >
-                          <Trophy className="w-3 h-3" style={{ color: item.color }} />
-                        </div>
-                        <span className="text-[12px] font-medium">{item.tier}</span>
-                      </div>
-                      <span className="text-[11px] text-muted-foreground">{item.points} pts</span>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-0.5">
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/buy-maang">
-                      <span className="text-[13px]">Start Trading</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/staking">
-                      <span className="text-[13px]">Stake Assets</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-between h-9 px-3" onClick={() => setReferralDialogOpen(true)}>
-                    <span className="text-[13px]">Invite Friends</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Button>
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/dashboard">
-                      <span className="text-[13px]">Dashboard</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </div>
