@@ -8,6 +8,8 @@ import {
   Trophy,
   Bell,
   ArrowUpRight,
+  MoreHorizontal,
+  Plus,
 } from "lucide-react";
 
 // Main navigation items
@@ -29,71 +31,83 @@ export function DesktopSidebar() {
   };
 
   return (
-    <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-[200px] flex-col bg-sidebar border-r border-sidebar-border z-50">
+    <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-[90px] flex-col bg-sidebar border-r border-sidebar-border z-50">
       {/* Logo */}
-      <div className="p-5 border-b border-border/30">
-        <Link to="/" className="flex items-center gap-2.5">
-          <img src="/eto-logo.svg" alt="ETO" className="w-7 h-7 object-contain" />
-          <div className="flex items-center gap-1">
-            <span className="font-semibold text-[15px]">ETO Protocol</span>
-            <span className="text-[9px] text-muted-foreground align-super">®</span>
-          </div>
+      <div className="flex justify-center py-6">
+        <Link to="/" className="flex items-center justify-center">
+          <img src="/eto-logo.svg" alt="ETO" className="w-9 h-9 object-contain" />
+        </Link>
+      </div>
+
+      {/* Add Button */}
+      <div className="flex justify-center py-4">
+        <Link
+          to="/trade"
+          className="w-11 h-11 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all"
+        >
+          <Plus className="w-5 h-5" />
         </Link>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 flex flex-col items-center py-2 gap-1 overflow-y-auto">
         {mainNavItems.map((item) => (
           <NavLink
             key={item.title}
             to={item.url}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+            className={`flex flex-col items-center justify-center w-full py-3 gap-1.5 transition-all ${
               isActive(item.url)
-                ? "bg-primary/10 text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${
-              isActive(item.url) ? "text-primary" : ""
-            }`} />
-            <span className="text-[13px] font-medium">{item.title}</span>
+            <item.icon className={`w-6 h-6 ${isActive(item.url) ? "text-primary" : ""}`} />
+            <span className="text-[11px] font-medium">{item.title}</span>
           </NavLink>
         ))}
+
+        {/* More */}
+        <button className="flex flex-col items-center justify-center w-full py-3 gap-1.5 text-muted-foreground hover:text-foreground transition-all">
+          <MoreHorizontal className="w-6 h-6" />
+          <span className="text-[11px] font-medium">More</span>
+        </button>
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-3 space-y-1 border-t border-border/30">
+      <div className="flex flex-col items-center py-6 gap-5">
         {/* Notifications */}
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all">
-          <Bell className="w-[18px] h-[18px] flex-shrink-0" />
-          <span className="text-[13px] font-medium">Notifications</span>
+        <button className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground transition-all">
+          <Bell className="w-6 h-6" />
         </button>
 
         {/* Account */}
         <Link
           to="/profile"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-            location.pathname === "/profile"
-              ? "bg-primary/10 text-foreground"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          }`}
+          className="flex flex-col items-center gap-1.5 transition-all"
         >
-          <div className="relative flex-shrink-0">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[9px] font-semibold text-primary-foreground">
-              RC
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-muted/50 border-2 border-primary/50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-[10px] font-semibold text-primary-foreground">
+                RC
+              </div>
             </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary border border-sidebar" />
+            {/* Pro badge */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[8px] font-bold bg-primary text-primary-foreground">
+              pro
+            </div>
           </div>
-          <span className="text-[13px] font-medium">Account</span>
+          <span className="text-[11px] font-medium text-muted-foreground mt-1">Account</span>
         </Link>
 
-        {/* Deposit */}
+        {/* Upgrade/Deposit */}
         <Link
           to="/staking"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+          className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground transition-all"
         >
-          <ArrowUpRight className="w-[18px] h-[18px] flex-shrink-0" />
-          <span className="text-[13px] font-medium">Deposit</span>
+          <div className="w-10 h-10 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-all">
+            <ArrowUpRight className="w-5 h-5" />
+          </div>
+          <span className="text-[11px] font-medium">Deposit</span>
         </Link>
       </div>
     </aside>

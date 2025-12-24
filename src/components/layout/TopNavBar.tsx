@@ -116,7 +116,7 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
       </Dialog>
 
       {/* Top Navigation Bar */}
-      <nav className="fixed top-0 right-0 left-0 md:left-[200px] z-40 h-14 bg-background border-b border-border/50">
+      <nav className="fixed top-0 right-0 left-0 md:left-[90px] z-40 h-14 bg-background border-b border-border/50">
         <div className="h-full px-4 md:px-6 flex items-center justify-between">
           
           {/* Left Section - Paper Trading, Network & Wallet */}
