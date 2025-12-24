@@ -257,8 +257,8 @@ export default function PointsDashboard() {
         <TopNavBar />
 
         <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
-          {/* Header Row */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          {/* Page Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-2">
             <h1 className="text-[28px] font-semibold tracking-tight">Points Dashboard</h1>
             
             <div className="flex items-center gap-2">
