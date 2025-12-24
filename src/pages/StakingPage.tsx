@@ -201,35 +201,7 @@ export default function StakingPage() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
             }`}
           >
-            {/* Vault Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Vault Assets', value: `${totalAssets.toLocaleString()} MAANG`, icon: <Vault className="w-4 h-4" /> },
-                { label: 'Share Price', value: sharePrice, icon: <TrendingUp className="w-4 h-4" />, change: '+2.4%' },
-                { label: 'Your Shares', value: sharesBalance, icon: <Wallet className="w-4 h-4" /> },
-                { label: 'Est. Value', value: `$${estimatedValue.toFixed(2)}`, icon: <Calculator className="w-4 h-4" />, highlight: true },
-              ].map((stat, i) => (
-                <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                      {stat.icon}
-                      <span className="text-[12px]">{stat.label}</span>
-            </div>
-                    <div className={`text-xl font-semibold ${stat.highlight ? 'text-primary' : ''}`}>
-                      {stat.value}
-            </div>
-                    {stat.change && (
-                      <div className="text-[11px] text-data-positive mt-1 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" />
-                        {stat.change}
-            </div>
-                    )}
-        </CardContent>
-      </Card>
-              ))}
-              </div>
-
-            {/* Main Action Card */}
+              {/* Main Action Card */}
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border pb-4">
                 <div className="flex items-center justify-between">
