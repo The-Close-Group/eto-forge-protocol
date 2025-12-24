@@ -1,5 +1,4 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
-import { useState } from "react";
 import {
   LayoutDashboard,
   Coins,
@@ -8,10 +7,6 @@ import {
   Database,
   ExternalLink,
   ChevronDown,
-  Zap,
-  Fuel,
-  Link2,
-  ArrowDownUp,
   Droplets,
   Trophy,
   Sparkles,
@@ -22,20 +17,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useStakingContext } from "@/contexts/StakingContext";
 
-// Protocol navigation (when Protocol tab is active)
+// Protocol navigation items
 const protocolNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Assets", url: "/trade", icon: Wallet },
   { title: "Staking", url: "/staking", icon: Coins },
-  { title: "Data API", url: "/system-health", icon: Database, external: true },
-];
-
-// Shortcuts navigation (when Shortcuts tab is active)
-const shortcutsNavItems = [
-  { title: "Quick Swap", url: "/buy-maang", icon: ArrowDownUp },
-  { title: "Gas Pass", url: "/shortcuts", icon: Fuel, badge: "Free" },
-  { title: "Quick Connectors", url: "/shortcuts", icon: Link2 },
   { title: "Faucet", url: "/faucet", icon: Droplets },
+  { title: "Data API", url: "/system-health", icon: Database, external: true },
 ];
 
 export function DesktopSidebar() {
@@ -53,7 +41,6 @@ function SidebarContentInner() {
   const { signOut } = useAuth();
   const { open, animate } = useSidebarAceternity();
   const { positions, assets, getTotalStaked, getTotalRewards } = useStakingContext();
-  const [activeTab, setActiveTab] = useState<'protocol' | 'shortcuts'>('protocol');
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
@@ -71,8 +58,6 @@ function SidebarContentInner() {
       rewards: pos.earnedRewards,
     };
   });
-
-  const navigationItems = activeTab === 'protocol' ? protocolNavItems : shortcutsNavItems;
 
   return (
     <>
@@ -109,42 +94,16 @@ function SidebarContentInner() {
             opacity: open ? 1 : 0,
           }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
-          className="overflow-hidden px-3 mb-3"
-        >
-          <span className="text-[11px] text-muted-foreground">
-            {activeTab === 'protocol' ? 'Core Protocol Features' : 'Quick Actions & Tools'}
-          </span>
-        </motion.div>
-
-        {/* Tab Switcher - Protocol / Shortcuts */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: open ? "auto" : 0,
-            opacity: open ? 1 : 0,
-          }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
           className="overflow-hidden px-3 mb-4"
         >
-          <div className="tab-list-custom">
-            <button 
-              className={`tab-trigger-custom flex-1 ${activeTab === 'protocol' ? 'tab-trigger-custom-active' : ''}`}
-              onClick={() => setActiveTab('protocol')}
-            >
-              Protocol
-            </button>
-            <button 
-              className={`tab-trigger-custom flex-1 ${activeTab === 'shortcuts' ? 'tab-trigger-custom-active' : ''}`}
-              onClick={() => setActiveTab('shortcuts')}
-            >
-              Shortcuts
-            </button>
-          </div>
+          <span className="text-[11px] text-muted-foreground">
+            Core Protocol Features
+          </span>
         </motion.div>
 
         {/* Navigation */}
         <div className="flex flex-col gap-0.5 px-2">
-          {navigationItems.map((item) => (
+          {protocolNavItems.map((item) => (
             <NavLink
               key={item.title}
               to={item.url}
@@ -178,9 +137,8 @@ function SidebarContentInner() {
           ))}
         </div>
 
-        {/* Active Staking Section - Only show on Protocol tab */}
-        {activeTab === 'protocol' && (
-          <motion.div
+        {/* Active Staking Section */}
+        <motion.div
             initial={false}
             animate={{
               height: open ? "auto" : 0,
@@ -244,30 +202,6 @@ function SidebarContentInner() {
               </div>
             )}
           </motion.div>
-        )}
-
-        {/* Shortcuts Section - Only show on Shortcuts tab */}
-        {activeTab === 'shortcuts' && (
-          <motion.div
-            initial={false}
-            animate={{
-              height: open ? "auto" : 0,
-              opacity: open ? 1 : 0,
-            }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="overflow-hidden mt-5 px-2"
-          >
-            <div className="px-2 py-3 rounded-xl bg-primary/5 border border-primary/10">
-              <div className="flex items-center gap-2 mb-2">
-                <Fuel className="w-4 h-4 text-primary" />
-                <span className="text-[12px] font-medium">Gas Pass Active</span>
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                All transaction fees are sponsored by ETO Protocol
-              </p>
-            </div>
-          </motion.div>
-        )}
 
         {/* Season 1 Section */}
         <motion.div
@@ -313,27 +247,6 @@ function SidebarContentInner() {
 
       {/* Bottom Section */}
       <div className="px-2 pb-3 space-y-2">
-        {/* Activate Super */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: open ? "auto" : 0,
-            opacity: open ? 1 : 0,
-          }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
-          className="overflow-hidden"
-        >
-          <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500/5 to-orange-500/5 border border-yellow-500/10">
-            <div className="flex items-center gap-2 mb-0.5">
-              <Zap className="w-4 h-4 text-yellow-500" />
-              <span className="text-[13px] font-medium">Activate Super</span>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              Unlock all features on ETO
-            </p>
-          </div>
-        </motion.div>
-
         {/* Sign Out */}
         <Button
           variant="ghost"
