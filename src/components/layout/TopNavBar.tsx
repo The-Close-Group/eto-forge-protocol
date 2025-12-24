@@ -106,11 +106,11 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
       </Dialog>
 
       {/* Top Navigation Bar */}
-      <nav className="fixed top-0 right-0 left-0 md:left-[90px] z-40 h-14 bg-background border-b border-border/50">
-        <div className="h-full px-4 md:px-6 flex items-center justify-between">
+      <nav className="fixed top-0 right-0 left-0 z-40 h-14 bg-background border-b border-border/50">
+        <div className="h-full px-4 md:pl-[102px] md:pr-6 flex items-center justify-between">
           
           {/* Left Section - Paper Trading, Network & Wallet */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             {/* Paper Trading Indicator */}
             <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/30">
               <FlaskConical className="w-3 h-3 text-amber-500" />
@@ -153,8 +153,8 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
             </button>
           </div>
 
-          {/* Right Section - Actions & Account */}
-          <div className="flex items-center gap-1">
+          {/* Right Section - Actions */}
+          <div className="flex items-center gap-1.5">
             {/* Mobile Search */}
             <button 
               onClick={() => setSearchOpen(true)}
@@ -219,10 +219,13 @@ export function TopNavBar({ onRefresh, onDeposit, onSearch }: TopNavBarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Divider */}
+            <div className="hidden sm:block w-px h-5 bg-border/50 mx-1" />
+
             {/* Deposit Button */}
             <button 
               onClick={handleDeposit}
-              className="hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-md text-[12px] font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="hidden sm:flex h-8 px-3.5 items-center gap-1.5 rounded-md text-[12px] font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Deposit</span>
