@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useDeFiPrices } from "@/hooks/useDeFiPrices";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   ArrowLeft, 
@@ -278,7 +279,9 @@ export default function Execution() {
   }, [payAmount]);
 
   return (
-    <div className="min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 bg-background">
+    <div className="min-h-screen bg-background">
+      <TopNavBar />
+      <div className="pt-14 p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <div 
@@ -719,6 +722,7 @@ export default function Execution() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

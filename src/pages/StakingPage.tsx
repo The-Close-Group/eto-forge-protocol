@@ -3,6 +3,7 @@ import { useActiveAccount, ConnectButton } from 'thirdweb/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TopNavBar } from '@/components/layout/TopNavBar';
 import { 
   TrendingUp, TrendingDown, Shield, Vault, Info, Loader2, 
   ChevronRight, RefreshCw, Zap, Lock, ArrowUpRight, Clock,
@@ -173,8 +174,9 @@ export default function StakingPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <TopNavBar onRefresh={async () => { await Promise.all([refetchBalances(), refetchStats()]); }} />
       {/* Page Header */}
-      <div className="max-w-[1440px] mx-auto p-6">
+      <div className="max-w-[1440px] mx-auto p-6 pt-20">
         <div 
           className={`mb-8 transition-all duration-700 ease-out ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Trophy, TrendingUp, Clock, ChevronRight, ChevronDown,
   RefreshCw, Target, Award, Users, Copy, ExternalLink,
@@ -253,42 +254,25 @@ export default function PointsDashboard() {
       </Dialog>
 
       <div className="min-h-screen bg-background">
-        {/* Top Header Bar - Matching Dashboard */}
-        <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <TopNavBar />
+
+        <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
+          {/* Page Title */}
+          <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Trophy className="w-4 h-4 text-primary" />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] font-medium">Season 1</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+              <div>
+                <h1 className="text-[15px] font-semibold">Season 1</h1>
+                <p className="text-[11px] text-muted-foreground">Points Dashboard</p>
               </div>
-            </button>
-
+            </div>
             <button className="deposit-btn ml-4" onClick={() => setReferralDialogOpen(true)}>
               Invite Friends
               <Users className="w-3.5 h-3.5" />
             </button>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button className="search-input" onClick={() => toast.info("Search coming soon")}>
-              <Hash className="w-3.5 h-3.5" />
-              <span>Search wallets...</span>
-            </button>
-
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
-
-        <div className="max-w-[1440px] mx-auto p-6 space-y-6">
           {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>

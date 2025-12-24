@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Shield, Bell, Key, Settings, ChevronRight, Copy, ExternalLink,
   CheckCircle2, AlertTriangle, Clock, Wallet, TrendingUp, Award, Zap,
@@ -160,9 +161,11 @@ export default function Profile() {
       />
 
       <div className="min-h-screen bg-background">
-        {/* Header Bar */}
-        <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-4">
+        <TopNavBar />
+
+        <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
+          {/* Page Title */}
+          <div className="flex items-center gap-4 mb-2">
             <div className="flex items-center gap-3">
               <div 
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -194,30 +197,6 @@ export default function Profile() {
               </Badge>
             )}
           </div>
-
-          <div className="flex items-center gap-3">
-            {isConnected && (
-              <>
-                <button className="icon-btn" onClick={handleViewOnExplorer}>
-                  <ExternalLink className="w-4 h-4" />
-                </button>
-                <button 
-                  className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </>
-            )}
-            <button className="icon-btn flex items-center gap-1.5">
-              <span className="text-[13px]">Settings</span>
-              <Settings className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
-
-        <div className="max-w-[1440px] mx-auto p-6 space-y-6">
           {/* Connect Wallet Prompt - Show when not connected */}
           {!isConnected && (
             <div 

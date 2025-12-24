@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Network, Shield, Target,
   Clock, RefreshCw, ChevronRight, Zap, Server, Database, Cpu, Wifi,
@@ -175,9 +176,11 @@ export default function SystemHealth() {
       />
 
       <div className="min-h-screen bg-background">
-        {/* Header Bar */}
-        <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-4">
+        <TopNavBar onRefresh={async () => { await refetchStats(); }} />
+
+        <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
+          {/* Page Title */}
+          <div className="flex items-center gap-4 mb-2">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Activity className="w-4 h-4 text-primary" />
@@ -192,26 +195,6 @@ export default function SystemHealth() {
               All Systems Operational
             </Badge>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button className="icon-btn">
-              <Bell className="w-4 h-4" />
-            </button>
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-            <button className="icon-btn flex items-center gap-1.5">
-              <span className="text-[13px]">Settings</span>
-              <Settings className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
-
-        <div className="max-w-[1440px] mx-auto p-6 space-y-6">
           {/* Stats Row */}
           <div 
             className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 ease-out ${

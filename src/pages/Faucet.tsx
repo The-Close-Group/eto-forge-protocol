@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { TopNavBar } from '@/components/layout/TopNavBar';
 import { 
   Droplets, ExternalLink, Loader2, Wallet, ChevronRight, 
   Zap, Shield, Clock, CheckCircle2, AlertCircle, Coins,
@@ -173,7 +174,8 @@ export default function Faucet() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-[1200px] mx-auto p-6 pb-24 md:pb-6">
+      <TopNavBar />
+      <div className="max-w-[1200px] mx-auto p-6 pt-20 pb-24 md:pb-6">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-2">
