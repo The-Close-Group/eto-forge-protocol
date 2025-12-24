@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { useMemo } from 'react';
 
@@ -47,14 +47,26 @@ export function AssetCard({
 
   return (
     <div 
-      className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
+      className={`staking-asset-card cursor-pointer group relative overflow-hidden ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
     >
-      {/* Hover tooltip */}
-      <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-        <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-          <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
+      {/* Hover Overlay with Trade CTA */}
+      <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+        {/* Gradient overlay - darker at bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        
+        {/* Trade CTA Button */}
+        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] font-semibold text-foreground">{symbol}</span>
+            <span className="text-[13px] font-medium text-muted-foreground">•</span>
+            <span className="text-[13px] font-semibold text-foreground">${price}</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-medium text-[12px] shadow-lg">
+            Trade
+            <ArrowRight className="w-3.5 h-3.5" />
+          </div>
         </div>
       </div>
       
