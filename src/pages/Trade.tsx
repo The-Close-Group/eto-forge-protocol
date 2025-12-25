@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useDeFiPrices } from "@/hooks/useDeFiPrices";
-import { useProtocolStats } from "@/hooks/useProtocolStats";
-import { useProtocolActivity } from "@/hooks/useProtocolActivity";
-import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  Sparkles, ChevronRight, RefreshCw, Zap, ExternalLink, Copy, Check,
-  Search, Settings, Bell, Plus, Wallet, User, LogOut, Calculator, ChevronDown, FlaskConical
+  ChevronRight, RefreshCw, Copy, Check,
+  Search, Settings, Bell, Plus, Wallet, FlaskConical, TrendingUp
 } from "lucide-react";
 import { AssetCard } from "@/components/AssetCard";
 import maangLogo from "@/assets/maang-logo.svg";
@@ -18,7 +12,6 @@ import ycLogo from "@/assets/ycombinator-logo.svg";
 import sequoiaLogo from "@/assets/sequoia-logo.svg";
 import lightspeedLogo from "@/assets/lightspeed-logo.svg";
 import { useActiveAccount } from "thirdweb/react";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -35,6 +28,17 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+
+// Searchable assets for global search
+const SEARCHABLE_ASSETS = [
+  { id: 'maang', symbol: 'MAANG', name: 'MAANG Token', description: 'ETO Protocol native token', logo: maangLogo, price: 12.50, change: 4.6 },
+  { id: 'smaang', symbol: 'sMAANG', name: 'Staked MAANG', description: 'Liquid staking derivative', logo: maangLogo, price: 13.25, change: 3.2 },
+  { id: 'usdc', symbol: 'USDC', name: 'USD Coin', description: 'Stablecoin pegged to USD', logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040', price: 1.00, change: 0.0 },
+  { id: 'ycombinator', symbol: 'YC', name: 'Y Combinator Index', description: 'YC portfolio companies index', logo: ycLogo, price: 145.80, change: 2.34 },
+  { id: 'sequoia', symbol: 'SEQ', name: 'Sequoia Capital Index', description: 'Sequoia portfolio index', logo: sequoiaLogo, price: 238.50, change: 2.18 },
+  { id: 'lightspeed', symbol: 'LSVP', name: 'Lightspeed Index', description: 'Lightspeed Ventures portfolio', logo: lightspeedLogo, price: 98.25, change: 1.95 },
+  { id: 'a16z', symbol: 'A16Z', name: 'a16z Index', description: 'Andreessen Horowitz portfolio', logo: a16zLogo, price: 312.40, change: 3.15 },
+];
 
 // Asset data for staking cards (original Dashboard style)
 const stakingAssets = [
@@ -111,13 +115,10 @@ const stakingAssets = [
 export default function Trade() {
   const navigate = useNavigate();
   const account = useActiveAccount();
-  const { signOut } = useAuth();
-  const { dmmPrice, oraclePrice, isLoading } = useDeFiPrices();
   const { setOpen } = useSidebar();
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [investmentPeriod, setInvestmentPeriod] = useState(6);
   const [addressCopied, setAddressCopied] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -129,11 +130,6 @@ export default function Trade() {
     ? `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`
     : displayAddress;
   const unreadCount = notifications.filter(n => !n.read).length;
-  
-  const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
-  const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
-
-  const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
 
   // Close sidebar when component mounts
   useEffect(() => {
@@ -145,8 +141,8 @@ export default function Trade() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await Promise.all([refetchStats(), refetchActivity()]);
-    setTimeout(() => setIsRefreshing(false), 800);
+    await new Promise(r => setTimeout(r, 800));
+    setIsRefreshing(false);
   };
 
   const handleCopyAddress = () => {
@@ -156,11 +152,6 @@ export default function Trade() {
     setTimeout(() => setAddressCopied(false), 2000);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Signed out successfully");
-  };
-
   const handleMarkAllRead = () => {
     toast.success("All notifications marked as read");
   };
@@ -168,48 +159,89 @@ export default function Trade() {
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Search Dialog */}
-      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Search</DialogTitle>
-            <DialogDescription>Search for assets, transactions, and more</DialogDescription>
+      <Dialog open={searchOpen} onOpenChange={(open) => {
+        setSearchOpen(open);
+        if (!open) setSearchQuery('');
+      }}>
+        <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle className="text-[15px]">Search Assets</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          
+          <div className="p-4 pb-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search assets, transactions..."
+                placeholder="Search by name or symbol..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-10 bg-muted/30 border-border/50"
                 autoFocus
               />
             </div>
-            <div className="space-y-1 max-h-64 overflow-y-auto">
-              {stakingAssets
-                .filter(a => 
-                  a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  a.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-                .map(asset => (
-                  <button
-                    key={asset.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
-                    onClick={() => {
-                      setSearchOpen(false);
-                      setSearchQuery('');
-                      navigate(`/execute/${asset.id}`);
-                    }}
-                  >
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden" style={{ background: `${asset.color}20` }}>
-                      <img src={asset.logo} alt="" className="w-5 h-5 object-contain" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[13px] font-medium">{asset.name}</div>
-                      <div className="text-[11px] text-muted-foreground">{asset.symbol}</div>
-                    </div>
-                  </button>
-                ))}
+          </div>
+
+          <div className="border-t border-border/50 max-h-[320px] overflow-y-auto">
+            {SEARCHABLE_ASSETS
+              .filter(a => 
+                a.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.description.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length > 0 ? (
+              <div className="p-2">
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 py-1.5">Assets</div>
+                {SEARCHABLE_ASSETS
+                  .filter(a => 
+                    a.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    a.description.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map(asset => (
+                    <button
+                      key={asset.id}
+                      onClick={() => {
+                        setSearchOpen(false);
+                        setSearchQuery('');
+                        navigate(`/execute/${asset.id}`);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group text-left"
+                    >
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img src={asset.logo} alt={asset.symbol} className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[13px] font-medium">{asset.symbol}</span>
+                          <span className="text-[11px] text-muted-foreground">{asset.name}</span>
+                        </div>
+                        <div className="text-[11px] text-muted-foreground truncate">{asset.description}</div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="text-[13px] font-medium">${asset.price.toFixed(2)}</div>
+                        <div className={`text-[11px] flex items-center justify-end gap-0.5 ${asset.change >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                          <TrendingUp className="w-3 h-3" />
+                          {asset.change >= 0 ? '+' : ''}{asset.change.toFixed(1)}%
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                    </button>
+                  ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <Search className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-[13px] text-muted-foreground">No assets found for "{searchQuery}"</p>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-border/50 p-3 bg-muted/20">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Click an asset to trade</span>
+              <div className="flex items-center gap-2">
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">esc</kbd>
+                <span>to close</span>
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -355,18 +387,9 @@ export default function Trade() {
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-              Assets
-            </h1>
-            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-primary/10 border border-primary/20 w-fit">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span className="text-[11px] sm:text-xs font-medium text-primary">ETO L1</span>
-            </div>
-          </div>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Trade and stake native L1 assets on the ETO Dynamic Market Maker
-          </p>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
+            Assets
+          </h1>
         </div>
         </div>
 
@@ -407,199 +430,6 @@ export default function Trade() {
         </div>
         </div>
 
-      {/* Content Container with padding */}
-      <div className="px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
-        {/* Secondary Cards Grid */}
-        <div 
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-700 delay-150 ease-out ${
-            isVisible 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-6'
-          }`}
-        >
-          {/* Investment Period */}
-          <Card className="overflow-hidden">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-[13px] sm:text-[14px] font-medium">Investment Period</h3>
-                <span className="period-badge-active text-[10px] sm:text-xs">{investmentPeriod} Month{investmentPeriod > 1 ? 's' : ''}</span>
-              </div>
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground mb-4 sm:mb-5">Contribution Period</p>
-              
-              <div className="flex gap-1.5 sm:gap-2 flex-wrap mb-3 sm:mb-4">
-                {[1, 3, 6, 12].map(months => (
-                  <button
-                    key={months}
-                    className={`${months === investmentPeriod ? 'period-badge-active' : 'period-badge'} text-[11px] sm:text-xs px-2.5 sm:px-3`}
-                    onClick={() => setInvestmentPeriod(months)}
-                  >
-                    {months}M
-                  </button>
-                ))}
-              </div>
-
-              <div className="relative">
-                <input
-                  type="range"
-                  min="1"
-                  max="12"
-                  value={investmentPeriod}
-                  onChange={(e) => setInvestmentPeriod(parseInt(e.target.value))}
-                  className="w-full h-[3px] bg-muted rounded-full appearance-none cursor-pointer
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
-                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white 
-                    [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-primary
-                    [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, hsl(160 70% 50%) 0%, hsl(160 70% 50%) ${sliderPosition}%, hsl(var(--muted)) ${sliderPosition}%, hsl(var(--muted)) 100%)`
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Protocol Stats */}
-          <Card>
-            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
-              <CardTitle className="text-[13px] sm:text-[14px] flex items-center justify-between">
-                Protocol Stats
-                <button className={`${isRefreshing ? 'animate-spin' : ''}`} onClick={handleRefresh}>
-                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
-                </button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2.5 sm:space-y-3 px-4 sm:px-6">
-              <div className="flex justify-between items-center">
-                <span className="text-[12px] sm:text-[13px] text-muted-foreground">Total Value Locked</span>
-                <span className="text-[12px] sm:text-[13px] font-medium">
-                  {isLoadingProtocol ? <Skeleton className="h-4 w-16" /> : 
-                    `$${(protocolStats?.tvl || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-                  }
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[12px] sm:text-[13px] text-muted-foreground">Oracle Price</span>
-                <span className="text-[12px] sm:text-[13px] font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-16" /> : `$${oraclePrice.toFixed(2)}`}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[12px] sm:text-[13px] text-muted-foreground">DMM Price</span>
-                <span className="text-[12px] sm:text-[13px] font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-16" /> : `$${dmmPrice.toFixed(2)}`}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="sm:col-span-2 lg:col-span-1">
-            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
-              <CardTitle className="text-[13px] sm:text-[14px]">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-0.5 px-4 sm:px-6">
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
-                <Link to="/buy-maang">
-                  <span className="text-[12px] sm:text-[13px]">Buy MAANG</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
-                <Link to="/staking">
-                  <span className="text-[12px] sm:text-[13px]">Stake Assets</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" className="w-full justify-between h-9 px-2 sm:px-3">
-                <Link to="/faucet">
-                  <span className="text-[12px] sm:text-[13px]">Get mUSDC</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Protocol Activity */}
-        <div 
-          className={`transition-all duration-700 delay-200 ease-out ${
-            isVisible 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-6'
-          }`}
-        >
-          <Card>
-            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
-              <CardTitle className="flex items-center justify-between text-[14px] sm:text-[15px]">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
-                  <span className="hidden xs:inline">Protocol</span> Activity
-                </div>
-                <button 
-                  className={`text-[10px] sm:text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 ${isRefreshing ? 'animate-spin' : ''}`}
-                  onClick={handleRefresh}
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  <span className="hidden sm:inline">Refresh</span>
-                </button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6">
-              <div className="space-y-1">
-                {isLoadingActivity ? (
-                  <>
-                    <Skeleton className="h-14 w-full rounded-lg" />
-                    <Skeleton className="h-14 w-full rounded-lg" />
-                  </>
-                ) : protocolActivity && protocolActivity.length > 0 ? (
-                  protocolActivity.slice(0, 4).map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-[10px] sm:text-[11px] font-medium flex-shrink-0 ${
-                          activity.type === 'drip_execute' ? 'bg-data-positive/10 text-data-positive' :
-                          activity.type === 'drip_commit' ? 'bg-primary/10 text-primary' :
-                          activity.type === 'deposit' ? 'bg-blue-500/10 text-blue-400' :
-                          'bg-muted text-muted-foreground'
-                        }`}>
-                          {activity.type === 'drip_execute' ? '⚡' :
-                           activity.type === 'drip_commit' ? '📝' :
-                           activity.type === 'deposit' ? '+' : '?'}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[12px] sm:text-[13px] font-medium truncate">{activity.description}</div>
-                          {activity.amount && (
-                            <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{activity.amount}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="text-right flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
-                        <div>
-                          <div className="text-[10px] sm:text-[11px] text-muted-foreground">{activity.timeAgo}</div>
-                          <div className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:block">Block #{activity.blockNumber}</div>
-                        </div>
-                        {activity.txHash && (
-                          <a 
-                            href={`https://eto-explorer.ash.center/tx/${activity.txHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="icon-btn p-1 sm:p-1.5"
-                          >
-                            <ExternalLink className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-muted-foreground py-8 sm:py-10 text-[12px] sm:text-[13px]">
-                    No recent protocol activity
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        </div>
       </div>
     </div>
   );

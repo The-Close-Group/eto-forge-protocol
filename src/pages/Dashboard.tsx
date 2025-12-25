@@ -12,7 +12,22 @@ import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
 import { HoldingsCard } from "@/components/dashboard/HoldingsCard";
 import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
 import maangLogo from "@/assets/maang-logo.svg";
+import a16zLogo from "@/assets/a16z-logo.svg";
+import ycLogo from "@/assets/ycombinator-logo.svg";
+import sequoiaLogo from "@/assets/sequoia-logo.svg";
+import lightspeedLogo from "@/assets/lightspeed-logo.svg";
 import { Link, useNavigate } from "react-router-dom";
+
+// Searchable assets for global search
+const SEARCHABLE_ASSETS = [
+  { id: 'maang', symbol: 'MAANG', name: 'MAANG Token', description: 'ETO Protocol native token', logo: maangLogo, price: 12.50, change: 4.6 },
+  { id: 'smaang', symbol: 'sMAANG', name: 'Staked MAANG', description: 'Liquid staking derivative', logo: maangLogo, price: 13.25, change: 3.2 },
+  { id: 'usdc', symbol: 'USDC', name: 'USD Coin', description: 'Stablecoin pegged to USD', logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040', price: 1.00, change: 0.0 },
+  { id: 'ycombinator', symbol: 'YC', name: 'Y Combinator Index', description: 'YC portfolio companies index', logo: ycLogo, price: 145.80, change: 2.34 },
+  { id: 'sequoia', symbol: 'SEQ', name: 'Sequoia Capital Index', description: 'Sequoia portfolio index', logo: sequoiaLogo, price: 238.50, change: 2.18 },
+  { id: 'lightspeed', symbol: 'LSVP', name: 'Lightspeed Index', description: 'Lightspeed Ventures portfolio', logo: lightspeedLogo, price: 98.25, change: 1.95 },
+  { id: 'a16z', symbol: 'A16Z', name: 'a16z Index', description: 'Andreessen Horowitz portfolio', logo: a16zLogo, price: 312.40, change: 3.15 },
+];
 import { Skeleton } from "@/components/ui/skeleton";
 import { useActiveAccount, ConnectButton } from "thirdweb/react";
 import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
@@ -234,57 +249,89 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Search Dialog */}
-      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Search Assets</DialogTitle>
-            <DialogDescription>Find staking assets by name or symbol</DialogDescription>
+      <Dialog open={searchOpen} onOpenChange={(open) => {
+        setSearchOpen(open);
+        if (!open) setSearchQuery('');
+      }}>
+        <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle className="text-[15px]">Search Assets</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          
+          <div className="p-4 pb-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name, symbol..."
+                placeholder="Search by name or symbol..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-10 bg-muted/30 border-border/50"
                 autoFocus
               />
             </div>
-            <div className="space-y-1 max-h-64 overflow-y-auto">
-              {assets
-                .filter(a => 
-                  a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  a.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-                .map(asset => (
-                  <button
-                    key={asset.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left group"
-                    onClick={() => {
-                      setSearchOpen(false);
-                      setSearchQuery('');
-                      navigate('/buy-maang', { state: { selectedToken: asset.symbol } });
-                    }}
-                  >
-                    <div 
-                      className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
-                      style={{ background: `${asset.color}15` }}
+          </div>
+
+          <div className="border-t border-border/50 max-h-[320px] overflow-y-auto">
+            {SEARCHABLE_ASSETS
+              .filter(a => 
+                a.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.description.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length > 0 ? (
+              <div className="p-2">
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 py-1.5">Assets</div>
+                {SEARCHABLE_ASSETS
+                  .filter(a => 
+                    a.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    a.description.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map(asset => (
+                    <button
+                      key={asset.id}
+                      onClick={() => {
+                        setSearchOpen(false);
+                        setSearchQuery('');
+                        navigate(`/execute/${asset.id}`);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group text-left"
                     >
-                      <img src={asset.logo} alt="" className="w-full h-full object-contain" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[13px] font-medium">{asset.name}</div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {getEffectiveAPY(asset.baseAPY, investmentPeriod, autoCompound).toFixed(2)}% APY
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img src={asset.logo} alt={asset.symbol} className="w-6 h-6 object-contain" />
                       </div>
-                    </div>
-                    <div className={`text-[12px] font-medium ${asset.riskLevel === 'low' ? 'text-data-positive' : asset.riskLevel === 'high' ? 'text-data-negative' : 'text-warning'}`}>
-                      {asset.riskLevel}
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </button>
-                ))}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[13px] font-medium">{asset.symbol}</span>
+                          <span className="text-[11px] text-muted-foreground">{asset.name}</span>
+                        </div>
+                        <div className="text-[11px] text-muted-foreground truncate">{asset.description}</div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="text-[13px] font-medium">${asset.price.toFixed(2)}</div>
+                        <div className={`text-[11px] flex items-center justify-end gap-0.5 ${asset.change >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                          <TrendingUp className="w-3 h-3" />
+                          {asset.change >= 0 ? '+' : ''}{asset.change.toFixed(1)}%
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                    </button>
+                  ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <Search className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-[13px] text-muted-foreground">No assets found for "{searchQuery}"</p>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-border/50 p-3 bg-muted/20">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Click an asset to trade</span>
+              <div className="flex items-center gap-2">
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">esc</kbd>
+                <span>to close</span>
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -739,11 +786,11 @@ export default function Dashboard() {
           >
             <TransactionsCard
               transactions={[
-                { id: '1', type: 'receive', token: 'MAANG', amount: 125.50, time: '08:21 AM', status: 'confirmed', showChart: true },
+                { id: '1', type: 'receive', token: 'MAANG', amount: 125.50, time: '08:21 AM', status: 'confirmed' },
                 { id: '2', type: 'send', token: 'USDC', amount: -500.00, time: '05.12.2024', status: 'confirmed' },
-                { id: '3', type: 'reward', token: 'sMAANG', amount: 12.34, time: '05:19 AM', status: 'confirmed', showChart: true },
-                { id: '4', type: 'receive', token: 'MAANG', amount: 250.00, time: '05.12.2024', status: 'confirmed', highlighted: true },
-                { id: '5', type: 'receive', token: 'USDC', amount: 1500.00, time: '05.12.2024', status: 'confirmed', showChart: true },
+                { id: '3', type: 'reward', token: 'sMAANG', amount: 12.34, time: '05:19 AM', status: 'confirmed' },
+                { id: '4', type: 'receive', token: 'MAANG', amount: 250.00, time: '05.12.2024', status: 'confirmed' },
+                { id: '5', type: 'receive', token: 'USDC', amount: 1500.00, time: '05.12.2024', status: 'confirmed' },
                 { id: '6', type: 'send', token: 'sMAANG', amount: -45.00, time: '04.12.2024', status: 'pending' },
               ]}
             />

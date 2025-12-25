@@ -9,8 +9,6 @@ interface Transaction {
   amount: number;
   time: string;
   status: 'pending' | 'confirmed' | 'failed';
-  highlighted?: boolean;
-  showChart?: boolean;
 }
 
 interface TransactionsCardProps {
@@ -55,28 +53,6 @@ const TokenIcon = ({ token }: { token: string }) => {
   );
 };
 
-// Mini sparkline component with design language colors
-const MiniChart = ({ positive = true }: { positive?: boolean }) => {
-  // Use primary green for positive, muted for negative
-  const color = positive ? 'hsl(160, 70%, 50%)' : 'hsl(var(--muted-foreground))';
-  const points = positive 
-    ? "0,20 5,18 10,19 15,15 20,16 25,12 30,14 35,10 40,8 45,9 50,5"
-    : "0,5 5,8 10,6 15,10 20,8 25,12 30,10 35,15 40,14 45,18 50,20";
-  
-  return (
-    <svg className="txn-mini-chart" viewBox="0 0 50 25" preserveAspectRatio="none">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity={positive ? 1 : 0.5}
-      />
-    </svg>
-  );
-};
 
 export function TransactionsCard({ transactions, className = '' }: TransactionsCardProps) {
   const formatAmount = (amount: number) => {
@@ -133,7 +109,7 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
         {transactions.slice(0, 6).map((tx) => (
           <div 
             key={tx.id} 
-            className={`txn-item group ${tx.highlighted ? 'highlighted' : ''}`}
+            className="txn-item group"
           >
             {/* Quick action on hover */}
             <div className="txn-quick-action">
@@ -151,13 +127,6 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
                 <span className="txn-time">{tx.time}</span>
               </div>
             </div>
-
-            {/* Chart (optional) */}
-            {tx.showChart && (
-              <div className="txn-chart-area">
-                <MiniChart positive={tx.amount >= 0} />
-              </div>
-            )}
 
             {/* Token + Amount */}
             <div className="txn-data">

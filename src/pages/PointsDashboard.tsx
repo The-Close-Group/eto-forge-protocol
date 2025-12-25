@@ -69,32 +69,16 @@ const formatAddress = (address: string, startChars = 6, endChars = 4) => {
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 };
 
-// Top 3 featured point sources (highest value)
-const featuredCategories = [
-  {
-    id: "referral",
-    type: "REFERRAL",
-    name: "Referrals",
-    points: POINT_VALUES.referral,
-    riskLevel: "high" as const,
-    description: "Both parties earn +100",
-  },
-  {
-    id: "bugReport",
-    type: "BUG REPORT",
-    name: "Bug Reports",
-    points: POINT_VALUES.bugReport,
-    riskLevel: "high" as const,
-    description: "Report valid issues",
-  },
-  {
-    id: "feedback",
-    type: "FEEDBACK",
-    name: "Design Feedback",
-    points: POINT_VALUES.feedback,
-    riskLevel: "medium" as const,
-    description: "Submit UI/UX feedback",
-  },
+// Mock points activity feed - simulates recent point earnings
+const generateMockActivityFeed = () => [
+  { id: '1', type: 'dailyLogin', action: 'Daily Login', points: POINT_VALUES.dailyLogin, timestamp: new Date(Date.now() - 1000 * 60 * 5), icon: 'calendar' },
+  { id: '2', type: 'trading', action: 'Trade Completed', points: POINT_VALUES.trading, timestamp: new Date(Date.now() - 1000 * 60 * 15), icon: 'swap' },
+  { id: '3', type: 'staking', action: 'Staked MAANG', points: POINT_VALUES.staking, timestamp: new Date(Date.now() - 1000 * 60 * 45), icon: 'coins' },
+  { id: '4', type: 'referral', action: 'Referral Bonus', points: POINT_VALUES.referral, timestamp: new Date(Date.now() - 1000 * 60 * 120), icon: 'users' },
+  { id: '5', type: 'volumeMilestone', action: '$1K Volume Milestone', points: POINT_VALUES.volumeMilestone, timestamp: new Date(Date.now() - 1000 * 60 * 180), icon: 'milestone' },
+  { id: '6', type: 'socialShare', action: 'Shared on Twitter', points: POINT_VALUES.socialShare, timestamp: new Date(Date.now() - 1000 * 60 * 240), icon: 'share' },
+  { id: '7', type: 'firstStake', action: 'First Stake Bonus', points: POINT_VALUES.firstStake, timestamp: new Date(Date.now() - 1000 * 60 * 300), icon: 'zap' },
+  { id: '8', type: 'governance', action: 'Voted on Proposal', points: POINT_VALUES.governance, timestamp: new Date(Date.now() - 1000 * 60 * 360), icon: 'vote' },
 ];
 
 // All point sources organized by category
@@ -311,72 +295,108 @@ export default function PointsDashboard() {
 
           {/* Main Content */}
           <div className="space-y-6">
-              {/* Featured Point Categories - Top 3 highest value */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {featuredCategories.map((category) => {
-                  const sparkData = generateSparklineData(30, 'up');
-                  const isSelected = selectedCategory === category.id;
-                  
-                  return (
-                    <div 
-                      key={category.id}
-                      className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
-                      onClick={() => setSelectedCategory(category.id)}
-                      onDoubleClick={() => {
-                        if (category.id === 'referral') setReferralDialogOpen(true);
-                        else if (category.id === 'bugReport') toast.info("Bug report form coming soon");
-                        else if (category.id === 'feedback') toast.info("Feedback form coming soon");
-                      }}
-                    >
-                      {/* Hover tooltip */}
-                      <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                        <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-                          <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center">
-                            {category.id === 'referral' && <Users className="w-4 h-4 text-muted-foreground" />}
-                            {category.id === 'bugReport' && <Bug className="w-4 h-4 text-muted-foreground" />}
-                            {category.id === 'feedback' && <MessageSquare className="w-4 h-4 text-muted-foreground" />}
-                          </div>
-                          <div>
-                            <div className="text-[11px] text-muted-foreground">{category.type}</div>
-                            <div className="text-[13px] font-medium">{category.name}</div>
-                          </div>
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      
-                      <div className="mb-3">
-                        <div className="reward-rate-label">Points per Action</div>
-                        <div className="flex items-baseline gap-0.5">
-                          <span className="reward-rate">+{category.points}</span>
-                          <span className="text-xl text-muted-foreground font-normal">pts</span>
-                        </div>
-                      </div>
-                      
-                      <div className={`status-badge ${category.riskLevel === 'high' ? 'status-badge-positive' : ''} mb-4`}>
-                        <span className="w-[6px] h-[6px] rounded-full bg-current" />
-                        {category.riskLevel === 'high' ? 'highest reward' : 'high reward'}
-                      </div>
-                      
-                      <div className="relative">
-                        <Sparkline 
-                          data={sparkData} 
-                          height={60}
-                          variant="positive"
-                          showArea={true}
-                          showEndValue={true}
-                          endValue={category.description}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Points Activity Table - Similar to Asset Metrics in SystemHealth */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-[15px] flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-primary" />
+                      Recent Points Activity
+                    </CardTitle>
+                    <span className="text-[11px] text-muted-foreground">{generateMockActivityFeed().length} activities</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Activity</th>
+                          <th className="text-left text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Category</th>
+                          <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Points Earned</th>
+                          <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Time</th>
+                          <th className="text-center text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {generateMockActivityFeed().map((activity) => {
+                          const timeAgo = Math.floor((Date.now() - activity.timestamp.getTime()) / 1000 / 60);
+                          const timeLabel = timeAgo < 60 ? `${timeAgo}m ago` : `${Math.floor(timeAgo / 60)}h ago`;
+                          
+                          // Map type to category label
+                          const categoryMap: Record<string, string> = {
+                            dailyLogin: 'Engagement',
+                            trading: 'Trading',
+                            staking: 'Protocol',
+                            referral: 'Social',
+                            volumeMilestone: 'Trading',
+                            socialShare: 'Social',
+                            firstStake: 'Achievement',
+                            governance: 'Protocol',
+                          };
+                          
+                          return (
+                            <tr 
+                              key={activity.id}
+                              className="border-b border-border/30 hover:bg-muted/30 transition-colors"
+                            >
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    {activity.icon === 'calendar' && <Calendar className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'swap' && <ArrowDownUp className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'coins' && <Award className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'users' && <Users className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'milestone' && <Milestone className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'share' && <Share2 className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'zap' && <Zap className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'vote' && <Vote className="w-4 h-4 text-primary" />}
+                                  </div>
+                                  <span className="text-[13px] font-medium">{activity.action}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" className="text-[10px] bg-muted/50">
+                                  {categoryMap[activity.type] || 'Other'}
+                                </Badge>
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                <span className="text-[13px] font-semibold text-primary font-mono">+{activity.points}</span>
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                <span className="text-[12px] text-muted-foreground">{timeLabel}</span>
+                              </td>
+                              <td className="text-center px-4 py-3">
+                                <div className="flex items-center justify-center">
+                                  <CheckCircle2 className="w-4 h-4 text-data-positive" />
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                      <tfoot>
+                        <tr className="bg-muted/20">
+                          <td className="px-4 py-3" colSpan={2}>
+                            <span className="text-[13px] font-semibold">Total Points Earned</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-semibold text-primary font-mono">
+                              +{generateMockActivityFeed().reduce((sum, a) => sum + a.points, 0)}
+                            </span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[11px] text-muted-foreground">Today</span>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <span className="text-[11px] text-data-positive font-medium">All Credited</span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* All Point Sources - Organized by Category */}
               <div className="active-staking-card">

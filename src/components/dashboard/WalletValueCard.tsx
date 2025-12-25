@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Grid3X3, Settings2, Plus, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
+import { ResponsiveContainer, Area, AreaChart, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface WalletValueCardProps {
   totalValue: number;
@@ -11,19 +12,20 @@ interface WalletValueCardProps {
   className?: string;
 }
 
-const generateChartData = (points: number = 50) => {
+// Generate chart data matching the Execution page format
+const generateChartData = (days: number = 180, basePrice: number = 40000, volatility: number = 0.015) => {
   const data = [];
-  let price = 39000;
+  let price = basePrice * 0.92;
+  const now = Date.now();
+  const interval = (days * 24 * 60 * 60 * 1000) / 100;
   
-  for (let i = 0; i < points; i++) {
-    const wave = Math.sin(i * 0.12) * 1200;
-    const trend = i * 40;
-    const noise = (Math.random() - 0.5) * 200;
-    price = 38000 + wave + trend + noise;
-    
+  for (let i = 0; i < 100; i++) {
+    const change = (Math.random() - 0.42) * volatility * price;
+    price = Math.max(price + change, basePrice * 0.8);
     data.push({
-      price,
-      volume: 25 + Math.random() * 65,
+      time: new Date(now - (100 - i) * interval).toLocaleString(),
+      timestamp: now - (100 - i) * interval,
+      price: price,
     });
   }
   return data;
@@ -31,6 +33,17 @@ const generateChartData = (points: number = 50) => {
 
 const timeFilters = ['1h', '8h', '1d', '1w', '1m', '6m', '1y'] as const;
 type TimeFilter = typeof timeFilters[number];
+
+// Map time filters to days
+const timeFilterToDays: Record<TimeFilter, number> = {
+  '1h': 0.04,
+  '8h': 0.33,
+  '1d': 1,
+  '1w': 7,
+  '1m': 30,
+  '6m': 180,
+  '1y': 365,
+};
 
 export function WalletValueCard({
   totalValue,
@@ -42,13 +55,12 @@ export function WalletValueCard({
   className = '',
 }: WalletValueCardProps) {
   const [activeFilter, setActiveFilter] = useState<TimeFilter>('6m');
-  const chartData = useMemo(() => generateChartData(50), []);
-
-  const prices = chartData.map(d => d.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const priceRange = maxPrice - minPrice || 1;
-  const peakIndex = prices.indexOf(maxPrice);
+  
+  // Generate chart data based on selected time filter
+  const chartData = useMemo(() => 
+    generateChartData(timeFilterToDays[activeFilter], totalValue),
+    [activeFilter, totalValue]
+  );
 
   const formatCurrency = (value: number, showSign = false) => {
     const abs = Math.abs(value);
@@ -61,31 +73,8 @@ export function WalletValueCard({
     return formatted;
   };
 
-  // SVG dimensions - full width edge-to-edge
-  const svgWidth = 1000;
-  const svgHeight = 280;
-  const margin = { top: 40, right: 0, bottom: 0, left: 0 }; // Zero side margins for edge-to-edge
-  const plotW = svgWidth;
-  const plotH = svgHeight - margin.top - margin.bottom;
-
-  // Calculate positions - full width
-  const getX = (i: number) => (i / (chartData.length - 1)) * plotW;
-  const getY = (p: number) => margin.top + plotH - ((p - minPrice) / priceRange) * plotH;
-
-  // Generate line path
-  const linePath = chartData.map((d, i) => 
-    `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.price).toFixed(1)}`
-  ).join(' ');
-
-  // Area path - full width
-  const areaPath = `${linePath} L ${svgWidth} ${margin.top + plotH} L 0 ${margin.top + plotH} Z`;
-
-  // Peak position  
-  const peakX = getX(peakIndex);
-  const peakY = getY(maxPrice);
-
-  // Bar dimensions
-  const barW = (plotW / chartData.length) * 0.65;
+  // Primary green color for the chart
+  const chartColor = '#10b981';
 
   return (
     <div className={`wvc ${className}`}>
@@ -141,72 +130,67 @@ export function WalletValueCard({
         </div>
       </div>
 
-      {/* Chart Container - Full Width Edge-to-Edge */}
+      {/* Chart Container - Using Recharts like Execution page */}
       <div className="wvc-chart-wrap">
-        <svg 
-          className="wvc-svg" 
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(160, 70%, 50%)" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="hsl(160, 70%, 50%)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
-          {/* Volume Bars - full width */}
-          {chartData.map((d, i) => {
-            const x = (i / chartData.length) * plotW;
-            const h = (d.volume / 100) * plotH * 0.5;
-            const y = margin.top + plotH - h;
-            
-            return (
-              <rect
-                key={i}
-                x={x}
-                y={y}
-                width={barW}
-                height={h}
-                fill="currentColor"
-                className="wvc-vol-bar"
+        <div className="h-64 md:h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="portfolioGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={chartColor} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis 
+                dataKey="time" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  if (activeFilter === '1h' || activeFilter === '8h') {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  }
+                  if (activeFilter === '1d') {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  }
+                  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                }}
+                interval="preserveStartEnd"
+                minTickGap={50}
               />
-            );
-          })}
-
-          {/* Area */}
-          <path d={areaPath} fill="url(#chartAreaGrad)" />
-
-          {/* Line */}
-          <path 
-            d={linePath} 
-            fill="none" 
-            stroke="hsl(160, 70%, 50%)" 
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Peak Circle */}
-          <circle
-            cx={peakX}
-            cy={peakY}
-            r="6"
-            fill="hsl(160, 70%, 50%)"
-            stroke="hsl(var(--card))"
-            strokeWidth="3"
-          />
-        </svg>
-
-        {/* Peak Label */}
-        <div 
-          className="wvc-peak-tooltip"
-          style={{
-            left: `${(peakX / svgWidth) * 100}%`,
-            top: `${((peakY - 10) / svgHeight) * 100}%`,
-          }}
-        >
-          +$1,859.48
+              <YAxis 
+                domain={['dataMin - 500', 'dataMax + 500']}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                orientation="right"
+                width={50}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const value = Number(payload[0].value);
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="text-sm font-medium">${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="text-xs text-muted-foreground">{payload[0].payload.time}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke={chartColor}
+                strokeWidth={2}
+                fill="url(#portfolioGradient)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

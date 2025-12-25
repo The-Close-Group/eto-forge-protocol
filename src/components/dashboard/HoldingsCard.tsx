@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react';
-import Sparkline, { generateSparklineData } from '@/components/Sparkline';
+import { useState } from 'react';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, ExternalLink } from 'lucide-react';
 import maangLogo from '@/assets/maang-logo.svg';
 
@@ -61,10 +60,6 @@ const holdings: Holding[] = [
 
 function HoldingItem({ holding }: { holding: Holding }) {
   const [isHovered, setIsHovered] = useState(false);
-  const sparkData = useMemo(() => 
-    generateSparklineData(20, holding.change >= 0 ? 'up' : 'down'),
-    [holding.change]
-  );
 
   return (
     <div 
@@ -124,16 +119,6 @@ function HoldingItem({ holding }: { holding: Holding }) {
           <span>{holding.apy.toFixed(2)}% APY</span>
         </div>
       )}
-
-      {/* Mini Chart */}
-      <div className="holding-chart">
-        <Sparkline 
-          data={sparkData} 
-          height={45}
-          variant={holding.change >= 0 ? 'positive' : 'negative'}
-          showArea={true}
-        />
-      </div>
     </div>
   );
 }

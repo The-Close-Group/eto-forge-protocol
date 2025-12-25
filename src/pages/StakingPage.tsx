@@ -182,19 +182,11 @@ export default function StakingPage() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-2">
-            <Vault className="w-4 h-4" />
-            <span>sMAANG Vault • Liquid Staking</span>
-            <Badge variant="outline" className="ml-2 text-[10px]">Live</Badge>
-          </div>
-          <h1 className="text-[32px] font-semibold tracking-tight mb-2">Staking & Liquidity</h1>
-          <p className="text-muted-foreground text-[15px]">
-            Deposit assets to earn yield from protocol trading fees
-        </p>
-      </div>
+          <h1 className="text-[32px] font-semibold tracking-tight">Staking & Liquidity</h1>
+        </div>
 
-        {/* Main Grid - Dashboard Style */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+        {/* Main Content - Full Width */}
+        <div className="w-full">
           {/* Left Column */}
           <div 
             className={`space-y-6 transition-all duration-700 delay-100 ease-out ${
@@ -521,87 +513,6 @@ export default function StakingPage() {
             </Card>
           </div>
 
-          {/* Right Sidebar */}
-          <div 
-            className={`space-y-5 transition-all duration-700 delay-200 ease-out ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-          >
-            {/* CTA Card */}
-            <div className="cta-card">
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center p-1.5">
-                    <img src={maangLogo} alt="" className="w-full h-full" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">sMAANG Vault</div>
-                    <div className="text-[11px] text-muted-foreground">Liquid Staking</div>
-                  </div>
-                </div>
-                
-                <div className="mb-6">
-                  <div className="text-[11px] text-muted-foreground mb-1">Current APY</div>
-                  <div className="text-[42px] font-semibold tracking-tight leading-none text-primary">
-                    {currentTier.apy}%
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>No lock-up period</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>Compound rewards automatically</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>Withdraw anytime</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-        </CardHeader>
-              <CardContent className="space-y-0.5">
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/trade">
-                    <span className="text-[13px]">Trade MAANG</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/dashboard">
-                    <span className="text-[13px]">View Dashboard</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/faucet">
-                    <span className="text-[13px]">Get Test Tokens</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-        </CardContent>
-      </Card>
-
-            {/* Refresh Button */}
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </Button>
-          </div>
         </div>
       </div>
     </div>
