@@ -1,35 +1,39 @@
-import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function Home() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          ETO Protocol Landing Page
-        </h1>
-        <p className="text-lg text-gray-600 mb-8">
-          Vite + React 18 + TypeScript + Tailwind CSS + React Router
-        </p>
+    <div className="min-h-screen flex flex-col bg-[#1A1A1A]">
+      {/* Navigation Bar */}
+      <nav className="w-full">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo - Left Side */}
+            <Link 
+              to="/" 
+              className="flex items-center transition-opacity hover:opacity-80"
+              aria-label="ETO Protocol Home"
+            >
+              <img 
+                src="/eto-brand-logo.svg" 
+                alt="ETO Protocol" 
+                className="h-8 w-auto"
+              />
+            </Link>
 
-        <div className="bg-white shadow-lg rounded-lg p-8 mb-6">
-          <button
-            onClick={() => setCount((count) => count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
-          >
-            Count is {count}
-          </button>
+            {/* Navigation Items - Right Side (placeholder for future nav items) */}
+            <div className="flex items-center gap-8">
+              {/* Future navigation items can go here */}
+            </div>
+          </div>
         </div>
+      </nav>
 
-        <div className="text-sm text-gray-500">
-          <p>✅ Vite configured</p>
-          <p>✅ React 18 ready</p>
-          <p>✅ TypeScript enabled</p>
-          <p>✅ Tailwind CSS working</p>
-          <p>✅ React Router DOM installed</p>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <div className="text-center">
+          {/* Content will go here */}
         </div>
-      </div>
+      </main>
     </div>
   )
 }
