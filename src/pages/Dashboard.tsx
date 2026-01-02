@@ -9,7 +9,7 @@ import {
   Calculator, PieChart, Shield, AlertTriangle, Sparkles, Target
 } from "lucide-react";
 import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
-import { HoldingsCard } from "@/components/dashboard/HoldingsCard";
+import { PortfolioRiskScore } from "@/components/dashboard/PortfolioRiskScore";
 import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
 import maangLogo from "@/assets/maang-logo.svg";
 import { Link, useNavigate } from "react-router-dom";
@@ -92,15 +92,8 @@ export default function Dashboard() {
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   // NOTE: Notifications are empty - real notifications should come from backend/events
   const [notifications, setNotifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
-  
-  // Trigger fade-in animation on mount
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
   
   const { data: protocolStats, isLoading: isLoadingProtocol, refetch: refetchStats } = useProtocolStats();
   const { data: protocolActivity, isLoading: isLoadingActivity, refetch: refetchActivity } = useProtocolActivity();
@@ -659,49 +652,34 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div 
-        className={`dashboard-container transition-all duration-700 ease-out ${
-          isVisible 
-            ? 'opacity-100 translate-y-0' 
-            : 'opacity-0 translate-y-6'
-        }`}
-      >
-        {/* Main Dashboard Grid - Full Width Chart + Bottom Row */}
+      <div className="dashboard-container">
+        {/* Main Dashboard Grid - Exact Screenshot Layout */}
         <div className="dashboard-grid">
-          {/* Full Width - Wallet Value Card with Chart */}
-          <div 
-            className={`transition-all duration-700 ease-out delay-100 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <WalletValueCard
-              totalValue={getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14}
-              changePercent={4.6}
-              realizedPL={1429.00}
-              unrealizedPL={-521.10}
-              projectedGrowth={1864.04}
-              netChange={495.68}
-            />
-          </div>
+          {/* Left Column - Wallet Value Card */}
+          <WalletValueCard
+            totalValue={getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14}
+            changePercent={4.6}
+            realizedPL={1429.00}
+            unrealizedPL={-521.10}
+            projectedGrowth={1864.04}
+            netChange={495.68}
+          />
 
-          {/* Bottom Row - Holdings + Transactions */}
-          <div 
-            className={`dashboard-bottom-row transition-all duration-700 ease-out delay-200 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            {/* Holdings Card - MAANG, sMAANG, Cash */}
-            <HoldingsCard />
+          {/* Right Column - Risk Score + Transactions Stacked */}
+          <div className="dashboard-right">
+            <PortfolioRiskScore
+              riskLevel={35}
+              lastUpdated="Just Now"
+            />
             
-            {/* Transactions with MAANG design language */}
             <TransactionsCard
               transactions={[
-                { id: '1', type: 'receive', token: 'MAANG', amount: 125.50, time: '08:21 AM', status: 'confirmed', showChart: true },
-                { id: '2', type: 'send', token: 'USDC', amount: -500.00, time: '05.12.2024', status: 'confirmed' },
-                { id: '3', type: 'reward', token: 'sMAANG', amount: 12.34, time: '05:19 AM', status: 'confirmed', showChart: true },
-                { id: '4', type: 'receive', token: 'MAANG', amount: 250.00, time: '05.12.2024', status: 'confirmed', highlighted: true },
-                { id: '5', type: 'receive', token: 'USDC', amount: 1500.00, time: '05.12.2024', status: 'confirmed', showChart: true },
-                { id: '6', type: 'send', token: 'sMAANG', amount: -45.00, time: '04.12.2024', status: 'pending' },
+                { id: '1', type: 'receive', token: 'BTC', amount: 0.002345, time: '08:21 AM', status: 'pending', showChart: true },
+                { id: '2', type: 'send', token: 'SOL', amount: -23.42, time: '05.12.2024', status: 'pending' },
+                { id: '3', type: 'reward', token: 'ETH', amount: 3.21, time: '05:19 AM', status: 'confirmed', showChart: true },
+                { id: '4', type: 'receive', token: 'MATIC', amount: 590.41, time: '05.12.2024', status: 'confirmed', highlighted: true },
+                { id: '5', type: 'receive', token: 'MATIC', amount: 14.08, time: '05.12.2024', status: 'confirmed', showChart: true },
+                { id: '6', type: 'send', token: 'USDT', amount: -19.57, time: '04.12.2024', status: 'failed' },
               ]}
             />
           </div>

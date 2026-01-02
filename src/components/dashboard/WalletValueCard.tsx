@@ -60,15 +60,15 @@ export function WalletValueCard({
     return formatted;
   };
 
-  // SVG dimensions - full width edge-to-edge
+  // SVG dimensions - use percentage-based viewBox
   const svgWidth = 1000;
-  const svgHeight = 280;
-  const margin = { top: 40, right: 0, bottom: 0, left: 0 }; // Zero side margins for edge-to-edge
-  const plotW = svgWidth;
+  const svgHeight = 300;
+  const margin = { top: 50, right: 30, bottom: 40, left: 30 };
+  const plotW = svgWidth - margin.left - margin.right;
   const plotH = svgHeight - margin.top - margin.bottom;
 
-  // Calculate positions - full width
-  const getX = (i: number) => (i / (chartData.length - 1)) * plotW;
+  // Calculate positions
+  const getX = (i: number) => margin.left + (i / (chartData.length - 1)) * plotW;
   const getY = (p: number) => margin.top + plotH - ((p - minPrice) / priceRange) * plotH;
 
   // Generate line path
@@ -76,8 +76,8 @@ export function WalletValueCard({
     `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.price).toFixed(1)}`
   ).join(' ');
 
-  // Area path - full width
-  const areaPath = `${linePath} L ${svgWidth} ${margin.top + plotH} L 0 ${margin.top + plotH} Z`;
+  // Area path
+  const areaPath = `${linePath} L ${svgWidth - margin.right} ${margin.top + plotH} L ${margin.left} ${margin.top + plotH} Z`;
 
   // Peak position  
   const peakX = getX(peakIndex);
@@ -137,24 +137,24 @@ export function WalletValueCard({
         </div>
       </div>
 
-      {/* Chart Container - Full Width Edge-to-Edge */}
+      {/* Chart Container */}
       <div className="wvc-chart-wrap">
         <svg 
           className="wvc-svg" 
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
         >
           <defs>
             <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(160, 70%, 50%)" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="hsl(160, 70%, 50%)" stopOpacity="0" />
+              <stop offset="0%" stopColor="#CDFF00" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#CDFF00" stopOpacity="0" />
             </linearGradient>
           </defs>
 
-          {/* Volume Bars - full width */}
+          {/* Volume Bars */}
           {chartData.map((d, i) => {
-            const x = (i / chartData.length) * plotW;
-            const h = (d.volume / 100) * plotH * 0.5;
+            const x = margin.left + (i / chartData.length) * plotW;
+            const h = (d.volume / 100) * plotH * 0.7;
             const y = margin.top + plotH - h;
             
             return (
@@ -177,8 +177,8 @@ export function WalletValueCard({
           <path 
             d={linePath} 
             fill="none" 
-            stroke="hsl(160, 70%, 50%)" 
-            strokeWidth="2.5"
+            stroke="#CDFF00" 
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -187,10 +187,10 @@ export function WalletValueCard({
           <circle
             cx={peakX}
             cy={peakY}
-            r="6"
-            fill="hsl(160, 70%, 50%)"
+            r="8"
+            fill="#CDFF00"
             stroke="hsl(var(--card))"
-            strokeWidth="3"
+            strokeWidth="4"
           />
         </svg>
 
@@ -199,10 +199,21 @@ export function WalletValueCard({
           className="wvc-peak-tooltip"
           style={{
             left: `${(peakX / svgWidth) * 100}%`,
-            top: `${((peakY - 10) / svgHeight) * 100}%`,
+            top: `${(peakY / svgHeight) * 100}%`,
           }}
         >
           +$1,859.48
+        </div>
+
+        {/* Time Axis */}
+        <div className="wvc-x-axis">
+          <span>8:00 AM</span>
+          <span>9:00 AM</span>
+          <span>10:00 AM</span>
+          <span>11:00 AM</span>
+          <span>12:00 PM</span>
+          <span>1:00 PM</span>
+          <span>2:00 PM</span>
         </div>
       </div>
 

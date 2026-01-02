@@ -322,27 +322,18 @@
   }
 
   /* ========================================
-     WALLET VALUE CARD - Design Language Aligned
+     WALLET VALUE CARD - Screenshot Match
      ======================================== */
   .wvc {
     display: flex;
     flex-direction: column;
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 14px;
-    padding: 24px;
-    transition: border-color 0.2s ease;
-  }
-
-  .wvc:hover {
-    border-color: hsl(var(--border));
   }
 
   .wvc-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .wvc-info {
@@ -352,45 +343,41 @@
   }
 
   .wvc-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
     color: hsl(var(--muted-foreground));
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
   }
 
   .wvc-amount-line {
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    gap: 16px;
   }
 
   .wvc-amount {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 44px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 52px;
     font-weight: 600;
     letter-spacing: -0.035em;
     line-height: 1;
     color: hsl(var(--foreground));
-    font-variant-numeric: tabular-nums;
   }
 
   .wvc-pct {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: hsl(var(--primary));
-    background: hsl(var(--primary) / 0.1);
-    padding: 5px 10px;
-    border-radius: 6px;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
   }
 
   .wvc-pct-icon {
-    font-size: 12px;
+    font-size: 16px;
+    opacity: 0.5;
   }
 
   .wvc-controls {
@@ -451,42 +438,53 @@
     color: hsl(var(--foreground));
   }
 
-  /* Chart - Full Width Edge-to-Edge */
+  /* Chart */
   .wvc-chart-wrap {
     position: relative;
-    height: 280px;
-    background: transparent;
+    height: 340px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border-subtle));
+    border-radius: 20px;
     overflow: hidden;
-    margin: 0 -24px 16px -24px; /* Negative margins to span full card width */
-    width: calc(100% + 48px);
+    margin-bottom: 16px;
   }
 
   .wvc-svg {
     display: block;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 36px);
     color: hsl(var(--muted));
   }
 
   .wvc-vol-bar {
-    opacity: 0.2;
+    opacity: 0.35;
   }
 
   .wvc-peak-tooltip {
     position: absolute;
-    transform: translate(-50%, -100%);
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: hsl(var(--primary));
-    background: hsl(var(--card));
-    padding: 4px 8px;
-    border-radius: 6px;
-    border: 1px solid hsl(var(--border));
+    transform: translate(-50%, -150%);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
-    box-shadow: 0 2px 8px hsl(var(--background) / 0.4);
+  }
+
+  .wvc-x-axis {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
   }
 
   /* Stats */
@@ -500,30 +498,22 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 16px 18px;
-    background: hsl(var(--muted) / 0.3);
+    padding: 18px 20px;
+    background: hsl(var(--card));
     border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
-    transition: all 0.2s ease;
-  }
-
-  .wvc-stat-card:hover {
-    background: hsl(var(--muted) / 0.5);
-    border-color: hsl(var(--border));
+    border-radius: 16px;
   }
 
   .wvc-stat-name {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
     color: hsl(var(--muted-foreground));
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
   }
 
   .wvc-stat-num {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 24px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
@@ -531,7 +521,7 @@
   }
 
   .wvc-stat-num.green {
-    color: hsl(var(--primary));
+    color: #CDFF00;
   }
 
   .wvc-stat-num.red {
@@ -539,8 +529,8 @@
   }
 
   .wvc-stat-meta {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
     font-weight: 400;
     color: hsl(var(--muted-foreground));
   }
@@ -643,205 +633,16 @@
   }
 
   /* ========================================
-     HOLDINGS CARD - MAANG Design Language
-     ======================================== */
-  .holdings-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 14px;
-    padding: 20px;
-    transition: border-color 0.2s ease;
-  }
-
-  .holdings-card:hover {
-    border-color: hsl(var(--border));
-  }
-
-  .holdings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .holdings-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: hsl(var(--foreground));
-  }
-
-  .holdings-total {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: hsl(var(--primary));
-    font-variant-numeric: tabular-nums;
-  }
-
-  .holdings-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* Individual Holding Item - MAANG Style */
-  .holding-item {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    background: hsl(var(--muted) / 0.3);
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .holding-item:hover {
-    background: hsl(var(--muted) / 0.5);
-    border-color: hsl(var(--border));
-  }
-
-  .holding-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .holding-icon-wrap {
-    flex-shrink: 0;
-  }
-
-  .holding-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px;
-  }
-
-  .holding-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .holding-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .holding-type {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  .holding-name {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: hsl(var(--foreground));
-  }
-
-  .holding-balance {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .holding-balance-label {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-
-  .holding-balance-value {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .holding-amount {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    color: hsl(var(--foreground));
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-
-  .holding-symbol {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
-  }
-
-  .holding-value-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .holding-usd {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
-    font-variant-numeric: tabular-nums;
-  }
-
-  .holding-change {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 6px;
-  }
-
-  .holding-change.positive {
-    color: hsl(var(--primary));
-    background: hsl(var(--primary) / 0.1);
-  }
-
-  .holding-change.negative {
-    color: hsl(var(--data-negative));
-    background: hsl(var(--data-negative) / 0.1);
-  }
-
-  .holding-chart {
-    height: 40px;
-    margin-top: 4px;
-  }
-
-  /* ========================================
-     TRANSACTIONS CARD - MAANG Design Language
+     TRANSACTIONS CARD - Screenshot Match
      ======================================== */
   .txn-card {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border-subtle));
-    border-radius: 14px;
+    border-radius: 20px;
     padding: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    transition: border-color 0.2s ease;
-  }
-
-  .txn-card:hover {
-    border-color: hsl(var(--border));
   }
 
   .txn-header {
@@ -852,19 +653,18 @@
   }
 
   .txn-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
     font-weight: 500;
     color: hsl(var(--foreground));
   }
 
   .txn-link {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
     font-weight: 500;
-    color: hsl(var(--primary));
+    color: #CDFF00;
     text-decoration: none;
-    transition: opacity 0.15s ease;
   }
 
   .txn-link:hover {
@@ -874,31 +674,27 @@
   .txn-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
     flex: 1;
   }
 
   .txn-item {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px;
-    background: hsl(var(--muted) / 0.3);
-    border: 1px solid hsl(var(--border-subtle));
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    min-height: 120px;
-    cursor: pointer;
+    gap: 12px;
+    padding: 16px;
+    background: hsl(var(--muted) / 0.35);
+    border-radius: 16px;
+    transition: all 0.15s ease;
+    min-height: 130px;
   }
 
   .txn-item:hover {
     background: hsl(var(--muted) / 0.5);
-    border-color: hsl(var(--border));
   }
 
   .txn-item.highlighted {
-    background: hsl(var(--primary));
-    border-color: hsl(var(--primary));
+    background: #CDFF00;
   }
 
   .txn-item.highlighted .txn-type,
@@ -907,44 +703,29 @@
   .txn-item.highlighted .txn-amount,
   .txn-item.highlighted .txn-status,
   .txn-item.highlighted .txn-status span {
-    color: hsl(var(--primary-foreground)) !important;
+    color: #000 !important;
   }
 
   .txn-item.highlighted .txn-dot {
-    background: hsl(var(--primary-foreground)) !important;
-  }
-
-  .txn-item.highlighted .txn-token-icon {
-    background: hsl(var(--primary-foreground) / 0.2) !important;
+    background: #000 !important;
   }
 
   .txn-top {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
-  /* Token Icon - MAANG Style */
-  .txn-token-icon {
+  .txn-icon-wrap {
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     flex-shrink: 0;
   }
 
-  .txn-token-img {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-  }
-
-  .txn-token-letter {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 600;
+  .txn-token-svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
   }
 
   .txn-info {
@@ -954,21 +735,21 @@
   }
 
   .txn-type {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
     font-weight: 500;
     color: hsl(var(--foreground));
   }
 
   .txn-time {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
     color: hsl(var(--muted-foreground));
   }
 
   .txn-chart-area {
-    height: 28px;
-    margin: 2px 0;
+    height: 30px;
+    margin: 4px 0;
   }
 
   .txn-mini-chart {
@@ -984,17 +765,15 @@
   }
 
   .txn-symbol {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
     color: hsl(var(--muted-foreground));
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
   }
 
   .txn-amount {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 26px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
@@ -1010,35 +789,33 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
     color: hsl(var(--muted-foreground));
     margin-top: 4px;
-    text-transform: capitalize;
   }
 
   .txn-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: hsl(var(--muted-foreground));
   }
 
   .txn-status.pending .txn-dot {
-    background: hsl(38 92% 50%);
+    background: #FACC15;
   }
 
   .txn-status.confirmed .txn-dot {
-    background: hsl(var(--primary));
+    background: #CDFF00;
   }
 
   .txn-status.failed .txn-dot {
-    background: hsl(var(--data-negative));
+    background: #EF4444;
   }
 
   .txn-status.failed {
-    color: hsl(var(--data-negative));
+    color: #EF4444;
   }
 
   @media (max-width: 480px) {
@@ -1062,7 +839,7 @@
   }
 
   /* ========================================
-     DASHBOARD LAYOUT - Full Width Chart + Bottom Row
+     DASHBOARD LAYOUT - Exact Screenshot Match
      ======================================== */
   .dashboard-container {
     max-width: 1440px;
@@ -1071,22 +848,10 @@
   }
 
   .dashboard-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* WalletValueCard takes full width */
-  .dashboard-grid > .wvc {
-    width: 100%;
-  }
-
-  /* Bottom row with Holdings + Transactions */
-  .dashboard-bottom-row {
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 1fr 360px;
     gap: 20px;
-    align-items: stretch;
+    align-items: start;
   }
 
   .dashboard-right {
@@ -1096,13 +861,13 @@
   }
 
   @media (max-width: 1200px) {
-    .dashboard-bottom-row {
-      grid-template-columns: 320px 1fr;
+    .dashboard-grid {
+      grid-template-columns: 1fr 320px;
     }
   }
 
   @media (max-width: 1024px) {
-    .dashboard-bottom-row {
+    .dashboard-grid {
       grid-template-columns: 1fr;
     }
     

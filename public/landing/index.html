@@ -4,18 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETO - Global Exchange for All Assets</title>
-    
-    <!-- DNS Prefetch & Preconnect for faster globe loading -->
-    <link rel="dns-prefetch" href="https://d3js.org">
-    <link rel="preconnect" href="https://d3js.org" crossorigin>
-    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
-    
-    <!-- Preload critical globe resources -->
-    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script" crossorigin>
-    <link rel="preload" href="https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json" as="fetch" crossorigin>
-    
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
@@ -55,7 +43,7 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
             </button>
-            <button class="launch-btn" onclick="window.top.location.href='/trade'">EXPLORE MARKETS</button>
+            <button class="launch-btn" onclick="window.location.href='http://localhost:8080/trade'">EXPLORE MARKETS</button>
         </div>
     </nav>
 
@@ -71,7 +59,7 @@
             <div class="hero-section">
                 <h1 class="hero-title">Global Exchange for All Assets</h1>
                 <p class="hero-subtitle">Trade U.S. Capital Markets on-chain and Stake them to Earn Yield.</p>
-                <button class="explore-btn" onclick="window.top.location.href='/trade'">
+                <button class="explore-btn" onclick="window.location.href='http://localhost:8080/trade'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -266,7 +254,7 @@
             <h2 class="maang-title">Buy and Gain Exposure to Real World Markets and Stake to Earn DeFi Yields.</h2>
             <p class="maang-subtitle">Start with as little as $1. No minimums, no barriers.</p>
             
-            <button class="explore-btn maang-trade-btn" onclick="window.top.location.href='/trade'">
+            <button class="explore-btn maang-trade-btn">
                 <span>TRADE MAANG</span>
                 <div class="btn-icon">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -838,274 +826,256 @@
                     </div>
     </section>
 
-    <!-- Page 5: Protocol Highlights - Display Cards -->
-    <section class="page page-highlights" id="highlights">
-        <div class="highlights-content">
-            
-            <div class="highlights-header">
-                <p class="highlights-label">Protocol</p>
-                <h2 class="highlights-title">Why ETO Protocol</h2>
+    <!-- Page 5: Why ETO Protocol - Sticky Stats Section -->
+    <section class="page page-highlights fade-in-section" id="highlights">
+        <div class="why-eto-container">
+            <div class="why-eto-grid">
+                <!-- Left Sticky Column -->
+                <div class="why-eto-sticky">
+                    <p class="why-eto-label">Protocol</p>
+                    <h2 class="why-eto-title">Why ETO Protocol</h2>
+                    <p class="why-eto-subtitle">ETO handles institutional-grade tokenized assets across multiple networks with industry-leading security.</p>
                 </div>
             
-            <!-- Dual Display Cards Container -->
-            <div class="display-cards-dual">
-                
-                <!-- Left Stack - Token Features -->
-                <div class="display-cards-container display-cards-left">
-                    <div class="display-cards-stack">
-                        
-                        <!-- Card 1 (Back) -->
-                        <div class="display-card display-card-1">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                        <path d="M2 17l10 5 10-5"/>
-                                        <path d="M2 12l10 5 10-5"/>
+                <!-- Right Scrolling Column -->
+                <div class="why-eto-stats">
+                    <!-- Stat 1: Total Value Locked -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 457 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0d1a17"/>
+                                <rect width="229" height="250" rx="16" fill="#0a1512"/>
+                                <!-- Straight bars only -->
+                                <g class="why-eto-bars">
+                                    <rect x="165" y="80" width="64" height="200" fill="#57FEC7" opacity="0.6"/>
+                                    <rect x="101" y="130" width="64" height="200" fill="#57FEC7" opacity="0.5"/>
+                                    <rect x="37" y="180" width="64" height="200" fill="#57FEC7" opacity="0.4"/>
+                                    <rect x="229" y="130" width="64" height="200" fill="#57FEC7" opacity="0.5"/>
+                                    <rect x="293" y="180" width="64" height="200" fill="#57FEC7" opacity="0.4"/>
+                                </g>
                                     </svg>
-                                </span>
-                                <p class="display-card-title">Composable</p>
                     </div>
-                            <p class="display-card-description">Fully ERC-20 compatible tokens</p>
-                            <p class="display-card-date">DeFi Ready</p>
-                </div>
-                        
-                        <!-- Card 2 (Middle) -->
-                        <div class="display-card display-card-2">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <path d="M12 6v6l4 2"/>
-                                    </svg>
-                                </span>
-                                <p class="display-card-title">Real-Time</p>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Frictionless</span>
+                            <span class="why-eto-stat-desc">Transfer anywhere</span>
+                        </div>
                     </div>
-                            <p class="display-card-description">Live market price synchronization</p>
-                            <p class="display-card-date">24/7 Updates</p>
-                </div>
-                        
-                        <!-- Card 3 (Front) -->
-                        <div class="display-card display-card-3">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    
+                    <!-- Stat 2: Trading Volume -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 457 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#57FEC7"/>
+                                <!-- Wave pattern -->
+                                <rect y="0" width="354" height="125" fill="#3dd4a8"/>
+                                <rect x="354" y="125" width="354" height="125" fill="#3dd4a8"/>
+                                <circle cx="354" cy="62.5" r="62.5" fill="#2ab896"/>
+                                <circle cx="354" cy="187.5" r="62.5" fill="#2ab896"/>
+                                <path d="M354 0C388.5 0 416.5 28 416.5 62.5C416.5 97 388.5 125 354 125V0Z" fill="#8BFFD8"/>
+                                <path d="M354 125C319.5 125 291.5 153 291.5 187.5C291.5 222 319.5 250 354 250V125Z" fill="#8BFFD8"/>
                                     </svg>
-                                </span>
-                                <p class="display-card-title">Self-Custody</p>
                             </div>
-                            <p class="display-card-description">Your keys, your assets, always</p>
-                            <p class="display-card-date">Non-Custodial</p>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Permissionless</span>
+                            <span class="why-eto-stat-desc">Liquidate anytime</span>
                         </div>
-                        
+                    </div>
+                    
+                    <!-- Stat 3: Composable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 457 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#1a2e28"/>
+                                <!-- Rotating circles -->
+                                <g class="why-eto-circles" style="transform-origin: 228.5px 125px;">
+                                    <circle cx="228.5" cy="125" r="100" fill="none" stroke="#57FEC7" stroke-width="40" opacity="0.3"/>
+                                    <path d="M228.5 25 A100 100 0 0 1 328.5 125" stroke="#57FEC7" stroke-width="40" fill="none"/>
+                                    <circle cx="228.5" cy="125" r="50" fill="none" stroke="#57FEC7" stroke-width="25" opacity="0.5"/>
+                                    <path d="M278.5 125 A50 50 0 0 1 228.5 175" stroke="#8BFFD8" stroke-width="25" fill="none"/>
+                                </g>
+                                    </svg>
+                            </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Composable</span>
+                            <span class="why-eto-stat-desc">Integrate anywhere</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 4: Usable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 457 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0d2620"/>
+                                <!-- Shield pattern -->
+                                <g class="why-eto-shield">
+                                    <circle cx="228.5" cy="125" r="90" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.2"/>
+                                    <circle cx="228.5" cy="125" r="70" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="50" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.5"/>
+                                    <path d="M228.5 55 L228.5 195 M158.5 125 L298.5 125" stroke="#57FEC7" stroke-width="2" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="25" fill="#57FEC7" opacity="0.15"/>
+                                    <path d="M228.5 85 L250 115 L228.5 165 L207 115 Z" fill="#57FEC7" opacity="0.4"/>
+                                    <path d="M228.5 100 L240 120 L228.5 150 L217 120 Z" fill="#8BFFD8"/>
+                                </g>
+                                    </svg>
+                            </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Usable</span>
+                            <span class="why-eto-stat-desc">Stake to secure the Price</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 5: Auditable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 457 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0a1814"/>
+                                <!-- Checkmark/Audit pattern -->
+                                <g class="why-eto-audit">
+                                    <circle cx="228.5" cy="125" r="80" fill="none" stroke="#57FEC7" stroke-width="4" opacity="0.2"/>
+                                    <circle cx="228.5" cy="125" r="60" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="40" fill="#57FEC7" opacity="0.15"/>
+                                    <path d="M200 125 L220 145 L260 105" stroke="#57FEC7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <path d="M200 125 L220 145 L260 105" stroke="#8BFFD8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Auditable</span>
+                            <span class="why-eto-stat-desc">Fully transparent. Trust but Verify.</span>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Right Stack - Protocol Benefits -->
-                <div class="display-cards-container display-cards-right">
-                    <div class="display-cards-stack display-cards-stack-right">
-                        
-                        <!-- Card 1 (Back) -->
-                        <div class="display-card display-card-1">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="3" y1="9" x2="21" y2="9"/>
-                                        <line x1="9" y1="21" x2="9" y2="9"/>
-                                    </svg>
-                                </span>
-                                <p class="display-card-title">Transparent</p>
-                            </div>
-                            <p class="display-card-description">On-chain verifiable reserves</p>
-                            <p class="display-card-date">Fully Audited</p>
-                        </div>
-                        
-                        <!-- Card 2 (Middle) -->
-                        <div class="display-card display-card-2">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                    </svg>
-                                </span>
-                                <p class="display-card-title">Instant</p>
-                            </div>
-                            <p class="display-card-description">Trade 24/7 with no downtime</p>
-                            <p class="display-card-date">Always On</p>
-                        </div>
-                        
-                        <!-- Card 3 (Front) -->
-                        <div class="display-card display-card-3">
-                            <div class="display-card-top">
-                                <span class="display-card-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <line x1="2" y1="12" x2="22" y2="12"/>
-                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                                    </svg>
-                                </span>
-                                <p class="display-card-title">Global</p>
-                            </div>
-                            <p class="display-card-description">Access markets from anywhere</p>
-                            <p class="display-card-date">Borderless</p>
-                        </div>
-                        
-                    </div>
-                </div>
-                
             </div>
-            
         </div>
     </section>
 
-    <!-- Page 6: Tokenization as a Service -->
-    <section class="page page-taas" id="taas">
-        <div class="taas-content">
-            <p class="taas-subtitle">Tokenization as a Service</p>
-            <h1 class="taas-title">Tokenize Global Markets</h1>
-            <button class="explore-btn taas-btn" onclick="window.top.location.href='/trade'">
-                <span>GET STARTED</span>
-                <div class="btn-icon">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+    <!-- Page 6: FAQ Section -->
+    <section class="page page-faq fade-in-section" id="faq">
+        <div class="faq-container">
+            <div class="faq-grid">
+                <!-- Left Column - Header -->
+                <div class="faq-header">
+                    <span class="faq-label">FAQ</span>
+                    <h2 class="faq-title">The Answers to All Your Questions</h2>
+                    <a href="https://docs.eto.finance" target="_blank" rel="noopener noreferrer" class="faq-docs-btn">
+                        <span>Read the Docs</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                    </a>
                 </div>
-            </button>
+                
+                <!-- Right Column - Accordion -->
+                <div class="faq-accordion">
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is ETO Protocol?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is a decentralized platform that tokenizes traditional assets, enabling users to trade, stake, and earn yield on U.S. capital markets on-chain with full transparency and self-custody.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is MAANG Token?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>MAANG is a tokenized index representing the five largest tech companies: Meta, Apple, Amazon, Netflix, and Google. It allows you to gain diversified exposure to these giants through a single on-chain asset.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How does staking work?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>When you stake MAANG tokens, you receive sMAANG which earns yield over time. There are no lock-up periods, and you can unstake at any time while maintaining full custody of your assets.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>Is ETO Protocol audited?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Yes, ETO Protocol maintains 100% on-chain verified reserves with real-time auditing. All smart contracts are fully audited by leading security firms, and reserves are transparently verifiable at any time.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What networks does ETO support?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is built on Avalanche and leverages LayerZero for cross-chain interoperability. This enables frictionless transfers and composability across multiple blockchain networks.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How do I get started?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Connect your wallet, acquire USDC, and you can immediately start trading MAANG tokens or stake them to earn yield. No KYC required, no intermediaries—just permissionless DeFi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="site-footer" id="footer">
+        <div class="footer-container">
+            <!-- Logo Circle -->
+            <div class="footer-logo-circle">
+                <svg class="footer-logo" width="32" height="32" viewBox="600 600 860 860" fill="currentColor">
+                    <path d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
+                    <path d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
+                    </svg>
         </div>
         
-        <!-- Dual Token Carousels -->
-        <div class="dual-carousel-container">
-            <!-- Top Row - Moving Right -->
-            <div class="h-carousel-wrapper carousel-right">
-                <div class="h-carousel-track track-right">
-                    <!-- ICE Logo -->
-                    <button class="h-token" type="button" aria-label="ICE">
-                        <div class="h-token-3d">
-                            <div class="h-token-front">
-                                <div class="h-token-logo h-token-logo-full">
-                                    <svg viewBox="194 194 1660 1660">
-                                        <circle cx="1024" cy="1024" r="830" fill="#ddd"/>
-                                        <path fill="#1a1a1a" d="M 676.55 666.976 L 1370.21 667.035 L 1370.7 1034.9 L 1310.95 1035.01 L 1310.48 726.95 L 970.5 726.965 L 736.009 726.996 L 736.003 1292.59 C 762.34 1292.65 788.676 1292.56 815.012 1292.33 L 815.024 1351.4 L 676.536 1351.32 L 676.55 666.976 z"/>
-                                        <path fill="#1a1a1a" d="M 1276.36 1132.39 C 1348.75 1128.59 1376.26 1187.83 1370 1251.96 C 1322.11 1252.32 1274.22 1252.37 1226.33 1252.12 C 1232.46 1321.34 1291.87 1327.28 1346.66 1308.08 L 1353.76 1305.33 C 1356.66 1316.24 1359.37 1327.19 1361.89 1338.18 C 1319.87 1358.82 1255.83 1360.69 1218.54 1328.88 C 1161.85 1280.52 1175.76 1159.2 1251.68 1136.5 C 1260.27 1133.93 1267.46 1133.06 1276.36 1132.39 z"/>
-                                        <path fill="#1a1a1a" d="M 1106.37 1132.4 C 1130.17 1131.2 1150.19 1134.19 1171.77 1144.28 C 1168.53 1155.98 1165.02 1167.78 1161.63 1179.46 C 1140.49 1170.36 1120.9 1164.89 1097.73 1170.72 C 1081.41 1174.67 1067.38 1185.05 1058.83 1199.51 C 1046.95 1219.47 1045.74 1244.43 1051.38 1266.26 C 1060.42 1299.18 1087.23 1316.9 1120.78 1315.79 C 1140.87 1315.13 1144.77 1310.6 1162.58 1305.75 C 1165.08 1307.87 1164.58 1308.9 1165.59 1312.81 C 1167.86 1320.89 1169.88 1330.6 1171.81 1338.87 C 1115.24 1365.27 1040.14 1355.59 1014.25 1292.44 C 992.177 1238.62 1008.31 1166.86 1064.83 1141.93 C 1079.34 1135.53 1090.75 1133.65 1106.37 1132.4 z"/>
-                                        <path fill="#1a1a1a" d="M 929.995 1138.85 C 944.011 1138.45 958.983 1138.62 973.077 1138.52 L 973.177 1351.05 L 930.006 1351.02 L 929.995 1138.85 z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="h-token-edge"></div>
-                            <div class="h-token-back"></div>
-                        </div>
-                    </button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <!-- Duplicates for seamless loop -->
-                    <!-- ICE Logo Duplicate -->
-                    <button class="h-token" type="button" aria-label="ICE">
-                        <div class="h-token-3d">
-                            <div class="h-token-front">
-                                <div class="h-token-logo h-token-logo-full">
-                                    <svg viewBox="194 194 1660 1660">
-                                        <circle cx="1024" cy="1024" r="830" fill="#ddd"/>
-                                        <path fill="#1a1a1a" d="M 676.55 666.976 L 1370.21 667.035 L 1370.7 1034.9 L 1310.95 1035.01 L 1310.48 726.95 L 970.5 726.965 L 736.009 726.996 L 736.003 1292.59 C 762.34 1292.65 788.676 1292.56 815.012 1292.33 L 815.024 1351.4 L 676.536 1351.32 L 676.55 666.976 z"/>
-                                        <path fill="#1a1a1a" d="M 1276.36 1132.39 C 1348.75 1128.59 1376.26 1187.83 1370 1251.96 C 1322.11 1252.32 1274.22 1252.37 1226.33 1252.12 C 1232.46 1321.34 1291.87 1327.28 1346.66 1308.08 L 1353.76 1305.33 C 1356.66 1316.24 1359.37 1327.19 1361.89 1338.18 C 1319.87 1358.82 1255.83 1360.69 1218.54 1328.88 C 1161.85 1280.52 1175.76 1159.2 1251.68 1136.5 C 1260.27 1133.93 1267.46 1133.06 1276.36 1132.39 z"/>
-                                        <path fill="#1a1a1a" d="M 1106.37 1132.4 C 1130.17 1131.2 1150.19 1134.19 1171.77 1144.28 C 1168.53 1155.98 1165.02 1167.78 1161.63 1179.46 C 1140.49 1170.36 1120.9 1164.89 1097.73 1170.72 C 1081.41 1174.67 1067.38 1185.05 1058.83 1199.51 C 1046.95 1219.47 1045.74 1244.43 1051.38 1266.26 C 1060.42 1299.18 1087.23 1316.9 1120.78 1315.79 C 1140.87 1315.13 1144.77 1310.6 1162.58 1305.75 C 1165.08 1307.87 1164.58 1308.9 1165.59 1312.81 C 1167.86 1320.89 1169.88 1330.6 1171.81 1338.87 C 1115.24 1365.27 1040.14 1355.59 1014.25 1292.44 C 992.177 1238.62 1008.31 1166.86 1064.83 1141.93 C 1079.34 1135.53 1090.75 1133.65 1106.37 1132.4 z"/>
-                                        <path fill="#1a1a1a" d="M 929.995 1138.85 C 944.011 1138.45 958.983 1138.62 973.077 1138.52 L 973.177 1351.05 L 930.006 1351.02 L 929.995 1138.85 z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="h-token-edge"></div>
-                            <div class="h-token-back"></div>
-                        </div>
-                    </button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                </div>
-            </div>
-            
-            <!-- Bottom Row - Moving Left -->
-            <div class="h-carousel-wrapper carousel-left">
-                <div class="h-carousel-track track-left">
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <!-- Duplicates for seamless loop -->
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                </div>
-            </div>
-        </div>
-    </section>
+            <!-- Navigation Links -->
+            <nav class="footer-nav">
+                <a href="#hero" class="footer-link">Home</a>
+                <a href="#highlights" class="footer-link">Why ETO</a>
+                <a href="/trade" class="footer-link">Trade</a>
+            </nav>
 
-    <!-- Page 6: Call to Action Section -->
-    <section class="page page-cta" id="cta">
-        <div class="cta-content">
-            <h2 class="cta-title">Five Giants. One Token.</h2>
-            <button class="explore-btn cta-btn" onclick="window.top.location.href='/trade'">
-                <span>EXPLORE MARKETS</span>
-                <div class="btn-icon">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+            <!-- Social Icons -->
+            <div class="footer-socials">
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="X">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Discord">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.618-1.25.077.077 0 00-.079-.037A19.74 19.74 0 003.677 4.37a.07.07 0 00-.032.028C.533 9.046-.32 13.58.099 18.058a.082.082 0 00.031.056c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 00.084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.11 13.11 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.078-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 01.079.01c.12.099.246.197.372.291a.077.077 0 01-.006.128 12.3 12.3 0 01-1.873.892.076.076 0 00-.04.107c.36.698.772 1.363 1.225 1.993a.076.076 0 00.084.028c1.961-.607 3.95-1.522 6.002-3.03a.077.077 0 00.032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.029zM8.02 15.33c-1.183 0-2.157-1.086-2.157-2.42 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.086-2.157-2.42 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                </a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="GitHub">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
                 </div>
-            </button>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-main">
-                <div class="footer-brand">
-                    <div class="footer-logo">
-                        <svg class="footer-logo-icon" width="32" height="32" viewBox="600 600 860 860" fill="none"><path fill="currentColor" d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/><path fill="currentColor" d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/><path fill="currentColor" d="M 682.191 1097.5 C 706.947 1097.31 735.358 1096.58 759.838 1097.61 C 762.866 1145.3 756.563 1201.47 761.27 1248.79 C 763.291 1269.12 790.006 1294.51 809.171 1298.07 C 823.802 1300.78 848.335 1299.86 864.81 1299.84 C 898.85 1299.65 932.891 1299.63 966.931 1299.8 C 967.423 1314.3 966.6 1329.82 966.857 1344.07 C 967.353 1371.64 970.096 1394.59 948.689 1415.5 C 936.923 1426.99 926.158 1434.41 908.74 1434.86 C 855.571 1434.24 802.143 1435.12 748.849 1434.64 C 723.6 1434.4 695.36 1435.94 670.269 1433.59 C 663.214 1432.26 655.822 1428.06 650.243 1423.91 C 640.318 1416.53 628.078 1401.6 625.549 1389.13 C 624.19 1382.44 624.859 1362.87 624.806 1355.12 L 624.789 1279.55 L 624.649 1194.45 C 624.684 1170.91 620.433 1143.59 636.781 1125.45 C 649.514 1111.32 662.538 1099.57 682.191 1097.5 z"/><path fill="currentColor" d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/><path fill="currentColor" d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/></svg>
-                        <span class="footer-logo-text">eto</span>
-                    </div>
-                    <p class="footer-tagline">Global Exchange for All Assets</p>
+                        
+            <!-- Newsletter Subscription -->
+            <div class="footer-newsletter">
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thanks for subscribing!');">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
                 </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Product</h4>
-                        <a href="/trade" class="footer-link">Trade</a>
-                        <a href="/stake" class="footer-link">Stake</a>
-                        <a href="/dashboard" class="footer-link">Dashboard</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Resources</h4>
-                        <a href="https://docs.eto.finance" target="_blank" class="footer-link">Docs</a>
-                        <a href="https://github.com/The-Close-Group" target="_blank" class="footer-link">GitHub</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Community</h4>
-                        <a href="https://twitter.com/etoprotocol" target="_blank" class="footer-link">Twitter</a>
-                        <a href="https://discord.gg/eto" target="_blank" class="footer-link">Discord</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p class="footer-copyright">© 2025 ETO Protocol. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#" class="footer-legal-link">Privacy</a>
-                    <a href="#" class="footer-legal-link">Terms</a>
-                </div>
-            </div>
-        </div>
+                        
+            <!-- Copyright -->
+            <div class="footer-copyright">
+                <p>© 2024 ETO Protocol. All rights reserved.</p>
+                            </div>
+                        </div>
     </footer>
-
     
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
@@ -1162,6 +1132,31 @@
                     }
                 });
             }
+        })();
+    </script>
+    <!-- FAQ Accordion Script -->
+    <script>
+        (function() {
+            const faqItems = document.querySelectorAll(".faq-item");
+            faqItems.forEach(item => {
+                const trigger = item.querySelector(".faq-trigger");
+                trigger.addEventListener("click", function() {
+                    const isOpen = item.classList.contains("open");
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove("open");
+                            otherItem.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
+                        }
+                    });
+                    if (isOpen) {
+                        item.classList.remove("open");
+                        trigger.setAttribute("aria-expanded", "false");
+                    } else {
+                        item.classList.add("open");
+                        trigger.setAttribute("aria-expanded", "true");
+                    }
+                });
+            });
         })();
     </script>
 </body>
