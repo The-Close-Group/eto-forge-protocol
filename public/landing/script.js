@@ -69,12 +69,26 @@ function initButtonEffects() {
 }
 
 /* ========================================
-   SHARED WORLD DATA LOADER
+   SHARED WORLD DATA LOADER (with localStorage cache)
    ======================================== */
+const GLOBE_CACHE_KEY = 'eto_globe_data_v1';
+const GLOBE_DOTS_CACHE_KEY = 'eto_globe_dots_v1';
+
 async function loadSharedWorldData() {
     if (typeof d3 === 'undefined') return;
     
     try {
+        // Try to load from cache first (instant load for returning visitors)
+        const cachedData = localStorage.getItem(GLOBE_CACHE_KEY);
+        const cachedDots = localStorage.getItem(GLOBE_DOTS_CACHE_KEY);
+        
+        if (cachedData && cachedDots) {
+            sharedLandFeatures = JSON.parse(cachedData);
+            sharedDots = JSON.parse(cachedDots);
+            return;
+        }
+        
+        // Fetch from network
         const response = await fetch(
             'https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json'
         );
@@ -90,6 +104,14 @@ async function loadSharedWorldData() {
                 sharedDots.push({ lng, lat });
             });
         });
+        
+        // Cache for next visit (async, non-blocking)
+        try {
+            localStorage.setItem(GLOBE_CACHE_KEY, JSON.stringify(sharedLandFeatures));
+            localStorage.setItem(GLOBE_DOTS_CACHE_KEY, JSON.stringify(sharedDots));
+        } catch (e) {
+            // localStorage might be full or disabled, ignore
+        }
     } catch (err) {
         console.error('Failed to load Earth data:', err);
     }
