@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETO - Global Exchange for All Assets</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@100;300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2025010301">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -1078,60 +1075,9 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
     
-    <!-- Theme Switching Script -->
-    <script>
-        (function() {
-            // Theme Toggle Functionality
-            const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
-            
-            // Check for saved theme preference or default to dark
-            const savedTheme = localStorage.getItem('eto-theme') || 'dark';
-            
-            // Apply saved theme on page load
-            if (savedTheme === 'light') {
-                html.setAttribute('data-theme', 'light');
-            }
-            
-            // Toggle theme on button click
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = html.getAttribute('data-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                
-                // Apply new theme
-                if (newTheme === 'light') {
-                    html.setAttribute('data-theme', 'light');
-                } else {
-                    html.removeAttribute('data-theme');
-                }
-                
-                // Save preference
-                localStorage.setItem('eto-theme', newTheme);
-                
-                // Add a subtle animation class
-                document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-            });
-            
-            // Respect system preference if no saved preference
-            if (!localStorage.getItem('eto-theme')) {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-                if (!prefersDark.matches) {
-                    html.setAttribute('data-theme', 'light');
-                }
-                
-                // Listen for system preference changes
-                prefersDark.addEventListener('change', function(e) {
-                    if (!localStorage.getItem('eto-theme')) {
-                        if (e.matches) {
-                            html.removeAttribute('data-theme');
-                        } else {
-                            html.setAttribute('data-theme', 'light');
-                        }
-                    }
-                });
-            }
-        })();
-    </script>
+    <!-- Theme Switching Script - REMOVED: No theme toggle button exists in HTML -->
+    <!-- If you want to add a theme toggle, create a button with id="theme-toggle" first -->
+    
     <!-- FAQ Accordion Script -->
     <script>
         (function() {
@@ -1154,6 +1100,47 @@
                         trigger.setAttribute("aria-expanded", "true");
                     }
                 });
+            });
+        })();
+    </script>
+    <!-- Typography Debug Instrumentation -->
+    <script>
+        (function() {
+            // Wait for fonts to settle
+            document.fonts.ready.then(() => {
+                const hero = document.querySelector('.hero-title');
+                const subtitle = document.querySelector('.hero-subtitle');
+                const brand = document.querySelector('.brand-name');
+                const button = document.querySelector('.start-trading-btn');
+                const ticker = document.querySelector('.ticker-item');
+
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/ca097152-2e59-4c74-91b1-c7163c0cb12c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'run3',hypothesisId:'H1',location:'index.html:fontcheck',message:'Font availability check',data:{inter16:document.fonts.check('16px Inter'),jetbrains16:document.fonts.check('16px \"JetBrains Mono\"'),fontCount:document.fonts.size,fonts:Array.from(document.fonts).map(f=>({family:f.family,weight:f.weight,style:f.style,status:f.status})),loading:Array.from(document.fonts).filter(f=>f.status!=='loaded').map(f=>({family:f.family,weight:f.weight,style:f.style,status:f.status}))},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+
+                // Try to force-load JetBrains Mono 400
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/ca097152-2e59-4c74-91b1-c7163c0cb12c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'run3',hypothesisId:'H1',location:'index.html:fontload-start',message:'Calling document.fonts.load for JetBrains Mono 400',data:{},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                document.fonts.load('400 1em "JetBrains Mono"').then(res => {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7243/ingest/ca097152-2e59-4c74-91b1-c7163c0cb12c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'run3',hypothesisId:'H1',location:'index.html:fontload-done',message:'document.fonts.load resolved',data:{resultCount:res.length,jetbrains16:document.fonts.check('16px \"JetBrains Mono\"'),loading:Array.from(document.fonts).filter(f=>f.status!=='loaded').map(f=>({family:f.family,weight:f.weight,style:f.style,status:f.status}))},timestamp:Date.now()})}).catch(()=>{});
+                    // #endregion
+                });
+
+                const gather = (el, name, hyp) => {
+                    if (!el) return;
+                    const cs = getComputedStyle(el);
+                    // #region agent log
+                    fetch('http://127.0.0.1:7243/ingest/ca097152-2e59-4c74-91b1-c7163c0cb12c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'run3',hypothesisId:hyp,location:`index.html:${name}`,message:`Computed styles for ${name}`,data:{fontFamily:cs.fontFamily,fontSize:cs.fontSize,fontWeight:cs.fontWeight,letterSpacing:cs.letterSpacing,lineHeight:cs.lineHeight},timestamp:Date.now()})}).catch(()=>{});
+                    // #endregion
+                };
+
+                gather(hero,'hero-title','H2');
+                gather(subtitle,'hero-subtitle','H2');
+                gather(brand,'brand-name','H2');
+                gather(button,'start-trading-btn','H3');
+                gather(ticker,'ticker-item','H3');
             });
         })();
     </script>

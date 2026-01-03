@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typography Debug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0c0c0c;
+            color: white;
+            padding: 40px;
+            font-family: Arial;
+        }
+        .test-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px solid #333;
+        }
+        .hero-title-test {
+            color: #FFF !important;
+            text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25) !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 71px !important;
+            font-style: normal !important;
+            font-weight: 600 !important;
+            line-height: 84px !important;
+            letter-spacing: -2.13px !important;
+        }
+        .brand-name-test {
+            color: #f8f9eb !important;
+            text-align: center;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 32px !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            line-height: 35px !important;
+            letter-spacing: -2.88px !important;
+        }
+        .button-test {
+            display: inline-flex;
+            align-items: center;
+            background: white;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', sans-serif !important;
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            letter-spacing: -0.3px !important;
+        }
+        .info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Typography Debug Page</h1>
+    
+    <div class="test-section">
+        <h2>Hero Title Test</h2>
+        <div class="hero-title-test">Invest in Sectors without leaving your Wallet.</div>
+        <div class="info">Should be: Inter Semi Bold, 71px, -2.13px letter-spacing</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Brand Name Test</h2>
+        <div class="brand-name-test">eto.markets</div>
+        <div class="info">Should be: Inter Regular, 32px, -2.88px letter-spacing</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Button Test</h2>
+        <button class="button-test">Start Trading</button>
+        <div class="info">Should be: JetBrains Mono Medium, 15px, -0.3px letter-spacing</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Font Loading Check</h2>
+        <div id="font-check"></div>
+    </div>
+    
+    <script>
+        // Check if fonts are loaded
+        document.fonts.ready.then(function() {
+            const fontCheckDiv = document.getElementById('font-check');
+            const interLoaded = document.fonts.check('16px Inter');
+            const jetbrainsLoaded = document.fonts.check('16px "JetBrains Mono"');
+            
+            fontCheckDiv.innerHTML = `
+                <div style="color: ${interLoaded ? 'lime' : 'red'}">
+                    Inter Font: ${interLoaded ? '✓ LOADED' : '✗ NOT LOADED'}
+                </div>
+                <div style="color: ${jetbrainsLoaded ? 'lime' : 'red'}">
+                    JetBrains Mono Font: ${jetbrainsLoaded ? '✓ LOADED' : '✗ NOT LOADED'}
+                </div>
+                <div style="margin-top: 20px; color: #888;">
+                    Total fonts loaded: ${document.fonts.size}
+                </div>
+                <div style="color: #888;">
+                    All loaded fonts:
+                    <ul>
+                    ${Array.from(document.fonts).map(font => 
+                        `<li>${font.family} ${font.weight} ${font.style}</li>`
+                    ).join('')}
+                    </ul>
+                </div>
+            `;
+        });
+        
+        // Also check computed styles
+        setTimeout(() => {
+            const heroTest = document.querySelector('.hero-title-test');
+            const brandTest = document.querySelector('.brand-name-test');
+            const buttonTest = document.querySelector('.button-test');
+            
+            console.log('=== COMPUTED STYLES ===');
+            console.log('Hero Title:', {
+                fontFamily: getComputedStyle(heroTest).fontFamily,
+                fontSize: getComputedStyle(heroTest).fontSize,
+                fontWeight: getComputedStyle(heroTest).fontWeight,
+                letterSpacing: getComputedStyle(heroTest).letterSpacing,
+                lineHeight: getComputedStyle(heroTest).lineHeight
+            });
+            console.log('Brand Name:', {
+                fontFamily: getComputedStyle(brandTest).fontFamily,
+                fontSize: getComputedStyle(brandTest).fontSize,
+                fontWeight: getComputedStyle(brandTest).fontWeight,
+                letterSpacing: getComputedStyle(brandTest).letterSpacing,
+                lineHeight: getComputedStyle(brandTest).lineHeight
+            });
+            console.log('Button:', {
+                fontFamily: getComputedStyle(buttonTest).fontFamily,
+                fontSize: getComputedStyle(buttonTest).fontSize,
+                fontWeight: getComputedStyle(buttonTest).fontWeight,
+                letterSpacing: getComputedStyle(buttonTest).letterSpacing
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
+

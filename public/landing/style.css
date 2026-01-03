@@ -1,4 +1,64 @@
 /* ========================================
+   FONT FACE (Self-hosted)
+   ======================================== */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('./fonts/inter-latin-100-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./fonts/inter-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('./fonts/inter-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('./fonts/jetbrains-mono-latin-100-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./fonts/jetbrains-mono-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+}
+
+/* ========================================
    CSS CUSTOM PROPERTIES - THEME SYSTEM
    ======================================== */
 :root {
@@ -206,42 +266,42 @@ body {
     align-items: center;
     gap: 0;
     padding-top: 20px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .brand-name {
-    width: 10.125rem;
-    height: 2rem;
-    color: #F8F9EB;
+    color: #f8f9eb !important;
     text-align: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 2.1875rem;
-    letter-spacing: -0.18rem;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 32px !important;
+    font-style: normal !important;
+    font-weight: 100 !important; /* thin */
+    line-height: 35px !important;
+    letter-spacing: -2.88px !important;
 }
 
 .ticker-divider {
-    width: 1.4375rem;
-    height: 2rem;
-    color: #F8F9EB;
+    color: #f8f9eb;
     text-align: center;
     font-family: 'Inter', sans-serif;
-    font-size: 2rem;
+    font-size: 32px;
     font-style: normal;
     font-weight: 400;
-    line-height: 2.1875rem;
-    letter-spacing: -0.18rem;
+    line-height: 35px;
+    letter-spacing: -2.88px;
     margin: 0 12px;
 }
 
 .ticker-item {
     font-family: 'JetBrains Mono', sans-serif;
     font-size: 12px;
-    font-weight: 100; /* Thin */
+    font-weight: 300; /* Light */
     color: white;
     letter-spacing: -1.08px;
     line-height: 35px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .ticker-status {
@@ -250,7 +310,10 @@ body {
     font-weight: 100; /* Thin */
     color: white;
     letter-spacing: -1.08px;
+    line-height: 35px;
     margin-left: 4px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Navigation Pill - Right Side */
@@ -267,9 +330,9 @@ body {
 }
 
 .nav-link {
-    font-family: 'JetBrains Mono', sans-serif;
+    font-family: 'JetBrains Mono' !important;
     font-size: 15px;
-    font-weight: 700; /* Bold */
+    font-weight: 700 !important; /* Bold */
     color: white;
     text-decoration: none;
     transition: color 0.2s ease;
@@ -283,7 +346,7 @@ body {
 }
 
 .launch-btn {
-    font-family: 'JetBrains Mono', sans-serif;
+    font-family: 'JetBrains Mono' !important;
     background: rgba(255, 255, 255, 0.95);
     color: #202020;
     border: 0.5px solid #4D4D4D;
@@ -292,7 +355,9 @@ body {
     width: 114px;
     padding: 0;
     font-size: 11px;
-    font-weight: 700; /* Bold */
+    font-weight: 700 !important; /* Bold */
+    line-height: normal;
+    letter-spacing: -0.22px;
     letter-spacing: -0.22px;
     line-height: normal;
     cursor: pointer;
@@ -337,16 +402,16 @@ body {
 .binary-cluster {
     position: absolute;
     display: flex;
-    width: 5.8125rem;
-    height: 5.8125rem;
+    width: 93px;
+    height: 93px;
     flex-direction: column;
     justify-content: center;
     font-family: 'Inter', sans-serif;
-    font-size: 1.1875rem;
+    font-size: 19px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    letter-spacing: -0.03563rem;
+    letter-spacing: -0.57px;
     color: #FFFFFF;
     white-space: nowrap;
 }
@@ -508,35 +573,33 @@ body {
     padding-top: 124px; /* 188px from top - 64px navbar */
     padding-left: 63px;
     margin-bottom: 0;
-    max-width: 660px;
+    max-width: 900px; /* allow hero title to keep “your Wallet.” on one line */
     position: relative;
     z-index: 10;
 }
 
 .hero-title {
-    width: 54.4375rem;
-    height: 12.58138rem;
-    color: #FFF;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', sans-serif;
-    font-size: 4.4375rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 5.25rem;
-    letter-spacing: -0.13313rem;
+    color: #FFF !important;
+    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 71px !important;
+    font-style: normal !important;
+    font-weight: 500 !important; /* lighten from Semi Bold to Medium */
+    line-height: 84px !important;
+    letter-spacing: -2.13px !important;
     margin-bottom: 20px;
 }
 
 .hero-subtitle {
+    color: #FFF !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.5rem !important;        /* 24px */
+    font-style: normal !important;
+    font-weight: 400 !important;
+    line-height: normal !important;
+    letter-spacing: -0.03rem !important; /* -0.48px */
     width: 51.3125rem;
     height: 1.82431rem;
-    color: #FFF;
-    font-family: 'Inter', sans-serif;
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    letter-spacing: -0.03rem;
     margin-bottom: 28px;
 }
 
@@ -558,12 +621,12 @@ body {
     height: 44.143px;
     width: 180.585px;
     padding: 0 3px 0 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9375rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    letter-spacing: -0.01875rem;
+    font-family: 'JetBrains Mono', sans-serif !important;
+    font-size: 15px !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    line-height: normal !important;
+    letter-spacing: -0.3px !important;
     cursor: pointer;
     transition: all 0.2s ease;
     box-sizing: border-box;
@@ -596,7 +659,7 @@ body {
 
 /* Legacy explore button */
 .explore-btn {
-    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono' !important;
     display: inline-flex;
     align-items: center;
     gap: 0;
@@ -4156,6 +4219,7 @@ body {
     }
 }
 
+.h-token-dots {
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
@@ -5826,6 +5890,7 @@ body {
     }
 }
 
+.h-token-dots {
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
@@ -7961,6 +8026,7 @@ body {
     }
 }
 
+.display-cards-stack-right .display-card-3:hover {
     transform: scaleX(-1) skewY(-8deg) translateX(120px) translateY(50px);
 }
 
