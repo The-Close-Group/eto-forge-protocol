@@ -2,23 +2,28 @@
    CSS CUSTOM PROPERTIES - THEME SYSTEM
    ======================================== */
 :root {
-    /* Dark Theme (Default) */
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --bg-card: rgba(26, 26, 26, 0.7);
-    --bg-card-solid: #1a1a1a;
-    --bg-card-hover: rgba(26, 26, 26, 0.9);
+    /* Dark Theme (Default) - Trust & Sophistication Palette */
+    --bg-primary: #0C0C0C;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1a1a1a;
+    --bg-card: rgba(42, 42, 42, 0.7);
+    --bg-card-solid: #2a2a2a;
+    --bg-card-hover: rgba(42, 42, 42, 0.9);
     
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-tertiary: rgba(255, 255, 255, 0.5);
-    --text-muted: rgba(255, 255, 255, 0.4);
+    --text-primary: #F8F9EB;
+    --text-secondary: rgba(248, 249, 235, 0.7);
+    --text-tertiary: rgba(248, 249, 235, 0.5);
+    --text-muted: rgba(248, 249, 235, 0.4);
     
-    --accent-green: #57FEC7;
-    --accent-green-hover: #3de0ab;
-    --accent-green-bg: rgba(87, 254, 199, 0.2);
-    --accent-red: #ff4d4d;
+    --accent-green: #F8F9EB;
+    --accent-green-hover: #FFFFFF;
+    --accent-green-bg: rgba(248, 249, 235, 0.15);
+    --accent-chart-green: #52C793;
+    --accent-chart-green-dark: #013D21;
+    --accent-blue: #4A7FFF;
+    --accent-blue-dark: #021768;
+    --accent-gold: #D4AF37;
+    --accent-red: #8B2635;
     
     --border-primary: rgba(255, 255, 255, 0.1);
     --border-secondary: rgba(255, 255, 255, 0.2);
@@ -102,13 +107,24 @@ html {
 }
 
 body {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     overflow-x: hidden;
     position: relative;
     width: 100%;
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Data Font - Apply to all numbers, prices, tickers */
+.data-mono,
+[data-type="price"],
+[data-type="ticker"],
+[data-type="percentage"],
+[data-type="number"] {
+    font-family: 'JetBrains Mono', 'Space Mono', 'Roboto Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
 }
 
 /* ========================================
@@ -127,36 +143,33 @@ body {
     position: relative;
     overflow: hidden;
     width: 100%;
+    min-height: 100vh;
+    height: auto;
     box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: 100px;
+    background: #0C0C0C;
 }
 
-/* Fade transition at bottom of hero into next section */
+/* Fade transition at bottom of hero into next section - REMOVED for clean separation */
 .page-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 450px;
-    background: var(--gradient-fade);
-    pointer-events: none;
-    z-index: 5;
-    transition: background 0.3s ease;
+    display: none;
 }
 
 /* ========================================
    HERO GLOBE - HORIZON EFFECT
    ======================================== */
 .hero-globe-container {
+    display: none; /* Globe component removed */
     position: absolute;
-    bottom: -650px;
+    bottom: -850px;
     left: 50%;
     transform: translateX(-50%);
     width: 1400px;
     height: 1400px;
     z-index: 1;
     pointer-events: auto;
-    display: flex;
+    /* display: flex; */
     align-items: center;
     justify-content: center;
 }
@@ -175,108 +188,120 @@ body {
    NAVIGATION
    ======================================== */
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 6px 0 6px 64px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 20px 60px;
-    position: relative;
-    z-index: 100;
-    transition: background-color 0.3s ease;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    width: 28px;
-    height: 28px;
-}
-
-.logo-icon path {
-    fill: var(--logo-fill);
-    transition: fill 0.3s ease;
-}
-
-.logo-text {
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-    transition: color 0.3s ease;
-}
-
-/* Navbar Right Section */
-.navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* Theme Toggle Button */
-.theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--border-primary);
-    background: var(--bg-card);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    cursor: pointer;
+    align-items: flex-start;
     transition: all 0.3s ease;
 }
 
-.theme-toggle:hover {
-    border-color: var(--border-secondary);
-    transform: scale(1.05);
+/* Left side - Brand + Tickers */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-top: 20px;
 }
 
-.theme-toggle svg {
-    width: 18px;
-    height: 18px;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
+.brand-name {
+    width: 10.125rem;
+    height: 2rem;
+    color: #F8F9EB;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 2.1875rem;
+    letter-spacing: -0.18rem;
 }
 
-/* Sun icon visible in dark mode, moon in light mode */
-.theme-toggle .icon-sun {
-    display: block;
+.ticker-divider {
+    width: 1.4375rem;
+    height: 2rem;
+    color: #F8F9EB;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 2.1875rem;
+    letter-spacing: -0.18rem;
+    margin: 0 12px;
 }
 
-.theme-toggle .icon-moon {
-    display: none;
+.ticker-item {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 12px;
+    font-weight: 100; /* Thin */
+    color: white;
+    letter-spacing: -1.08px;
+    line-height: 35px;
 }
 
-[data-theme="light"] .theme-toggle .icon-sun {
-    display: none;
+.ticker-status {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 9px;
+    font-weight: 100; /* Thin */
+    color: white;
+    letter-spacing: -1.08px;
+    margin-left: 4px;
 }
 
-[data-theme="light"] .theme-toggle .icon-moon {
-    display: block;
+/* Navigation Pill - Right Side */
+.navbar-pill {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    height: 52px;
+    width: 467px;
+    padding: 0 10px 0 32px;
+    background: #202020;
+    border: 0.5px solid white;
+    border-radius: 133px;
+}
+
+.nav-link {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 15px;
+    font-weight: 700; /* Bold */
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    letter-spacing: -0.3px;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .launch-btn {
-    background: var(--accent-green);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
+    font-family: 'JetBrains Mono', sans-serif;
+    background: rgba(255, 255, 255, 0.95);
+    color: #202020;
+    border: 0.5px solid #4D4D4D;
+    border-radius: 100px;
+    height: 33px;
+    width: 114px;
+    padding: 0;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-weight: 700; /* Bold */
+    letter-spacing: -0.22px;
+    line-height: normal;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
 }
 
 .launch-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(87, 254, 199, 0.4);
-    background: var(--accent-green-hover);
+    background: #FFFFFF;
 }
 
 /* ========================================
@@ -287,68 +312,329 @@ body {
     z-index: 10;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     padding-bottom: 150px;
+}
+
+/* ========================================
+   BINARY BACKGROUND
+   ======================================== */
+.binary-background {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1512px; /* Exact SVG canvas width */
+    height: 100%;
+    min-height: 100vh;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Binary Cluster Base Styles - Exact SVG positions (1512x900 canvas) */
+.binary-cluster {
+    position: absolute;
+    display: flex;
+    width: 5.8125rem;
+    height: 5.8125rem;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.03563rem;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.binary-cluster span {
+    display: block;
+}
+
+/* ========================================
+   CLUSTER POSITIONS - EXACT SVG COORDINATES
+   SVG Canvas: 1512px x 900px
+   Using exact x/y from SVG path data
+   ======================================== */
+
+/* Cluster A: x=1101, y=175, GREEN (#57FEC7) */
+.binary-cluster.cluster-a.green {
+    top: 175px;
+    left: 1101px;
+    color: #57FEC7;
+}
+
+/* Cluster B: x=1272, y=267, GREEN (#57FEC7) */
+.binary-cluster.cluster-b.green {
+    top: 267px;
+    left: 1272px;
+    color: #57FEC7;
+}
+
+/* Cluster 1: x=795, y=183, opacity 0.49 - white */
+.binary-cluster.cluster-1 {
+    top: 183px;
+    left: 795px;
+    color: #FFFFFF;
+    opacity: 0.49;
+}
+
+/* Cluster 2: x=888, y=279, opacity 0.22 - white */
+.binary-cluster.cluster-2 {
+    top: 279px;
+    left: 888px;
+    color: #FFFFFF;
+    opacity: 0.22;
+}
+
+/* Cluster 3: x=663, y=367, opacity 0.22 - white */
+.binary-cluster.cluster-3 {
+    top: 367px;
+    left: 663px;
+    color: #FFFFFF;
+    opacity: 0.22;
+}
+
+/* Cluster 4: x=1076, y=360, GREEN (#57FEC7) */
+.binary-cluster.cluster-4.green {
+    top: 360px;
+    left: 1076px;
+    color: #57FEC7;
+}
+
+/* Cluster 5: x=1272, y=360, GREEN (#57FEC7) */
+.binary-cluster.cluster-5.green {
+    top: 360px;
+    left: 1272px;
+    color: #57FEC7;
+}
+
+/* Cluster 6: x=1174, y=447, opacity 0.45 - white */
+.binary-cluster.cluster-6 {
+    top: 447px;
+    left: 1174px;
+    color: #FFFFFF;
+    opacity: 0.45;
+}
+
+/* Cluster 7: x=795, y=477, opacity 0.42 - white */
+.binary-cluster.cluster-7 {
+    top: 477px;
+    left: 795px;
+    color: #FFFFFF;
+    opacity: 0.42;
+}
+
+/* Cluster 8: x=1076, y=546, GREEN (#57FEC7) */
+.binary-cluster.cluster-8.green {
+    top: 546px;
+    left: 1076px;
+    color: #57FEC7;
+}
+
+/* Cluster 9: x=1263, y=545, GREEN (#57FEC7) */
+.binary-cluster.cluster-9.green {
+    top: 545px;
+    left: 1263px;
+    color: #57FEC7;
+}
+
+/* ========================================
+   BOTTOM BLOCKS - EXACT SVG COORDINATES
+   y=763 (relative to 900px height)
+   ======================================== */
+.binary-block {
+    position: absolute;
+    display: flex;
+    width: 5.8125rem;
+    height: 5.8125rem;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.03563rem;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.binary-block span {
+    display: block;
+}
+
+/* Bottom left primary: x=117, y=777, opacity 0.6 */
+.binary-block.bottom-left {
+    top: 777px;
+    left: 117px;
+    color: #FFFFFF;
+    opacity: 0.6;
+}
+
+/* Bottom left secondary: x=210, y=777, opacity 0.45 */
+.binary-block.bottom-left-2 {
+    top: 777px;
+    left: 210px;
+    color: #FFFFFF;
+    opacity: 0.45;
+}
+
+/* Bottom right primary: x=1386, y=777, opacity 0.6 */
+.binary-block.bottom-right {
+    top: 777px;
+    left: 1386px;
+    color: #FFFFFF;
+    opacity: 0.6;
+}
+
+/* Bottom right secondary: x=1293, y=777, opacity 0.45 */
+.binary-block.bottom-right-2 {
+    top: 777px;
+    left: 1293px;
+    color: #FFFFFF;
+    opacity: 0.45;
 }
 
 /* ========================================
    HERO SECTION
    ======================================== */
 .hero-section {
-    text-align: center;
-    padding-top: 60px;
-    margin-bottom: 40px;
+    text-align: left;
+    padding-top: 124px; /* 188px from top - 64px navbar */
+    padding-left: 63px;
+    margin-bottom: 0;
+    max-width: 660px;
+    position: relative;
+    z-index: 10;
 }
 
 .hero-title {
-    font-size: 88px;
-    font-weight: 700;
-    line-height: 1.05;
-    margin-bottom: 28px;
-    color: var(--text-primary);
-    letter-spacing: -1.5px;
-    transition: color 0.3s ease;
+    width: 54.4375rem;
+    height: 12.58138rem;
+    color: #FFF;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    font-family: 'Inter', sans-serif;
+    font-size: 4.4375rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 5.25rem;
+    letter-spacing: -0.13313rem;
+    margin-bottom: 20px;
 }
 
 .hero-subtitle {
-    font-size: 20px;
+    width: 51.3125rem;
+    height: 1.82431rem;
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-style: normal;
     font-weight: 400;
-    margin-bottom: 38px;
-    color: rgba(255, 255, 255, 0.92);
-    letter-spacing: 0.2px;
+    line-height: normal;
+    letter-spacing: -0.03rem;
+    margin-bottom: 28px;
 }
 
-.explore-btn {
+.hero-subtitle sup {
+    font-size: 11px;
+    vertical-align: super;
+    line-height: 0;
+}
+
+/* Start Trading Button - Pill with white fill - exact SVG coords */
+.start-trading-btn {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     background: white;
-    color: black;
+    color: #000;
     border: none;
     border-radius: 100px;
-    padding: 8px 8px 8px 24px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    height: 44.143px;
+    width: 180.585px;
+    padding: 0 3px 0 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.01875rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.explore-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+.start-trading-btn span {
+    flex: 1;
 }
 
-.btn-icon {
-    width: 36px;
-    height: 36px;
-    background: black;
+.start-trading-btn .btn-icon-circle {
+    width: 38px;
+    height: 38px;
+    background: #000000;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease;
+    color: #FFFFFF;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.start-trading-btn:hover {
+    background: #F0F0F0;
+}
+
+.start-trading-btn:hover .btn-icon-circle {
+    transform: rotate(45deg);
+}
+
+/* Legacy explore button */
+.explore-btn {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: #F8F9EB;
+    color: #202020;
+    border: none;
+    border-radius: 40px;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.explore-btn span {
+    padding-right: 12px;
+}
+
+.explore-btn .btn-icon {
+    width: 36px;
+    height: 36px;
+    background: #202020;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -16px -10px -16px 0;
+}
+
+.explore-btn:hover {
+    background: #FFFFFF;
+    transform: scale(1.02);
+}
+
+.explore-btn .btn-icon svg {
+    color: #F8F9EB;
 }
 
 .explore-btn:hover .btn-icon {
@@ -504,7 +790,7 @@ body {
     font-size: 22px;
     font-weight: 700;
     line-height: 1.25;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin: 0;
 }
 
@@ -549,16 +835,207 @@ body {
 }
 
 /* ========================================
-   PARTNER LOGOS - ON THE CURVE
+   MARKET DECK - HERO ASSET CARDS
    ======================================== */
-.partners-section {
-    position: absolute;
-    bottom: 180px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
+.market-deck {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
     max-width: 800px;
-    height: 50px;
+    margin: 50px auto 0;
+    padding: 0 20px;
+}
+
+.asset-card {
+    background: #2a2a2a;
+    border: 1px solid rgba(248, 249, 235, 0.1);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    height: 85px;
+}
+
+.asset-card:hover {
+    border-color: rgba(248, 249, 235, 0.2);
+    transform: scale(1.01);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.asset-card[data-accent="green"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(82, 199, 147, 0.12);
+}
+
+.asset-card[data-accent="blue"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(74, 127, 255, 0.12);
+}
+
+.asset-card[data-accent="gold"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.12);
+}
+
+/* Logo Section - Left */
+.asset-logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.asset-logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(248, 249, 235, 0.05);
+}
+
+.asset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.asset-ticker {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #F8F9EB;
+    letter-spacing: 0;
+}
+
+.asset-name {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(248, 249, 235, 0.5);
+}
+
+/* Price Section - Middle */
+.asset-price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    justify-self: end;
+}
+
+.asset-price {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.01em;
+}
+
+.asset-change-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.asset-change {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.asset-change.positive {
+    color: #52C793;
+}
+
+.asset-change.negative {
+    color: #C75252;
+}
+
+/* Chart Section - Right */
+.asset-chart {
+    width: 150px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+.asset-sparkline {
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .market-deck {
+        gap: 10px;
+        margin-top: 40px;
+    }
+    
+    .asset-card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        padding: 18px 20px;
+        gap: 16px;
+    }
+    
+    .asset-logo-section {
+        grid-column: 1;
+    }
+    
+    .asset-price-section {
+        align-items: flex-start;
+        grid-column: 1;
+        grid-row: 2;
+    }
+    
+    .asset-chart {
+        grid-column: 1;
+        grid-row: 3;
+        width: 100%;
+        height: 60px;
+    }
+    
+    .asset-price {
+        font-size: 18px;
+    }
+    
+    .asset-change {
+        font-size: 12px;
+    }
+    
+    .asset-logo-img {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ========================================
+   PARTNER LOGOS - STANDALONE SECTION
+   ======================================== */
+.page-partners {
+    background: #202020;
+    padding: 80px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.partners-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+}
+
+.partners-section {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 60px;
     overflow: hidden;
     z-index: 50;
     pointer-events: auto;
@@ -607,7 +1084,7 @@ body {
 }
 
 .partner-text {
-    color: white;
+    color: #F8F9EB;
     font-size: 15px;
     font-weight: 500;
     letter-spacing: 0.3px;
@@ -872,11 +1349,27 @@ body {
 
 @media (max-width: 768px) {
     .navbar {
-        padding: 16px 30px;
+        padding: 24px 30px;
+    }
+    
+    .navbar-pill .nav-link {
+        display: none;
+    }
+    
+    .navbar-pill {
+        gap: 0;
+        padding: 14px 20px;
+    }
+    
+    .launch-btn {
+        padding: 10px 18px;
+        font-size: 11px;
     }
     
     .hero-title {
         font-size: 48px;
+        line-height: 52px;
+        letter-spacing: -0.02em;
     }
     
     .hero-subtitle {
@@ -923,12 +1416,12 @@ body {
         height: 65px;
     }
     
+    .page-partners {
+        padding: 60px 30px;
+    }
+    
     .partners-section {
-        position: relative;
-        bottom: auto;
-        height: 40px;
-        margin-top: 40px;
-        max-width: 100%;
+        height: 45px;
     }
     
     .partners-track {
@@ -936,7 +1429,7 @@ body {
     }
     
     .hero-globe-container {
-        bottom: -800px;
+        bottom: -900px; /* Pushed down for mobile eclipse effect */
         width: 1200px;
         height: 1200px;
     }
@@ -1028,7 +1521,7 @@ body {
    PAGE 2: FEATURES SECTION
    ======================================== */
 .page-features {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1055,21 +1548,21 @@ body {
 
 .features-label {
     display: block;
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .features-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -1120,7 +1613,7 @@ body {
 }
 
 .grid-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 32px;
     position: relative;
@@ -1169,10 +1662,12 @@ body {
 }
 
 .grid-card-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 8px;
+    letter-spacing: -0.01em;
 }
 
 .grid-card-subtitle {
@@ -1309,7 +1804,7 @@ body {
 .yield-dollar {
     font-size: 80px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
     position: relative;
     z-index: 2;
@@ -1490,7 +1985,7 @@ body {
 
 .grid-card:hover .wallet-icon {
     transform: scale(1.08) translateY(-8px);
-    color: #57FEC7;
+    color: #F8F9EB;
     filter: drop-shadow(0 15px 40px rgba(87, 254, 199, 0.3));
 }
 
@@ -1564,7 +2059,7 @@ body {
 .yield-dollar {
     font-size: 80px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
     position: relative;
     z-index: 2;
@@ -1803,7 +2298,7 @@ body {
    PAGE 3: MAANG TOKEN SECTION
    ======================================== */
 .page-maang {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2081,19 +2576,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -2112,10 +2607,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -2137,7 +2632,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -2162,17 +2657,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -2349,7 +2844,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -2358,16 +2853,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -2377,7 +2872,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -2567,7 +3062,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -2584,20 +3079,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -2835,7 +3330,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2853,10 +3348,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -2903,7 +3398,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2929,18 +3424,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -2957,7 +3452,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -2980,13 +3475,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -3105,7 +3600,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -3120,7 +3615,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -3131,7 +3626,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -3276,7 +3771,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -3335,7 +3830,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -3509,7 +4004,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -3527,16 +4022,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -3583,7 +4078,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -3751,19 +4246,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -3782,10 +4277,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -3807,7 +4302,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -3832,17 +4327,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -4019,7 +4514,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -4028,16 +4523,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -4047,7 +4542,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -4237,7 +4732,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -4254,20 +4749,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -4505,7 +5000,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4523,10 +5018,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -4573,7 +5068,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4599,18 +5094,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -4627,7 +5122,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -4650,13 +5145,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -4775,7 +5270,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -4790,7 +5285,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -4801,7 +5296,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -4946,7 +5441,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -5005,7 +5500,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -5179,7 +5674,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -5197,16 +5692,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -5253,7 +5748,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -5421,19 +5916,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -5452,10 +5947,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -5477,7 +5972,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -5502,17 +5997,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -5689,7 +6184,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -5698,16 +6193,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -5717,7 +6212,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -5907,7 +6402,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -5924,20 +6419,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -6175,7 +6670,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6193,10 +6688,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -6243,7 +6738,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6269,18 +6764,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -6297,7 +6792,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -6320,13 +6815,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -6445,7 +6940,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -6460,7 +6955,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -6471,7 +6966,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -6616,7 +7111,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -6675,7 +7170,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -6849,7 +7344,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -6867,16 +7362,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -6923,7 +7418,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -7588,7 +8083,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -7597,16 +8092,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -7616,7 +8111,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -7806,7 +8301,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -7823,20 +8318,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -8074,7 +8569,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8092,10 +8587,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -8142,7 +8637,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8168,18 +8663,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -8196,7 +8691,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -8219,13 +8714,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -8344,7 +8839,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -8359,7 +8854,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -8370,7 +8865,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -8515,7 +9010,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -8574,7 +9069,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -8748,7 +9243,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -8766,16 +9261,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -8822,7 +9317,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -9528,7 +10023,7 @@ body {
 }
 
 [data-theme="light"] .newsletter-btn {
-    color: white;
+    color: #F8F9EB;
 }
 
 /* Responsive */
@@ -9674,21 +10169,9 @@ body {
     }
 }
 
-/* Partner logos staggered fade */
+/* Partner logos fade in - no transform needed in standalone section */
 .partners-section {
-    opacity: 0;
-    animation: fadeInUpCentered 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
-}
-
-@keyframes fadeInUpCentered {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+    opacity: 1;
 }
 
 @keyframes fadeInUp {
@@ -9723,7 +10206,16 @@ body {
 
 /* Card animations with stagger */
 .feature-card,
-.grid-card,
+.grid-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.grid-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .display-card,
 .orbital-node {
     opacity: 0;
@@ -9839,27 +10331,27 @@ body {
 }
 
 .why-eto-label {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 16px;
 }
 
 .why-eto-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.5px;
-    color: #ffffff;
+    color: #F8F9EB;
     margin: 0 0 20px 0;
 }
 
 .why-eto-subtitle {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 1.6;
@@ -9906,16 +10398,16 @@ body {
 }
 
 .why-eto-stat-number {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.3px;
-    color: #57FEC7;
+    color: #F8F9EB;
     white-space: nowrap;
 }
 
 .why-eto-stat-desc {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 1.5;
@@ -10000,7 +10492,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 100px 60px;
     position: relative;
 }
@@ -10027,12 +10519,12 @@ body {
 }
 
 .faq-label {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #57FEC7;
+    color: #F8F9EB;
     display: inline-block;
     padding: 6px 14px;
     border: 1px solid rgba(87, 254, 199, 0.3);
@@ -10041,12 +10533,12 @@ body {
 }
 
 .faq-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
     line-height: 1.2;
-    letter-spacing: -0.5px;
-    color: #ffffff;
+    letter-spacing: -0.02em;
+    color: #F8F9EB;
     margin: 0;
     max-width: 400px;
 }
@@ -10055,10 +10547,10 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
-    color: #ffffff;
+    color: #F8F9EB;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
@@ -10072,7 +10564,7 @@ body {
 
 .faq-docs-btn:hover {
     border-color: #57FEC7;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-docs-btn svg {
@@ -10109,15 +10601,15 @@ body {
 }
 
 .faq-trigger span {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     font-weight: 500;
-    color: #ffffff;
+    color: #F8F9EB;
     transition: color 0.3s ease;
 }
 
 .faq-trigger:hover span {
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-chevron {
@@ -10128,7 +10620,7 @@ body {
 
 .faq-trigger[aria-expanded="true"] .faq-chevron {
     transform: rotate(180deg);
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-content {
@@ -10143,7 +10635,7 @@ body {
 }
 
 .faq-content p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 1.6;
