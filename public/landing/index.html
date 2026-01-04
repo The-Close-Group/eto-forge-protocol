@@ -25,6 +25,19 @@
             <a href="https://docs.eto.finance" target="_blank" class="nav-link">Docs</a>
             <button class="launch-btn" onclick="window.location.href='http://localhost:8080/trade'">LAUNCH MARKETS</button>
         </div>
+
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="mobile-menu" aria-hidden="true">
+            <a href="#security" class="nav-link">Security</a>
+            <a href="#community" class="nav-link">Community</a>
+            <a href="https://docs.eto.finance" target="_blank" class="nav-link">Docs</a>
+            <button class="launch-btn" onclick="window.location.href='http://localhost:8080/trade'">LAUNCH MARKETS</button>
+        </div>
     </nav>
 
     <!-- Page 1: Hero Section -->
@@ -1141,6 +1154,20 @@
                 gather(brand,'brand-name','H2');
                 gather(button,'start-trading-btn','H3');
                 gather(ticker,'ticker-item','H3');
+            });
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const toggle = document.querySelector('.nav-toggle');
+            const menu = document.querySelector('.mobile-menu');
+            if (!toggle || !menu) return;
+
+            toggle.addEventListener('click', () => {
+                const isOpen = menu.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                menu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
             });
         })();
     </script>
