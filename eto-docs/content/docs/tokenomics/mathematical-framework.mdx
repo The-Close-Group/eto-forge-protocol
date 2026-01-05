@@ -1,0 +1,175 @@
+---
+title: Mathematical Framework
+description: Core mathematical foundations of the DRI Protocol including the reflective price mechanism, convergence analysis, and formal proofs.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Mathematical Framework
+
+This section establishes the formal mathematical foundations that guarantee price convergence, stability bounds, and manipulation resistance in the DRI Protocol.
+
+---
+
+## Reflective Price Algorithm
+
+The reflective price update is the protocol's core innovation—a bounded adjustment mechanism that converges to oracle prices while preventing manipulation.
+
+### Three-Step Update
+
+**Step 1: Raw Factor Calculation**
+
+$$
+\alpha_{\text{raw}} = \frac{P_{\text{twap}}}{R_{t-1}}
+$$
+
+Where:
+- $P_{\text{twap}}$ = Time-weighted average price from oracle aggregation
+- $R_{t-1}$ = Previous reflective price
+
+**Step 2: Adjustment Capping**
+
+$$
+\alpha = \text{clamp}(\alpha_{\text{raw}}, 1 - \Delta, 1 + \Delta)
+$$
+
+Where $\Delta$ = maximum adjustment per tick (e.g., 3% = 0.03)
+
+**Step 3: Price Update**
+
+$$
+R_t = R_{t-1} \times \alpha
+$$
+
+<Callout type="info">
+This ensures the new reflective price moves toward the oracle price but **cannot change by more than ±Δ% per update**.
+</Callout>
+
+---
+
+## Convergence Analysis
+
+The reflective price mechanism provides mathematical guarantees for convergence to the true oracle price.
+
+### Convergence Theorem
+
+<Callout type="warn">
+**Theorem 1 (Convergence):** Given oracle price $P_t$ and reflective price $R_t$, if $P_t$ remains constant for time $T > \frac{\ln(1+\varepsilon)}{\ln(1+\Delta)}$, then $\frac{|R_t - P_t|}{P_t} < \varepsilon$ with probability 1.
+</Callout>
+
+**Proof Sketch:**
+
+Each update reduces the relative error by a factor $(1+\Delta)$ when $R_t < P_t$ or $(1-\Delta)$ when $R_t > P_t$. The geometric convergence rate ensures bounded convergence time.
+
+Let $e_t = \frac{|R_t - P_t|}{P_t}$ be the relative error at time $t$.
+
+For $R_t < P_t$:
+
+$$
+e_{t+1} = \frac{|R_t(1+\Delta) - P_t|}{P_t} = \frac{P_t - R_t(1+\Delta)}{P_t} = e_t - \frac{R_t \cdot \Delta}{P_t}
+$$
+
+The error decreases geometrically, giving convergence time:
+
+$$
+T_{\text{converge}} = \frac{\ln(e_0/\varepsilon)}{\ln(1+\Delta)} \approx \frac{\ln(e_0/\varepsilon)}{\Delta}
+$$
+
+---
+
+## Implementation
+
+The `syncPrice()` function in `BootstrapDRIController.sol` implements this algorithm:
+
+```solidity
+function syncPrice() external nonReentrant whenNotHalted {
+    // 1. Enforce sync interval
+    require(block.timestamp >= lastSyncTime + syncInterval, "Too frequent");
+    
+    // 2. Fetch aggregated oracle price
+    (uint256 oraclePrice, uint256 timestamp) = oracleAggregator.getAggregatedPrice();
+    require(block.timestamp - timestamp <= maxOracleStaleness, "Stale oracle");
+    
+    // 3. Calculate capped adjustment factor
+    uint256 rawFactor = oraclePrice.div(reflectivePrice);
+    uint256 upperBound = 1e18 + (maxDeltaPerTick * 1e18 / 10000);
+    uint256 lowerBound = 1e18 - (maxDeltaPerTick * 1e18 / 10000);
+    uint256 cappedFactor = clamp(rawFactor, lowerBound, upperBound);
+    
+    // 4. Update reflective price
+    reflectivePrice = reflectivePrice.mul(cappedFactor);
+    lastSyncTime = block.timestamp;
+    
+    // 5. Trigger DMM recenter and PSM arbitrage
+    _checkDeviationAndRespond();
+}
+```
+
+---
+
+## Parameter Tuning
+
+### Maximum Delta (Δ)
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| **Δ = 3%** | 300 bps | Tracks daily index volatility while resisting manipulation |
+| Smaller Δ | — | Higher manipulation resistance, slower convergence |
+| Larger Δ | — | Faster convergence, increased manipulation risk |
+
+### Sync Interval
+
+| Interval | Trade-off |
+|----------|-----------|
+| **30 seconds** (default) | Balanced accuracy and gas costs |
+| 15 seconds | Better tracking, 2× gas cost |
+| 60+ seconds | Lower gas, increased drift |
+
+---
+
+## Circuit Breaker Modulation
+
+The effective Δ adapts based on circuit breaker state:
+
+| State | Level | Effective Δ | Purpose |
+|-------|-------|-------------|---------|
+| Normal | 0 | Δ (3%) | Full responsiveness |
+| Warning | 1 | Δ (3%) | Monitoring only |
+| Throttle | 2 | Δ/2 (1.5%) | Reduced volatility |
+| Halt | 3 | 0 | Complete suspension |
+
+---
+
+## Volatility-Adjusted Delta
+
+For dynamic adaptation to market conditions:
+
+$$
+\Delta_{\text{adaptive}} = \Delta_{\text{base}} \times \left(1 + \gamma \cdot \sigma_{\text{realized}}\right)
+$$
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| $\Delta_{\text{base}}$ | 3% | Base adjustment cap |
+| $\gamma$ | 0.5 | Volatility scaling factor |
+| $\sigma_{\text{realized}}$ | Variable | 30-day rolling volatility |
+
+---
+
+## Oracle Integration
+
+The Oracle Aggregator provides manipulation-resistant price data:
+
+| Feature | Implementation |
+|---------|----------------|
+| **Multi-source** | Chainlink, Pyth, API3 (3+ sources) |
+| **Median filtering** | Eliminates outliers automatically |
+| **TWAP smoothing** | α = 0.1–0.3 exponential smoothing |
+| **Staleness check** | 4-day maximum (345,600 seconds) |
+| **Deviation bounds** | σ_max filtering for extreme values |
+
+---
+
+<Callout type="info">
+**Next:** [System Dynamics](/docs/tokenomics/system-dynamics) — Complete mathematical model of system interconnections
+</Callout>

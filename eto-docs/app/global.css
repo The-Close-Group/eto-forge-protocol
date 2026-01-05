@@ -18,6 +18,55 @@
   --color-fd-ring: #57FEC7;
 }
 
+/* Muted Globe Background Effect */
+body::before {
+  content: '';
+  position: fixed;
+  bottom: -60%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 100%,
+    rgba(87, 254, 199, 0.03) 0%,
+    rgba(87, 254, 199, 0.015) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark body::before {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 100%,
+    rgba(87, 254, 199, 0.06) 0%,
+    rgba(87, 254, 199, 0.025) 30%,
+    transparent 70%
+  );
+}
+
+/* Subtle grid pattern overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(87, 254, 199, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87, 254, 199, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.dark body::after {
+  background-image: 
+    linear-gradient(rgba(87, 254, 199, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87, 254, 199, 0.03) 1px, transparent 1px);
+  opacity: 0.4;
+}
+
 #nd-page > div:first-child {
   font-family: var(--font-accent), var(--font-heading), system-ui, sans-serif;
   letter-spacing: -0.01em;
@@ -95,4 +144,57 @@ html:not(.dark) #nd-toc a {
 
 html:not(.dark) #nd-toc [data-active='true'] {
   color: var(--sidebar-active-text-light);
+}
+
+/* KaTeX Math Styling */
+.katex-display {
+  margin: 1.5rem 0 !important;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(87, 254, 199, 0.03) 0%, rgba(87, 254, 199, 0.01) 100%);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(87, 254, 199, 0.1);
+  overflow-x: auto;
+}
+
+.dark .katex-display {
+  background: linear-gradient(135deg, rgba(87, 254, 199, 0.06) 0%, rgba(87, 254, 199, 0.02) 100%);
+  border-color: rgba(87, 254, 199, 0.15);
+}
+
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-display > .katex {
+  font-size: 1.15em;
+}
+
+/* Inline math styling */
+.katex:not(.katex-display .katex) {
+  padding: 0.1em 0.25em;
+  background: rgba(87, 254, 199, 0.05);
+  border-radius: 0.25rem;
+}
+
+.dark .katex:not(.katex-display .katex) {
+  background: rgba(87, 254, 199, 0.08);
+}
+
+/* Better scrollbar for math overflow */
+.katex-display::-webkit-scrollbar {
+  height: 6px;
+}
+
+.katex-display::-webkit-scrollbar-track {
+  background: rgba(87, 254, 199, 0.05);
+  border-radius: 3px;
+}
+
+.katex-display::-webkit-scrollbar-thumb {
+  background: rgba(87, 254, 199, 0.2);
+  border-radius: 3px;
+}
+
+.katex-display::-webkit-scrollbar-thumb:hover {
+  background: rgba(87, 254, 199, 0.3);
 }

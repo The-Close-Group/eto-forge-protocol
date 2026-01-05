@@ -1,0 +1,252 @@
+---
+title: Bootstrap Deployment
+description: Deployment challenges, solutions, and the bootstrap system for the DRI Protocol.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Bootstrap Deployment
+
+The DRI Protocol implements a **bootstrap system** that resolves circular dependencies and enables safe initialization from zero to fully operational state.
+
+---
+
+## The Problem
+
+### Circular Dependencies
+
+```
+┌──────────────────────────────────────────────────────────┐
+│               CIRCULAR DEPENDENCY PROBLEM                 │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│   DRIController ────────▶ Needs DMM address (constructor) │
+│        ▲                                                  │
+│        │                                                  │
+│        └──────────────── DMM needs DRIController address  │
+│                                                           │
+│   Traditional deployment becomes IMPOSSIBLE               │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Additional Challenges
+
+| Challenge | Impact |
+|-----------|--------|
+| **Oracle Chicken-and-Egg** | System required 3+ oracles before providing price data |
+| **Strict Validation** | Production thresholds prevented initial setup |
+| **No Degradation** | No graceful path from zero to operational |
+
+---
+
+## Bootstrap Solutions
+
+### Bootstrap Oracle System
+
+| Solution | Description |
+|----------|-------------|
+| Single Oracle Start | Allows starting with a single oracle source |
+| Gradual Transition | Smooth transition to multi-oracle requirement |
+| Lenient Validation | Relaxed validation during initialization phase |
+| Upgrade Path | Clear upgrade path to production mode |
+
+### Settable DMM Address
+
+| Solution | Description |
+|----------|-------------|
+| Delayed Dependency | DRIController deploys without DMM dependency |
+| Post-Deploy Setting | DMM address set after DMM deployment |
+| One-Time Setter | Function with proper authorization |
+| Security Maintained | Maintains security while solving circular dependency |
+
+### Lenient Bootstrap Mode
+
+| Solution | Description |
+|----------|-------------|
+| Relaxed Thresholds | Relaxed validation thresholds during bootstrap |
+| Higher Staleness | Higher staleness tolerance for initial oracle data |
+| Expanded Limits | Expanded deviation limits for circuit breakers |
+| Auto-Transition | Automatic transition to strict mode when ready |
+
+---
+
+## Bootstrap Deployment Process
+
+### Phase 1: Foundation Deployment
+
+```solidity
+// Deploy core tokens
+DRIToken driToken = new DRIToken(
+    "Dynamic Reflective Index", 
+    "DRI", 
+    50_000_000e18, 
+    owner
+);
+GOVDRIToken govToken = new GOVDRIToken(owner);
+MockUSDC usdcToken = new MockUSDC();
+
+// Deploy bootstrap oracle system
+BootstrapOracle oracleAggregator = new BootstrapOracle(governance);
+MockOracle oracle1 = new MockOracle(100e18, 3600, 18);
+oracleAggregator.addOracle(address(oracle1), 10000);
+```
+
+### Phase 2: Core System Deployment
+
+```solidity
+// Deploy controller without DMM dependency
+BootstrapDRIController driController = new BootstrapDRIController(
+    address(oracleAggregator),
+    100e18, // Initial reflective price
+    owner
+);
+
+// Deploy DMM with controller reference
+DynamicMarketMaker dmm = new DynamicMarketMaker(
+    address(driToken),
+    address(usdcToken), 
+    address(driController),
+    owner
+);
+
+// Resolve circular dependency
+driController.setLiquidityPool(address(dmm));
+```
+
+### Phase 3: System Initialization
+
+```solidity
+// Fund initial liquidity
+driToken.mint(deployer, TOTAL_SUPPLY);
+driToken.approve(address(dmm), 10_000e18);
+usdcToken.approve(address(dmm), 1_000_000e6);
+dmm.addLiquidity(10_000e18, 1_000_000e6);
+
+// Fund PSM reserves  
+driToken.approve(address(psm), 100_000e18);
+usdcToken.approve(address(psm), 10_000_000e6);
+psm.fundReserve(100_000e18, 10_000_000e6);
+```
+
+### Phase 4: Production Transition
+
+```solidity
+// Add additional oracle sources
+oracleAggregator.addOracle(address(chainlinkOracle), 5000);
+oracleAggregator.addOracle(address(pythOracle), 5000);
+
+// Disable bootstrap mode when ready
+if (oracleAggregator.getActiveOracleCount() >= 3) {
+    oracleAggregator.disableBootstrapMode();
+    driController.disableBootstrapMode();
+}
+
+// Finalize token minting
+driToken.finalizeMinting();
+```
+
+---
+
+## Production Readiness Checklist
+
+### Technical Requirements
+
+<Callout>
+**Technical Requirements Checklist:**
+- **Oracle Diversity:** Minimum 3 different Oracle sources active
+- **Liquidity Depth:** Sufficient DMM and PSM reserves funded
+- **System Testing:** Complete end-to-end functionality verification
+- **Performance Validation:** Gas optimization and efficiency testing
+- **Integration Testing:** Cross-contract interaction validation
+</Callout>
+
+### Security Requirements
+
+<Callout type="warn">
+**Security Requirements Checklist:**
+- **Smart Contract Audits:** Professional audit completion and issue resolution
+- **Bug Bounty Program:** Active bug bounty with appropriate rewards
+- **Governance Setup:** Multisig configuration and key management
+- **Emergency Procedures:** Response plans and contact protocols
+- **Insurance Coverage:** Protocol insurance for major risk categories
+</Callout>
+
+### Operational Requirements
+
+<Callout type="info">
+**Operational Requirements Checklist:**
+- **Keeper Infrastructure:** Automated price sync and maintenance systems
+- **Monitoring Systems:** Real-time system health and alerting
+- **Documentation:** Complete user and developer documentation
+- **Community Preparation:** Governance token distribution and education
+- **Legal Compliance:** Regulatory review and compliance verification
+</Callout>
+
+---
+
+## Deployment Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DEPLOYMENT PHASES                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  PHASE 1: FOUNDATION                                            │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────────────┐    │
+│  │DRI Token│  │GOV-DRI  │  │  USDC   │  │BootstrapOracle  │    │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────────┬────────┘    │
+│       │            │            │                 │              │
+│       ▼            ▼            ▼                 ▼              │
+│  ═══════════════════════════════════════════════════════════    │
+│                                                                  │
+│  PHASE 2: CORE SYSTEM                                           │
+│  ┌─────────────────┐            ┌─────────────────┐             │
+│  │ DRI Controller  │◀──────────▶│      DMM        │             │
+│  │  (Bootstrap)    │            │  (Initialized)  │             │
+│  └────────┬────────┘            └────────┬────────┘             │
+│           │                              │                       │
+│           ▼                              ▼                       │
+│  ═══════════════════════════════════════════════════════════    │
+│                                                                  │
+│  PHASE 3: INITIALIZATION                                        │
+│  ┌─────────┐  ┌─────────┐  ┌─────────────────────────────┐     │
+│  │Liquidity│  │   PSM   │  │     Reserve Funding          │     │
+│  │ Funding │  │ Funding │  │ • DRI + USDC paired         │     │
+│  └─────────┘  └─────────┘  └─────────────────────────────┘     │
+│                                                                  │
+│  PHASE 4: PRODUCTION                                            │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐       │
+│  │ Multi-Oracle  │  │   Disable     │  │   Finalize    │       │
+│  │  Integration  │  │   Bootstrap   │  │    Minting    │       │
+│  └───────────────┘  └───────────────┘  └───────────────┘       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Bootstrap Mode Parameters
+
+| Parameter | Bootstrap Mode | Production Mode | Contract Parameter |
+|-----------|---------------|-----------------|-------------------|
+| Min Oracle Count | 1 | 3 | `minQuorum` |
+| Staleness Threshold | 4 days (paper trading) | 15 minutes | `maxOracleStaleness` |
+| Sync Interval | 30 seconds | 15 seconds | `syncInterval` |
+| Max Delta Per Tick | 3% (300 bps) | 3% (300 bps) | `maxDeltaPerTick: 300` |
+| Deviation Bounds | ±20% | ±5% | Circuit breaker config |
+| Circuit Breaker Thresholds | 2× normal | 1%/2%/5% | `warnThreshold: 100` |
+
+<Callout type="info">
+**Bootstrap vs Production:** The controller starts with `skipOracleValidation: true` and `maxOracleStaleness: 345600` (4 days) for paper trading. Call `disableBootstrapMode()` to switch to production parameters with 15-second sync intervals and 15-minute staleness.
+</Callout>
+
+<Callout type="warn">
+**Security Note:** Production deployments MUST set `skipOracleValidation: false` and `maxOracleStaleness: 900` (15 minutes) to prevent stale oracle attacks.
+</Callout>
+
+---
+
+<Callout type="info">
+**Next:** [Risk Analysis](/docs/tokenomics/risk-analysis) — Multi-dimensional risk assessment and mitigation strategies
+</Callout>

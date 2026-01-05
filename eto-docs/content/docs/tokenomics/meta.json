@@ -1,0 +1,15 @@
+{
+  "title": "Whitepaper",
+  "icon": "FileText",
+  "pages": [
+    "overview",
+    "mathematical-framework",
+    "system-dynamics",
+    "capital-efficiency",
+    "economic-model",
+    "governance-framework",
+    "bootstrap-deployment",
+    "risk-analysis",
+    "stress-testing"
+  ]
+}
