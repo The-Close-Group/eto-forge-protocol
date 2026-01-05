@@ -1,4 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useStockPrices, MAANG_STOCKS, StockSymbol } from '@/hooks/useStockPrices';
+import { ProTradingChart } from '@/components/charts';
+import {
+  createChart,
+  IChartApi,
+  ColorType,
+  CrosshairMode,
+  AreaSeries,
+  HistogramSeries,
+} from 'lightweight-charts';
 
 interface WalletValueCardProps {
   totalValue: number;
@@ -10,26 +20,7 @@ interface WalletValueCardProps {
   className?: string;
 }
 
-const generateChartData = (points: number = 50) => {
-  const data = [];
-  let price = 39000;
-  
-  for (let i = 0; i < points; i++) {
-    const wave = Math.sin(i * 0.12) * 1200;
-    const trend = i * 40;
-    const noise = (Math.random() - 0.5) * 200;
-    price = 38000 + wave + trend + noise;
-    
-    data.push({
-      price,
-      volume: 25 + Math.random() * 65,
-    });
-  }
-  return data;
-};
-
-const timeFilters = ['1h', '8h', '1d', '1w', '1m', '6m', '1y'] as const;
-type TimeFilter = typeof timeFilters[number];
+type ChartMode = 'simple' | 'pro';
 
 export function WalletValueCard({
   totalValue,
@@ -40,14 +31,26 @@ export function WalletValueCard({
   netChange,
   className = '',
 }: WalletValueCardProps) {
-  const [activeFilter, setActiveFilter] = useState<TimeFilter>('6m');
-  const chartData = useMemo(() => generateChartData(50), []);
+  const [chartMode, setChartMode] = useState<ChartMode>('pro');
+  const simpleChartRef = useRef<HTMLDivElement>(null);
+  const chartInstanceRef = useRef<IChartApi | null>(null);
+  
+  // Use live MAANG stock prices from Yahoo Finance
+  const {
+    portfolioValue,
+    portfolioChangePercent,
+    chartData,
+    candleData,
+    yahooCandleData,
+    stocks,
+    isLoading,
+    lastUpdated,
+  } = useStockPrices(totalValue);
 
-  const prices = chartData.map(d => d.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const priceRange = maxPrice - minPrice || 1;
-  const peakIndex = prices.indexOf(maxPrice);
+  // Detect theme
+  const isDark = typeof document !== 'undefined'
+    ? !document.documentElement.classList.contains('light')
+    : true;
 
   const formatCurrency = (value: number, showSign = false) => {
     const abs = Math.abs(value);
@@ -60,192 +63,232 @@ export function WalletValueCard({
     return formatted;
   };
 
-  // SVG dimensions - use percentage-based viewBox
-  const svgWidth = 1000;
-  const svgHeight = 300;
-  const margin = { top: 50, right: 30, bottom: 40, left: 30 };
-  const plotW = svgWidth - margin.left - margin.right;
-  const plotH = svgHeight - margin.top - margin.bottom;
+  // Simple area chart for "Simple" mode
+  useEffect(() => {
+    if (chartMode !== 'simple' || !simpleChartRef.current || !chartData.length) return;
 
-  // Calculate positions
-  const getX = (i: number) => margin.left + (i / (chartData.length - 1)) * plotW;
-  const getY = (p: number) => margin.top + plotH - ((p - minPrice) / priceRange) * plotH;
+    // Clean up previous chart
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.remove();
+    }
 
-  // Generate line path
-  const linePath = chartData.map((d, i) => 
-    `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.price).toFixed(1)}`
-  ).join(' ');
+    const accentColor = '#CDFF00';
+    const gridColor = isDark ? 'hsl(240, 4%, 12%)' : 'hsl(214, 20%, 94%)';
+    const borderColor = isDark ? 'hsl(240, 4%, 16%)' : 'hsl(214, 32%, 91%)';
+    const textColor = isDark ? 'hsl(240, 4%, 52%)' : 'hsl(215, 16%, 47%)';
 
-  // Area path
-  const areaPath = `${linePath} L ${svgWidth - margin.right} ${margin.top + plotH} L ${margin.left} ${margin.top + plotH} Z`;
+    const chart = createChart(simpleChartRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: 'transparent' },
+        textColor,
+        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontSize: 11,
+      },
+      grid: {
+        vertLines: { color: gridColor, style: 1 },
+        horzLines: { color: gridColor, style: 1 },
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
+        vertLine: { color: `${accentColor}80`, width: 1, style: 2, labelBackgroundColor: borderColor },
+        horzLine: { color: `${accentColor}80`, width: 1, style: 2, labelBackgroundColor: borderColor },
+      },
+      rightPriceScale: { visible: true, borderColor, scaleMargins: { top: 0.1, bottom: 0.2 } },
+      timeScale: { visible: true, borderColor, timeVisible: true, secondsVisible: false },
+      handleScroll: true,
+      handleScale: true,
+    });
 
-  // Peak position  
-  const peakX = getX(peakIndex);
-  const peakY = getY(maxPrice);
+    chartInstanceRef.current = chart;
 
-  // Bar dimensions
-  const barW = (plotW / chartData.length) * 0.65;
+    // Volume series
+    const volumeSeries = chart.addSeries(HistogramSeries, {
+      color: 'rgba(205, 255, 0, 0.15)',
+      priceFormat: { type: 'volume' },
+      priceScaleId: 'volume',
+    });
+    chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
+
+    // Area series
+    const areaSeries = chart.addSeries(AreaSeries, {
+      lineColor: accentColor,
+      topColor: 'rgba(205, 255, 0, 0.35)',
+      bottomColor: 'rgba(205, 255, 0, 0.0)',
+      lineWidth: 3,
+      crosshairMarkerVisible: true,
+      crosshairMarkerRadius: 6,
+      crosshairMarkerBorderColor: accentColor,
+      crosshairMarkerBackgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+      lastValueVisible: true,
+    });
+
+    const areaData = chartData.map(d => ({ time: d.time, value: d.value }));
+    const volumeData = chartData.map(d => ({ time: d.time, value: d.volume * 100, color: 'rgba(205, 255, 0, 0.2)' }));
+
+    areaSeries.setData(areaData);
+    volumeSeries.setData(volumeData);
+    chart.timeScale().fitContent();
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (simpleChartRef.current && chartInstanceRef.current) {
+        chartInstanceRef.current.applyOptions({
+          width: simpleChartRef.current.clientWidth,
+          height: simpleChartRef.current.clientHeight,
+        });
+      }
+    });
+    resizeObserver.observe(simpleChartRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+      chart.remove();
+      chartInstanceRef.current = null;
+    };
+  }, [chartMode, chartData, isDark]);
+
+  // Use Yahoo Finance live candles if available, otherwise fall back to generated candles
+  // Always show generated candles while Yahoo data is loading
+  const tradingChartData = candleData && candleData.length > 0 ? candleData : [];
+  const hasLiveData = yahooCandleData && yahooCandleData.length > 0;
 
   return (
     <div className={`wvc ${className}`}>
       {/* Header */}
       <div className="wvc-head">
         <div className="wvc-info">
-          <div className="wvc-title">Wallet Value</div>
+          <div className="wvc-title flex items-center gap-2">
+            <span className="flex items-center gap-2">
+              Wallet Value
+              {isLoading && (
+                <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
+              )}
+            </span>
+            {lastUpdated && (
+              <span className="text-[10px] text-muted-foreground font-normal ml-2">
+                Updated: {new Date(lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
           <div className="wvc-amount-line">
-            <span className="wvc-amount">{formatCurrency(totalValue)}</span>
-            <span className="wvc-pct">
+            <span className="wvc-amount">{formatCurrency(portfolioValue)}</span>
+            <span className={`wvc-pct ${portfolioChangePercent >= 0 ? '' : 'negative'}`}>
               <span className="wvc-pct-icon">◐</span>
-              {changePercent.toFixed(1)}%
+              {portfolioChangePercent >= 0 ? '+' : ''}{portfolioChangePercent.toFixed(1)}%
             </span>
           </div>
+          {/* MAANG Stock Pills */}
+          {stocks && (
+            <div className="flex gap-1 mt-2 flex-wrap">
+              {(Object.keys(MAANG_STOCKS) as StockSymbol[]).map((symbol) => {
+                const quote = stocks[symbol];
+                const info = MAANG_STOCKS[symbol];
+                const isPositive = quote?.changePercent >= 0;
+                return (
+                  <span
+                    key={symbol}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium"
+                    style={{ 
+                      backgroundColor: `${info.color}15`,
+                      color: info.color,
+                      border: `1px solid ${info.color}30`
+                    }}
+                    title={`${info.name}: $${quote?.price?.toFixed(2) || '---'} (${isPositive ? '+' : ''}${quote?.changePercent?.toFixed(2) || '0'}%)`}
+                  >
+                    {symbol}
+                    <span className={isPositive ? 'text-data-positive' : 'text-data-negative'}>
+                      {isPositive ? '↑' : '↓'}
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
         
-        <div className="wvc-controls">
-          <div className="wvc-actions">
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+        {/* Chart Mode Toggle */}
+        <div className="flex items-center gap-2">
+          <div className="flex p-0.5 rounded-lg bg-muted/50 border border-border/50">
+            <button
+              onClick={() => setChartMode('simple')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                chartMode === 'simple'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Simple
             </button>
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-              </svg>
-            </button>
-            <button className="wvc-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
+            <button
+              onClick={() => setChartMode('pro')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                chartMode === 'pro'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Pro
             </button>
           </div>
-          <div className="wvc-time-btns">
-            {timeFilters.map((f) => (
-              <button
-                key={f}
-                className={`wvc-time-btn ${activeFilter === f ? 'active' : ''}`}
-                onClick={() => setActiveFilter(f)}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+          {hasLiveData && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-medium">
+              LIVE
+            </span>
+          )}
+          {!hasLiveData && !isLoading && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium">
+              SIMULATED
+            </span>
+          )}
         </div>
       </div>
 
       {/* Chart Container */}
       <div className="wvc-chart-wrap">
-        <svg 
-          className="wvc-svg" 
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <defs>
-            <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#CDFF00" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#CDFF00" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
-          {/* Volume Bars */}
-          {chartData.map((d, i) => {
-            const x = margin.left + (i / chartData.length) * plotW;
-            const h = (d.volume / 100) * plotH * 0.7;
-            const y = margin.top + plotH - h;
-            
-            return (
-              <rect
-                key={i}
-                x={x}
-                y={y}
-                width={barW}
-                height={h}
-                fill="currentColor"
-                className="wvc-vol-bar"
-              />
-            );
-          })}
-
-          {/* Area */}
-          <path d={areaPath} fill="url(#chartAreaGrad)" />
-
-          {/* Line */}
-          <path 
-            d={linePath} 
-            fill="none" 
-            stroke="#CDFF00" 
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {chartMode === 'simple' ? (
+          // Simple Area Chart
+          <div 
+            ref={simpleChartRef} 
+            className="w-full"
+            style={{ height: 480 }}
           />
-
-          {/* Peak Circle */}
-          <circle
-            cx={peakX}
-            cy={peakY}
-            r="8"
-            fill="#CDFF00"
-            stroke="hsl(var(--card))"
-            strokeWidth="4"
+        ) : (
+          // Pro Trading Chart with Candlesticks - Full height professional view
+          <ProTradingChart
+            symbol="MAANG Portfolio"
+            data={hasLiveData ? yahooCandleData : tradingChartData}
+            height={560}
+            theme={isDark ? 'dark' : 'light'}
+            showToolbar={true}
+            showIndicators={true}
+            showVolume={true}
           />
-        </svg>
-
-        {/* Peak Label */}
-        <div 
-          className="wvc-peak-tooltip"
-          style={{
-            left: `${(peakX / svgWidth) * 100}%`,
-            top: `${(peakY / svgHeight) * 100}%`,
-          }}
-        >
-          +$1,859.48
-        </div>
-
-        {/* Time Axis */}
-        <div className="wvc-x-axis">
-          <span>8:00 AM</span>
-          <span>9:00 AM</span>
-          <span>10:00 AM</span>
-          <span>11:00 AM</span>
-          <span>12:00 PM</span>
-          <span>1:00 PM</span>
-          <span>2:00 PM</span>
-        </div>
+        )}
       </div>
 
-      {/* Bottom Stats */}
-      <div className="wvc-bottom">
-        <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Realized PL</div>
-          <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
+      {/* Minimal Stats Bar */}
+      <div className="flex items-center justify-between px-4 py-3 border-t border-border/30 bg-card/30">
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Realized</span>
+            <span className={realizedPL >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
             {formatCurrency(realizedPL, true)}
+            </span>
           </div>
-          <div className="wvc-stat-meta">◐ +27% Today</div>
-        </div>
-        <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Unrealized PL</div>
-          <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Unrealized</span>
+            <span className={unrealizedPL >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
             {formatCurrency(unrealizedPL, true)}
+            </span>
           </div>
-          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Net Change</span>
+            <span className={netChange >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
+              {formatCurrency(netChange, true)}
+            </span>
+          </div>
         </div>
-        <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Projected Growth</div>
-          <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(projectedGrowth, true)}
-          </div>
-          <div className="wvc-stat-meta">◐ +3.2% Today</div>
-        </div>
-        <div className="wvc-stat-card">
-          <div className="wvc-stat-name">Net Change</div>
-          <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
-            {formatCurrency(netChange, true)}
-          </div>
-          <div className="wvc-stat-meta">◐ -11.8% Today</div>
+        <div className="text-xs text-muted-foreground">
+          Data from Yahoo Finance • 20% each: META, AAPL, AMZN, NVDA, GOOG
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { TVSparkline, generateSparklineNumbers } from '@/components/charts';
 
 interface Transaction {
   id: string;
@@ -62,24 +64,21 @@ const TokenIcons: Record<string, JSX.Element> = {
   ),
 };
 
-// Mini sparkline component
-const MiniChart = ({ positive = true }: { positive?: boolean }) => {
-  const color = positive ? '#CDFF00' : '#fff';
-  const points = positive 
-    ? "0,20 5,18 10,19 15,15 20,16 25,12 30,14 35,10 40,8 45,9 50,5"
-    : "0,5 5,8 10,6 15,10 20,8 25,12 30,10 35,15 40,14 45,18 50,20";
+// Mini sparkline component using TradingView Lightweight Charts
+const MiniChart = ({ positive = true, seed }: { positive?: boolean; seed?: string }) => {
+  const data = useMemo(() => 
+    generateSparklineNumbers(18, positive ? 'up' : 'down', seed),
+    [positive, seed]
+  );
   
   return (
-    <svg className="txn-mini-chart" viewBox="0 0 50 25" preserveAspectRatio="none">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <TVSparkline
+      data={data}
+      height={30}
+      variant={positive ? 'accent' : 'negative'}
+      showArea={false}
+      lineWidth={1.5}
+    />
   );
 };
 
@@ -119,10 +118,10 @@ export function TransactionsCard({ transactions, className = '' }: TransactionsC
               </div>
             </div>
 
-            {/* Chart (optional) */}
+            {/* Chart (optional) - TradingView Sparkline */}
             {tx.showChart && (
               <div className="txn-chart-area">
-                <MiniChart positive={tx.amount >= 0} />
+                <MiniChart positive={tx.amount >= 0} seed={`${tx.id}-${tx.token}`} />
               </div>
             )}
 

@@ -9,9 +9,27 @@ import {
   Calculator, PieChart, Shield, AlertTriangle, Sparkles, Target
 } from "lucide-react";
 import { WalletValueCard } from "@/components/dashboard/WalletValueCard";
-import { PortfolioRiskScore } from "@/components/dashboard/PortfolioRiskScore";
-import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
+import { 
+  RWAPriceTicker, 
+  TradePanel, 
+  TradeFeed, 
+  OpenTradesTable,
+  ChartDrawingTools,
+} from "@/components/trading";
 import maangLogo from "@/assets/maang-logo.svg";
+
+// Trading types
+interface TradeOrder {
+  side: 'long' | 'short';
+  type: 'market' | 'limit' | 'stop';
+  collateral: number;
+  leverage: number;
+  size: number;
+  takeProfit?: number;
+  stopLoss?: number;
+  limitPrice?: number;
+  stopPrice?: number;
+}
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useActiveAccount, ConnectButton } from "thirdweb/react";
@@ -19,7 +37,7 @@ import { client, etoMainnet, supportedChains } from "@/lib/thirdweb";
 import { createWallet } from "thirdweb/wallets";
 import { useProtocolStats } from "@/hooks/useProtocolStats";
 import { useProtocolActivity } from "@/hooks/useProtocolActivity";
-import Sparkline, { generateSparklineData } from "@/components/Sparkline";
+import { TVSparkline, TVAreaChart, generateSparklineNumbers, generateSparklineData } from "@/components/charts";
 import { toast } from "sonner";
 import { useStakingContext } from "@/contexts/StakingContext";
 import {
@@ -652,10 +670,22 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="dashboard-container">
-        {/* Main Dashboard Grid - Exact Screenshot Layout */}
-        <div className="dashboard-grid">
-          {/* Left Column - Wallet Value Card */}
+      {/* RWA Price Ticker */}
+      <RWAPriceTicker />
+
+      {/* Main Trading Layout */}
+      <div className="trading-layout">
+        {/* Drawing Tools Sidebar */}
+        <div className="trading-layout-tools">
+          <ChartDrawingTools 
+            vertical={true}
+            onScreenshot={() => toast.info("Screenshot captured")}
+            onFullscreen={() => toast.info("Fullscreen mode")}
+          />
+        </div>
+
+        {/* Chart Area */}
+        <div className="trading-layout-chart">
           <WalletValueCard
             totalValue={getTotalStaked() + getTotalRewards() > 0 ? getTotalStaked() + getTotalRewards() : 41812.14}
             changePercent={4.6}
@@ -664,25 +694,37 @@ export default function Dashboard() {
             projectedGrowth={1864.04}
             netChange={495.68}
           />
+        </div>
 
-          {/* Right Column - Risk Score + Transactions Stacked */}
-          <div className="dashboard-right">
-            <PortfolioRiskScore
-              riskLevel={35}
-              lastUpdated="Just Now"
-            />
-            
-            <TransactionsCard
-              transactions={[
-                { id: '1', type: 'receive', token: 'BTC', amount: 0.002345, time: '08:21 AM', status: 'pending', showChart: true },
-                { id: '2', type: 'send', token: 'SOL', amount: -23.42, time: '05.12.2024', status: 'pending' },
-                { id: '3', type: 'reward', token: 'ETH', amount: 3.21, time: '05:19 AM', status: 'confirmed', showChart: true },
-                { id: '4', type: 'receive', token: 'MATIC', amount: 590.41, time: '05.12.2024', status: 'confirmed', highlighted: true },
-                { id: '5', type: 'receive', token: 'MATIC', amount: 14.08, time: '05.12.2024', status: 'confirmed', showChart: true },
-                { id: '6', type: 'send', token: 'USDT', amount: -19.57, time: '04.12.2024', status: 'failed' },
-              ]}
+        {/* Right Panel - Trade + Feed */}
+        <div className="trading-layout-right">
+          <div className="flex-1 overflow-y-auto">
+            <TradePanel 
+              symbol="MAANG"
+              currentPrice={6844.78}
+              onTrade={(trade) => {
+                console.log("Trade placed:", trade);
+                toast.success(`${trade.side.toUpperCase()} ${trade.size.toFixed(4)} MAANG @ ${trade.leverage}x`);
+              }}
             />
           </div>
+          <div className="border-t border-border h-[300px]">
+            <TradeFeed 
+              symbol="MAANG"
+              basePrice={6844.78}
+            />
+          </div>
+        </div>
+
+        {/* Open Trades Table */}
+        <div className="trading-layout-positions">
+          <OpenTradesTable 
+            symbol="MAANG"
+            currentPrice={6844.78}
+            onClosePosition={(id) => {
+              toast.success(`Position ${id} closed`);
+            }}
+          />
         </div>
       </div>
     </div>
