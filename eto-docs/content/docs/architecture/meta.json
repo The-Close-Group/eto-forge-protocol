@@ -1,0 +1,11 @@
+{
+  "title": "Architecture",
+  "pages": [
+    "overview",
+    "reflective-price-index",
+    "dynamic-market-maker",
+    "peg-stability-module",
+    "oracle-aggregation",
+    "circuit-breakers"
+  ]
+}

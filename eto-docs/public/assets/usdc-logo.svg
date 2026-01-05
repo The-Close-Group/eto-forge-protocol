@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue circle background -->
+  <circle cx="256" cy="256" r="240" fill="#2775CA"/>
+  
+  <!-- Dollar sign -->
+  <path d="M256 96v32" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  <path d="M256 384v32" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- S curve of dollar sign -->
+  <path d="M320 176c0-33.137-28.654-60-64-60s-64 26.863-64 60c0 33.137 28.654 60 64 60s64 26.863 64 60c0 33.137-28.654 60-64 60s-64-26.863-64-60" 
+        stroke="white" 
+        stroke-width="24" 
+        stroke-linecap="round"
+        fill="none"/>
+</svg>
