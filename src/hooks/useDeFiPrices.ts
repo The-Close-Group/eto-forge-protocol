@@ -36,8 +36,8 @@ export function useDeFiPrices() {
           functionName: "getAggregatedPrice",
         });
         return Number(price) / 10 ** 18;
-      } catch (error: any) {
-        console.warn("Oracle read failed:", error.message || error);
+      } catch (error: unknown) {
+        console.warn("Oracle read failed:", error instanceof Error ? error.message : error);
         return 0;
       }
     },
@@ -55,8 +55,8 @@ export function useDeFiPrices() {
           functionName: "getCurrentPrice",
         });
         return Number(price) / 10 ** 18;
-      } catch (error: any) {
-        console.warn("DMM read failed:", error.message || error);
+      } catch (error: unknown) {
+        console.warn("DMM read failed:", error instanceof Error ? error.message : error);
         return 0;
       }
     },

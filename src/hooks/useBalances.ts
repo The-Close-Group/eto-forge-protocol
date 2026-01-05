@@ -60,7 +60,7 @@ export function useBalances(enabledChains: string[] = [DEFAULT_CHAIN]) {
               nativeBalance = await eth_getBalance(rpcRequest, { address });
             }
             
-            let formatted = Number(nativeBalance) / 10 ** chainConfig.nativeToken.decimals;
+            const formatted = Number(nativeBalance) / 10 ** chainConfig.nativeToken.decimals;
             
             const price = getTokenPrice(chainConfig.nativeToken.symbol);
             const usdValue = formatted * price;

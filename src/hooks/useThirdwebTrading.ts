@@ -121,9 +121,9 @@ export function useThirdwebTrading() {
       queryClient.invalidateQueries({ queryKey: ["user-balances"] });
       
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Approval failed:", error);
-      toast.error(`Approval failed: ${error.message || "Unknown error"}`);
+      toast.error(`Approval failed: ${error instanceof Error ? error.message : "Unknown error"}`);
       return false;
     } finally {
       setIsApproving(false);
@@ -154,9 +154,9 @@ export function useThirdwebTrading() {
       queryClient.invalidateQueries({ queryKey: ["user-balances"] });
       
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Trade execution failed:", error);
-      toast.error(`Trade failed: ${error.message || "Unknown error"}`);
+      toast.error(`Trade failed: ${error instanceof Error ? error.message : "Unknown error"}`);
       return false;
     } finally {
       setIsLoading(false);
@@ -187,9 +187,9 @@ export function useThirdwebTrading() {
       queryClient.invalidateQueries({ queryKey: ["user-balances"] });
       
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Trade execution failed:", error);
-      toast.error(`Trade failed: ${error.message || "Unknown error"}`);
+      toast.error(`Trade failed: ${error instanceof Error ? error.message : "Unknown error"}`);
       return false;
     } finally {
       setIsLoading(false);

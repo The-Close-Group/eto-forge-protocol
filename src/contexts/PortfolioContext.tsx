@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { useUserState } from './UserStateContext';
+import { useUserState, UserStateContextType } from './UserStateContext';
 
 export interface PortfolioAsset {
   symbol: string;
@@ -44,7 +44,7 @@ interface PortfolioContextType {
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
 // Get real-time prices from user state
-const getCurrentPrice = (symbol: string, userState: any): number => {
+const getCurrentPrice = (symbol: string, userState: UserStateContextType): number => {
   const balance = userState.getBalance(symbol);
   return balance?.price || 0;
 };

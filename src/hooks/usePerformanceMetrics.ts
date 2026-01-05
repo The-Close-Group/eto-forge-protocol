@@ -225,7 +225,7 @@ export function usePerformanceMetrics(timeframe: '1M' | '3M' | '6M' | '1Y' | 'AL
       calmarRatio: maxDrawdownPercent > 0 ? metrics.annualizedReturn / maxDrawdownPercent : 0,
       sterlingRatio: maxDrawdownPercent > 0 ? 
         (metrics.annualizedReturn - 10) / maxDrawdownPercent : 0, // Excess return over 10%
-      treynorRatio: 1.2 > 0 ? metrics.annualizedReturn / 1.2 : 0, // Assuming beta of 1.2
+      treynorRatio: metrics.annualizedReturn / 1.2, // Assuming beta of 1.2
       ulcerIndex: Math.sqrt(chartData.reduce((sum, d) => sum + Math.pow(d.drawdown, 2), 0) / chartData.length),
     };
   }, [metrics, chartData]);
@@ -289,7 +289,11 @@ function calculateMonthlyReturns(chartData: ChartData[]): number[] {
   );
 }
 
-function calculateDiversificationRatio(assets: any[]): number {
+interface AssetWithValue {
+  currentValue: number;
+}
+
+function calculateDiversificationRatio(assets: AssetWithValue[]): number {
   if (assets.length <= 1) return 0;
   
   // Simplified diversification ratio
@@ -303,7 +307,7 @@ function calculateDiversificationRatio(assets: any[]): number {
   return (1 / herfindahlIndex) / assets.length; // Normalized to 0-1
 }
 
-function calculateConcentration(assets: any[], totalValue: number): number {
+function calculateConcentration(assets: AssetWithValue[], totalValue: number): number {
   if (assets.length === 0 || totalValue === 0) return 0;
   
   const maxWeight = Math.max(...assets.map(asset => 

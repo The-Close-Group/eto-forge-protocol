@@ -190,7 +190,7 @@ export function useDirectSwap() {
       return false;
     }
 
-    const ethereum = (window as any).ethereum;
+    const ethereum = (window as Window & { ethereum?: unknown }).ethereum;
     if (!ethereum) {
       toast.error('No wallet detected');
       return false;
@@ -238,12 +238,15 @@ export function useDirectSwap() {
         toast.error('Approval failed');
         return false;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Approval error:', error);
-      if (error.code === 4001) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 4001) {
         toast.error('Approval rejected');
       } else {
-        toast.error(error.shortMessage || error.message || 'Approval failed');
+        const errorMsg = error && typeof error === 'object' && ('shortMessage' in error || 'message' in error)
+          ? (error as { shortMessage?: string; message?: string }).shortMessage || (error as { message?: string }).message || 'Approval failed'
+          : 'Approval failed';
+        toast.error(errorMsg);
       }
       return false;
     } finally {
@@ -262,7 +265,7 @@ export function useDirectSwap() {
       return null;
     }
 
-    const ethereum = (window as any).ethereum;
+    const ethereum = (window as Window & { ethereum?: unknown }).ethereum;
     if (!ethereum) {
       toast.error('No wallet detected');
       return null;
@@ -346,13 +349,13 @@ export function useDirectSwap() {
         toast.error('Swap failed: Amount may exceed price band limits. Try a smaller amount or wait for the keeper to recenter.');
         return null;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Swap] Error:', error);
-      if (error.code === 4001) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 4001) {
         toast.error('Swap rejected by user');
-      } else if (error.message?.includes('InsufficientAllowance')) {
+      } else if (error instanceof Error && error.message?.includes('InsufficientAllowance')) {
         toast.error('Token approval needed. Please try again.');
-      } else if (error.message?.includes('insufficient funds')) {
+      } else if (error instanceof Error && error.message?.includes('insufficient funds')) {
         toast.error('Insufficient balance for swap');
       } else if (error.message?.includes('E37') || error.data?.includes('E37') || error.reason?.includes('E37')) {
         toast.error('Swap exceeds price band limits. Try a smaller amount or wait for the keeper to recenter.');

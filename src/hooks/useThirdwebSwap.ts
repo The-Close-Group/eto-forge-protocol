@@ -113,7 +113,7 @@ export function useThirdwebSwap() {
 
       toast.success('Swap completed successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Swap execution failed:', error);
       toast.error(`Swap failed: ${error.message || 'Unknown error'}`);
       return false;

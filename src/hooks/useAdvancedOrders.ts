@@ -105,8 +105,8 @@ export function useAdvancedOrders() {
       toast.success('OCO order created successfully');
       
       return { success: true, orderId: ocoOrder.id };
-    } catch (error: any) {
-      toast.error(`Failed to create OCO order: ${error.message}`);
+    } catch (error: unknown) {
+      toast.error(`Failed to create OCO order: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return { success: false, error: error.message };
     }
   }, [createOrder]);
@@ -122,9 +122,10 @@ export function useAdvancedOrders() {
         `$${params.trailAmount} trail`}`);
       
       return { success: true, orderId: trailingOrder.id };
-    } catch (error: any) {
-      toast.error(`Failed to create trailing stop: ${error.message}`);
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create trailing stop: ${errorMsg}`);
+      return { success: false, error: errorMsg };
     }
   }, []);
 
@@ -147,8 +148,8 @@ export function useAdvancedOrders() {
       setTrailingStops(advancedOrderEngine.getTrailingStops());
       
       toast.success(`Trailing stop triggered at $${order.currentStopPrice.toFixed(2)}`);
-    } catch (error: any) {
-      toast.error(`Failed to trigger trailing stop: ${error.message}`);
+    } catch (error: unknown) {
+      toast.error(`Failed to trigger trailing stop: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }, [trailingStops, createOrder]);
 
@@ -173,9 +174,10 @@ export function useAdvancedOrders() {
       toast.success(`Iceberg order created: ${params.displaySize} shown of ${params.totalAmount} total`);
       
       return { success: true, orderId: icebergOrder.id };
-    } catch (error: any) {
-      toast.error(`Failed to create iceberg order: ${error.message}`);
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create iceberg order: ${errorMsg}`);
+      return { success: false, error: errorMsg };
     }
   }, [createOrder]);
 
@@ -188,9 +190,10 @@ export function useAdvancedOrders() {
       toast.success(`TWAP order created: ${params.amount} ${params.asset} over ${params.executionPeriod} minutes`);
       
       return { success: true, orderId: twapOrder.id };
-    } catch (error: any) {
-      toast.error(`Failed to create TWAP order: ${error.message}`);
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create TWAP order: ${errorMsg}`);
+      return { success: false, error: errorMsg };
     }
   }, []);
 
@@ -223,9 +226,9 @@ export function useAdvancedOrders() {
       }
 
       setTWAPOrders(advancedOrderEngine.getTWAPOrders());
-    } catch (error: any) {
+    } catch (error: unknown) {
       currentSlice.status = 'failed';
-      toast.error(`TWAP slice execution failed: ${error.message}`);
+      toast.error(`TWAP slice execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }, [twapOrders, createOrder]);
 
@@ -238,9 +241,10 @@ export function useAdvancedOrders() {
       toast.success(`VWAP order created: ${(params.participationRate * 100).toFixed(1)}% participation rate`);
       
       return { success: true, orderId: vwapOrder.id };
-    } catch (error: any) {
-      toast.error(`Failed to create VWAP order: ${error.message}`);
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create VWAP order: ${errorMsg}`);
+      return { success: false, error: errorMsg };
     }
   }, []);
 
@@ -285,7 +289,7 @@ export function useAdvancedOrders() {
       case 'oco':
         await cancelOCOOrder(orderId);
         break;
-      case 'trailing_stop':
+      case 'trailing_stop': {
         const trailingOrder = trailingStops.find(o => o.id === orderId);
         if (trailingOrder) {
           trailingOrder.status = 'cancelled';
@@ -293,7 +297,8 @@ export function useAdvancedOrders() {
           toast.success('Trailing stop cancelled');
         }
         break;
-      case 'iceberg':
+      }
+      case 'iceberg': {
         const icebergOrder = icebergOrders.find(o => o.id === orderId);
         if (icebergOrder) {
           icebergOrder.status = 'cancelled';
@@ -301,7 +306,8 @@ export function useAdvancedOrders() {
           toast.success('Iceberg order cancelled');
         }
         break;
-      case 'twap':
+      }
+      case 'twap': {
         const twapOrder = twapOrders.find(o => o.id === orderId);
         if (twapOrder) {
           twapOrder.status = 'cancelled';
@@ -309,7 +315,8 @@ export function useAdvancedOrders() {
           toast.success('TWAP order cancelled');
         }
         break;
-      case 'vwap':
+      }
+      case 'vwap': {
         const vwapOrder = vwapOrders.find(o => o.id === orderId);
         if (vwapOrder) {
           vwapOrder.status = 'cancelled';
@@ -317,6 +324,7 @@ export function useAdvancedOrders() {
           toast.success('VWAP order cancelled');
         }
         break;
+      }
     }
   }, [ocoOrders, trailingStops, icebergOrders, twapOrders, vwapOrders, cancelOCOOrder]);
 

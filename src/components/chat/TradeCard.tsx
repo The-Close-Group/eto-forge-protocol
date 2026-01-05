@@ -17,7 +17,7 @@ export function TradeCard({ fromAsset, toAsset, amount }: TradeCardProps) {
   const { executeTrade } = useTradeExecution();
   const { toast } = useToast();
   
-  const prices: any = { MAANG: 33, USDC: 1, ETH: 3200, AVAX: 35, SOL: 140 };
+  const prices: Record<string, number> = { MAANG: 33, USDC: 1, ETH: 3200, AVAX: 35, SOL: 140 };
   const fromPrice = prices[fromAsset] || 0;
   const toPrice = prices[toAsset] || 0;
   const toAmount = (amount * fromPrice) / toPrice;

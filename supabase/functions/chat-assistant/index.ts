@@ -151,7 +151,12 @@ When showing trades, charts, or portfolio data, use your tools to create interac
     const stream = new ReadableStream({
       async start(controller) {
         let buffer = '';
-        let toolCalls: any[] = [];
+        interface ToolCall {
+          id?: string;
+          type: string;
+          function: { name: string; arguments: string };
+        }
+        const toolCalls: ToolCall[] = [];
         
         try {
           while (true) {
@@ -205,21 +210,23 @@ When showing trades, charts, or portfolio data, use your tools to create interac
           if (toolCalls.length > 0 && userId) {
             for (const toolCall of toolCalls) {
               const args = JSON.parse(toolCall.function.arguments);
-              let result: any = {};
+              let result: Record<string, unknown> = {};
               
               switch (toolCall.function.name) {
-                case 'get_portfolio':
+                case 'get_portfolio': {
                   const { data: balances } = await supabase
                     .from('user_balances')
                     .select('*')
                     .eq('user_id', userId);
                   result = { type: 'portfolio', data: balances || [] };
                   break;
+                }
                   
-                case 'get_price':
-                  const prices: any = { MAANG: 33, USDC: 1, ETH: 3200, AVAX: 35, SOL: 140 };
+                case 'get_price': {
+                  const prices: Record<string, number> = { MAANG: 33, USDC: 1, ETH: 3200, AVAX: 35, SOL: 140 };
                   result = { type: 'price', asset: args.asset, price: prices[args.asset] || 0 };
                   break;
+                }
                   
                 case 'execute_trade':
                   result = { 

@@ -59,7 +59,7 @@ export interface TWAPSlice {
   status: 'pending' | 'executing' | 'completed' | 'failed';
   executedAmount?: number;
   averagePrice?: number;
-  fills: any[];
+  fills: Array<{ amount: number; price: number; fee?: number }>;
 }
 
 export interface VWAPSlice extends TWAPSlice {

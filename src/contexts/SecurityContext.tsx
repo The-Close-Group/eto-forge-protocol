@@ -8,7 +8,7 @@ interface SecurityEvent {
   userId: string;
   eventType: 'login' | 'logout' | 'trade' | 'transfer' | 'settings_change' | 'security_alert';
   description: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   timestamp: Date;
@@ -126,7 +126,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
           userId: event.user_id,
           eventType: event.event_type as SecurityEvent['eventType'],
           description: event.description,
-          metadata: (event.metadata as Record<string, any>) || {},
+          metadata: (event.metadata as Record<string, unknown>) || {},
           ipAddress: event.ip_address,
           userAgent: event.user_agent,
           timestamp: new Date(event.created_at),

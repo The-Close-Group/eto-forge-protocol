@@ -69,9 +69,23 @@ export interface DailyPerformance {
   trades: number;
 }
 
+export interface ExecutionData {
+  slippage?: number;
+  filled?: boolean;
+  partiallyFilled?: boolean;
+  fillTime?: number;
+  marketImpact?: number;
+  fees?: number;
+}
+
+export interface PortfolioDataItem {
+  dailyReturnPercent: number;
+  value: number;
+}
+
 export class AnalyticsEngine {
   private performanceHistory: DailyPerformance[] = [];
-  private executionData: any[] = [];
+  private executionData: ExecutionData[] = [];
   private marketData: Map<string, number[]> = new Map();
 
   // Performance Analytics
@@ -165,7 +179,7 @@ export class AnalyticsEngine {
   }
 
   // Risk Analytics
-  calculateRiskMetrics(portfolioData: any[], correlationMatrix?: AssetCorrelation[]): RiskMetrics {
+  calculateRiskMetrics(portfolioData: PortfolioDataItem[], correlationMatrix?: AssetCorrelation[]): RiskMetrics {
     const returns = portfolioData.map(p => p.dailyReturnPercent / 100);
     
     // Value at Risk calculations
@@ -197,7 +211,7 @@ export class AnalyticsEngine {
   }
 
   // Execution Analytics
-  calculateExecutionMetrics(executionData: any[]): ExecutionMetrics {
+  calculateExecutionMetrics(executionData: ExecutionData[]): ExecutionMetrics {
     if (executionData.length === 0) {
       return {
         totalSlippage: 0,
@@ -382,7 +396,7 @@ export class AnalyticsEngine {
     return tailReturns.length > 0 ? this.mean(tailReturns) : 0;
   }
 
-  private calculateConcentrationRisk(portfolioData: any[]): number {
+  private calculateConcentrationRisk(portfolioData: PortfolioDataItem[]): number {
     if (portfolioData.length === 0) return 0;
     
     const totalValue = portfolioData.reduce((sum, asset) => sum + asset.value, 0);
@@ -400,7 +414,7 @@ export class AnalyticsEngine {
     return avgCorrelation * 100; // Convert to percentage
   }
 
-  private calculateLiquidityRisk(portfolioData: any[]): number {
+  private calculateLiquidityRisk(portfolioData: PortfolioDataItem[]): number {
     // Simplified liquidity risk based on asset concentration
     return this.calculateConcentrationRisk(portfolioData) * 0.5;
   }
@@ -414,7 +428,7 @@ export class AnalyticsEngine {
     return returns;
   }
 
-  private runStressTests(portfolioData: any[]): StressTestResult[] {
+  private runStressTests(portfolioData: PortfolioDataItem[]): StressTestResult[] {
     const scenarios = [
       { name: "Market Crash (-20%)", impact: -0.20 },
       { name: "Crypto Bear Market (-50%)", impact: -0.50 },

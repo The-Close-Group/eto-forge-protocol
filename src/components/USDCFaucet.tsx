@@ -41,7 +41,7 @@ export function USDCFaucet() {
       return;
     }
 
-    const ethereum = (window as any).ethereum;
+    const ethereum = (window as Window & { ethereum?: unknown }).ethereum;
     if (!ethereum) {
       toast.error("No wallet detected");
       return;
@@ -57,8 +57,8 @@ export function USDCFaucet() {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: ETO_CHAIN_ID_HEX }],
         });
-      } catch (switchErr: any) {
-        if (switchErr.code === 4902) {
+      } catch (switchErr: unknown) {
+        if (switchErr && typeof switchErr === 'object' && 'code' in switchErr && switchErr.code === 4902) {
           await ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [ETO_CHAIN_PARAMS],
@@ -123,10 +123,12 @@ export function USDCFaucet() {
       } else {
         toast.error("Transaction failed on-chain");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Faucet error:", error);
       
-      if (error.code === 4001 || error.message?.includes('rejected') || error.message?.includes('denied')) {
+      const isUserRejection = error && typeof error === 'object' && ('code' in error && error.code === 4001) ||
+        (error instanceof Error && (error.message?.includes('rejected') || error.message?.includes('denied')));
+      if (isUserRejection) {
         toast.error("Transaction rejected");
       } else {
         toast.error(error.shortMessage || error.message || "Transaction failed");

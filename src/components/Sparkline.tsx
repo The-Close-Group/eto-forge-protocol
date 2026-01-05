@@ -19,6 +19,9 @@ export default function Sparkline({
   showEndValue = false,
   endValue
 }: SparklineProps) {
+  // React Hook must be called before any conditional returns
+  const uniqueId = React.useId().replace(/:/g, '');
+
   if (!data || data.length < 2) return null;
 
   const min = Math.min(...data);
@@ -63,7 +66,6 @@ export default function Sparkline({
   };
 
   const color = colors[variant];
-  const uniqueId = React.useId().replace(/:/g, '');
 
   return (
     <div className={`relative ${className || ''}`} style={{ height }}>

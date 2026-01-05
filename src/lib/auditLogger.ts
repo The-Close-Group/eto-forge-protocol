@@ -6,7 +6,7 @@ export interface AuditLogEntry {
   resource: string;
   resourceId?: string;
   userId: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   metadata: {
     ipAddress?: string;
     userAgent?: string;
@@ -119,7 +119,7 @@ class AuditLogger {
   }
 
   // Predefined logging methods for common actions
-  async logLogin(userId: string, success: boolean, details: Record<string, any> = {}) {
+  async logLogin(userId: string, success: boolean, details: Record<string, unknown> = {}) {
     await this.log({
       action: success ? 'login' : 'login_failed',
       resource: 'auth',
@@ -129,7 +129,7 @@ class AuditLogger {
     });
   }
 
-  async logTrade(userId: string, tradeDetails: Record<string, any>) {
+  async logTrade(userId: string, tradeDetails: Record<string, unknown>) {
     const riskLevel = this.assessTradeRisk(tradeDetails);
     await this.log({
       action: 'trade_execute',
@@ -141,7 +141,7 @@ class AuditLogger {
     });
   }
 
-  async logTransfer(userId: string, transferDetails: Record<string, any>) {
+  async logTransfer(userId: string, transferDetails: Record<string, unknown>) {
     const riskLevel = this.assessTransferRisk(transferDetails);
     await this.log({
       action: 'transfer_initiate',
@@ -153,7 +153,7 @@ class AuditLogger {
     });
   }
 
-  async logSettingsChange(userId: string, settingType: string, details: Record<string, any> = {}) {
+  async logSettingsChange(userId: string, settingType: string, details: Record<string, unknown> = {}) {
     const riskLevel = settingType.includes('security') ? 'medium' : 'low';
     await this.log({
       action: 'settings_update',
@@ -164,8 +164,10 @@ class AuditLogger {
     });
   }
 
-  private assessTradeRisk(tradeDetails: Record<string, any>): 'low' | 'medium' | 'high' | 'critical' {
-    const { amount, asset, orderType } = tradeDetails;
+  private assessTradeRisk(tradeDetails: Record<string, unknown>): 'low' | 'medium' | 'high' | 'critical' {
+    const amount = typeof tradeDetails.amount === 'number' ? tradeDetails.amount : 0;
+    const asset = typeof tradeDetails.asset === 'string' ? tradeDetails.asset : '';
+    const orderType = typeof tradeDetails.orderType === 'string' ? tradeDetails.orderType : '';
     
     // High value trades are higher risk
     if (amount > 100000) return 'high';
@@ -179,8 +181,10 @@ class AuditLogger {
     return 'low';
   }
 
-  private assessTransferRisk(transferDetails: Record<string, any>): 'low' | 'medium' | 'high' | 'critical' {
-    const { amount, destination, isExternal } = transferDetails;
+  private assessTransferRisk(transferDetails: Record<string, unknown>): 'low' | 'medium' | 'high' | 'critical' {
+    const amount = typeof transferDetails.amount === 'number' ? transferDetails.amount : 0;
+    const destination = typeof transferDetails.destination === 'string' ? transferDetails.destination : '';
+    const isExternal = typeof transferDetails.isExternal === 'boolean' ? transferDetails.isExternal : false;
     
     // External transfers are higher risk
     if (isExternal && amount > 50000) return 'critical';

@@ -1,12 +1,12 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { useUserBalances } from '@/hooks/useUserBalances';
+import { useUserBalances, UserBalance } from '@/hooks/useUserBalances';
 import { useAuth } from './AuthContext';
 
-interface UserStateContextType {
+export interface UserStateContextType {
   balances: ReturnType<typeof useUserBalances>['balances'];
   isLoading: boolean;
   getTotalPortfolioValue: () => number;
-  getBalance: (asset: string) => any;
+  getBalance: (asset: string) => UserBalance | null;
   getAvailableBalance: (asset: string) => number;
   updateBalance: (asset: string, change: number) => void;
   validateAmount: (asset: string, amount: number) => { isValid: boolean; error?: string };

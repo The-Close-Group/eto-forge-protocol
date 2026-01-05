@@ -34,8 +34,8 @@ export default function PerformanceChart({ data, height = 300 }: PerformanceChar
           />
           <ChartTooltip 
             content={<ChartTooltipContent 
-              formatter={(value: any) => [`$${Number(value).toFixed(2)}`, "Portfolio Value"]}
-              labelFormatter={(label: any) => new Date(label).toLocaleDateString()}
+              formatter={(value: unknown) => [`$${Number(value).toFixed(2)}`, "Portfolio Value"]}
+              labelFormatter={(label: unknown) => new Date(Number(label)).toLocaleDateString()}
             />} 
           />
           <Line

@@ -10,8 +10,10 @@ export interface TokenInfo {
   logoUri?: string;
 }
 
+import type { Chain } from "thirdweb/chains";
+
 export interface ChainConfig {
-  chain: any; // Thirdweb chain object
+  chain: Chain; // Thirdweb chain object
   name: string;
   nativeToken: TokenInfo;
   tokens: TokenInfo[];

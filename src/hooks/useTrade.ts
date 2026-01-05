@@ -89,12 +89,12 @@ export function useTrade() {
         }
       }, 2000);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Transaction failed:', error);
       setState(prev => ({
         ...prev,
         transactionStatus: 'error',
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Transaction failed',
         transactionHash: generateMockTxHash() // Even failed transactions have hashes
       }));
     }

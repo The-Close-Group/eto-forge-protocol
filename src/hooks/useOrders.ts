@@ -49,8 +49,8 @@ export function useOrderManagement() {
       }
       
       return result;
-    } catch (error: any) {
-      const errorMsg = error.message || 'Failed to place order';
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to place order';
       toast.error(errorMsg);
       return { success: false, error: errorMsg };
     }
@@ -67,8 +67,8 @@ export function useOrderManagement() {
       }
       
       return success;
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to cancel order');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to cancel order');
       return false;
     }
   }, [cancelOrder]);
@@ -84,8 +84,8 @@ export function useOrderManagement() {
       }
       
       return success;
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to modify order');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to modify order');
       return false;
     }
   }, [modifyOrder]);

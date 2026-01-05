@@ -141,7 +141,7 @@ export default function Dashboard() {
 
   // Sort and filter assets
   const sortedAssets = useMemo(() => {
-    let sorted = [...assets];
+    const sorted = [...assets];
     switch (sortOrder) {
       case 'apy':
         sorted.sort((a, b) => getEffectiveAPY(b.baseAPY, investmentPeriod, autoCompound) - getEffectiveAPY(a.baseAPY, investmentPeriod, autoCompound));
@@ -149,10 +149,11 @@ export default function Dashboard() {
       case 'tvl':
         sorted.sort((a, b) => b.tvl - a.tvl);
         break;
-      case 'risk':
+      case 'risk': {
         const riskOrder = { low: 0, medium: 1, high: 2 };
         sorted.sort((a, b) => riskOrder[a.riskLevel] - riskOrder[b.riskLevel]);
         break;
+      }
     }
     return sorted.slice(0, 3); // Top 3
   }, [assets, sortOrder, getEffectiveAPY, investmentPeriod, autoCompound]);

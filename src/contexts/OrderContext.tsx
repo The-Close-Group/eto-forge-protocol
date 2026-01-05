@@ -263,7 +263,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         totalCost: fills.reduce((sum, fill) => sum + (fill.amount * fill.price) + fill.fee, 0)
       };
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       setOrders(prev => prev.map(o => 
         o.id === orderId ? { ...o, status: 'rejected' } : o
       ));
