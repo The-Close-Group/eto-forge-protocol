@@ -1,0 +1,249 @@
+---
+title: System Dynamics
+description: Complete mathematical model of DRI Protocol system interconnections, state transitions, and stability analysis.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# System Dynamics
+
+The DRI Protocol can be modeled as a dynamic system where multiple mathematical functions interact to maintain price stability.
+
+---
+
+## State Variables
+
+The complete system state is defined by:
+
+| Variable | Description |
+|----------|-------------|
+| `R_t` | Reflective price at time t |
+| `M_t` | Market price from DMM at time t |
+| `P_t` | Oracle price (TWAP) at time t |
+| `L_t` | Liquidity depth in DMM at time t |
+| `S_t` | PSM reserve state at time t |
+
+---
+
+## Core System Equations
+
+The system dynamics are expressed as:
+
+$$
+\begin{aligned}
+R_{t+1} &= f_{\text{reflect}}(R_t, P_t, \Delta, CB_t) \\[0.5em]
+M_{t+1} &= f_{\text{market}}(M_t, R_t, L_t, V_t) \\[0.5em]
+L_{t+1} &= f_{\text{liquidity}}(L_t, R_t, M_t, \delta) \\[0.5em]
+S_{t+1} &= f_{\text{psm}}(S_t, M_t, R_t, \theta)
+\end{aligned}
+$$
+
+Where:
+- $CB_t$ = circuit breaker state
+- $V_t$ = trading volume
+- $\delta$ = band half-width
+- $\theta$ = PSM threshold
+
+---
+
+## Reflective Price Update Function
+
+$$
+f_{\text{reflect}}(R_t, P_t, \Delta, CB_t) = R_t \times \text{clamp}\left(\frac{P_t}{R_t}, 1-\Delta_{\text{eff}}, 1+\Delta_{\text{eff}}\right)
+$$
+
+---
+
+## Market Price Dynamics Function
+
+The market price evolution depends on AMM mechanics and trading activity:
+
+$$
+f_{\text{market}}(M_t, R_t, L_t, V_t) = M_t + \Delta M_{\text{trade}} + \Delta M_{\text{rebalance}}
+$$
+
+Where:
+
+$$
+\Delta M_{\text{trade}} = \frac{V_{\text{buy}} - V_{\text{sell}}}{2\sqrt{L_{\text{DRI}} \times L_{\text{USDC}}}} \quad \text{(trading impact)}
+$$
+
+$$
+\Delta M_{\text{rebalance}} = \lambda \cdot (R_t - M_t) \quad \text{(rebalancing force)}
+$$
+
+And $\lambda$ is the rebalancing coefficient that increases with accumulated fees.
+
+---
+
+## Liquidity Evolution Function
+
+The liquidity function models DMM band recentering:
+
+| Condition | Result |
+|-----------|--------|
+| $\frac{\|M_t - R_t\|}{R_t} < \delta$ | $L_t$ (no change) |
+| $\frac{\|M_t - R_t\|}{R_t} \geq \delta$ AND fees adequate | $L_{\text{recentered}}(R_t, \delta)$ |
+| Otherwise | $L_t$ (no change) |
+
+Where $L_{\text{recentered}}$ repositions all liquidity around the new reflective price $R_t$.
+
+---
+
+## PSM Intervention Function
+
+The PSM function activates when deviations exceed DMM capacity:
+
+| Condition | Result |
+|-----------|--------|
+| $\frac{\|M_t - R_t\|}{R_t} < \theta$ | $S_t$ (no change) |
+| Intervention needed | $S_t - \Delta S_{\text{intervention}}$ |
+
+Where the intervention size is calculated as:
+
+$$
+\Delta S_{\text{intervention}} = \min\left(
+  |M_t - R_t| \times S_{\text{circ}},\;
+  S_t \times \mu_{\text{cap}},\;
+  s^*_{\text{opt}}(M_t, R_t)
+\right)
+$$
+
+---
+
+## Deviation Measurement and Response
+
+The system continuously measures price deviation:
+
+$$
+\varepsilon_t = \frac{M_t - R_t}{R_t}
+$$
+
+### DMM Recentering Trigger
+
+$$
+\text{recentering\_needed} = |\varepsilon_t| \geq \delta \;\land\; \text{fees}_{\text{acc}} \geq \varphi \cdot IL_{\text{proj}}
+$$
+
+Where $\varphi$ is the fee coverage multiplier and:
+
+$$
+IL_{\text{proj}} = \frac{\delta^2}{2} \cdot L_t
+$$
+
+### PSM Intervention Trigger
+
+$$
+\text{psm\_needed} = |\varepsilon_t| \geq \theta \;\land\; \text{reserve\_sufficient} \;\land\; \neg\text{halt}
+$$
+
+Where:
+- $\theta = 0.5\%$ (deviation threshold, `deviationThreshold: 0.005e18`)
+- `reserve_sufficient` = USDC reserve > 10% of initial
+- PSM swap cap = 1% of pool TVL per tick (`swapCap: 0.01e18`)
+
+### Circuit Breaker Activation
+
+$$
+CB_{t+1} = \max\left(CB_t,\; \text{CB\_level}(\max_{\tau \in [t-w, t]} |\varepsilon_\tau|)\right)
+$$
+
+| Level | Threshold | Persistence | Contract Parameter |
+|-------|-----------|-------------|-------------------|
+| 0 (Normal) | ε < 1% | — | — |
+| 1 (Warn) | ε ≥ 1% | 150 blocks (~5 min) | `warnThreshold: 100` |
+| 2 (Throttle) | ε ≥ 2% | 300 blocks (~10 min) | `throttleThreshold: 200` |
+| 3 (Halt) | ε ≥ 5% | 450 blocks (~15 min) | `haltThreshold: 500` |
+
+---
+
+## Oracle Aggregation Mathematics
+
+The oracle aggregation function combines multiple price sources through a four-step process:
+
+### Step 1: Raw Price Collection
+
+$$
+\mathbf{P}_{\text{raw}} = \{p_1, p_2, \ldots, p_n\} \quad \text{where } p_i = \text{oracle}_i.\text{getPrice}()
+$$
+
+### Step 2: Outlier Filtering
+
+$$
+P_{\text{median}} = \text{median}(\mathbf{P}_{\text{raw}})
+$$
+
+$$
+\mathbf{P}_{\text{filtered}} = \left\{p \in \mathbf{P}_{\text{raw}} : \frac{|p - P_{\text{median}}|}{P_{\text{median}}} \leq \sigma_{\max}\right\}
+$$
+
+### Step 3: Weighted Aggregation
+
+$$
+P_{\text{weighted}} = \frac{\sum_{p_i \in \mathbf{P}_{\text{filtered}}} w_i \cdot p_i}{\sum_{p_i \in \mathbf{P}_{\text{filtered}}} w_i}
+$$
+
+### Step 4: TWAP Smoothing
+
+$$
+P_t = \alpha \cdot P_{\text{weighted}} + (1-\alpha) \cdot P_{t-1}
+$$
+
+Where $\alpha$ is the smoothing factor (typically 0.1–0.3).
+
+---
+
+## System Stability Analysis
+
+The system's stability can be analyzed through the Jacobian matrix of the state transition:
+
+$$
+\mathbf{J} = \begin{bmatrix}
+\frac{\partial f_i}{\partial x_j}
+\end{bmatrix}_{4 \times 4}
+$$
+
+$$
+\text{where } \mathbf{f} = [f_{\text{reflect}}, f_{\text{market}}, f_{\text{liquidity}}, f_{\text{psm}}]^T \text{ and } \mathbf{x} = [R_t, M_t, L_t, S_t]^T
+$$
+
+<Callout type="warn">
+**Stability Requirement:** For stability, all eigenvalues of $\mathbf{J}$ must satisfy $|\lambda_i| < 1$.
+</Callout>
+
+The system is designed such that:
+
+| Component | Stability Property |
+|-----------|-------------------|
+| Reflective Price | $\frac{\partial f_{\text{reflect}}}{\partial R_t} = 1 - \Delta \cdot \text{sign}(P_t - R_t)$ has eigenvalue $\leq 1-\Delta$ |
+| Market Price | $\frac{\partial f_{\text{market}}}{\partial M_t} = 1 - \lambda$ has eigenvalue $< 1$ when $\lambda > 0$ |
+| Cross-coupling | Off-diagonal terms provide stabilizing feedback |
+
+---
+
+## Parameter Optimization
+
+The optimal parameters can be derived through constrained optimization:
+
+### Objective Function
+
+Minimize tracking error while maintaining stability:
+
+$$
+\min_{\Delta, \theta, \delta} \; \mathbb{E}[\varepsilon_t^2]
+$$
+
+Subject to:
+- **System stability:** $\max_i |\lambda_i(\mathbf{J})| < 1$
+- **Safety constraints:** $\Delta \leq \Delta_{\max}$, $\theta \geq \theta_{\min}$
+- **Economic viability:** $\text{fee\_revenue} \geq \text{operational\_costs}$
+
+<Callout type="info">
+These mathematical relationships ensure that all system parameters are optimally tuned for the specific market conditions and risk preferences.
+</Callout>
+
+---
+
+## Next: Capital Efficiency
+
+Continue to [Capital Efficiency](/docs/tokenomics/capital-efficiency) to understand the concentrated liquidity mathematics.

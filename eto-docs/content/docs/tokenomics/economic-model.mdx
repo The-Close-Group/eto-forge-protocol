@@ -1,0 +1,287 @@
+---
+title: Economic Model
+description: Token architecture, distribution, fee structure, and revenue model for the DRI Protocol.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Economic Model
+
+The DRI Protocol implements a dual-token system designed to separate governance rights from economic exposure.
+
+---
+
+## Token Architecture
+
+### DRI Token
+
+| Property | Value |
+|----------|-------|
+| **Total Supply** | 50,000,000 DRI (fixed, non-inflationary) |
+| **Purpose** | Index tracking token representing protocol economic value |
+| **Transferable** | Fully tradeable on secondary markets |
+| **Functionality** | Core protocol token for all economic operations |
+
+### GOV-DRI Token
+
+| Property | Value |
+|----------|-------|
+| **Total Supply** | 1,000,000 GOV-DRI (fixed, non-inflationary) |
+| **Purpose** | Governance rights and protocol decision-making |
+| **Transferable** | Non-transferable (exception: multisig key rotation) |
+| **Functionality** | Voting power in governance proposals |
+
+---
+
+## Initial Distribution and Allocation
+
+### Genesis Allocation
+
+At protocol launch, the 50M DRI supply is allocated as follows:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              DRI TOKEN GENESIS ALLOCATION                │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Dynamic Market Maker (40%) — 20,000,000 DRI             │
+│  • Provides immediate liquidity for trading              │
+│  • Concentrated in ±0.25% bands (200× capital efficiency)│
+│  • Generates 0.30% trading fees for sustainability       │
+│                                                          │
+│  Peg Stability Module (50%) — 25,000,000 DRI             │
+│  • Reserve backing for arbitrage interventions           │
+│  • Paired with equivalent USDC token reserves            │
+│  • 0.50% intervention fee, 1% swap cap per tick          │
+│                                                          │
+│  Expansion Buffer (10%) — 5,000,000 DRI                  │
+│  • Held in TrancheVault for future expansion             │
+│  • Released through milestone-based auctions             │
+│  • Ensures controlled supply growth                      │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+<Callout type="info">
+**Fixed Supply:** DRI has a fixed 50M supply with no minting capability. The PSM explicitly enforces `CRITICAL FIX: DRI has fixed supply - no minting allowed`.
+</Callout>
+
+### GOV-DRI Distribution
+
+Governance tokens are distributed to ensure decentralized control:
+
+| Allocation | Percentage | Details |
+|------------|------------|---------|
+| **Founding Team** | 20% | 4-year vesting with 1-year cliff, ensures long-term alignment |
+| **Community Governance** | 60% | Distributed through participation incentives, includes early adopters |
+| **Protocol Treasury** | 15% | Reserved for future initiatives, controlled by governance vote |
+| **Strategic Reserve** | 5% | Emergency governance backup, requires 90% community vote to activate |
+
+---
+
+## Supply Expansion Mechanism
+
+### Milestone-Based Tranches
+
+The DRI Protocol implements controlled supply expansion through market cap milestones:
+
+| Tranche | Market Cap Trigger | DRI Unlock |
+|---------|-------------------|------------|
+| **T-1** | $350M | 1,000,000 DRI |
+| **T-3** | $750M | 1,500,000 DRI |
+| **T-5** | $1B | Remaining buffer |
+
+### Expansion Auction Mechanism
+
+When milestones are reached, new tokens are distributed through sealed-bid auctions:
+
+| Phase | Duration | Description |
+|-------|----------|-------------|
+| Auction Announcement | 7 days | Notice period with full auction details |
+| Bidding Period | 24 hours | Sealed bid submission window |
+| Price Discovery | — | Dutch auction with oracle-anchored floor price |
+| Allocation | — | Pro-rata distribution based on bid prices |
+| Settlement | — | Automatic token delivery and USDC collection |
+
+### Minimum Bid Price Formula
+
+The auction mechanism prevents discount dilution:
+
+$$
+P_{\text{bid}}^{\min} = \max\left(
+  P_{\text{oracle}} \times 0.95,\;
+  P_{\text{TWAP}}^{30d} \times 0.90,\;
+  P_{\text{prev\_auction}} \times 0.98
+\right)
+$$
+
+---
+
+## Fee Structure and Revenue Model
+
+### Revenue Sources
+
+#### Trading Fees (0.30%)
+
+| Aspect | Details | Contract Parameter |
+|--------|---------|-------------------|
+| Applied to | All DMM swaps | `feePips: 3000` |
+| Split | 70% protocol treasury, 30% governance rewards | Via `collectFees()` |
+| Est. Annual Revenue | $2–5M (based on projected volume) | — |
+
+<Callout type="info">
+**Fee Distribution:** DMM fees are collected via `collectFees(recipient)` and should be distributed: 70% to protocol treasury, 30% to governance reward pool.
+</Callout>
+
+#### PSM Intervention Fees (0.50%)
+
+| Aspect | Details | Contract Parameter |
+|--------|---------|-------------------|
+| Applied to | Arbitrage peg maintenance operations | `feeRate: 0.005e18` |
+| Swap Cap | 1% of pool TVL per tick | `swapCap: 0.01e18` |
+| Max USDC Draw | 20% of reserve per operation | `maxUsdcDraw: 0.2e18` |
+| Purpose | Discourages excessive PSM usage, generates revenue | — |
+| Est. Annual Revenue | $200K–500K | — |
+
+<Callout type="warn">
+**Peg Stability Optimization:** The 0.50% PSM fee (vs 0.30% DMM) creates a fee gradient that encourages normal trading through DMM while reserving PSM for genuine peg defense. The 1% swap cap allows aggressive peg restoration when needed.
+</Callout>
+
+#### Expansion Auction Premiums
+
+| Aspect | Details |
+|--------|---------|
+| Source | Market-driven premiums above oracle floor |
+| Allocation | 100% to protocol treasury |
+| Est. Revenue per Tranche | $50K–200K |
+
+---
+
+## PSM Fee Structure
+
+The PSM applies variable fees based on utilization and market conditions:
+
+### Base Fee Calculation
+
+$$
+f_{\text{base}} = f_0 \times \left(1 + \kappa \cdot U_t\right)
+$$
+
+Where $f_0$ is the base fee rate (e.g., 0.50%) and $\kappa$ is the utilization multiplier.
+
+### Volatility Adjustment
+
+During high volatility periods, fees increase:
+
+$$
+f_{\text{vol}} = f_{\text{base}} \times \left(1 + \gamma \cdot \sigma_{\text{realized}}\right)
+$$
+
+### Final Fee Calculation
+
+$$
+f_{\text{total}} = \min(f_{\text{vol}}, f_{\max}) \times S_{\text{notional}}
+$$
+
+
+
+---
+
+## Protocol Sustainability
+
+Revenue allocation ensures long-term protocol sustainability:
+
+| Category | Allocation | Purpose |
+|----------|------------|---------|
+| **Operational Expenses** | 40% | Oracle fees, keeper incentives, infrastructure |
+| **Security Budget** | 30% | Audits, bug bounties, insurance reserves |
+| **Development Fund** | 20% | Protocol improvements and new features |
+| **Governance Rewards** | 10% | Incentives for active governance participation |
+
+---
+
+## Reserve-Adjusted PSM Threshold
+
+The PSM threshold adapts based on reserve levels:
+
+$$
+\theta_{\text{adaptive}} = \theta_{\text{base}} \times \left(1 - 0.5 \cdot U_{\text{reserve}}\right)
+$$
+
+<Callout type="info">
+This makes PSM **more conservative as reserves are depleted**, protecting the system from over-extension.
+</Callout>
+
+---
+
+## Operational Constraints and Gas Economics
+
+### Gas Cost Analysis (Avalanche C-Chain)
+
+```solidity
+// syncPrice() function breakdown:
+Oracle calls (3 sources):           ~15,000 gas each = 45,000 gas
+Price calculations:                 ~8,000 gas  
+Storage updates:                    ~5,000 gas
+Event emissions:                    ~2,000 gas
+DMM recentering (when triggered):   ~65,000 gas
+PSM check:                          ~3,000 gas
+────────────────────────────────────────────────────────────────
+Total (normal operation):           ~63,000 gas
+Total (with recentering):           ~128,000 gas
+```
+
+### Cost Analysis at Different Gas Prices
+
+| Gas Price | Normal Sync | With Recentering |
+|-----------|-------------|------------------|
+| 25 gwei (calm) | $0.80 | $1.60 |
+| 50 gwei (busy) | $1.60 | $3.20 |
+| 100 gwei (congested) | $3.20 | $6.40 |
+
+### Daily Operational Costs (30-second intervals)
+
+| Gas Price | Daily Cost (2,880 syncs) |
+|-----------|-------------------------|
+| 25 gwei | $2,304/day |
+| 50 gwei | $4,608/day |
+| 100 gwei | $9,216/day |
+
+### Adaptive Sync Intervals
+
+To manage costs while maintaining responsiveness:
+
+$$
+T_{\text{sync}} = T_{\text{base}} \times \xi
+$$
+
+Where:
+
+$$
+\xi = \max\left(0.5,\; \min\left(4.0,\; \frac{1}{\sigma_{\text{rolling}}}\right)\right)
+$$
+
+| Market Condition | Interval | Gas Savings |
+|------------------|----------|-------------|
+| Calm (σ less than 0.5%) | 2-minute | ~75% |
+| Normal (0.5% ≤ σ ≤ 2%) | 30-second | Baseline |
+| Volatile (σ greater than 2%) | 15-second | 2× cost |
+
+### Gas Budget Management
+
+$$
+B_{\text{gas}}^{\text{daily}} = \min\left(
+  0.3 \times F_{\text{trading}},\;
+  0.0001 \times TVL
+\right)
+$$
+
+<Callout>
+Maximum 30% of fees for operations, or 0.01% of TVL daily.
+</Callout>
+
+---
+
+## Next: Governance Framework
+
+Continue to [Governance Framework](/docs/tokenomics/governance-framework) to understand the voting and proposal systems.

@@ -4,6 +4,8 @@ import {
   frontmatterSchema,
   metaSchema,
 } from 'fumadocs-mdx/config';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.dev/docs/mdx/collections
@@ -22,6 +24,9 @@ export const docs = defineDocs({
 
 export default defineConfig({
   mdxOptions: {
-    // MDX options
+    // Prepend remarkMath to run BEFORE fumadocs default plugins
+    remarkPlugins: (defaults) => [remarkMath, ...defaults],
+    // Prepend rehypeKatex to run BEFORE Shiki code highlighting
+    rehypePlugins: (defaults) => [rehypeKatex, ...defaults],
   },
 });

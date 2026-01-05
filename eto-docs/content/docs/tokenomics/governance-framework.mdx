@@ -1,0 +1,306 @@
+---
+title: Governance Framework
+description: Governance architecture, voting mechanisms, and emergency controls for the DRI Protocol.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Governance Framework
+
+The DRI Protocol implements a sophisticated governance system designed to balance decentralization with operational efficiency.
+
+---
+
+## Governance Architecture
+
+### Non-Transferable Token Model
+
+GOV-DRI tokens **cannot be transferred** between addresses (except multisig key rotation):
+
+| Feature | Benefit |
+|---------|---------|
+| Prevents governance capture | No token accumulation attacks possible |
+| Long-term alignment | Ensures participants have protocol commitment |
+| Eliminates speculation | No governance token trading or vote buying |
+
+### Voting Power Calculation
+
+$$
+V_{\text{power}} = \text{balanceOf}(\text{voter}) + V_{\text{delegated}}
+$$
+
+Where delegated power allows for:
+- Expert delegation without token transfer
+- Institutional participation through authorized representatives
+- Scaling participation while maintaining security
+
+---
+
+## Proposal System
+
+### Proposal Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| **Minimum Stake** | 1 GOV-DRI to submit proposals |
+| **Proposal Content** | Detailed specification with risk assessment |
+| **Risk Memo** | IPFS-hosted risk analysis document |
+| **Implementation Timeline** | Clear execution schedule |
+
+### Proposal Categories
+
+| Category | Scope |
+|----------|-------|
+| **Parameter Updates** | Adjustment caps, thresholds, fee rates |
+| **System Upgrades** | Smart contract upgrades and new features |
+| **Oracle Management** | Adding/removing Oracle sources, weight adjustments |
+| **Emergency Actions** | Circuit breaker management, emergency pauses |
+| **Treasury Management** | Protocol treasury allocation and spending |
+
+---
+
+## Voting Process and Timeline
+
+### Standard Governance Timeline
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  GOVERNANCE TIMELINE                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Day 0    │ Phase 1: Proposal Submission                        │
+│           │ • Proposal submitted with risk assessment            │
+│           │ • Community discussion begins                        │
+│           │ • Technical review initiated                         │
+│           │                                                      │
+│  Days 3-6 │ Phase 2: Voting Period                               │
+│           │ • 72-hour voting window                              │
+│           │ • Vote types: For, Against, Abstain                  │
+│           │ • Real-time vote tallying                            │
+│           │                                                      │
+│  Day 6    │ Phase 3: Queuing                                     │
+│           │ • Successful proposals queued for timelock           │
+│           │ • 48-hour delay before execution                     │
+│           │ • Final review period                                │
+│           │                                                      │
+│  Day 8+   │ Phase 4: Execution                                   │
+│           │ • Automated execution after timelock                 │
+│           │ • On-chain implementation                            │
+│           │ • Post-execution monitoring                          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Voting Requirements
+
+#### Quorum Thresholds
+
+| Proposal Type | Required Quorum | GOV-DRI Tokens |
+|---------------|-----------------|----------------|
+| Standard Proposals | 60% of total GOV-DRI supply | 600,000 GOV-DRI |
+| Emergency Proposals | 40% quorum with 48-hour voting | 400,000 GOV-DRI |
+| Constitutional Changes | 75% quorum requirement | 750,000 GOV-DRI |
+
+<Callout type="info">
+**Contract Implementation:** Governor enforces `quorum: 600_000e18` for standard proposals (60% of 1M GOV-DRI).
+</Callout>
+
+#### Approval Thresholds
+
+| Proposal Type | Required Approval | Basis Points |
+|---------------|-------------------|--------------|
+| Standard Proposals | 67% (supermajority) | 6,700 bps |
+| Parameter Adjustments | 60% approval | 6,000 bps |
+| Emergency Actions | 80% with reduced timelock | 8,000 bps |
+
+<Callout type="warn">
+**Security Design:** The 67% supermajority (`approvalThreshold: 6700`) prevents 51% attacks while ensuring meaningful consensus.
+</Callout>
+
+---
+
+## Multi-Signature Emergency Controls
+
+### Emergency Multisig Powers
+
+The protocol includes a **5-of-8 multisig** with limited emergency powers:
+
+<Callout type="warn">
+**Authorized Emergency Actions**
+- Circuit breaker reset during system halts
+- Oracle source emergency removal (malfunction/compromise)
+- PSM operation suspension during attacks
+- Protocol pause during critical vulnerabilities
+</Callout>
+
+<Callout type="error">
+**Prohibited Actions**
+- Parameter changes outside hard-coded bounds
+- Treasury fund access or reallocation
+- Governance system modifications
+- Token supply changes
+</Callout>
+
+### Multisig Composition and Rotation
+
+#### Initial Composition
+
+| Role | Count |
+|------|-------|
+| Founding team members | 3 |
+| Community-elected representatives | 2 |
+| Technical advisors | 2 |
+| Legal/compliance representative | 1 |
+
+#### Rotation Mechanism
+
+| Slot | Rotation |
+|------|----------|
+| Community slots | Annual community election |
+| Technical advisors | Selected by community vote |
+| Founding team | Slots decrease over 4-year timeline |
+| Legal representative | Appointed by governance vote |
+
+---
+
+## Circuit Breaker System
+
+### Three-Tier Protection Model
+
+The DRI Protocol implements a sophisticated three-tier circuit breaker system:
+
+#### Level 1 — Warning Mode
+
+| Attribute | Value | Contract Parameter |
+|-----------|-------|-------------------|
+| **Trigger** | Sustained deviation ≥ 1% (100 bps) | `warnThreshold: 100` |
+| **Persistence** | 150 blocks (~5 min at 2s/block) | `warnBlocks: 150` |
+| **Response** | Increased monitoring, event emission | — |
+| **Purpose** | Early warning for monitoring tools | — |
+
+#### Level 2 — Throttle Mode
+
+| Attribute | Value | Contract Parameter |
+|-----------|-------|-------------------|
+| **Trigger** | Sustained deviation ≥ 2% (200 bps) | `throttleThreshold: 200` |
+| **Persistence** | 300 blocks (~10 min at 2s/block) | `throttleBlocks: 300` |
+| **Response** | Reduced Δ/2, slower rebalancing | — |
+| **Purpose** | Gradual slowdown to prevent destabilization | — |
+
+#### Level 3 — Halt Mode
+
+| Attribute | Value | Contract Parameter |
+|-----------|-------|-------------------|
+| **Trigger** | Sustained deviation ≥ 5% (500 bps) | `haltThreshold: 500` |
+| **Persistence** | 450 blocks (~15 min at 2s/block) | `haltBlocks: 450` |
+| **Response** | Complete suspension of operations | — |
+| **Purpose** | Full protection during extreme conditions | — |
+
+<Callout type="info">
+**Block-Time Conversion:** On Avalanche (~2s blocks), time triggers convert to: 5 min = 150 blocks, 10 min = 300 blocks, 15 min = 450 blocks. Recovery requires `recoverBlocks: 50` consecutive blocks below warn threshold.
+</Callout>
+
+### Circuit Breaker Mathematics
+
+Circuit breakers activate based on rolling maximum deviation:
+
+$$
+\varepsilon_{\max}^{(t)} = \max_{k \in [t-N+1, t]} |\varepsilon_k|
+$$
+
+Where:
+- $\varepsilon_{\max}^{(t)}$ = maximum absolute deviation over the last $N$ blocks
+- $\varepsilon_k$ = deviation at block $k$
+- $N$ = time window length (varies by circuit breaker level)
+
+### Level Determination
+
+| Level | Condition |
+|-------|-----------|
+| 0 | $\varepsilon_{\max} \leq 1\%$ |
+| 1 | $1\% < \varepsilon_{\max} \leq 2\%$ AND duration $\geq$ 150 blocks |
+| 2 | $2\% < \varepsilon_{\max} \leq 5\%$ AND duration $\geq$ 300 blocks |
+| 3 | $\varepsilon_{\max} > 5\%$ AND duration $\geq$ 450 blocks |
+
+### Hysteresis Implementation
+
+To prevent oscillation between states:
+- **Activation threshold:** $\varepsilon_{\text{base}}$
+- **Deactivation threshold:** $0.8 \times \varepsilon_{\text{base}}$ (20% lower for deactivation)
+
+### System Impact by Level
+
+```solidity
+// Level 1 (Warning):
+Δ_effective = Δ_normal
+monitoring_frequency = 2 × base_frequency
+alert_threshold = 0.5 × normal_threshold
+
+// Level 2 (Throttle):
+Δ_effective = Δ_normal / 2
+sync_interval = 2 × base_interval  
+fee_multiplier = 1.5
+
+// Level 3 (Halt):
+Δ_effective = 0
+sync_disabled = true
+psm_disabled = true
+emergency_mode = true
+```
+
+---
+
+## Recovery Mechanisms
+
+Circuit breakers implement hysteresis to prevent oscillation:
+
+| Mechanism | Threshold |
+|-----------|-----------|
+| Activation Threshold | 1.5× base threshold to trigger |
+| Deactivation Threshold | 0.8× base threshold to release |
+| Minimum Active Time | Each level must remain active for minimum duration |
+
+### Recovery Dynamics
+
+Recovery follows exponential decay:
+
+$$
+\rho(t) = 1 - e^{-t/\tau}
+$$
+
+Where $\tau$ is the recovery time constant, and full recovery requires $\rho \geq 0.95$.
+
+---
+
+## Governance Incentives
+
+### Voting Rewards
+
+| Reward Type | Amount |
+|-------------|--------|
+| Base reward | 0.1% of quarterly trading fees per vote |
+| Consistency bonus | +50% for greater than 80% voting participation |
+| Risk assessment rewards | Extra 0.05% for detailed proposal analysis |
+
+### Proposal Rewards
+
+| Reward Type | Amount |
+|-------------|--------|
+| Successful proposal bonus | 0.5% of relevant trading fees |
+| Quality bonus | For well-researched proposals with community support |
+| Implementation success bonus | Based on proposal outcome metrics |
+
+### Delegation System
+
+| Feature | Description |
+|---------|-------------|
+| Expert Delegation | Delegate to recognized experts without token transfer |
+| Delegation Categories | Technical, Economic, Legal, Community |
+| Revocable Delegation | Immediate effect when revoked |
+| Transparency | Delegation tracking and expert performance metrics |
+
+---
+
+## Next: Bootstrap Deployment
+
+Continue to [Bootstrap Deployment](/docs/tokenomics/bootstrap-deployment) to understand the deployment process and circular dependency solutions.
