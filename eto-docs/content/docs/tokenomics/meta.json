@@ -1,5 +1,6 @@
 {
-  "title": "Tokenomics & Whitepaper",
+  "title": "Whitepaper",
+  "icon": "FileText",
   "pages": [
     "overview",
     "mathematical-framework",

@@ -5,18 +5,29 @@ description: Comprehensive risk assessment and mitigation strategies for the DRI
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-# Risk Analysis and Mitigation
+# Risk Analysis
 
-A comprehensive analysis of technical, economic, and governance risks facing the DRI Protocol, along with mitigation strategies.
+This section provides a comprehensive assessment of technical, economic, and governance risks facing the DRI Protocol, along with mitigation strategies.
+
+---
+
+## Risk Matrix
+
+| Risk Category | Probability | Impact | Mitigation |
+|--------------|-------------|--------|------------|
+| Smart Contract Bugs | Medium | High | Multi-firm audits, formal verification |
+| Oracle Manipulation | Medium | Medium | Multi-oracle, TWAP, capped Δ |
+| Liquidity Crises | Low | High | PSM reserves, circuit breakers |
+| Governance Capture | Low | High | Non-transferable GOV-DRI |
 
 ---
 
 ## Technical Risks
 
-### Smart Contract Risks
+### Smart Contract Vulnerabilities
 
 <Callout type="error">
-**Risk:** Smart contract bugs leading to fund loss or system dysfunction
+**Risk:** Contract bugs leading to fund loss or system dysfunction
 </Callout>
 
 | Attribute | Assessment |
@@ -264,6 +275,6 @@ Where:
 
 ---
 
-## Next: Stress Testing
-
-Continue to [Stress Testing](/docs/tokenomics/stress-testing) to understand the validation framework and backtesting methodology.
+<Callout type="info">
+**Next:** [Stress Testing](/docs/tokenomics/stress-testing) — Backtesting methodology and validation framework
+</Callout>

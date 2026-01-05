@@ -1,115 +1,115 @@
 ---
-title: DRI Protocol Whitepaper
+title: Protocol Overview
 description: Technical whitepaper for the Dynamic Reflective Index Protocol - a novel on-chain token indexing architecture for tracking real-world asset indices.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
+import { Callout, Card, Cards } from 'fumadocs-ui/components/callout';
 
-# Dynamic Reflective Index (DRI) Protocol
+# Dynamic Reflective Index Protocol
 
 <Callout type="info">
-**Technical Whitepaper v1.0** — January 2025
+**Technical Whitepaper v1.0** | January 2025 | ETO Protocol Team
 </Callout>
 
 ## Abstract
 
-The Dynamic Reflective Index (DRI) Protocol introduces a novel on-chain token indexing architecture designed to track real-world asset indices through a **capped reflective price mechanism**, **protocol-managed liquidity**, and **graduated intervention systems**. The protocol addresses fundamental challenges in on-chain index tracking: capital inefficiency, oracle manipulation, and tracking drift.
+The **Dynamic Reflective Index (DRI) Protocol** introduces a novel on-chain token indexing architecture designed to track real-world asset indices through three core mechanisms:
 
-### Core Innovation
+1. **Capped Reflective Pricing** — Algorithmically bounded adjustments converging to oracle prices
+2. **Protocol-Managed Liquidity** — Concentrated bands achieving 200× capital efficiency  
+3. **Graduated Intervention** — Multi-tier circuit breakers and reserve-backed stability
 
-The reflective price update mechanism uses algorithmically bounded adjustments (maximum adjustable rate per update) to converge toward oracle prices while preventing manipulation. Combined with concentrated liquidity bands (adjustable rate width) and reserve-backed stability modules, the system targets high tracking accuracy with controlled risk exposure.
+The protocol addresses fundamental challenges in on-chain index tracking: capital inefficiency, oracle manipulation, and tracking drift.
 
-### Key Features
+---
 
-- **Capped reflective price updates** with convergence guarantees
-- **200× capital efficiency** through concentrated liquidity (±0.25% bands)
-- **Multi-tier circuit breaker system** for emergency protection (1%/2%/5% thresholds)
-- **Non-transferable governance tokens** preventing capture attacks
-- **Bootstrap deployment system** solving circular dependency issues
+## Key Metrics
 
-<Callout type="info">
-**Capital Efficiency:** With ±0.25% bands (δ = 0.0025), the theoretical capital efficiency is `CE = 1/(2×0.0025) = 200×`. After accounting for recentering costs and price impact, effective efficiency is ~200× compared to full-range AMMs.
-</Callout>
+| Metric | Value | Description |
+|--------|-------|-------------|
+| **Capital Efficiency** | 200× | Concentrated ±0.25% bands vs full-range AMMs |
+| **Tracking Accuracy** | ±0.01% | Five times tighter than leading alternatives |
+| **Circuit Breakers** | 1% / 2% / 5% | Three-tier graduated protection system |
+| **Max Adjustment** | 3% per tick | Capped Δ prevents manipulation |
+| **Sync Interval** | 30 seconds | Balance of accuracy vs gas costs |
 
 <Callout type="warn">
-**Development Status:** This whitepaper presents architectural specifications and mathematical frameworks. Performance data and stress testing results will be published following comprehensive testnet validation and backtesting against historical market events.
+**Development Status:** This whitepaper presents architectural specifications and mathematical frameworks. Performance data will be published following testnet validation.
 </Callout>
 
 ---
 
-## Background and Motivation
+## The Problem
 
-Traditional approaches to on-chain index tracking face fundamental challenges:
+Traditional on-chain index tracking faces fundamental challenges:
 
-| Challenge | Description |
-|-----------|-------------|
-| High capital requirements | Substantial over-collateralization needed |
-| Tracking error accumulation | 95-98% accuracy with significant drift over time |
-| Oracle manipulation vulnerabilities | Single points of failure |
-| Governance capture risks | Token accumulation attacks |
-
-The DRI Protocol addresses these limitations through a fundamentally different approach. Rather than attempting to replicate index composition on-chain, DRI uses a **reflective price mechanism** that gradually converges to external oracle data while maintaining strict mathematical bounds on price movements.
+| Challenge | Traditional Approach | DRI Solution |
+|-----------|---------------------|--------------|
+| **Capital Inefficiency** | Full-range liquidity (1× efficiency) | Concentrated ±0.25% bands (200×) |
+| **Tracking Drift** | 95-98% accuracy, compounds over time | Reflective convergence guarantees |
+| **Oracle Manipulation** | Single oracle, immediate price impact | Multi-oracle TWAP with capped adjustments |
+| **Governance Capture** | Transferable tokens enable accumulation | Non-transferable GOV-DRI tokens |
 
 ---
 
 ## Design Principles
 
-The DRI Protocol is built on five core design principles:
-
-| Principle | Description |
-|-----------|-------------|
-| **Algorithmic Rigor** | All price updates follow provably sound mathematical models with formal convergence guarantees |
-| **Capital Efficiency** | Concentrated liquidity deployment achieves maximum utility per dollar of protocol-owned assets |
-| **Manipulation Resistance** | Capped adjustments and multi-oracle aggregation prevent price manipulation attacks |
-| **Automated Operation** | The system requires minimal human intervention while maintaining strict security bounds |
-| **Graduated Responses** | Multi-tier intervention systems provide proportional responses to different deviation levels |
+| Principle | Implementation |
+|-----------|----------------|
+| **Algorithmic Rigor** | Provably sound models with formal convergence guarantees |
+| **Capital Efficiency** | Concentrated liquidity maximizes utility per dollar |
+| **Manipulation Resistance** | Capped Δ + multi-oracle aggregation |
+| **Automated Operation** | Minimal human intervention with strict security bounds |
+| **Graduated Response** | Proportional interventions matching deviation severity |
 
 ---
 
-## System Overview
-
-The DRI Protocol consists of several interconnected components:
+## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      DRI PROTOCOL ARCHITECTURE                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────┐     ┌─────────────────┐                    │
-│  │  Oracle         │────▶│  DRI Controller │◀────────┐          │
-│  │  Aggregator     │     │  (Core Logic)   │         │          │
-│  └─────────────────┘     └────────┬────────┘         │          │
-│         ▲                         │                   │          │
-│         │                         ▼                   │          │
-│  ┌──────┴──────┐         ┌─────────────────┐  ┌──────┴──────┐   │
-│  │ Chainlink   │         │ Dynamic Market  │  │   Circuit   │   │
-│  │ Pyth        │         │ Maker (DMM)     │  │   Breakers  │   │
-│  │ API3        │         └────────┬────────┘  └─────────────┘   │
-│  └─────────────┘                  │                              │
-│                                   ▼                              │
-│                          ┌─────────────────┐                    │
-│                          │ Peg Stability   │                    │
-│                          │ Module (PSM)    │                    │
-│                          └─────────────────┘                    │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                        DRI PROTOCOL STACK                             │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│    ┌──────────────┐          ┌──────────────────┐                    │
+│    │   ORACLES    │─────────▶│  DRI CONTROLLER  │◀─── Circuit        │
+│    │  Chainlink   │          │  Reflective Price │     Breakers      │
+│    │  Pyth, API3  │          │  Capped Updates   │                    │
+│    └──────────────┘          └────────┬─────────┘                    │
+│                                       │                               │
+│                      ┌────────────────┼────────────────┐             │
+│                      ▼                ▼                ▼             │
+│              ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │
+│              │     DMM     │  │     PSM     │  │  GOVERNANCE │       │
+│              │  ±0.25% LP  │  │  Arbitrage  │  │  GOV-DRI    │       │
+│              │  200× Eff.  │  │  Reserve    │  │  Non-Xfer   │       │
+│              └─────────────┘  └─────────────┘  └─────────────┘       │
+│                                                                       │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-| Component | Description |
-|-----------|-------------|
-| **DRI Controller** | Central coordinator implementing the reflective price mechanism |
-| **Dynamic Market Maker (DMM)** | Concentrated liquidity provider with automated band recentering |
-| **Peg Stability Module (PSM)** | Reserve-backed intervention system for extreme deviations |
-| **Oracle Aggregator** | Multi-source price feed aggregation with TWAP smoothing |
-| **Governance System** | Time-locked governance with non-transferable voting tokens |
-| **Expansion Auctions** | Demand-gated supply increases through sealed-bid auctions |
-| **Circuit Breakers** | Three-tier emergency protection system |
+### Core Components
+
+| Component | Role | Key Parameters |
+|-----------|------|----------------|
+| **DRI Controller** | Reflective price mechanism, system orchestration | Δ = 3%, sync = 30s |
+| **Dynamic Market Maker** | Concentrated liquidity, automated recentering | ±0.25% bands, 0.30% fee |
+| **Peg Stability Module** | Reserve-backed arbitrage intervention | 0.50% fee, 1% cap |
+| **Oracle Aggregator** | Multi-source TWAP with outlier filtering | 3+ sources, 4-day staleness |
+| **Circuit Breakers** | Three-tier graduated protection | 1% / 2% / 5% thresholds |
+| **Governance** | Non-transferable token voting | 60% quorum, 67% approval |
 
 ---
 
-## Continue Reading
+## Documentation Guide
 
-- [Mathematical Framework](/docs/tokenomics/mathematical-framework) — Reflective price updates, convergence proofs, and core equations
-- [System Dynamics](/docs/tokenomics/system-dynamics) — Complete system model and interconnections
-- [Capital Efficiency](/docs/tokenomics/capital-efficiency) — Concentrated liquidity mathematics and optimization
-- [Economic Model](/docs/tokenomics/economic-model) — Token architecture, distribution, and fee structure
+| Section | Contents |
+|---------|----------|
+| [**Mathematical Framework**](/docs/tokenomics/mathematical-framework) | Reflective price algorithm, convergence proofs |
+| [**System Dynamics**](/docs/tokenomics/system-dynamics) | State equations, stability analysis |
+| [**Capital Efficiency**](/docs/tokenomics/capital-efficiency) | Concentrated liquidity math, 200× derivation |
+| [**Economic Model**](/docs/tokenomics/economic-model) | Token distribution, fee structure |
+| [**Governance**](/docs/tokenomics/governance-framework) | Voting, circuit breakers, emergency controls |
+| [**Deployment**](/docs/tokenomics/bootstrap-deployment) | Bootstrap phases, production checklist |
+| [**Risk Analysis**](/docs/tokenomics/risk-analysis) | Multi-dimensional risk assessment |
+| [**Stress Testing**](/docs/tokenomics/stress-testing) | Backtesting methodology, validation |

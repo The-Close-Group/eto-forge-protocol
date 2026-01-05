@@ -5,50 +5,38 @@ description: Deployment challenges, solutions, and the bootstrap system for the 
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-# Bootstrap System and Deployment
+# Bootstrap Deployment
 
-The DRI Protocol faced significant deployment challenges that were systematically addressed through a comprehensive bootstrap system.
+The DRI Protocol implements a **bootstrap system** that resolves circular dependencies and enables safe initialization from zero to fully operational state.
 
 ---
 
-## Deployment Challenges
+## The Problem
 
-### Original Problems
-
-#### Oracle Chicken-and-Egg Problem
-
-| Issue | Description |
-|-------|-------------|
-| **Requirement** | Original system required 3+ active oracles before providing price data |
-| **Impact** | Created circular dependency preventing initial deployment |
-| **Symptom** | No clear path from zero to operational state |
-
-#### Circular Dependency Issue
+### Circular Dependencies
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              CIRCULAR DEPENDENCY PROBLEM                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   DRIController ──────────────▶ Needs DMM address           │
-│        ▲                        in constructor               │
-│        │                                                     │
-│        │                                                     │
-│        └──────────────────────── DMM needs                   │
-│                                  DRIController address       │
-│                                  for operation               │
-│                                                              │
-│   ═══════════════════════════════════════════════════════   │
-│   Traditional deployment order becomes IMPOSSIBLE!           │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│               CIRCULAR DEPENDENCY PROBLEM                 │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│   DRIController ────────▶ Needs DMM address (constructor) │
+│        ▲                                                  │
+│        │                                                  │
+│        └──────────────── DMM needs DRIController address  │
+│                                                           │
+│   Traditional deployment becomes IMPOSSIBLE               │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
 ```
 
-#### Strict Production Validation
+### Additional Challenges
 
-- Production-level validation too strict for bootstrap phase
-- Prevented legitimate initial setup operations
-- No graceful degradation during system initialization
+| Challenge | Impact |
+|-----------|--------|
+| **Oracle Chicken-and-Egg** | System required 3+ oracles before providing price data |
+| **Strict Validation** | Production thresholds prevented initial setup |
+| **No Degradation** | No graceful path from zero to operational |
 
 ---
 
@@ -259,7 +247,6 @@ driToken.finalizeMinting();
 
 ---
 
-## Next: Risk Analysis
-
-Continue to [Risk Analysis](/docs/tokenomics/risk-analysis) to understand the protocol's risk mitigation strategies.
-
+<Callout type="info">
+**Next:** [Risk Analysis](/docs/tokenomics/risk-analysis) — Multi-dimensional risk assessment and mitigation strategies
+</Callout>

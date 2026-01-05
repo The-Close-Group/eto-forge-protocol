@@ -7,21 +7,19 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # System Dynamics
 
-The DRI Protocol can be modeled as a dynamic system where multiple mathematical functions interact to maintain price stability.
+The DRI Protocol operates as a coupled dynamic system where four primary state variables interact through defined mathematical functions to maintain price stability.
 
 ---
 
-## State Variables
+## State Space
 
-The complete system state is defined by:
-
-| Variable | Description |
-|----------|-------------|
-| `R_t` | Reflective price at time t |
-| `M_t` | Market price from DMM at time t |
-| `P_t` | Oracle price (TWAP) at time t |
-| `L_t` | Liquidity depth in DMM at time t |
-| `S_t` | PSM reserve state at time t |
+| Variable | Symbol | Description | Units |
+|----------|--------|-------------|-------|
+| Reflective Price | $R_t$ | Algorithm-computed target price | USD (18 dec) |
+| Market Price | $M_t$ | Actual DMM trading price | USD (18 dec) |
+| Oracle Price | $P_t$ | External TWAP from aggregator | USD (18 dec) |
+| Liquidity Depth | $L_t$ | DMM concentrated liquidity | Tokens |
+| PSM Reserves | $S_t$ | Intervention reserve state | USDC (6 dec) |
 
 ---
 
@@ -239,11 +237,11 @@ Subject to:
 - **Economic viability:** $\text{fee\_revenue} \geq \text{operational\_costs}$
 
 <Callout type="info">
-These mathematical relationships ensure that all system parameters are optimally tuned for the specific market conditions and risk preferences.
+These constraints ensure parameters are optimally tuned for market conditions and risk preferences.
 </Callout>
 
 ---
 
-## Next: Capital Efficiency
-
-Continue to [Capital Efficiency](/docs/tokenomics/capital-efficiency) to understand the concentrated liquidity mathematics.
+<Callout type="info">
+**Next:** [Capital Efficiency](/docs/tokenomics/capital-efficiency) — Concentrated liquidity mathematics and 200× efficiency derivation
+</Callout>

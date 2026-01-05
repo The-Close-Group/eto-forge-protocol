@@ -5,17 +5,21 @@ description: Stress testing methodology, historical backtesting, and validation 
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-# Stress Testing and Validation Framework
+# Stress Testing
 
-Comprehensive validation methodology including historical backtesting, failure mode testing, and performance benchmarking.
+This section details the validation methodology including historical backtesting against major market events, failure mode testing, and performance benchmarking.
+
+<Callout type="warn">
+**Status:** Stress testing results will be published following comprehensive testnet validation.
+</Callout>
 
 ---
 
-## Historical Backtesting Methodology
+## Backtesting Methodology
 
-### Market Event Selection
+### Historical Events
 
-The DRI Protocol will be backtested against major market disruption events:
+The protocol will be validated against these market disruptions:
 
 | Event | Date | Characteristics |
 |-------|------|-----------------|
@@ -276,26 +280,26 @@ $$
 
 ## Conclusion
 
-The DRI Protocol represents a significant advancement in on-chain index tracking technology. Through its innovative reflective price mechanism, concentrated liquidity architecture, and comprehensive risk management systems, DRI achieves unprecedented tracking accuracy while maintaining robust security guarantees.
+The DRI Protocol represents a significant advancement in on-chain index tracking through:
 
-### Key Innovations
-
-| Innovation | Description |
+| Innovation | Achievement |
 |------------|-------------|
-| **Mathematically Provable Convergence** | Capped reflective price updates with formal proofs |
-| **Capital Efficiency** | 200× improvement through concentrated liquidity bands |
-| **Manipulation Resistance** | Multi-layered protection against attack vectors |
-| **Automated Operation** | Minimal human intervention for normal operation |
-| **Graduated Response System** | Proportional interventions based on deviation severity |
+| **Reflective Price Mechanism** | Mathematically provable convergence to oracle prices |
+| **Concentrated Liquidity** | 200× capital efficiency vs full-range AMMs |
+| **Multi-Layer Protection** | Manipulation resistance through capped Δ + multi-oracle |
+| **Automated Operation** | Minimal intervention with strict security bounds |
+| **Graduated Response** | Proportional interventions matching deviation severity |
 
-### Future Development Roadmap
+### Development Roadmap
 
-| Timeframe | Planned Developments |
-|-----------|---------------------|
-| **Short-term (6-12 months)** | Additional oracle providers, analytics dashboards, mobile apps, cross-chain preparations |
-| **Medium-term (1-2 years)** | Multi-asset index tracking, advanced derivatives, institutional features, L2 scaling |
-| **Long-term (2+ years)** | AI-assisted governance, cross-protocol liquidity sharing, predictive risk modeling, global compliance framework |
+| Phase | Focus Areas |
+|-------|-------------|
+| **Near-term** | Additional oracles, analytics, mobile, cross-chain prep |
+| **Medium-term** | Multi-asset indices, derivatives, institutional features |
+| **Long-term** | AI governance, cross-protocol liquidity, predictive risk |
 
-<Callout type="info">
-**Disclaimer:** This whitepaper presents architectural specifications for the DRI Protocol. All performance claims are theoretical until validated through comprehensive testing. The protocol involves experimental DeFi mechanisms with inherent smart contract, economic, and operational risks. Prospective users should conduct independent research and risk assessment before participation.
+---
+
+<Callout type="warn">
+**Disclaimer:** This whitepaper presents architectural specifications. Performance claims are theoretical until validated through testing. The protocol involves experimental DeFi mechanisms with inherent risks. Conduct independent research before participation.
 </Callout>

@@ -7,32 +7,39 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # Governance Framework
 
-The DRI Protocol implements a sophisticated governance system designed to balance decentralization with operational efficiency.
+The DRI Protocol implements a **capture-resistant governance system** using non-transferable tokens, supermajority requirements, and timelocked execution.
 
 ---
 
-## Governance Architecture
+## Key Parameters
 
-### Non-Transferable Token Model
+| Parameter | Value | Contract Constant |
+|-----------|-------|-------------------|
+| **Quorum** | 60% (600,000 GOV-DRI) | `quorum: 600_000e18` |
+| **Approval** | 67% supermajority | `approvalThreshold: 6700` |
+| **Voting Period** | 3 days (~17,280 blocks) | `votingPeriod: 17280` |
+| **Timelock** | 48 hours | `timelockDelay: 11520` |
+| **Cooldown** | 24 hours between proposals | `proposalCooldown: 5760` |
 
-GOV-DRI tokens **cannot be transferred** between addresses (except multisig key rotation):
+---
 
-| Feature | Benefit |
-|---------|---------|
-| Prevents governance capture | No token accumulation attacks possible |
-| Long-term alignment | Ensures participants have protocol commitment |
-| Eliminates speculation | No governance token trading or vote buying |
+## Non-Transferable Governance
 
-### Voting Power Calculation
+GOV-DRI tokens **cannot be transferred** (except multisig key rotation):
+
+| Design Choice | Security Benefit |
+|---------------|------------------|
+| Non-transferable | Prevents governance capture attacks |
+| Non-speculative | Eliminates vote buying and trading |
+| Long-term aligned | Ensures commitment to protocol health |
+
+### Voting Power
 
 $$
 V_{\text{power}} = \text{balanceOf}(\text{voter}) + V_{\text{delegated}}
 $$
 
-Where delegated power allows for:
-- Expert delegation without token transfer
-- Institutional participation through authorized representatives
-- Scaling participation while maintaining security
+Delegation enables expert participation without token transfer.
 
 ---
 
@@ -294,13 +301,13 @@ Where $\tau$ is the recovery time constant, and full recovery requires $\rho \ge
 
 | Feature | Description |
 |---------|-------------|
-| Expert Delegation | Delegate to recognized experts without token transfer |
-| Delegation Categories | Technical, Economic, Legal, Community |
-| Revocable Delegation | Immediate effect when revoked |
-| Transparency | Delegation tracking and expert performance metrics |
+| **Expert Delegation** | Delegate to recognized experts without token transfer |
+| **Categories** | Technical, Economic, Legal, Community |
+| **Revocable** | Immediate effect when revoked |
+| **Transparent** | On-chain tracking with performance metrics |
 
 ---
 
-## Next: Bootstrap Deployment
-
-Continue to [Bootstrap Deployment](/docs/tokenomics/bootstrap-deployment) to understand the deployment process and circular dependency solutions.
+<Callout type="info">
+**Next:** [Bootstrap Deployment](/docs/tokenomics/bootstrap-deployment) — Deployment phases and circular dependency solutions
+</Callout>

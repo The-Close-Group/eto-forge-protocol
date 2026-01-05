@@ -7,15 +7,15 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # Mathematical Framework
 
-The mathematical framework underlying the DRI Protocol provides formal guarantees for price convergence, stability bounds, and manipulation resistance.
+This section establishes the formal mathematical foundations that guarantee price convergence, stability bounds, and manipulation resistance in the DRI Protocol.
 
 ---
 
-## Reflective Price Update Mechanism
+## Reflective Price Algorithm
 
-The core innovation of the DRI Protocol is its reflective price update algorithm. This mechanism ensures controlled convergence to external oracle prices while preventing manipulation through extreme adjustments.
+The reflective price update is the protocol's core innovation—a bounded adjustment mechanism that converges to oracle prices while preventing manipulation.
 
-### Algorithm Steps
+### Three-Step Update
 
 **Step 1: Raw Factor Calculation**
 
@@ -77,107 +77,99 @@ $$
 
 ---
 
-## Implementation Details
+## Implementation
 
-The reflective price mechanism is implemented in the `syncPrice()` function of the DRI Controller:
+The `syncPrice()` function in `BootstrapDRIController.sol` implements this algorithm:
 
 ```solidity
-function syncPrice() external nonReentrant {
-    // 1. Validate preconditions
-    require(!isCircuitBreakerActive(), "Circuit breaker active");
+function syncPrice() external nonReentrant whenNotHalted {
+    // 1. Enforce sync interval
     require(block.timestamp >= lastSyncTime + syncInterval, "Too frequent");
     
-    // 2. Fetch Oracle data
+    // 2. Fetch aggregated oracle price
     (uint256 oraclePrice, uint256 timestamp) = oracleAggregator.getAggregatedPrice();
-    require(block.timestamp - timestamp <= stalenessThreshold, "Stale oracle data");
+    require(block.timestamp - timestamp <= maxOracleStaleness, "Stale oracle");
     
-    // 3. Calculate adjustment factor
+    // 3. Calculate capped adjustment factor
     uint256 rawFactor = oraclePrice.div(reflectivePrice);
-    uint256 cappedFactor = clamp(rawFactor, 1e18 - maxDelta, 1e18 + maxDelta);
+    uint256 upperBound = 1e18 + (maxDeltaPerTick * 1e18 / 10000);
+    uint256 lowerBound = 1e18 - (maxDeltaPerTick * 1e18 / 10000);
+    uint256 cappedFactor = clamp(rawFactor, lowerBound, upperBound);
     
     // 4. Update reflective price
-    uint256 newReflectivePrice = reflectivePrice.mul(cappedFactor);
-    reflectivePrice = newReflectivePrice;
+    reflectivePrice = reflectivePrice.mul(cappedFactor);
     lastSyncTime = block.timestamp;
     
-    // 5. Check for interventions
+    // 5. Trigger DMM recenter and PSM arbitrage
     _checkDeviationAndRespond();
-    
-    emit ReflectivePriceUpdated(newReflectivePrice, block.timestamp);
 }
 ```
 
 ---
 
-## Parameter Selection and Tuning
+## Parameter Tuning
 
 ### Maximum Delta (Δ)
 
-The adjustment cap Δ creates a fundamental trade-off:
-
-| Smaller Δ | Larger Δ |
-|-----------|----------|
-| Higher manipulation resistance | Faster convergence |
-| Slower convergence | Increased manipulation risk |
-
-<Callout>
-**Default Value:** Δ = 3% (300 basis points) is chosen based on empirical analysis of major index volatility patterns. This value ensures that the protocol can track typical daily index movements while preventing extreme manipulations.
-</Callout>
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| **Δ = 3%** | 300 bps | Tracks daily index volatility while resisting manipulation |
+| Smaller Δ | — | Higher manipulation resistance, slower convergence |
+| Larger Δ | — | Faster convergence, increased manipulation risk |
 
 ### Sync Interval
 
-The minimum time between price updates affects both tracking accuracy and gas efficiency:
-
-| Shorter intervals | Longer intervals |
-|-------------------|------------------|
-| Better tracking accuracy | Lower gas costs |
-| Higher gas costs | Increased tracking drift |
-
-**Default:** 30-second interval balances these concerns while ensuring normal market movements can be tracked effectively.
+| Interval | Trade-off |
+|----------|-----------|
+| **30 seconds** (default) | Balanced accuracy and gas costs |
+| 15 seconds | Better tracking, 2× gas cost |
+| 60+ seconds | Lower gas, increased drift |
 
 ---
 
-## Effective Delta by Circuit Breaker State
+## Circuit Breaker Modulation
 
-The effective delta depends on the circuit breaker state:
+The effective Δ adapts based on circuit breaker state:
 
-| Circuit Breaker State | Effective Delta |
-|----------------------|-----------------|
-| Normal (CB = 0) | Δ |
-| Throttle (CB = 1) | Δ/2 |
-| Halt (CB = 2) | 0 |
+| State | Level | Effective Δ | Purpose |
+|-------|-------|-------------|---------|
+| Normal | 0 | Δ (3%) | Full responsiveness |
+| Warning | 1 | Δ (3%) | Monitoring only |
+| Throttle | 2 | Δ/2 (1.5%) | Reduced volatility |
+| Halt | 3 | 0 | Complete suspension |
 
 ---
 
 ## Volatility-Adjusted Delta
 
-For dynamic parameter adaptation:
+For dynamic adaptation to market conditions:
 
 $$
 \Delta_{\text{adaptive}} = \Delta_{\text{base}} \times \left(1 + \gamma \cdot \sigma_{\text{realized}}\right)
 $$
 
-Where:
-- $\Delta_{\text{base}} = 0.03$ (3%)
-- $\gamma = 0.5$ (volatility scaling factor)
-- $\sigma_{\text{realized}}$ = 30-day rolling volatility of tracked index
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| $\Delta_{\text{base}}$ | 3% | Base adjustment cap |
+| $\gamma$ | 0.5 | Volatility scaling factor |
+| $\sigma_{\text{realized}}$ | Variable | 30-day rolling volatility |
 
 ---
 
 ## Oracle Integration
 
-The reflective price mechanism depends on high-quality oracle data from the Oracle Aggregator system:
+The Oracle Aggregator provides manipulation-resistant price data:
 
-| Feature | Description |
-|---------|-------------|
-| Multi-source aggregation | Combines data from multiple oracle providers |
-| Median filtering | Eliminates outliers through median calculation |
-| TWAP smoothing | Reduces impact of temporary price manipulation |
-| Staleness detection | Rejects outdated price data |
-| Deviation bounds | Filters extreme price movements |
+| Feature | Implementation |
+|---------|----------------|
+| **Multi-source** | Chainlink, Pyth, API3 (3+ sources) |
+| **Median filtering** | Eliminates outliers automatically |
+| **TWAP smoothing** | α = 0.1–0.3 exponential smoothing |
+| **Staleness check** | 4-day maximum (345,600 seconds) |
+| **Deviation bounds** | σ_max filtering for extreme values |
 
 ---
 
-## Next: System Dynamics
-
-Continue to [System Dynamics](/docs/tokenomics/system-dynamics) to understand how all system components interact mathematically.
+<Callout type="info">
+**Next:** [System Dynamics](/docs/tokenomics/system-dynamics) — Complete mathematical model of system interconnections
+</Callout>

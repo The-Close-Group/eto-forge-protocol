@@ -7,64 +7,47 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # Economic Model
 
-The DRI Protocol implements a dual-token system designed to separate governance rights from economic exposure.
+The DRI Protocol implements a **dual-token architecture** separating economic exposure (DRI) from governance rights (GOV-DRI).
 
 ---
 
-## Token Architecture
+## Dual-Token Architecture
 
-### DRI Token
-
-| Property | Value |
-|----------|-------|
-| **Total Supply** | 50,000,000 DRI (fixed, non-inflationary) |
-| **Purpose** | Index tracking token representing protocol economic value |
-| **Transferable** | Fully tradeable on secondary markets |
-| **Functionality** | Core protocol token for all economic operations |
-
-### GOV-DRI Token
+### DRI Token — Economic Value
 
 | Property | Value |
 |----------|-------|
-| **Total Supply** | 1,000,000 GOV-DRI (fixed, non-inflationary) |
-| **Purpose** | Governance rights and protocol decision-making |
-| **Transferable** | Non-transferable (exception: multisig key rotation) |
-| **Functionality** | Voting power in governance proposals |
+| **Supply** | 50,000,000 DRI (fixed, non-inflationary) |
+| **Purpose** | Index tracking, economic participation |
+| **Transferable** | ✓ Fully tradeable |
+| **Decimals** | 18 |
 
----
+### GOV-DRI Token — Governance Rights
 
-## Initial Distribution and Allocation
+| Property | Value |
+|----------|-------|
+| **Supply** | 1,000,000 GOV-DRI (fixed) |
+| **Purpose** | Protocol governance, voting |
+| **Transferable** | ✗ Non-transferable |
+| **Decimals** | 18 |
 
-### Genesis Allocation
-
-At protocol launch, the 50M DRI supply is allocated as follows:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│              DRI TOKEN GENESIS ALLOCATION                │
-├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  Dynamic Market Maker (40%) — 20,000,000 DRI             │
-│  • Provides immediate liquidity for trading              │
-│  • Concentrated in ±0.25% bands (200× capital efficiency)│
-│  • Generates 0.30% trading fees for sustainability       │
-│                                                          │
-│  Peg Stability Module (50%) — 25,000,000 DRI             │
-│  • Reserve backing for arbitrage interventions           │
-│  • Paired with equivalent USDC token reserves            │
-│  • 0.50% intervention fee, 1% swap cap per tick          │
-│                                                          │
-│  Expansion Buffer (10%) — 5,000,000 DRI                  │
-│  • Held in TrancheVault for future expansion             │
-│  • Released through milestone-based auctions             │
-│  • Ensures controlled supply growth                      │
-│                                                          │
-└─────────────────────────────────────────────────────────┘
-```
-
-<Callout type="info">
-**Fixed Supply:** DRI has a fixed 50M supply with no minting capability. The PSM explicitly enforces `CRITICAL FIX: DRI has fixed supply - no minting allowed`.
+<Callout type="warn">
+**Fixed Supply:** DRI has no minting capability. The PSM contract explicitly enforces: `CRITICAL FIX: DRI has fixed supply - no minting allowed`.
 </Callout>
+
+---
+
+---
+
+## Genesis Allocation
+
+### DRI Token Distribution (50M Total)
+
+| Allocation | Amount | Percentage | Purpose |
+|------------|--------|------------|---------|
+| **Dynamic Market Maker** | 20,000,000 | 40% | Trading liquidity, ±0.25% bands |
+| **Peg Stability Module** | 25,000,000 | 50% | Reserve backing for arbitrage |
+| **Expansion Buffer** | 5,000,000 | 10% | Milestone-based auction releases |
 
 ### GOV-DRI Distribution
 
@@ -282,6 +265,6 @@ Maximum 30% of fees for operations, or 0.01% of TVL daily.
 
 ---
 
-## Next: Governance Framework
-
-Continue to [Governance Framework](/docs/tokenomics/governance-framework) to understand the voting and proposal systems.
+<Callout type="info">
+**Next:** [Governance Framework](/docs/tokenomics/governance-framework) — Voting mechanisms, circuit breakers, and emergency controls
+</Callout>

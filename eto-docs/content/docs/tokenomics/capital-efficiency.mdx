@@ -7,17 +7,22 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # Capital Efficiency
 
-The Dynamic Market Maker (DMM) represents a significant innovation in automated market making through its concentrated liquidity approach.
+The Dynamic Market Maker (DMM) achieves **200× capital efficiency** by concentrating all liquidity within a narrow band around the reflective price, rather than spreading it across all possible prices like traditional AMMs.
 
 ---
 
-## Concentrated Liquidity Model
+## Concentrated Liquidity
 
-Unlike traditional AMMs that spread liquidity across all possible price ranges, the DMM concentrates all liquidity within a narrow band around the oracle price.
+### Core Concept
+
+| AMM Type | Price Range | Capital Efficiency |
+|----------|-------------|-------------------|
+| **Uniswap V2** | $[0, \infty]$ | 1× (baseline) |
+| **DRI DMM** | $[P - 0.25\%, P + 0.25\%]$ | 200× |
 
 ### Mathematical Foundation
 
-The DMM implements a constant product AMM within a restricted price range:
+The DMM implements constant product within a restricted range:
 
 $$
 \left[P_{\text{center}} - \delta,\; P_{\text{center}} + \delta\right]
@@ -219,6 +224,6 @@ The DMM integrates closely with the DRI Controller's price update mechanism:
 
 ---
 
-## Next: Economic Model
-
-Continue to [Economic Model](/docs/tokenomics/economic-model) to understand the token architecture and fee structure.
+<Callout type="info">
+**Next:** [Economic Model](/docs/tokenomics/economic-model) — Token architecture, distribution, and fee structure
+</Callout>
