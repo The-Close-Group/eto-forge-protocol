@@ -13,9 +13,10 @@ import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
 import { toast } from 'sonner';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),

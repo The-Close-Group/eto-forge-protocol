@@ -3,23 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETO - Tokenize Everything</title>
-    
-    <!-- DNS Prefetch & Preconnect for faster resource loading -->
-    <link rel="dns-prefetch" href="https://d3js.org">
-    <link rel="preconnect" href="https://d3js.org" crossorigin>
-    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+    <title>ETO - Global Exchange for All Assets</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    
-    <!-- Preload critical resources for globe -->
-    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script" crossorigin>
-    <link rel="preload" href="https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json" as="fetch" crossorigin>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,15 +15,36 @@
         <div class="logo-container">
             <!-- ETO Logo -->
             <svg class="logo-icon" width="28" height="28" viewBox="600 600 860 860" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill="white" d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
-                <path fill="white" d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
-                <path fill="white" d="M 682.191 1097.5 C 706.947 1097.31 735.358 1096.58 759.838 1097.61 C 762.866 1145.3 756.563 1201.47 761.27 1248.79 C 763.291 1269.12 790.006 1294.51 809.171 1298.07 C 823.802 1300.78 848.335 1299.86 864.81 1299.84 C 898.85 1299.65 932.891 1299.63 966.931 1299.8 C 967.423 1314.3 966.6 1329.82 966.857 1344.07 C 967.353 1371.64 970.096 1394.59 948.689 1415.5 C 936.923 1426.99 926.158 1434.41 908.74 1434.86 C 855.571 1434.24 802.143 1435.12 748.849 1434.64 C 723.6 1434.4 695.36 1435.94 670.269 1433.59 C 663.214 1432.26 655.822 1428.06 650.243 1423.91 C 640.318 1416.53 628.078 1401.6 625.549 1389.13 C 624.19 1382.44 624.859 1362.87 624.806 1355.12 L 624.789 1279.55 L 624.649 1194.45 C 624.684 1170.91 620.433 1143.59 636.781 1125.45 C 649.514 1111.32 662.538 1099.57 682.191 1097.5 z"/>
-                <path fill="white" d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/>
-                <path fill="white" d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/>
+                <path d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
+                <path d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
+                <path d="M 682.191 1097.5 C 706.947 1097.31 735.358 1096.58 759.838 1097.61 C 762.866 1145.3 756.563 1201.47 761.27 1248.79 C 763.291 1269.12 790.006 1294.51 809.171 1298.07 C 823.802 1300.78 848.335 1299.86 864.81 1299.84 C 898.85 1299.65 932.891 1299.63 966.931 1299.8 C 967.423 1314.3 966.6 1329.82 966.857 1344.07 C 967.353 1371.64 970.096 1394.59 948.689 1415.5 C 936.923 1426.99 926.158 1434.41 908.74 1434.86 C 855.571 1434.24 802.143 1435.12 748.849 1434.64 C 723.6 1434.4 695.36 1435.94 670.269 1433.59 C 663.214 1432.26 655.822 1428.06 650.243 1423.91 C 640.318 1416.53 628.078 1401.6 625.549 1389.13 C 624.19 1382.44 624.859 1362.87 624.806 1355.12 L 624.789 1279.55 L 624.649 1194.45 C 624.684 1170.91 620.433 1143.59 636.781 1125.45 C 649.514 1111.32 662.538 1099.57 682.191 1097.5 z"/>
+                <path d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/>
+                <path d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/>
             </svg>
-            <span class="logo-text">ETO</span>
+            <span class="logo-text">eto</span>
         </div>
-        <button class="launch-btn" onclick="window.top.location.href='/dashboard'">LAUNCH MARKETS</button>
+        <div class="navbar-right">
+            <!-- Theme Toggle Button -->
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <!-- Sun Icon (shown in dark mode) -->
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <!-- Moon Icon (shown in light mode) -->
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <button class="launch-btn" onclick="window.location.href='http://localhost:8080/trade'">EXPLORE MARKETS</button>
+        </div>
     </nav>
 
     <!-- Page 1: Hero Section -->
@@ -49,9 +57,9 @@
         <main class="main-content">
             <!-- Hero Section -->
             <div class="hero-section">
-                <h1 class="hero-title">Tokenize Everything</h1>
-                <p class="hero-subtitle">On-Chain Index Tokens with Composability</p>
-                <button class="explore-btn" onclick="window.location.href='/dashboard'">
+                <h1 class="hero-title">Global Exchange for All Assets</h1>
+                <p class="hero-subtitle">Trade U.S. Capital Markets on-chain and Stake them to Earn Yield.</p>
+                <button class="explore-btn" onclick="window.location.href='http://localhost:8080/trade'">
                     <span>EXPLORE MARKETS</span>
                     <div class="btn-icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,38 +69,7 @@
                 </button>
             </div>
 
-            <!-- Feature Cards -->
-            <div class="feature-card card-left">
-                <div class="card-content">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#57FEC7" stroke-width="1.5">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Earn<br/>Yield</h3>
-                    <p class="card-subtitle">Stake sMAANG for real returns from protocol fees</p>
-                </div>
-                <div class="card-glow"></div>
-                <div class="card-hover-overlay">
-                    <p>Stake your MAANG tokens to earn yield from protocol trading fees. Real yield from real activity — no inflation, no dilution.</p>
-                </div>
-            </div>
-
-            <div class="feature-card card-right">
-                <div class="card-content">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#57FEC7" stroke-width="1.5">
-                            <path d="M16 8v8M12 11v5M8 14v2M3 3v18h18"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Protocol<br/>Revenue</h3>
-                    <p class="card-subtitle">Distributed to stakers in USDC</p>
-                </div>
-                <div class="card-glow"></div>
-                <div class="card-hover-overlay">
-                    <p>Trading fees flow directly to stakers. No governance tokens, no vesting — just real USDC yield from protocol activity.</p>
-                </div>
-            </div>
+            <!-- Feature Cards moved to: extra-pieces/hero-feature-cards.html -->
 
             <!-- Partner Logos - Rotating Carousel -->
             <div class="partners-section">
@@ -273,6 +250,19 @@
     <!-- Page 2: MAANG Token Section -->
     <section class="page page-maang" id="maang">
         <div class="maang-content">
+            <span class="maang-label">Available Now</span>
+            <h2 class="maang-title">Buy and Gain Exposure to Real World Markets and Stake to Earn DeFi Yields.</h2>
+            <p class="maang-subtitle">Start with as little as $1. No minimums, no barriers.</p>
+            
+            <button class="explore-btn maang-trade-btn">
+                <span>TRADE MAANG</span>
+                <div class="btn-icon">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </button>
+            
             <!-- Horizontal Token Carousel - 5 Visible -->
             <div class="h-carousel-wrapper">
                 <div class="h-carousel-track">
@@ -569,31 +559,23 @@
                     </button>
                 </div>
             </div>
-            
-            <p class="maang-available">Meta · Amazon · Apple · Nvidia · Google</p>
-            <h2 class="maang-title">Trade MAANG On-Chain</h2>
-            <p class="maang-subtitle">One token tracking the world's 5 biggest tech giants — self-custody, instant liquidity.</p>
-            
-            <button class="explore-btn maang-btn">
-                <span>EXPLORE MARKETS</span>
-                <div class="btn-icon">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-            </button>
         </div>
     </section>
 
     <!-- Page 3: Features Section -->
     <section class="page page-features" id="features">
         <div class="features-content">
+            <div class="features-header">
+                <span class="features-label">Features</span>
+                <h2 class="features-title">Truly Decentralized Finance</h2>
+            </div>
             <div class="features-grid-new">
-                <!-- Card 1: Real Price -->
+                <!-- Card 1: Reflective Price -->
+                <div class="grid-card-wrapper">
                 <div class="grid-card">
                     <div class="grid-card-header">
-                        <h3 class="grid-card-title">Real Price</h3>
-                        <p class="grid-card-subtitle">Trade the real-world price, on-chain</p>
+                            <h3 class="grid-card-title">Reflective Price</h3>
+                            <p class="grid-card-subtitle">Mirrors real market value, always</p>
                     </div>
                     <div class="grid-card-graphic graphic-tokens-fan">
                         <div class="tokens-fan">
@@ -611,7 +593,7 @@
                             </div>
                             <!-- Amazon -->
                             <div class="fan-token fan-token-2">
-                                <svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="256" fill="#ddd"/><g fill="#1a1a1a"><path d="M146.2 330.4c60.8 44.9 149.1 68.6 225.3 68.6 53.3 0 111.8-11.1 165.6-33.9 8.1-3.5 15 5.3 6.9 11.5-47.8 40-110.1 64.1-172.8 64.1-84.1 0-159.6-31.1-216.8-82.8-6.4-5.4-.6-12.8 5.8-9.5h-14z" transform="translate(-60, -100) scale(0.85)"/><path d="M392.7 301.5c-8.8-11.3-58.2-5.3-80.3-2.7-6.7.8-7.8-5.1-1.7-9.3 39.3-27.6 103.8-19.6 111.4-10.4 7.6 9.3-2 73.7-38.9 104.4-5.7 4.7-11.1 2.2-8.6-4 8.3-20.9 27-67.1 18.1-78z" transform="translate(-60, -100) scale(0.85)"/><path d="M314.1 115.2v-18.6c0-2.8 2.1-4.7 4.7-4.7h83.5c2.7 0 4.8 2 4.8 4.7v15.9c0 2.7-2.3 6.2-6.3 11.7l-43.3 61.8c16.1-.4 33.1 2 47.7 10.2 3.3 1.8 4.2 4.6 4.4 7.2v19.9c0 2.7-3 5.9-6.1 4.3-25.5-13.4-59.4-14.8-87.6.1-2.9 1.5-5.9-1.6-5.9-4.4v-18.9c0-3.1 0-8.4 3.1-13.1l50.2-72h-43.7c-2.7 0-4.8-2-4.8-4.7l-.7-4.4z" transform="translate(-60, -100) scale(0.85)"/></g></svg>
+                                    <svg viewBox="400 400 1248 1248" style="width: 100%; height: 100%;"><circle cx="1024" cy="1024" r="1024" fill="#ddd"/><g fill="#1a1a1a"><path d="M 852.937 926.02 C 864.239 912.925 872.02 904.354 890.542 904.766 C 928.664 905.615 924.662 944.648 924.789 971.652 C 924.892 993.372 924.36 1013.99 924.71 1035.57 C 924.753 1038.27 923.183 1039.56 921.457 1041.07 C 914.22 1042.78 904.117 1042.62 896.726 1041.59 C 895.592 1041.43 893.443 1041.02 892.639 1040.15 C 883.922 1030.72 898.796 956.819 886.322 941.174 C 883.89 938.124 880.448 936.593 876.591 936.404 C 871.416 936.151 867.052 938.431 863.456 942.02 C 860.595 944.875 858.504 948.064 857.625 952.04 C 854.996 963.928 857.269 1016.67 857.45 1032.25 C 857.514 1034.78 857.253 1036.07 856.908 1038.56 C 855.799 1039.91 855.234 1041.15 853.799 1041.36 C 847.025 1042.33 831.311 1043.22 825.551 1040.44 C 821.02 1034.99 824.484 970.552 823.739 956.784 C 822.522 934.295 805.431 927.794 792.979 947.184 C 785.201 959.297 795.267 1030.18 788.481 1040.12 C 782.43 1042.18 760.84 1043.81 756.564 1039.48 C 754.777 1032.6 755.908 1003.56 755.938 994.282 C 755.855 965.455 755.952 936.628 756.231 907.802 C 762.915 907.244 769.725 906.358 776.402 906.048 C 790.995 905.371 789.272 916.121 789.115 926.006 C 796.598 914.753 801.399 909.305 814.38 905.133 C 834.709 903.801 843.832 907.788 852.937 926.02 z"/><path d="M 1240.39 903.405 C 1301.89 905.039 1309.43 988.186 1279.49 1027.55 C 1270.44 1039.46 1256.08 1044.46 1241.61 1045.46 C 1228.52 1044.63 1218.02 1042.2 1207.75 1033.17 C 1175.24 1004.58 1176.28 932.685 1215.4 909.859 C 1223.75 904.988 1231.11 904.058 1240.39 903.405 z"/><path fill="#ddd" d="M 1238.06 929.043 C 1260.08 928.404 1261.18 958.574 1261.05 974.629 C 1260.92 990.828 1260.74 1012.37 1244.04 1020.36 C 1219.17 1019.97 1219.77 987.907 1219.96 969.757 C 1220.12 954.601 1222.06 935.094 1238.06 929.043 z"/><path d="M 1001.88 903.462 C 1077.15 904.109 1044.23 959.83 1054.89 1007.7 C 1055.6 1010.91 1062.39 1020.32 1064.68 1023.86 C 1056.66 1031.18 1049.4 1038.1 1040.18 1043.87 C 1031.06 1037.42 1029.39 1035.5 1023.58 1025.97 C 1022.05 1027.71 1020.26 1029.74 1018.59 1031.33 C 1008.79 1040.6 995.652 1045.48 982.184 1044.85 C 968.829 1044.1 961.27 1038.34 952.758 1029.09 C 944.244 1014.57 943.95 991.474 955.591 978.444 C 971.211 960.963 997.246 959.163 1019.12 957.537 C 1019.11 946.207 1019.05 933.176 1005.76 928.86 C 1001.43 927.472 996.713 927.909 992.705 930.07 C 984.498 934.441 982.352 941.299 980.115 949.375 C 973.877 948.932 952.468 947.923 951.261 944.244 C 945.761 927.48 968.648 908.807 983.007 905.967 C 994.483 903.698 994.485 903.855 1001.88 903.462 z"/><path fill="#ddd" d="M 1013.47 977.369 C 1016.02 977.194 1015.29 977.018 1017.44 977.905 C 1019.17 981.501 1019.39 988.044 1018.89 991.999 C 1016.61 1010.1 1008.28 1021.49 989.55 1019.14 C 988.929 1018.73 988.319 1018.31 987.718 1017.87 C 978.246 1010.92 976.892 998.774 984.684 989.825 C 993.096 980.166 1001.54 978.667 1013.47 977.369 z"/><path d="M 673.556 904.361 C 677.888 903.835 685.669 903.97 689.873 904.435 C 747.912 910.865 717.908 973.578 730.298 1010.67 C 731.148 1013.22 738.112 1021.49 740.267 1024.13 C 718.306 1042.26 718.545 1051.01 698.115 1026.92 C 679.723 1047.79 650.502 1051.94 629.583 1032.28 C 624.266 1024.7 621.479 1018.78 621.175 1009.33 C 619.789 966.284 660.868 959.205 694.087 957.715 C 694.344 943.521 692.139 922.953 669.478 930.341 C 661.509 932.939 658.066 942.27 655.418 949.79 C 648.811 949.309 634.004 949.053 628.754 946.239 C 622.639 942.961 631.663 925.885 634.486 922.444 C 644.953 909.686 658.094 906.177 673.556 904.361 z"/><path fill="#ddd" d="M 685.503 977.255 C 688.192 977.041 689.318 977.126 691.968 977.224 C 694.023 979.397 694.564 985.462 694.426 988.412 C 693.56 1006.85 685.748 1020.38 666.234 1020.04 C 654.582 1013.82 651.93 1002.11 659.559 991.236 C 666.387 981.509 674.46 979.077 685.503 977.255 z"/><path d="M 738.254 1059.33 C 743.58 1060.79 777.427 1081.55 788.048 1086.17 C 843.374 1110.23 901.756 1120.79 961.627 1119.18 C 989.578 1118.26 1017.32 1114.07 1044.3 1106.7 C 1057 1103.33 1069.54 1099.39 1081.89 1094.88 C 1089.05 1092.25 1108.19 1083.42 1114.82 1085.25 C 1119.87 1091.32 1105.97 1101.38 1101.45 1104.85 C 1037.56 1145.51 960.507 1160.09 886.181 1145.59 C 837.556 1136.08 796.176 1117.35 757.532 1086.31 C 750.313 1080.52 740.285 1073.13 735.23 1065.6 C 735.299 1062.04 735.572 1062.87 738.254 1059.33 z"/><path d="M 1373.59 905.175 C 1376.09 904.883 1378.6 904.72 1381.11 904.687 C 1420.3 903.972 1415.04 944.991 1415.06 971.38 L 1415.01 1041.28 C 1409.87 1041.72 1404.29 1041.95 1399.13 1041.97 C 1391.42 1042 1382.11 1043.56 1381.77 1033.01 C 1381.02 1009.84 1382.01 986.624 1381.82 963.425 C 1381.73 952.402 1381.26 934.148 1365.26 936.666 C 1357.76 937.869 1354.4 941.334 1350.17 947.465 C 1343.74 966.908 1351.78 1030.27 1346.37 1040.11 C 1341.78 1042.96 1332.42 1042.17 1327.04 1042.08 C 1323.21 1042.01 1318.73 1041.98 1316.04 1038.84 C 1313.35 1035.69 1314.4 918.314 1315.01 907.273 C 1318.68 907.154 1323.13 907.01 1326.75 906.713 C 1346.14 905.118 1346.22 910.215 1346.06 927.25 C 1355.06 914.531 1358.69 909.531 1373.59 905.175 z"/><path d="M 1118.99 1051.39 C 1153.05 1046.92 1163.4 1058.91 1153.15 1089.96 C 1150.17 1098.98 1133.93 1140.09 1121.16 1135.39 C 1118.65 1129.39 1123.06 1122.86 1125.68 1117.26 C 1158.64 1041.26 1096.17 1078.63 1075.75 1069.43 L 1075.23 1067.73 C 1081.79 1057.14 1107.38 1052.7 1118.99 1051.39 z"/></g></svg>
                             </div>
                             <!-- Meta - Front -->
                             <div class="fan-token fan-token-1">
@@ -620,52 +602,118 @@
                         </div>
                     </div>
                     <div class="grid-card-arrow">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M4 4L12 12M12 12H6M12 12V6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="grid-card-tooltip">
-                        <p>MAANG token price tracks the actual Net Asset Value of the underlying index within ±0.25%. Our DMM + PSM system ensures tight peg accuracy during market hours.</p>
+                            <p>MAANG reflects the combined value of five tech giants in real-time. Powered by decentralized oracles, your token always mirrors actual market prices — transparent, accurate, trustless.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card-subbox">
+                        <p>+ Real-Time Price Sync with U.S. Markets</p>
+                        <p>+ Always trade at true market value</p>
                     </div>
                 </div>
 
-                <!-- Card 2: ERC-20 Composable -->
+                <!-- Card 2: ERC-20 -->
+                <div class="grid-card-wrapper">
                 <div class="grid-card">
                     <div class="grid-card-header">
                         <h3 class="grid-card-title">ERC-20</h3>
-                        <p class="grid-card-subtitle">Fully composable across DeFi — use as collateral, LP, or trade freely</p>
+                            <p class="grid-card-subtitle">Fully composable across DeFi</p>
                     </div>
                     <div class="grid-card-graphic graphic-erc">
-                        <div class="puzzle-piece">
-                            <div class="puzzle-glow"></div>
-                        </div>
+                            <svg class="puzzle-svg" width="231" height="93" viewBox="0 0 231 93" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_f_2_1848)">
+                                    <circle cx="87.5" cy="46.5" r="33.5" fill="url(#paint0_radial_2_1848)"/>
+                                </g>
+                                <path d="M64.888 92.8846H88.1481C90.486 92.8846 92.728 91.9526 94.3811 90.2936C96.0342 88.6347 96.9629 86.3846 96.9629 84.0385V63.2224C96.9592 62.497 96.7777 61.7837 96.4345 61.1453C96.0914 60.5069 95.597 59.963 94.995 59.5615C94.393 59.1601 93.7019 58.9133 92.9825 58.8431C92.2631 58.7728 91.5375 58.8812 90.8697 59.1586C89.3078 59.8061 87.6343 60.1386 85.9444 60.1373C78.6557 60.1373 72.7222 54.0002 72.7222 46.4644C72.7222 38.9286 78.6557 32.7916 85.9444 32.7916C87.6343 32.7903 89.3078 33.1228 90.8697 33.7702C91.541 34.0491 92.2705 34.1571 92.9935 34.0847C93.7164 34.0122 94.4103 33.7616 95.0133 33.355C95.6164 32.9484 96.11 32.3985 96.4501 31.7543C96.7903 31.11 96.9664 30.3914 96.9629 29.6623V8.84616C96.9629 6.50001 96.0342 4.24995 94.3811 2.59098C92.728 0.932002 90.486 2.55697e-08 88.1481 2.55697e-08H68.1936C50.463 -9.53674e-06 44.963 7.65496e-06 28.7693 2.55697e-08H8.81481C6.47698 2.55697e-08 4.2349 0.932002 2.5818 2.59098C0.928701 4.24995 8.02524e-07 6.50001 8.02524e-07 8.84616V26.6601C8.43192e-06 39.3846 -3.01217e-06 50.3846 8.02524e-07 66.2245V84.0385C8.02524e-07 86.3846 0.928701 88.6347 2.5818 90.2936C4.2349 91.9526 6.47698 92.8846 8.81481 92.8846H32.0749" fill="url(#paint1_linear_2_1848)"/>
+                                <path d="M29.824 92.8846C29.5479 92.8846 29.2729 92.8716 29 92.8459H37.1909C37.4463 92.8459 37.6995 92.8595 37.9497 92.8846H29.824Z" fill="url(#paint2_linear_2_1848)"/>
+                                <path d="M149.29 92.8846C144.32 92.8846 140.29 88.8552 140.29 83.8846L140.291 62.9258C140.287 62.1942 140.105 61.4747 139.762 60.8308C139.418 60.1868 138.924 59.6382 138.322 59.2333C137.719 58.8283 137.028 58.5794 136.309 58.5085C135.589 58.4377 134.863 58.547 134.195 58.8268C132.633 59.4799 130.958 59.8153 129.268 59.814C121.976 59.814 116.041 53.6236 116.041 46.0223C116.041 38.421 121.976 32.2307 129.268 32.2307C130.958 32.2293 132.633 32.5648 134.195 33.2178C134.866 33.4991 135.596 33.608 136.32 33.535C137.043 33.4619 137.737 33.2091 138.34 32.799C138.943 32.3889 139.437 31.8342 139.777 31.1843C140.118 30.5345 140.294 29.8096 140.291 29.0742V9C140.291 4.02944 144.32 0 149.291 0L221.5 0C226.471 0 230.5 4.02944 230.5 9V84C230.5 88.9706 226.471 93 221.5 93H182.348C182.316 93 182.291 92.9742 182.291 92.9423C182.291 92.9105 182.265 92.8846 182.233 92.8846H149.29Z" fill="url(#paint3_linear_2_1848)"/>
+                                <defs>
+                                    <filter id="filter0_f_2_1848" x="44" y="3" width="87" height="87" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                                        <feGaussianBlur stdDeviation="5" result="effect1_foregroundBlur_2_1848"/>
+                                    </filter>
+                                    <radialGradient id="paint0_radial_2_1848" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(87.5 46.5) rotate(90) scale(33.5)">
+                                        <stop stop-color="white"/>
+                                        <stop offset="1" stop-color="#A1BCFF" stop-opacity="0"/>
+                                    </radialGradient>
+                                    <linearGradient id="paint1_linear_2_1848" x1="92" y1="4" x2="-4.71713e-06" y2="93" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="white" stop-opacity="0.94"/>
+                                        <stop offset="1" stop-color="white" stop-opacity="0.14"/>
+                                    </linearGradient>
+                                    <linearGradient id="paint2_linear_2_1848" x1="208.259" y1="2.99998" x2="117.259" y2="57.5" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="white" stop-opacity="0.61"/>
+                                        <stop offset="1" stop-color="white" stop-opacity="0.08"/>
+                                    </linearGradient>
+                                    <linearGradient id="paint3_linear_2_1848" x1="208.259" y1="2.99998" x2="117.259" y2="57.5" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="white" stop-opacity="0.61"/>
+                                        <stop offset="1" stop-color="white" stop-opacity="0.08"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
                     </div>
                     <div class="grid-card-arrow">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M4 4L12 12M12 12H6M12 12V6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="grid-card-tooltip">
-                        <p>ERC-20 is the standard token format on Ethereum. This means MAANG works seamlessly with any DeFi protocol — use it as collateral for loans, provide liquidity, or trade on any DEX.</p>
+                            <p>MAANG is a standard ERC-20 token — it plugs into any DeFi protocol out of the box. Use it as collateral, add liquidity, or swap on your favorite DEX. No wrappers, no bridges, just native compatibility.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card-subbox">
+                        <p>+ Works with any DeFi protocol</p>
+                        <p>+ Swap, lend, or LP instantly</p>
                     </div>
                 </div>
 
-                <!-- Card 3: Self-Custody -->
+                <!-- Card 3: Self Custody -->
+                <div class="grid-card-wrapper">
                 <div class="grid-card">
                     <div class="grid-card-header">
-                        <h3 class="grid-card-title">Self-Custody</h3>
-                        <p class="grid-card-subtitle">Token lives in your wallet. No broker, no counterparty, no permission needed.</p>
+                            <h3 class="grid-card-title">Self Custody</h3>
+                            <p class="grid-card-subtitle">Your keys, your tokens. No intermediaries.</p>
                     </div>
                     <div class="grid-card-graphic graphic-feature3">
-                        <div class="glass-shape"></div>
+                            <svg class="wallet-card-icon" width="380" height="250" viewBox="0 0 380 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="1" width="379" height="250" rx="31" fill="url(#paint0_linear_wallet)"/>
+                                <rect y="56" width="379" height="138" rx="31" fill="url(#paint1_linear_wallet)"/>
+                                <rect x="274" y="95" width="105" height="59" rx="29.5" fill="white"/>
+                                <rect width="28" height="59" transform="translate(352 95)" fill="white"/>
+                                <path d="M309 145.75C321.023 145.75 330.75 136.449 330.75 125C330.75 113.551 321.023 104.25 309 104.25C296.977 104.25 287.25 113.551 287.25 125C287.25 136.449 296.977 145.75 309 145.75Z" fill="url(#paint2_radial_wallet)" stroke="black" stroke-width="0.5"/>
+                                <defs>
+                                    <linearGradient id="paint0_linear_wallet" x1="190.5" y1="0" x2="190.5" y2="250" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#D9D9D9"/>
+                                        <stop offset="1" stop-color="#737373"/>
+                                    </linearGradient>
+                                    <linearGradient id="paint1_linear_wallet" x1="189.5" y1="56" x2="189.5" y2="194" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#D9D9D9"/>
+                                        <stop offset="1" stop-color="#737373"/>
+                                    </linearGradient>
+                                    <radialGradient id="paint2_radial_wallet" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(309 125) rotate(-90) scale(21 22)">
+                                        <stop offset="0.21" stop-color="#13523D"/>
+                                        <stop offset="0.605" stop-color="#57FEC7"/>
+                                        <stop offset="1" stop-color="#FFF0D9"/>
+                                    </radialGradient>
+                                </defs>
+                            </svg>
                     </div>
                     <div class="grid-card-arrow">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M4 4L12 12M12 12H6M12 12V6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="grid-card-tooltip">
-                        <p>You hold your own keys. Unlike traditional brokerages, there's no intermediary holding your assets. Your tokens are in your wallet — transfer, trade, or hold with complete sovereignty.</p>
+                            <p>Your tokens live in your wallet — not on an exchange or with a broker. Move your tokens anytime, anywhere. No withdrawal requests, no frozen accounts. True ownership, as crypto intended.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card-subbox">
+                        <p>+ Full control of your assets 24/7</p>
+                        <p>+ No counterparty risk</p>
                     </div>
                 </div>
             </div>
@@ -677,21 +725,25 @@
         <div class="engine-content">
             
             <div class="engine-header">
-                <p class="engine-label">HOW IT WORKS</p>
-                <h2 class="engine-title">The Staking Engine</h2>
+                <p class="engine-label staking-label">Staking</p>
+                <h2 class="engine-title">Access Infrastructure Yield on Idle ETO Assets.</h2>
             </div>
             
-            <!-- Two Card Layout -->
-            <div class="stake-grid">
-                
-                <!-- Left Card: You Stake -->
-                <div class="stake-card">
-                    <div class="stake-card-header">
-                        <h3 class="stake-card-title">Stake USDC</h3>
-                        <p class="stake-card-subtitle">Your capital backs the MAANG token and powers price stability</p>
-                    </div>
-                    <div class="stake-card-graphic">
-                        <div class="usdc-logo">
+            <!-- Staking Card Wrapper -->
+            <div class="staking-card-wrapper">
+                <div class="staking-card">
+                    <!-- Two-Panel Staking Flow -->
+                    <div class="staking-visual">
+                        <!-- Left Panel: Stake Assets -->
+                        <div class="stake-panel stake-panel-flipped">
+                            <h3 class="panel-title">Stake assets</h3>
+                            <p class="panel-subtitle">Deposit USDC, MAANG, or both.<br/>Secure and non-custodial.</p>
+                            <div class="panel-token stake-token-visual">
+                                <div class="token-stack-visual">
+                                    <!-- USDC Token -->
+                                    <div class="stack-coin stack-usdc-coin">
+                                        <div class="staking-token-3d">
+                                            <div class="staking-token-front">
                             <svg viewBox="100 100 1848 1848" fill="#ddd">
                                 <circle cx="1024" cy="1024" r="890" fill="#ddd"/>
                                 <path fill="#1a1a1a" d="M 996.37 570.146 C 997.187 570.084 998.005 570.028 998.823 569.979 C 1017.05 568.864 1045.04 568.581 1063 570.732 C 1089.46 573.901 1084.23 609.042 1084.07 629.391 L 1084.05 684.67 C 1112.66 688.032 1147.58 701.501 1172.07 717.872 C 1210.87 743.691 1236.09 785.338 1246.14 830.402 C 1250.73 844.867 1241.06 865.227 1223.98 865.18 C 1204.9 865.127 1171.96 867.422 1154.05 863.659 C 1140.69 860.854 1134.32 831.267 1127.2 818.593 C 1121.14 807.733 1112.9 798.244 1102.99 790.72 C 1071.43 766.82 1025.34 765.99 988.579 770.88 C 933.089 778.26 898.364 817.547 908.885 874.042 C 911.846 889.942 919.688 905.64 933.459 914.769 C 982.255 947.115 1047.3 943.927 1102.55 957.635 C 1140.41 965.628 1175.83 977.81 1207.95 1000.13 C 1283.73 1052.79 1286.92 1177.27 1234.98 1247.48 C 1198.18 1297.21 1144.65 1323.52 1084.07 1332.78 C 1083.8 1356.8 1083.31 1384.77 1084.22 1408.59 C 1086.11 1458.12 1050.2 1448.11 1011.75 1447.82 C 969.561 1447.46 975.542 1423.04 975.691 1389.63 L 975.791 1333.35 C 879.158 1320.26 807.52 1273.73 784.638 1174.59 C 772.263 1119.33 808.82 1131.75 842.262 1129.89 C 905.468 1126.38 887.592 1145.25 908.218 1187.98 C 914.982 1202.03 925.215 1214.12 937.953 1223.12 C 989.173 1259.87 1102.62 1257.42 1140.91 1201.67 C 1161.31 1171.99 1165.44 1115.72 1136.71 1090.36 C 1093.88 1052.56 1022.59 1053.43 969.393 1041.34 C 930.085 1033.61 893.422 1022.45 859.403 1000.48 C 785.791 952.947 778.256 834.387 825.756 766.145 C 861.095 715.376 915.591 692.881 975.469 682.452 C 975.613 664.337 972.555 595.874 978.681 583.395 C 982.287 576.048 988.962 572.674 996.37 570.146 z"/>
@@ -699,163 +751,410 @@
                                 <path fill="#1a1a1a" d="M 1207.55 394.143 C 1223.73 393.843 1264.46 411.352 1280.71 418.249 C 1440.48 486.055 1566.64 614.726 1631.29 775.796 C 1696.72 939.06 1694.63 1121.62 1625.48 1283.35 C 1554.44 1450.26 1425.66 1571.59 1258.3 1639.09 C 1241.92 1645.15 1218.01 1657.6 1200.65 1649.69 C 1194.88 1647.06 1191.16 1642.57 1189.25 1636.54 C 1185.63 1625.11 1185.81 1579.72 1188.06 1567.48 C 1189.15 1561.59 1191.45 1555.2 1195.37 1550.58 C 1204.03 1540.37 1252.19 1522.45 1267.99 1514.66 C 1376.15 1461.29 1461.51 1371.76 1515.19 1264.28 C 1578.87 1136.33 1589.43 988.408 1544.59 852.708 C 1501.93 723.279 1412.51 614.425 1293.83 547.438 C 1277.48 538.125 1260.59 529.187 1243.27 521.832 C 1231.8 516.965 1219.18 513.372 1208.19 507.637 C 1198.96 502.816 1191.01 494.527 1187.92 484.445 C 1184.14 472.113 1183.83 416.475 1189.85 405.817 C 1193.7 399.006 1200.28 395.951 1207.55 394.143 z"/>
                             </svg>
                         </div>
+                                            <div class="staking-token-edge"></div>
                     </div>
-                    <div class="stake-card-arrow">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </div>
+                                    <!-- ETO Token -->
+                                    <div class="stack-coin stack-maang-coin">
+                                        <div class="staking-token-3d">
+                                            <div class="staking-token-front">
+                                                <svg viewBox="0 0 2048 2048" fill="#ddd">
+                                                    <circle cx="1024" cy="1024" r="890" fill="#ddd"/>
+                                                    <path fill="#1a1a1a" d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
+                                                    <path fill="#1a1a1a" d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
+                                                    <path fill="#1a1a1a" d="M 682.191 1097.5 C 706.947 1097.31 735.358 1096.58 759.838 1097.61 C 762.866 1145.3 756.563 1201.47 761.27 1248.79 C 763.291 1269.12 790.006 1294.51 809.171 1298.07 C 823.802 1300.78 848.335 1299.86 864.81 1299.84 C 898.85 1299.65 932.891 1299.63 966.931 1299.8 C 967.423 1314.3 966.6 1329.82 966.857 1344.07 C 967.353 1371.64 970.096 1394.59 948.689 1415.5 C 936.923 1426.99 926.158 1434.41 908.74 1434.86 C 855.571 1434.24 802.143 1435.12 748.849 1434.64 C 723.6 1434.4 695.36 1435.94 670.269 1433.59 C 663.214 1432.26 655.822 1428.06 650.243 1423.91 C 640.318 1416.53 628.078 1401.6 625.549 1389.13 C 624.19 1382.44 624.859 1362.87 624.806 1355.12 L 624.789 1279.55 L 624.649 1194.45 C 624.684 1170.91 620.433 1143.59 636.781 1125.45 C 649.514 1111.32 662.538 1099.57 682.191 1097.5 z"/>
+                                                    <path fill="#1a1a1a" d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/>
+                                                    <path fill="#1a1a1a" d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/>
+                        </svg>
+                                            </div>
+                                            <div class="staking-token-edge"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+                
+                        <!-- Dashed Arrow -->
+                        <div class="stake-arrow">
+                            <svg width="140" height="24" viewBox="0 0 140 24" fill="none">
+                                <path d="M0 12H125" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="8 6"/>
+                                <path d="M125 12L115 6M125 12L115 18" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                    </div>
+                        
+                        <!-- Right Panel: Earn Rewards -->
+                        <div class="stake-panel stake-panel-flipped">
+                            <h3 class="panel-title">Earn rewards</h3>
+                            <p class="panel-subtitle">Receive yield-bearing sMAANG.<br/>Withdraw anytime, no lock-ups.</p>
+                            <div class="panel-token earn-token-visual">
+                                <div class="earn-coin">
+                                    <div class="staking-token-3d staking-token-large">
+                                        <div class="staking-token-front">
+                                            <svg viewBox="0 0 2048 2048" fill="#ddd">
+                                                <circle cx="1024" cy="1024" r="890" fill="#ddd"/>
+                                                <path fill="#1a1a1a" d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
+                                                <path fill="#1a1a1a" d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
+                                                <path fill="#1a1a1a" d="M 682.191 1097.5 C 706.947 1097.31 735.358 1096.58 759.838 1097.61 C 762.866 1145.3 756.563 1201.47 761.27 1248.79 C 763.291 1269.12 790.006 1294.51 809.171 1298.07 C 823.802 1300.78 848.335 1299.86 864.81 1299.84 C 898.85 1299.65 932.891 1299.63 966.931 1299.8 C 967.423 1314.3 966.6 1329.82 966.857 1344.07 C 967.353 1371.64 970.096 1394.59 948.689 1415.5 C 936.923 1426.99 926.158 1434.41 908.74 1434.86 C 855.571 1434.24 802.143 1435.12 748.849 1434.64 C 723.6 1434.4 695.36 1435.94 670.269 1433.59 C 663.214 1432.26 655.822 1428.06 650.243 1423.91 C 640.318 1416.53 628.078 1401.6 625.549 1389.13 C 624.19 1382.44 624.859 1362.87 624.806 1355.12 L 624.789 1279.55 L 624.649 1194.45 C 624.684 1170.91 620.433 1143.59 636.781 1125.45 C 649.514 1111.32 662.538 1099.57 682.191 1097.5 z"/>
+                                                <path fill="#1a1a1a" d="M 1150.37 621.305 C 1176.34 620.264 1390.17 619.528 1398.5 622.645 C 1413.82 628.378 1429.55 644.303 1435.9 659.28 C 1438.23 664.774 1438.75 670.143 1439.06 676.036 C 1441.27 718.749 1439.5 762.302 1439.4 805.125 C 1439.33 836.902 1441.14 869.436 1439.59 901.099 C 1439.31 906.868 1438.81 912.756 1436.51 918.107 C 1428.36 937.003 1411.06 950.948 1392.35 958.407 C 1382.32 960.689 1320.08 959.85 1305.35 959.969 C 1305.09 924.548 1306.33 888.689 1305.72 853.459 C 1305.2 823.571 1311.5 799.059 1288.73 775.955 C 1272.55 758.239 1256.51 757.485 1234.01 757.188 C 1190.36 756.612 1146.1 758.04 1102.52 756.674 C 1102.14 734.584 1098.58 678.748 1106.56 660.829 C 1115.08 641.71 1131.29 628.824 1150.37 621.305 z"/>
+                                                <path fill="#1a1a1a" d="M 1306.77 1097.27 C 1330.68 1097.37 1354.54 1096.92 1378.52 1097.12 C 1397.01 1097.28 1406.95 1105.13 1419.92 1117.46 C 1436.92 1133.72 1439.72 1144.1 1439.67 1166.97 C 1439.73 1236.89 1439.52 1306.32 1439.48 1376.29 C 1441 1398.59 1423.14 1423.07 1402.65 1430.92 C 1388.53 1436.33 1356.82 1434.65 1340.36 1434.69 L 1232.75 1434.69 C 1194.28 1434.53 1144.75 1443.93 1118.46 1413.78 C 1099.63 1392.19 1101.91 1374.01 1101.98 1347.07 C 1102.02 1330.96 1101.67 1315.55 1102.48 1299.73 L 1198.87 1299.83 C 1216.2 1299.82 1234.8 1301.16 1252.01 1299.03 C 1258.27 1298.26 1264.39 1296.06 1270 1293.23 C 1283.98 1286.17 1296.65 1273.78 1302.13 1258.92 C 1308.04 1242.86 1305.8 1152.06 1305.55 1129.34 C 1305.46 1121.63 1303.7 1105.08 1306.21 1098.59 C 1306.38 1098.14 1306.58 1097.71 1306.77 1097.27 z"/>
+                            </svg>
+                        </div>
+                                        <div class="staking-token-edge"></div>
+                    </div>
+                                </div>
+                                <div class="apy-badge">8.2% APY</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Arrow Button -->
+                    <div class="staking-card-arrow">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 4L12 12M12 12H6M12 12V6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                 </div>
                 
-                <!-- Right Card: You Earn -->
-                <div class="stake-card">
-                    <div class="stake-card-header">
-                        <h3 class="stake-card-title title-yield">8.2% APY</h3>
-                        <p class="stake-card-subtitle">Protocol fees flow back to stakers as yield-bearing sMAANG</p>
+                <!-- Sub-card with benefits -->
+                <div class="staking-subbox">
+                    <p>+ No lock-up periods</p>
+                    <p>+ Real-time yield accrual</p>
+                    <p>+ Fully audited contracts</p>
+                </div>
+            </div>
+            
                     </div>
-                    <div class="stake-card-graphic">
-                        <div class="smaang-logo">
-                            <svg viewBox="0 0 28 28" fill="none">
-                                <rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/>
-                                <rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/>
-                                <rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/>
-                                <rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/>
-                                <rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/>
-                                <rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/>
+    </section>
+
+    <!-- Page 5: Why ETO Protocol - Sticky Stats Section -->
+    <section class="page page-highlights fade-in-section" id="highlights">
+        <div class="why-eto-container">
+            <div class="why-eto-grid">
+                <!-- Left Sticky Column -->
+                <div class="why-eto-sticky">
+                    <p class="why-eto-label">Protocol</p>
+                    <h2 class="why-eto-title">Why ETO Protocol</h2>
+                    <p class="why-eto-subtitle">ETO handles institutional-grade tokenized assets across multiple networks with industry-leading security.</p>
+                </div>
+            
+                <!-- Right Scrolling Column -->
+                <div class="why-eto-stats">
+                    <!-- Stat 1: Total Value Locked -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0d1a17"/>
+                                <rect width="229" height="250" rx="16" fill="#0a1512"/>
+                                <!-- Straight bars only -->
+                                <g class="why-eto-bars">
+                                    <rect x="165" y="80" width="64" height="200" fill="#57FEC7" opacity="0.6"/>
+                                    <rect x="101" y="130" width="64" height="200" fill="#57FEC7" opacity="0.5"/>
+                                    <rect x="37" y="180" width="64" height="200" fill="#57FEC7" opacity="0.4"/>
+                                    <rect x="229" y="130" width="64" height="200" fill="#57FEC7" opacity="0.5"/>
+                                    <rect x="293" y="180" width="64" height="200" fill="#57FEC7" opacity="0.4"/>
+                                </g>
+                                    </svg>
+                    </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Frictionless</span>
+                            <span class="why-eto-stat-desc">Transfer anywhere</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 2: Trading Volume -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#57FEC7"/>
+                                <!-- Wave pattern -->
+                                <rect y="0" width="354" height="125" fill="#3dd4a8"/>
+                                <rect x="354" y="125" width="354" height="125" fill="#3dd4a8"/>
+                                <circle cx="354" cy="62.5" r="62.5" fill="#2ab896"/>
+                                <circle cx="354" cy="187.5" r="62.5" fill="#2ab896"/>
+                                <path d="M354 0C388.5 0 416.5 28 416.5 62.5C416.5 97 388.5 125 354 125V0Z" fill="#8BFFD8"/>
+                                <path d="M354 125C319.5 125 291.5 153 291.5 187.5C291.5 222 319.5 250 354 250V125Z" fill="#8BFFD8"/>
+                                    </svg>
+                            </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Permissionless</span>
+                            <span class="why-eto-stat-desc">Liquidate anytime</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 3: Composable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#1a2e28"/>
+                                <!-- Rotating circles -->
+                                <g class="why-eto-circles" style="transform-origin: 228.5px 125px;">
+                                    <circle cx="228.5" cy="125" r="100" fill="none" stroke="#57FEC7" stroke-width="40" opacity="0.3"/>
+                                    <path d="M228.5 25 A100 100 0 0 1 328.5 125" stroke="#57FEC7" stroke-width="40" fill="none"/>
+                                    <circle cx="228.5" cy="125" r="50" fill="none" stroke="#57FEC7" stroke-width="25" opacity="0.5"/>
+                                    <path d="M278.5 125 A50 50 0 0 1 228.5 175" stroke="#8BFFD8" stroke-width="25" fill="none"/>
+                                </g>
+                                    </svg>
+                            </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Composable</span>
+                            <span class="why-eto-stat-desc">Integrate anywhere</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 4: Usable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0d2620"/>
+                                <!-- Shield pattern -->
+                                <g class="why-eto-shield">
+                                    <circle cx="228.5" cy="125" r="90" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.2"/>
+                                    <circle cx="228.5" cy="125" r="70" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="50" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.5"/>
+                                    <path d="M228.5 55 L228.5 195 M158.5 125 L298.5 125" stroke="#57FEC7" stroke-width="2" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="25" fill="#57FEC7" opacity="0.15"/>
+                                    <path d="M228.5 85 L250 115 L228.5 165 L207 115 Z" fill="#57FEC7" opacity="0.4"/>
+                                    <path d="M228.5 100 L240 120 L228.5 150 L217 120 Z" fill="#8BFFD8"/>
+                                </g>
+                                    </svg>
+                            </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Usable</span>
+                            <span class="why-eto-stat-desc">Stake to secure the Price</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 5: Auditable -->
+                    <div class="why-eto-stat-card">
+                        <div class="why-eto-stat-visual">
+                            <svg width="100%" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="why-eto-svg">
+                                <rect width="457" height="250" rx="16" fill="#0a1814"/>
+                                <!-- Checkmark/Audit pattern -->
+                                <g class="why-eto-audit">
+                                    <circle cx="228.5" cy="125" r="80" fill="none" stroke="#57FEC7" stroke-width="4" opacity="0.2"/>
+                                    <circle cx="228.5" cy="125" r="60" fill="none" stroke="#57FEC7" stroke-width="3" opacity="0.3"/>
+                                    <circle cx="228.5" cy="125" r="40" fill="#57FEC7" opacity="0.15"/>
+                                    <path d="M200 125 L220 145 L260 105" stroke="#57FEC7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <path d="M200 125 L220 145 L260 105" stroke="#8BFFD8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </g>
                             </svg>
                         </div>
+                        <div class="why-eto-stat-info">
+                            <span class="why-eto-stat-number">Auditable</span>
+                            <span class="why-eto-stat-desc">Fully transparent. Trust but Verify.</span>
+                        </div>
                     </div>
-                    <div class="stake-card-arrow">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6 14L14 6M14 6H8M14 6V12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 6: FAQ Section -->
+    <section class="page page-faq fade-in-section" id="faq">
+        <div class="faq-container">
+            <div class="faq-grid">
+                <!-- Left Column - Header -->
+                <div class="faq-header">
+                    <span class="faq-label">FAQ</span>
+                    <h2 class="faq-title">The Answers to All Your Questions</h2>
+                    <a href="https://docs.eto.markets" target="_blank" rel="noopener noreferrer" class="faq-docs-btn">
+                        <span>Read the Docs</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
                         </svg>
-                    </div>
+                    </a>
                 </div>
-            </div>
-            
-            <!-- How It Works Steps -->
-            <div class="stake-steps">
-                <div class="stake-step">
-                    <span class="step-num">01</span>
-                    <div class="step-content">
-                        <h4 class="step-title">Deposit</h4>
-                        <p class="step-desc">Stake USDC into the protocol</p>
-                    </div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="stake-step">
-                    <span class="step-num">02</span>
-                    <div class="step-content">
-                        <h4 class="step-title">Stabilize</h4>
-                        <p class="step-desc">Engine maintains the stability of the price</p>
-                    </div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="stake-step">
-                    <span class="step-num">03</span>
-                    <div class="step-content">
-                        <h4 class="step-title">Earn</h4>
-                        <p class="step-desc">Receive yield-bearing sMAANG</p>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-    </section>
-
-    <!-- Page 5: Tokenization as a Service -->
-    <section class="page page-taas" id="taas">
-        <div class="taas-content">
-            <p class="taas-subtitle">Tokenization as a Service</p>
-            <h1 class="taas-title">Tokenize Global Markets</h1>
-            <button class="explore-btn taas-btn" onclick="window.location.href='/dashboard'">
-                <span>GET STARTED</span>
-                <div class="btn-icon">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 10L10 4M10 4H5M10 4V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-            </button>
-        </div>
-        
-        <!-- Dual Token Carousels -->
-        <div class="dual-carousel-container">
-            <!-- Top Row - Moving Right -->
-            <div class="h-carousel-wrapper carousel-right">
-                <div class="h-carousel-track track-right">
-                    <!-- ICE Logo -->
-                    <button class="h-token" type="button" aria-label="ICE">
-                        <div class="h-token-3d">
-                            <div class="h-token-front">
-                                <div class="h-token-logo h-token-logo-full">
-                                    <svg viewBox="194 194 1660 1660">
-                                        <circle cx="1024" cy="1024" r="830" fill="#ddd"/>
-                                        <path fill="#1a1a1a" d="M 676.55 666.976 L 1370.21 667.035 L 1370.7 1034.9 L 1310.95 1035.01 L 1310.48 726.95 L 970.5 726.965 L 736.009 726.996 L 736.003 1292.59 C 762.34 1292.65 788.676 1292.56 815.012 1292.33 L 815.024 1351.4 L 676.536 1351.32 L 676.55 666.976 z"/>
-                                        <path fill="#1a1a1a" d="M 1276.36 1132.39 C 1348.75 1128.59 1376.26 1187.83 1370 1251.96 C 1322.11 1252.32 1274.22 1252.37 1226.33 1252.12 C 1232.46 1321.34 1291.87 1327.28 1346.66 1308.08 L 1353.76 1305.33 C 1356.66 1316.24 1359.37 1327.19 1361.89 1338.18 C 1319.87 1358.82 1255.83 1360.69 1218.54 1328.88 C 1161.85 1280.52 1175.76 1159.2 1251.68 1136.5 C 1260.27 1133.93 1267.46 1133.06 1276.36 1132.39 z"/>
-                                        <path fill="#1a1a1a" d="M 1106.37 1132.4 C 1130.17 1131.2 1150.19 1134.19 1171.77 1144.28 C 1168.53 1155.98 1165.02 1167.78 1161.63 1179.46 C 1140.49 1170.36 1120.9 1164.89 1097.73 1170.72 C 1081.41 1174.67 1067.38 1185.05 1058.83 1199.51 C 1046.95 1219.47 1045.74 1244.43 1051.38 1266.26 C 1060.42 1299.18 1087.23 1316.9 1120.78 1315.79 C 1140.87 1315.13 1144.77 1310.6 1162.58 1305.75 C 1165.08 1307.87 1164.58 1308.9 1165.59 1312.81 C 1167.86 1320.89 1169.88 1330.6 1171.81 1338.87 C 1115.24 1365.27 1040.14 1355.59 1014.25 1292.44 C 992.177 1238.62 1008.31 1166.86 1064.83 1141.93 C 1079.34 1135.53 1090.75 1133.65 1106.37 1132.4 z"/>
-                                        <path fill="#1a1a1a" d="M 929.995 1138.85 C 944.011 1138.45 958.983 1138.62 973.077 1138.52 L 973.177 1351.05 L 930.006 1351.02 L 929.995 1138.85 z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="h-token-edge"></div>
-                            <div class="h-token-back"></div>
+                
+                <!-- Right Column - Accordion -->
+                <div class="faq-accordion">
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is ETO Protocol?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is a decentralized platform that tokenizes traditional assets, enabling users to trade, stake, and earn yield on U.S. capital markets on-chain with full transparency and self-custody.</p>
                         </div>
-                    </button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <!-- Duplicates for seamless loop -->
-                    <!-- ICE Logo Duplicate -->
-                    <button class="h-token" type="button" aria-label="ICE">
-                        <div class="h-token-3d">
-                            <div class="h-token-front">
-                                <div class="h-token-logo h-token-logo-full">
-                                    <svg viewBox="194 194 1660 1660">
-                                        <circle cx="1024" cy="1024" r="830" fill="#ddd"/>
-                                        <path fill="#1a1a1a" d="M 676.55 666.976 L 1370.21 667.035 L 1370.7 1034.9 L 1310.95 1035.01 L 1310.48 726.95 L 970.5 726.965 L 736.009 726.996 L 736.003 1292.59 C 762.34 1292.65 788.676 1292.56 815.012 1292.33 L 815.024 1351.4 L 676.536 1351.32 L 676.55 666.976 z"/>
-                                        <path fill="#1a1a1a" d="M 1276.36 1132.39 C 1348.75 1128.59 1376.26 1187.83 1370 1251.96 C 1322.11 1252.32 1274.22 1252.37 1226.33 1252.12 C 1232.46 1321.34 1291.87 1327.28 1346.66 1308.08 L 1353.76 1305.33 C 1356.66 1316.24 1359.37 1327.19 1361.89 1338.18 C 1319.87 1358.82 1255.83 1360.69 1218.54 1328.88 C 1161.85 1280.52 1175.76 1159.2 1251.68 1136.5 C 1260.27 1133.93 1267.46 1133.06 1276.36 1132.39 z"/>
-                                        <path fill="#1a1a1a" d="M 1106.37 1132.4 C 1130.17 1131.2 1150.19 1134.19 1171.77 1144.28 C 1168.53 1155.98 1165.02 1167.78 1161.63 1179.46 C 1140.49 1170.36 1120.9 1164.89 1097.73 1170.72 C 1081.41 1174.67 1067.38 1185.05 1058.83 1199.51 C 1046.95 1219.47 1045.74 1244.43 1051.38 1266.26 C 1060.42 1299.18 1087.23 1316.9 1120.78 1315.79 C 1140.87 1315.13 1144.77 1310.6 1162.58 1305.75 C 1165.08 1307.87 1164.58 1308.9 1165.59 1312.81 C 1167.86 1320.89 1169.88 1330.6 1171.81 1338.87 C 1115.24 1365.27 1040.14 1355.59 1014.25 1292.44 C 992.177 1238.62 1008.31 1166.86 1064.83 1141.93 C 1079.34 1135.53 1090.75 1133.65 1106.37 1132.4 z"/>
-                                        <path fill="#1a1a1a" d="M 929.995 1138.85 C 944.011 1138.45 958.983 1138.62 973.077 1138.52 L 973.177 1351.05 L 930.006 1351.02 L 929.995 1138.85 z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="h-token-edge"></div>
-                            <div class="h-token-back"></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What is MAANG Token?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>MAANG is a tokenized index representing the five largest tech companies: Meta, Apple, Amazon, Netflix, and Google. It allows you to gain diversified exposure to these giants through a single on-chain asset.</p>
                         </div>
-                    </button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                </div>
-            </div>
-            
-            <!-- Bottom Row - Moving Left -->
-            <div class="h-carousel-wrapper carousel-left">
-                <div class="h-carousel-track track-left">
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <!-- Duplicates for seamless loop -->
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
-                    <button class="h-token" type="button"><div class="h-token-3d"><div class="h-token-front"><div class="h-token-dots"></div><div class="h-token-ring"></div><div class="h-token-logo"><svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="3" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="17" y="17" width="8" height="8" rx="1.5" fill="#ddd"/><rect x="7" y="7" width="14" height="14" rx="2" fill="#1a1a1a"/><rect x="10" y="10" width="8" height="8" rx="1" fill="#ddd"/></svg></div><div class="h-token-shine"></div></div><div class="h-token-edge"></div><div class="h-token-back"></div></div></button>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How does staking work?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>When you stake MAANG tokens, you receive sMAANG which earns yield over time. There are no lock-up periods, and you can unstake at any time while maintaining full custody of your assets.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>Is ETO Protocol audited?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Yes, ETO Protocol maintains 100% on-chain verified reserves with real-time auditing. All smart contracts are fully audited by leading security firms, and reserves are transparently verifiable at any time.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>What networks does ETO support?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>ETO Protocol is built on Avalanche and leverages LayerZero for cross-chain interoperability. This enables frictionless transfers and composability across multiple blockchain networks.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span>How do I get started?</span>
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-content">
+                            <p>Connect your wallet, acquire USDC, and you can immediately start trading MAANG tokens or stake them to earn yield. No KYC required, no intermediaries—just permissionless DeFi.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Footer Section -->
+    <footer class="site-footer" id="footer">
+        <div class="footer-wrapper">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo-wrap">
+                        <svg class="footer-logo" width="28" height="28" viewBox="600 600 860 860" fill="currentColor">
+                            <path d="M 905.888 860.411 C 923.072 859.557 948.113 860.482 966.243 860.419 L 1089.76 860.296 C 1104.82 860.385 1119.89 860.332 1134.95 860.136 C 1143.87 860.048 1153.17 859.738 1162.08 860.533 C 1182.01 862.315 1201.85 881.454 1203.52 901.553 C 1204.62 914.66 1204.09 928.932 1204.06 942.218 L 1203.97 1017.81 L 1204.03 1107.62 C 1203.99 1124.06 1204.55 1140.86 1202.83 1157.18 C 1200.37 1180.42 1181.08 1196.25 1158.48 1198.58 L 988.194 1198.52 C 961.501 1198.47 934.814 1198.87 908.09 1198.26 C 886.984 1197.85 870.112 1183.4 864.068 1163.45 C 861.471 1154.88 862.565 1137.93 862.57 1128.45 L 862.599 1061.07 L 862.678 957.26 C 862.695 938.928 862.168 919.99 863.415 901.758 C 864.871 880.468 885.463 863.015 905.888 860.411 z"/>
+                            <path d="M 669.877 621.375 C 673.572 621.16 677.27 621.014 680.971 620.936 C 735.182 619.764 789.657 620.927 843.891 620.843 C 858.774 620.82 910.197 618.754 922.322 621.712 C 931.499 623.95 941.42 633.08 948.088 639.568 C 954.797 646.097 961.471 654.276 964.483 663.254 C 969.32 677.676 966.908 737.301 967.111 756.989 C 958.294 757.618 946.19 757.151 937.124 757.192 C 914.223 757.398 891.32 757.354 868.42 757.061 C 824.913 756.684 784.611 751.005 763.536 798.734 C 758.012 815.721 759.956 859.674 760.007 879.692 L 760.104 959.805 C 738.277 959.514 679.558 963.63 662.665 954.978 C 648.809 947.881 630.007 928.391 625.852 913.093 C 623.067 902.841 624.947 856.515 624.906 842.759 L 624.854 732.561 C 624.848 711.087 624.422 689.04 625.612 667.627 C 625.865 663.076 626.985 660.039 629.157 656.124 C 638.341 639.575 651.631 626.959 669.877 621.375 z"/>
+                        </svg>
+                        <span class="footer-logo-text">eto</span>
+                    </div>
+                    <p class="footer-tagline">Global exchange for tokenized real-world assets</p>
+                </div>
+                <div class="footer-links-grid">
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Product</h4>
+                        <a href="/trade" class="footer-link">Trade</a>
+                        <a href="/stake" class="footer-link">Stake</a>
+                        <a href="/dashboard" class="footer-link">Dashboard</a>
+                        <a href="/faucet" class="footer-link">Faucet</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Resources</h4>
+                        <a href="https://docs.eto.markets" target="_blank" class="footer-link">Documentation</a>
+                        <a href="https://github.com/The-Close-Group" target="_blank" class="footer-link">GitHub</a>
+                        <a href="#" class="footer-link">Whitepaper</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Community</h4>
+                        <a href="https://twitter.com/etoprotocol" target="_blank" class="footer-link">Twitter</a>
+                        <a href="https://discord.gg/eto" target="_blank" class="footer-link">Discord</a>
+                        <a href="https://t.me/etoprotocol" target="_blank" class="footer-link">Telegram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2025 ETO Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#" class="footer-legal-link">Privacy</a>
+                    <a href="#" class="footer-legal-link">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
     
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
+    
+    <!-- Theme Switching Script -->
+    <script>
+        (function() {
+            // Theme Toggle Functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            
+            // Check for saved theme preference or default to dark
+            const savedTheme = localStorage.getItem('eto-theme') || 'dark';
+            
+            // Apply saved theme on page load
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                // Apply new theme
+                if (newTheme === 'light') {
+                    html.setAttribute('data-theme', 'light');
+                } else {
+                    html.removeAttribute('data-theme');
+                }
+                
+                // Save preference
+                localStorage.setItem('eto-theme', newTheme);
+                
+                // Add a subtle animation class
+                document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+            });
+            
+            // Respect system preference if no saved preference
+            if (!localStorage.getItem('eto-theme')) {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                if (!prefersDark.matches) {
+                    html.setAttribute('data-theme', 'light');
+                }
+                
+                // Listen for system preference changes
+                prefersDark.addEventListener('change', function(e) {
+                    if (!localStorage.getItem('eto-theme')) {
+                        if (e.matches) {
+                            html.removeAttribute('data-theme');
+                        } else {
+                            html.setAttribute('data-theme', 'light');
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+    <!-- FAQ Accordion Script -->
+    <script>
+        (function() {
+            const faqItems = document.querySelectorAll(".faq-item");
+            faqItems.forEach(item => {
+                const trigger = item.querySelector(".faq-trigger");
+                trigger.addEventListener("click", function() {
+                    const isOpen = item.classList.contains("open");
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove("open");
+                            otherItem.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
+                        }
+                    });
+                    if (isOpen) {
+                        item.classList.remove("open");
+                        trigger.setAttribute("aria-expanded", "false");
+                    } else {
+                        item.classList.add("open");
+                        trigger.setAttribute("aria-expanded", "true");
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 import { useActiveWallet } from 'thirdweb/react';
 import { useActiveWalletChain } from 'thirdweb/react';
 import { Button } from '@/components/ui/button';
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),
