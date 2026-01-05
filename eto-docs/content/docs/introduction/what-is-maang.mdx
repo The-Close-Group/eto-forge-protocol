@@ -1,0 +1,61 @@
+---
+title: What is MAANG?
+description: MAANG is a single ERC-20 token that tracks five major technology companies, providing diversified equity exposure through DeFi infrastructure.
+---
+
+# What is MAANG?
+
+MAANG is an index token that provides exposure to five major technology companies—Meta, Amazon, Apple, Nvidia, and Google—through a single ERC-20 asset. The token tracks the unweighted average price of these five equities using oracle-based pricing, enabling users to hold diversified tech exposure in their own wallets and trade it with stablecoins on-chain.
+
+Traditional access to this basket would require opening a brokerage account, purchasing each stock individually, dealing with multi-day settlement, and accepting custody relationships. MAANG collapses this into a single token that can be acquired instantly with USDC, held in any wallet, and integrated into DeFi protocols without intermediaries.
+
+## The Basket
+
+MAANG tracks an **unweighted average** of five technology companies:
+
+- **Meta** (Facebook)
+- **Amazon**
+- **Apple**
+- **Nvidia**
+- **Google** (Alphabet)
+
+The basket composition never changes, and weights are never rebalanced. Each company contributes equally to the index price regardless of individual market capitalization. This design eliminates the need for ongoing rebalancing operations, which would introduce additional intermediaries and trust assumptions.
+
+MAANG does not confer ownership of the underlying shares, does not distribute dividends, and provides no shareholder rights. It is purely a price exposure instrument.
+
+## How to Access MAANG
+
+MAANG runs on an Avalanche-powered L1 subnet designed specifically for ETO's index products. Users acquire MAANG through ETO's swap interface using USDC from multiple networks. The interface includes automatic routing to the ETO subnet, eliminating manual bridging.
+
+Contract addresses should always be verified through the official ETO application interface, not documentation. The interface displays current contract addresses which can be cross-referenced against verified contracts on the block explorer.
+
+For detailed acquisition instructions, see [User Guide → Buy](/docs/user-guide/buy).
+
+<Callout type="warning">
+
+## Risk Disclosure
+
+MAANG involves multiple risk categories that users should understand before participating:
+
+**Smart contract risk**: Protocol functionality depends on smart contract code which may contain bugs or vulnerabilities despite security audits.
+
+**Oracle and infrastructure risk**: Price data relies on external oracle providers. Oracle failures, delays, or manipulation could affect pricing accuracy.
+
+**Stablecoin risk**: The system uses USDC for settlements. Issues with USDC itself would affect the ability to enter or exit positions.
+
+**Administrative risk**: The protocol includes administrative controls for upgrades and emergency interventions. These controls could be misused or compromised.
+
+**Regulatory risk**: The regulatory status of tokenized equity exposure varies by jurisdiction and may change over time. Users are responsible for understanding their local regulations.
+
+**No investment advice**: Nothing in this documentation constitutes investment advice. Users should conduct their own research and consult appropriate advisors before participating.
+
+**No underlying ownership**: MAANG does not represent ownership of the underlying stocks, does not receive dividends, and confers no shareholder rights.
+
+</Callout>
+
+---
+
+**Next:**
+- [User Guide → Buy](/docs/user-guide/buy) to acquire MAANG
+- [User Guide → Stake](/docs/user-guide/stake) to earn staking yields
+- [Architecture → Overview](/docs/architecture/overview) for technical implementation details
