@@ -1,0 +1,229 @@
+---
+title: Capital Efficiency
+description: Concentrated liquidity mathematics, capital efficiency calculations, and DMM architecture for the DRI Protocol.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Capital Efficiency
+
+The Dynamic Market Maker (DMM) achieves **200× capital efficiency** by concentrating all liquidity within a narrow band around the reflective price, rather than spreading it across all possible prices like traditional AMMs.
+
+---
+
+## Concentrated Liquidity
+
+### Core Concept
+
+| AMM Type | Price Range | Capital Efficiency |
+|----------|-------------|-------------------|
+| **Uniswap V2** | $[0, \infty]$ | 1× (baseline) |
+| **DRI DMM** | $[P - 0.25\%, P + 0.25\%]$ | 200× |
+
+### Mathematical Foundation
+
+The DMM implements constant product within a restricted range:
+
+$$
+\left[P_{\text{center}} - \delta,\; P_{\text{center}} + \delta\right]
+$$
+
+Where:
+- $P_{\text{center}}$ = current reflective price
+- $\delta$ = band half-width (e.g., 25 basis points = 0.25%)
+
+Within this range, the traditional constant product formula applies:
+
+$$
+x \cdot y = k
+$$
+
+Where $x$ and $y$ represent token reserves and $k$ is the invariant.
+
+---
+
+## Capital Efficiency Calculation
+
+The capital efficiency gain is calculated as the ratio of the utilized price range:
+
+$$
+CE = \frac{\text{Full Range Width}}{\text{Concentrated Range Width}} = \frac{1}{2\delta}
+$$
+
+<Callout type="info">
+**Result:** With $\delta = 0.25\%$ (25 basis points), the DMMv2_CLMM achieves **200× capital efficiency** compared to full-range AMMs like Uniswap V2.
+</Callout>
+
+### Detailed Mathematical Derivation
+
+For a constant product AMM $x \cdot y = k$ within a price range $[P_{\min}, P_{\max}]$, the liquidity $L$ is related to reserves by:
+
+$$
+L = \sqrt{x \cdot y} = \sqrt{k}
+$$
+
+In a full-range AMM ($P_{\min} = 0$, $P_{\max} = \infty$), the relationship between price $P$ and reserves is:
+
+$$
+P = \frac{y}{x} \quad \Rightarrow \quad x = \sqrt{\frac{k}{P}},\; y = \sqrt{k \cdot P}
+$$
+
+**Full-Range AMM:**
+
+$$
+L_{\text{full}} = \frac{K}{2\sqrt{P}}
+$$
+
+**Concentrated Range AMM $[P(1-\delta), P(1+\delta)]$:**
+
+The virtual reserves at price boundaries are:
+
+$$
+x_{\text{virt}} = \frac{L}{\sqrt{P(1+\delta)}}, \quad y_{\text{virt}} = L \cdot \sqrt{P(1-\delta)}
+$$
+
+The real capital deployed is:
+
+$$
+K_{\text{concentrated}} \approx \frac{L \cdot \delta}{\sqrt{P}}
+$$
+
+The theoretical capital efficiency ratio is:
+
+$$
+CE_{\text{theoretical}} = \frac{1}{2\delta} = \frac{1}{2 \times 0.0025} = 200\times
+$$
+
+<Callout type="warn">
+**Contract Implementation:** The DMMv2_CLMM uses `halfWidthTicks` for band configuration. With `tickSpacing = 10` and `halfWidthTicks = 25`, this creates approximately ±0.25% bands, yielding **200× effective capital efficiency** after accounting for fees and rebalancing.
+</Callout>
+
+---
+
+## Price Impact Mathematics
+
+Within the concentrated band, the price impact function follows a modified constant product curve:
+
+### Swap Calculation
+
+For a swap of `Δx` tokens, the output `Δy` is calculated based on the constant product invariant within the band.
+
+### Slippage Analysis
+
+The slippage relative to the mid-price is approximately:
+
+$$
+\text{slippage} \approx -\frac{\Delta x}{2x}
+$$
+
+### Fee Integration
+
+With trading fee $f$, the net output becomes:
+
+$$
+\Delta y_{\text{net}} = (1-f) \cdot \Delta y
+$$
+
+---
+
+## Recentering Mechanism
+
+The DMM automatically re-centers its liquidity band when the market price deviates significantly from the reflective price.
+
+### Recentering Process
+
+| Step | Action |
+|------|--------|
+| 1. Trigger Detection | Monitor deviation between market and reflective price |
+| 2. Fee Coverage Validation | Ensure accumulated fees cover impermanent loss |
+| 3. Band Recentering | Shift liquidity to new price range centered on reflective price |
+| 4. State Update | Update internal accounting and emit events |
+
+<Callout>
+**Default Trigger:** 25 basis points (0.25%) deviation, matching the band half-width.
+</Callout>
+
+---
+
+## Fee Mechanism and Impermanent Loss Management
+
+### Trading Fees
+
+The DMM charges a **0.30% fee** (`feePips: 3000`) on all swaps, serving multiple purposes:
+
+| Purpose | Description | Revenue Split |
+|---------|-------------|---------------|
+| Revenue Generation | Provides income to cover operational costs | 70% → Treasury |
+| Impermanent Loss Coverage | Accumulates funds to offset recentering costs | — |
+| Governance Rewards | Incentivizes governance participation | 30% → Rewards |
+| MEV Protection | Reduces profitability of sandwich attacks | — |
+
+<Callout type="info">
+**Fee Collection:** Fees accumulate in the DMM position and are collected via `collectFees(recipient)`. The 70/30 treasury/governance split should be implemented off-chain or via a fee distributor contract.
+</Callout>
+
+### Impermanent Loss Analysis
+
+Each band recentering operation incurs impermanent loss proportional to the square of the price movement:
+
+$$
+IL \approx \frac{\delta^2}{2}
+$$
+
+For $\delta = 0.25\%$, this represents approximately **0.03% of TVL** per recentering event.
+
+The fee accumulation requirement ensures:
+
+$$
+\text{Fees}_{\text{accumulated}} \geq \varphi \cdot IL_{\text{projected}}
+$$
+
+Where $\varphi$ is the fee coverage multiplier (default: 1.0).
+
+---
+
+## Liquidity-Adjusted Band Width
+
+For dynamic parameter adaptation:
+
+$$
+\delta_{\text{adaptive}} = \delta_{\text{base}} \times \sqrt{\frac{L_{\text{base}}}{L_{\text{current}}}}
+$$
+
+<Callout type="info">
+This **widens bands when liquidity is thin**, reducing recentering frequency.
+</Callout>
+
+---
+
+## Integration with Price Updates
+
+The DMM integrates closely with the DRI Controller's price update mechanism:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   syncPrice() Flow                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. Deviation Check ──▶ Controller calculates M vs R         │
+│           │                                                  │
+│           ▼                                                  │
+│  2. Threshold Evaluation ──▶ Compare against 25bp trigger    │
+│           │                                                  │
+│           ▼                                                  │
+│  3. Fee Coverage Validation ──▶ Verify sufficient fees       │
+│           │                                                  │
+│           ▼                                                  │
+│  4. Band Shift Execution ──▶ DMM recenters around R          │
+│           │                                                  │
+│           ▼                                                  │
+│  5. State Synchronization ──▶ Update state, emit events      │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+<Callout type="info">
+**Next:** [Economic Model](/docs/tokenomics/economic-model) — Token architecture, distribution, and fee structure
+</Callout>

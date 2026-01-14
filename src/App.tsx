@@ -20,6 +20,7 @@ import { RouteTransition } from "@/components/RouteTransition";
 // Pages
 import Pitch from "@/pages/Pitch";
 import Landing from "@/pages/Landing";
+import Docs from "@/pages/Docs";
 import { Navigate } from "react-router-dom";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
@@ -36,7 +37,6 @@ import Shortcuts from "@/pages/Shortcuts";
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
-import SidebarDemoPage from "@/pages/SidebarDemoPage";
 import Profile from "@/pages/Profile";
 import PointsDashboard from "@/pages/PointsDashboard";
 
@@ -59,6 +59,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
+                <Route path="/docs/*" element={<Docs />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
@@ -82,7 +83,6 @@ const App = () => (
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/points" element={<PointsDashboard />} />
                             <Route path="/faucet" element={<Faucet />} />
-                            <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </RouteTransition>

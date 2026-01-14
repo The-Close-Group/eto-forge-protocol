@@ -1,0 +1,53 @@
+---
+title: Trust and Security
+description: ETO's security model combines independent audits, protocol-level safeguards, and continuous monitoring to protect user funds.
+---
+
+# Trust and Security
+
+ETO's security approach operates across three layers: independent verification through continuous auditing, protocol-level safety mechanisms encoded in smart contracts, and operational monitoring that detects and responds to emerging threats. No security model eliminates all risk, but this architecture is designed to make the most common failure modes explicit, bounded, and recoverable.
+
+## Independent Security Audits
+
+ETO maintains a continuous audit engagement with Octane Security, a smart contract security firm specializing in DeFi protocols. Unlike point-in-time audits that examine code at a single moment, this arrangement provides ongoing review as the protocol evolves. Octane Security's work includes code review for all contract deployments, monitoring of deployed contracts for anomalous behavior, security advisory support for architectural decisions, and incident response capabilities if issues are discovered.
+
+This continuous relationship means security review happens throughout the development lifecycle rather than only before launch. As new features are developed or existing contracts are upgraded, they undergo the same rigorous examination that applied to the initial implementation. The ongoing nature of this engagement also means that emerging threats or newly discovered vulnerability patterns can be assessed against ETO's deployed contracts even if those threats were unknown at the time of initial deployment.
+
+All audit reports are published once remediation is complete. Current and historical audit reports are available in the Audits section of this documentation. Each report includes scope definition, findings categorized by severity, remediation status, and any acknowledged residual risks. This transparency allows users and integrators to make informed decisions based on the same security assessment available to the development team.
+
+## Protocol-Level Safeguards
+
+Security mechanisms are encoded directly into the protocol's smart contracts, creating automated protection that operates independently of any individual's actions. These safeguards define the boundaries within which the protocol can operate and specify what happens when those boundaries are approached or exceeded.
+
+Circuit breakers monitor deviation between on-chain token prices and oracle-provided reference prices. When deviation exceeds defined thresholds for a sustained period, the system automatically pauses price updates and stabilization mechanisms. This prevents the protocol from executing trades or adjustments based on potentially compromised data. Users can still exit positions during circuit breaker activation, but the protocol will not process new pricing updates until the issue is resolved. The specific thresholds and persistence windows are calibrated to distinguish between normal market volatility and genuine system stress.
+
+Oracle validation aggregates price data from multiple independent sources and applies bounds checking before accepting any feed. If a price source reports values that deviate significantly from the median of other sources, that feed is excluded from calculations. If sufficient feeds are unavailable or stale beyond acceptable thresholds, the system treats this as a circuit breaker condition rather than proceeding with incomplete data. This multi-source approach combined with active validation reduces the risk that any single oracle failure or manipulation attempt can corrupt the protocol's price reference.
+
+Rate limiting constrains how quickly capital can flow in or out of protocol-controlled pools. These limits prevent rapid drainage scenarios where an attacker or bug could extract the majority of liquidity in a short timeframe. The limits are calibrated to allow normal trading activity while making economically significant exploits visible and interruptible. If an unusual pattern emerges that suggests coordinated extraction or a malfunctioning contract, the rate limits buy time for monitoring systems to detect the issue and for the guardian role to intervene if necessary.
+
+Administrative timelocks enforce waiting periods on protocol upgrades and parameter changes. Critical modifications cannot be executed immediately upon proposal. Instead, they must be publicly announced and wait through a defined timelock period before activation. This gives users visibility into pending changes and time to exit if they disagree with proposed modifications. The timelock mechanism makes governance actions transparent and predictable rather than allowing opaque or sudden changes to protocol behavior.
+
+For complete technical specifications of these mechanisms, see [Architecture → Circuit Breakers](/docs/architecture/circuit-breakers).
+
+## Ongoing Monitoring and Response
+
+Security is not a one-time achievement but an ongoing operational discipline. ETO maintains monitoring infrastructure that tracks protocol health metrics, oracle feed reliability, liquidity pool composition, and contract interaction patterns. This monitoring operates continuously and generates alerts when observed behavior deviates from expected patterns.
+
+When monitoring detects anomalies, automated alerts notify the security response team. For high-severity issues, the protocol's guardian role can pause affected modules immediately while the issue is investigated. This guardian capability is deliberately limited in scope. It can halt operations to prevent further damage but cannot move user funds or modify core protocol logic. The separation between emergency pause authority and fund control authority reduces the risk that any single compromised key or malicious actor could both halt the protocol and extract capital.
+
+Incident response procedures define clear escalation paths, communication protocols, and remediation workflows. If a vulnerability is discovered, the priority hierarchy is user fund safety first, protocol stability second, and feature availability third. Users will receive clear communication about any security incidents, their impact, and remediation steps through official channels. The protocol will not resume normal operations until the issue is understood, remediated, and verified.
+
+<Callout type="info">
+
+## Responsible Disclosure
+
+If you discover a security vulnerability in ETO's contracts or infrastructure, please report it responsibly by emailing security@eto.finance. Do not disclose vulnerabilities publicly before giving the team reasonable time to assess and remediate. Reports submitted through this channel will receive timely acknowledgment and investigation.
+
+</Callout>
+
+---
+
+**Next:**
+- [Architecture → Circuit Breakers](/docs/architecture/circuit-breakers) for safety control implementation details
+- [Architecture → Oracle Aggregation](/docs/architecture/oracle-aggregation) for oracle validation details
+- [What is MAANG?](/docs/introduction/what-is-maang) for product risk information

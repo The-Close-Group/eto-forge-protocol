@@ -1,0 +1,98 @@
+---
+title: What is ETO?
+description: ETO issues on-chain index tokens that provide self-custodied, permissionless exposure to global markets.
+---
+
+# What is ETO?
+
+ETO issues on-chain index tokens that provide exposure to global equities, commodities, and real-world assets through a self-custodied, permissionless infrastructure. The protocol enables users to diversify beyond crypto markets while maintaining full control of their assets and accessing the composability of DeFi.
+
+Traditional market access requires intermediaries, multi-day settlement, geographic restrictions, and custody relationships. ETO eliminates these barriers by bringing real-world market exposure directly on-chain, where it can be held in any wallet, traded against stablecoins, and integrated into DeFi protocols without relying on custody-backed redemption programs.
+
+## DeFi-Native by Design
+
+ETO's infrastructure is built on core DeFi principles that differentiate it from centralized or custody-based alternatives:
+
+**Self-custody**: Users hold assets directly in their own wallets with no intermediary control.
+
+**Permissionless access**: Interaction is wallet-based, not account-based. No gatekeepers, no application process.
+
+**Composability**: Assets behave like standard ERC-20 tokens and integrate seamlessly across protocols.
+
+**Transparency**: System behavior is defined by on-chain contracts and verifiable data inputs.
+
+**Instant settlement**: Trades and transfers finalize on-chain immediately, not in days.
+
+These properties shape both what users hold (the tokens) and how the system maintains pricing and liquidity.
+
+## The Products
+
+### On-Chain Index Tokens
+
+ETO's core products are index tokens that track real-world reference prices using oracle-based mechanisms. Users can acquire, hold, transfer, and exit these tokens with stablecoins in a way that resembles typical DeFi usage: simple custody, programmatic integrations, and on-chain settlement.
+
+### Infrastructure Layer
+
+Beyond the tokens themselves, ETO provides the underlying infrastructure for pricing, liquidity, and risk management. This infrastructure supports both ETO's own index products and potential integration partners who want to build on the same foundation.
+
+## How Pricing and Liquidity Work
+
+ETO maintains reliable pricing and usable liquidity through three integrated systems. The technical details are covered in the [Architecture](/docs/architecture/overview) section, but here's what matters for users:
+
+**Dynamic pricing**: Token prices continuously reflect real-world reference prices through oracle feeds, with built-in smoothing and bounds checking.
+
+**Concentrated liquidity**: A Dynamic Market Maker (DMM) keeps most liquidity in a tight band around the current reference price, delivering low spreads and high execution quality.
+
+**Peg stability**: When market prices drift beyond normal ranges, a Peg Stability Module (PSM) applies backstop pressure using protocol reserves to help the market re-align.
+
+**Safety controls**: Circuit breakers and rate limits throttle or pause specific actions under defined stress conditions, making failure modes explicit and system behavior predictable.
+
+These mechanisms work together to keep on-chain prices closely aligned with external reference values while maintaining usable liquidity and explicit safety controls. See [Architecture → Overview](/docs/architecture/overview) for the complete technical design.
+
+## MAANG: 5 Tech Giants, 1 Token
+
+ETO's first flagship product is **MAANG**, an index token representing exposure to five large-cap technology companies:
+
+- Meta
+- Amazon  
+- Apple
+- Nvidia
+- Google (Alphabet)
+
+MAANG is designed to provide price exposure to this basket through the protocol's oracle-based tracking system. It does not confer shareholder rights, dividends, or a claim on custody-held shares. The token is held and used like any other ERC-20 asset.
+
+MAANG demonstrates ETO's core value proposition in concrete terms: "five giants in one token," with self-custody, stablecoin entry/exit, and full DeFi composability. To acquire MAANG, see the [User Guide → Buy](/docs/introduction/user-guide/buy).
+
+## Who ETO Is For
+
+ETO serves users and teams seeking real-world market exposure without leaving on-chain infrastructure:
+
+**DeFi power users** can rotate risk away from pure crypto beta while maintaining self-custody and composability.
+
+**Passive diversifiers** can hold basket-style tokens with straightforward custody and stablecoin entry/exit.
+
+**Traders and aggregators** prioritize execution quality, narrow spreads, and predictable liquidity behavior.
+
+**Builders and integrators** can use ETO assets and liquidity primitives inside wallets, applications, and other DeFi products.
+
+<Callout type="warning">
+
+## Safety, Risk, and Scope Clarity
+
+ETO is non-custodial at the user level, but it is not risk-free.
+
+**No guarantees**: Principal is at risk. Token prices can move against you.
+
+**Variable outcomes**: Any yield mechanisms are market-dependent and not guaranteed.
+
+**Scope clarity**: ETO is positioned as an on-chain index infrastructure provider and asset issuer, not a broker, ETF wrapper, or custody-backed token issuer.
+
+Users should do their own research and consider their own risk tolerance before participating.
+
+</Callout>
+
+---
+
+**Next:**
+- Read [What is MAANG?](/docs/introduction/what-is-maang) for product specifics and trading details.
+- See [Architecture → Overview](/docs/architecture/overview) for the technical model behind pricing, liquidity, and safety.

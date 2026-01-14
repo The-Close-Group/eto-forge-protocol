@@ -1,0 +1,200 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+:root {
+  --color-fd-primary: #57FEC7;
+  --color-fd-primary-foreground: #041311;
+  --color-fd-ring: #57FEC7;
+  --sidebar-text-light: #1f2937;
+  --sidebar-active-text-light: hsl(160 84% 20%);
+  --sidebar-icon-bg: hsl(160 84% 96%);
+  --sidebar-icon-active-bg: hsl(160 84% 92%);
+}
+
+.dark {
+  --color-fd-primary: #57FEC7;
+  --color-fd-primary-foreground: #041311;
+  --color-fd-ring: #57FEC7;
+}
+
+/* Muted Globe Background Effect */
+body::before {
+  content: '';
+  position: fixed;
+  bottom: -60%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 100%,
+    rgba(87, 254, 199, 0.03) 0%,
+    rgba(87, 254, 199, 0.015) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark body::before {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 100%,
+    rgba(87, 254, 199, 0.06) 0%,
+    rgba(87, 254, 199, 0.025) 30%,
+    transparent 70%
+  );
+}
+
+/* Subtle grid pattern overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(87, 254, 199, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87, 254, 199, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.dark body::after {
+  background-image: 
+    linear-gradient(rgba(87, 254, 199, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87, 254, 199, 0.03) 1px, transparent 1px);
+  opacity: 0.4;
+}
+
+#nd-page > div:first-child {
+  font-family: var(--font-accent), var(--font-heading), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+#nd-page > div:first-child,
+#nd-page > div:first-child a,
+#nd-page > div:first-child span {
+  color: #57FEC7 !important;
+}
+
+#nd-page h1,
+#nd-page h2,
+#nd-page h3,
+#nd-page .prose h1,
+#nd-page .prose h2,
+#nd-page .prose h3 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+html:not(.dark) #nd-sidebar,
+html:not(.dark) #nd-sidebar-mobile {
+  --color-fd-muted-foreground: var(--sidebar-text-light);
+  color: var(--sidebar-text-light);
+}
+
+html:not(.dark) #nd-sidebar a,
+html:not(.dark) #nd-sidebar button,
+html:not(.dark) #nd-sidebar-mobile a,
+html:not(.dark) #nd-sidebar-mobile button {
+  color: var(--sidebar-text-light);
+  transition: color 120ms ease;
+}
+
+html:not(.dark) #nd-sidebar a:hover,
+html:not(.dark) #nd-sidebar button:hover,
+html:not(.dark) #nd-sidebar-mobile a:hover,
+html:not(.dark) #nd-sidebar-mobile button:hover {
+  color: var(--sidebar-active-text-light);
+}
+
+html:not(.dark) #nd-sidebar [data-active='true'],
+html:not(.dark) #nd-sidebar-mobile [data-active='true'] {
+  color: var(--sidebar-active-text-light);
+}
+
+html:not(.dark) #nd-sidebar a > svg:first-child:not([data-icon]),
+html:not(.dark) #nd-sidebar button > svg:first-child:not([data-icon]),
+html:not(.dark) #nd-sidebar-mobile a > svg:first-child:not([data-icon]),
+html:not(.dark) #nd-sidebar-mobile button > svg:first-child:not([data-icon]) {
+  width: 1rem;
+  height: 1rem;
+  padding: 0.35rem;
+  border-radius: 0.65rem;
+  background-color: var(--sidebar-icon-bg);
+  color: var(--sidebar-text-light);
+  flex-shrink: 0;
+}
+
+html:not(.dark) #nd-sidebar [data-active='true'] > svg:first-child:not([data-icon]),
+html:not(.dark) #nd-sidebar-mobile [data-active='true'] > svg:first-child:not([data-icon]) {
+  background-color: var(--sidebar-icon-active-bg);
+  color: var(--sidebar-active-text-light);
+}
+
+html:not(.dark) #nd-toc {
+  color: var(--sidebar-text-light);
+}
+
+html:not(.dark) #nd-toc a {
+  color: var(--sidebar-text-light);
+  transition: color 120ms ease;
+}
+
+html:not(.dark) #nd-toc [data-active='true'] {
+  color: var(--sidebar-active-text-light);
+}
+
+/* KaTeX Math Styling */
+.katex-display {
+  margin: 1.5rem 0 !important;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(87, 254, 199, 0.03) 0%, rgba(87, 254, 199, 0.01) 100%);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(87, 254, 199, 0.1);
+  overflow-x: auto;
+}
+
+.dark .katex-display {
+  background: linear-gradient(135deg, rgba(87, 254, 199, 0.06) 0%, rgba(87, 254, 199, 0.02) 100%);
+  border-color: rgba(87, 254, 199, 0.15);
+}
+
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-display > .katex {
+  font-size: 1.15em;
+}
+
+/* Inline math styling */
+.katex:not(.katex-display .katex) {
+  padding: 0.1em 0.25em;
+  background: rgba(87, 254, 199, 0.05);
+  border-radius: 0.25rem;
+}
+
+.dark .katex:not(.katex-display .katex) {
+  background: rgba(87, 254, 199, 0.08);
+}
+
+/* Better scrollbar for math overflow */
+.katex-display::-webkit-scrollbar {
+  height: 6px;
+}
+
+.katex-display::-webkit-scrollbar-track {
+  background: rgba(87, 254, 199, 0.05);
+  border-radius: 3px;
+}
+
+.katex-display::-webkit-scrollbar-thumb {
+  background: rgba(87, 254, 199, 0.2);
+  border-radius: 3px;
+}
+
+.katex-display::-webkit-scrollbar-thumb:hover {
+  background: rgba(87, 254, 199, 0.3);
+}

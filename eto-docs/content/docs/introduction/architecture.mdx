@@ -1,0 +1,110 @@
+---
+title: Overview
+description: ETO's architecture maintains tight price alignment with real-world assets through layered stability mechanisms, oracle-based pricing, and explicit safety controls.
+---
+
+# Architecture Overview
+
+ETO's architecture is designed to solve a specific problem: maintaining reliable on-chain prices that closely track real-world asset values while providing usable liquidity and explicit safety boundaries. The system achieves this through three integrated layers that respond to different market conditions, oracle-based pricing that aggregates multiple data sources, and token economics that keep supply and value transparent and verifiable.
+
+The architecture prioritizes predictability over complexity. Each mechanism has defined operating conditions, clear triggers for activation, and known limits on its authority. This makes system behavior understandable and allows users to reason about what will happen under various market scenarios.
+
+## The Core Challenge
+
+Traditional financial markets maintain price alignment through centralized intermediaries, custody relationships, and multi-day settlement processes. Bringing real-world asset exposure on-chain eliminates these intermediaries but creates a new challenge: how to keep the on-chain token price synchronized with external reference prices when those prices change continuously and the on-chain system has no direct authority over the underlying assets.
+
+ETO addresses this through a combination of oracle-based reference pricing, concentrated liquidity that makes arbitrage efficient, and reserve-backed stabilization that can absorb larger dislocations. The goal is not perfect alignment at every moment but rather tight tracking over relevant time horizons with explicit bounds on maximum deviation.
+
+## Three-Layer Stability System
+
+ETO employs a three-layer defense system where each layer handles progressively more severe price deviations. This layered approach concentrates capital and operational complexity where it delivers the most value while keeping the system efficient during normal conditions.
+
+## Dive Deeper
+
+- [Dynamic Market Maker](/docs/architecture/dynamic-market-maker) — Concentrated liquidity that recenters around the oracle price for tight spreads in normal conditions.
+- [Peg Stability Module](/docs/architecture/peg-stability-module) — Reserve-backed interventions when prices move outside the DMM band.
+- [Circuit Breakers](/docs/architecture/circuit-breakers) — Three-tier safety controls that throttle or halt operations during sustained deviations or oracle issues.
+- [Oracle Aggregation](/docs/architecture/oracle-aggregation) — How multiple feeds are combined, filtered, and rate-limited to produce reliable reference prices.
+- [Token Economics](/docs/architecture/reflective-price-index) — Fixed supply, reserve-backed value accrual, and composability choices that keep the index predictable.
+
+---
+title: Reflective Price Index
+description: Understanding the Reflective Price Index mechanism
+---
+
+# Reflective Price Index
+
+ETO's token supply is fixed at genesis and never inflates. All tokens are minted once into a protocol-controlled vault. Circulating supply changes only in response to net liquidity flows in or out of the protocol's controlled pools. When users deposit stablecoins to acquire index tokens, the vault releases tokens to pair with that incoming liquidity. When users redeem tokens for stablecoins, excess tokens return to the vault.
+
+This flow-based supply mechanism means circulating supply naturally tracks the amount of stablecoin capital backing the protocol. There is no minting authority that can inflate supply, and there is no burning mechanism that permanently destroys tokens. Instead, tokens move between active circulation and vault storage based purely on user demand for exposure.
+
+Value accrual happens through the protocol's net asset value rather than through token burns or buybacks. When the PSM captures spread during stabilization operations, that value flows into the protocol's reserve composition, improving the backing ratio. When trading fees are collected, they contribute to the same pool. Token holders benefit from this value accrual proportionally through the increasing net asset value of the protocol relative to circulating supply.
+
+## Integration and Composability
+
+ETO's index tokens are standard ERC-20 assets with no special transfer restrictions or complex redemption requirements. This means they integrate naturally with existing DeFi infrastructure. The tokens can serve as collateral in lending markets, be held in multi-signature wallets, participate in liquidity pools on other protocols, or be used in structured products and derivatives.
+
+The architecture deliberately avoids mechanisms that would break composability. There are no rebasing operations that automatically change user balances. There are no whitelists that restrict which addresses can hold tokens. There are no forced redemptions that could surprise downstream integrators. The stability mechanisms operate at the protocol level through liquidity pools and reserves, not at the token level through balance manipulation.
+
+This composability extends to the protocol's cross-chain design. While the core protocol operates on an Avalanche-powered subnet, the architecture includes cross-chain messaging infrastructure that allows tokens to exist as wrapped representations on other networks. Users can bridge tokens between chains through standard interfaces, and the protocol's stability mechanisms continue to operate regardless of which chain users are trading on.
+
+
+---
+title: Dynamic Market Maker
+description: How the Dynamic Market Maker works
+---
+
+# Dynamic Market Maker
+
+The Dynamic Market Maker serves as the primary liquidity layer during normal market conditions. Rather than spreading liquidity across a wide price range as traditional automated market makers do, the DMM concentrates capital in a narrow band around the current oracle-referenced price. This concentrated approach delivers approximately 200 times the capital efficiency of a full-range market maker, meaning the same liquidity depth can be maintained with significantly less capital.
+
+The DMM operates within a defined band, typically set at plus or minus 0.25 percent around the reference price during market hours and slightly wider during off-hours when underlying markets are closed. When the market price approaches the edges of this band, the DMM automatically recenters its liquidity range to track the new price level. This recentering happens frequently during volatile markets and rarely during stable periods, with the gas costs of recentering operations factored into the overall economic design.
+
+Users trading within the DMM's active range experience tight spreads and minimal price impact. The concentrated liquidity means that typical trade sizes can be executed with slippage measured in basis points rather than percentage points. This first layer handles the vast majority of normal trading activity without requiring intervention from deeper stability mechanisms.
+
+
+
+
+
+---
+title: Peg Stability Module
+description: Understanding the Peg Stability Module
+---
+
+# Peg Stability Module
+
+When market prices drift beyond the DMM's operating range, the Peg Stability Module activates as a second line of defense. The PSM holds reserves of both the index token and stablecoins, allowing it to trade against the market to apply corrective pressure. Unlike the DMM which provides passive liquidity, the PSM actively intervenes when deviation exceeds defined thresholds.
+
+The PSM's activation threshold is typically set at the outer edge of the DMM's band. If the on-chain market price trades at a premium to the oracle reference price beyond this threshold, the PSM can sell index tokens from its reserves to push the price down. If the market trades at a discount, the PSM can buy tokens to push the price up. These interventions are rate-limited and subject to utilization caps to prevent reserve depletion during sustained one-directional pressure.
+
+The PSM captures spread during these operations. When it intervenes, it trades at the oracle reference price plus or minus a small fee. This fee structure means the PSM tends to generate revenue during periods of elevated volatility, which helps maintain its reserve buffers over time. The captured spread does not go to any individual but rather accrues to the protocol's net asset value, benefiting all token holders proportionally.
+
+The PSM operates with explicit constraints on how much capital it can deploy per transaction, per hour, and per day. These constraints prevent the PSM from exhausting its reserves during extreme scenarios and ensure that its interventions remain economically rational. If market pressure persists beyond what the PSM can handle within its constraints, the system escalates to the third layer of protection.
+
+---
+title: Oracle Aggregation
+description: How ETO aggregates oracle data
+---
+
+# Oracle Aggregation
+
+The stability mechanisms described above all depend on accurate reference pricing. ETO aggregates price data from multiple independent oracle providers including Chainlink, Pyth, and similar services. Each data source reports prices independently, and the aggregator applies median filtering to exclude outliers before calculating the reference price used by the protocol.
+
+Oracle validation includes staleness detection, which rejects data older than a defined threshold, and deviation bounds that flag any individual feed reporting prices far from the consensus median. If sufficient feeds become unavailable or stale, the system treats this as a circuit breaker condition rather than attempting to proceed with incomplete data. This conservative approach to data quality prevents the protocol from making decisions based on potentially manipulated or failed oracle feeds.
+
+The oracle-derived reference price updates on a regular cadence, typically every 15 to 30 seconds during normal conditions. Updates include built-in rate limiting that caps how much the reference price can change in a single update, preventing sudden jumps from creating exploitable arbitrage opportunities. This price smoothing through rate-limited updates balances responsiveness to real market movements with protection against oracle manipulation or failure.
+
+---
+title: Circuit Breakers
+description: Safety mechanisms and circuit breakers
+---
+
+# Circuit Breakers
+
+Circuit breakers represent the final safeguard layer, activating under conditions that exceed both the DMM's normal operating range and the PSM's intervention capacity. These mechanisms monitor sustained deviations between on-chain prices and oracle references, oracle data staleness, and rapid liquidity changes. When predefined thresholds are exceeded, circuit breakers automatically throttle or halt specific protocol operations.
+
+The circuit breaker system operates in three tiers. Warning mode activates when deviation exceeds one percent for a sustained period, increasing monitoring intensity and sending alerts but making no operational changes. Throttle mode engages at two percent sustained deviation, reducing the magnitude of price updates and slowing recentering operations to prevent rapid system adjustments during uncertain conditions. Halt mode triggers at five percent sustained deviation or under severe oracle failures, temporarily pausing price updates and stabilization mechanisms entirely.
+
+During a halt, users can still exit positions but the protocol will not process new price updates or rebalancing operations until the triggering condition resolves. This prevents the protocol from making decisions based on potentially corrupted data. If a halt persists and the issue cannot be resolved through normal recovery procedures, the protocol includes emergency procedures to return user funds in stablecoins rather than leaving capital locked indefinitely.
+
+The three-tier design with explicit hysteresis prevents rapid oscillation between states. Activation thresholds differ from deactivation thresholds, ensuring the system does not rapidly toggle between warning and normal operation or between throttle and warning. This stability in state transitions makes circuit breaker behavior predictable and gives each state time to serve its intended purpose.
