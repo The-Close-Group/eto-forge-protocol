@@ -3,14 +3,29 @@ import { Callout } from './Callout';
 
 // Custom link component that handles internal docs links
 function DocsLink({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
-  // Convert /docs/ links to internal routes
-  if (href?.startsWith('/docs/')) {
+  // Handle relative links (no protocol or leading slash) - treat as docs internal links
+  const isRelative = href && !href.startsWith('/') && !href.startsWith('http') && !href.startsWith('#');
+  const isDocsInternal = href?.startsWith('/docs/');
+
+  if (isRelative || isDocsInternal) {
+    // Convert relative paths to absolute /docs/ paths
+    const path = isRelative ? `/docs/${href}` : href;
     return (
-      <Link to={href} className="text-emerald-400 hover:text-emerald-300 underline" {...props}>
+      <Link to={path!} className="text-emerald-400 hover:text-emerald-300 underline" {...props}>
         {children}
       </Link>
     );
   }
+
+  // Hash links (anchor links within the page)
+  if (href?.startsWith('#')) {
+    return (
+      <a href={href} className="text-emerald-400 hover:text-emerald-300 underline" {...props}>
+        {children}
+      </a>
+    );
+  }
+
   // External links
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 underline" {...props}>
