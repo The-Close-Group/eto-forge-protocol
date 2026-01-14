@@ -1,14 +1,17 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
 
+// Get the base path for assets - uses assetPrefix in production
+const basePath = process.env.NODE_ENV === 'production' ? '/docs' : '';
+
 export function baseOptions(): BaseLayoutProps {
   return {
-    githubUrl: 'https://github.com/fuma-nama/fumadocs',
+    githubUrl: 'https://github.com/eto-markets',
     links: [],
     nav: {
       title: (
         <Image
-          src="/eto-logo.svg"
+          src={`${basePath}/eto-logo.svg`}
           alt="ETO"
           width={131}
           height={62}
@@ -16,7 +19,7 @@ export function baseOptions(): BaseLayoutProps {
           priority
         />
       ),
-      url: '/docs',
+      url: `${basePath}/docs`,
       transparentMode: 'none',
     },
     searchToggle: {

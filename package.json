@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run build:docs",
+    "build:vite": "vite build",
+    "build:docs": "cd eto-docs && npm install && npm run build && cd .. && mkdir -p dist/docs && cp -r eto-docs/out/docs/* dist/docs/ && cp -r eto-docs/out/_next dist/docs/ && cp eto-docs/out/*.svg dist/docs/ 2>/dev/null; cp eto-docs/out/*.ico dist/docs/ 2>/dev/null; true",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
