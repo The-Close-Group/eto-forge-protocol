@@ -298,7 +298,7 @@ export default function Faucet() {
                       <Button
                         onClick={handleFaucet}
                         disabled={isLoading}
-                        variant="cta"
+                        variant="outline"
                         size="lg"
                         className="w-full h-14 text-[15px]"
                       >

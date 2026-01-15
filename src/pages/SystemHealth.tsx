@@ -615,7 +615,7 @@ export default function SystemHealth() {
                     </div>
                   </div>
 
-                  <Button variant="cta" className="w-full h-11">
+                  <Button variant="outline" className="w-full h-11">
                     View Explorer
                     <ExternalLink className="w-3.5 h-3.5 ml-1" />
                   </Button>

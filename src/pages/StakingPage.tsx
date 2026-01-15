@@ -336,7 +336,7 @@ export default function StakingPage() {
                       />
                     ) : (
               <Button
-                        variant="cta"
+                        variant="outline"
                         size="xl"
                 className="w-full"
                         onClick={handleDeposit}

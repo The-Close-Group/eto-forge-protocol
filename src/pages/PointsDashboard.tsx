@@ -220,7 +220,7 @@ export default function PointsDashboard() {
                   readOnly 
                   className="font-mono text-[12px]"
                 />
-                <Button variant="cta" onClick={handleCopyReferral}>
+                <Button variant="outline" onClick={handleCopyReferral}>
                   <Copy className="w-4 h-4 mr-1" />
                   Copy
                 </Button>
@@ -278,7 +278,7 @@ export default function PointsDashboard() {
               </div>
               
               <div className="flex items-center gap-2.5">
-                <Button variant="cta" className="h-10" onClick={() => setReferralDialogOpen(true)}>
+                <Button variant="outline" className="h-10" onClick={() => setReferralDialogOpen(true)}>
                   Get Referral Link
                   <Users className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
@@ -661,7 +661,7 @@ export default function PointsDashboard() {
                           <span className="text-[46px] font-medium tracking-tight leading-none tabular-nums">
                             {userPoints.total.toLocaleString()}
                           </span>
-                          <Button variant="cta" size="default" onClick={() => setReferralDialogOpen(true)}>
+                          <Button variant="outline" size="default" onClick={() => setReferralDialogOpen(true)}>
                             Invite
                           </Button>
                           <Button variant="outline" size="default" asChild>

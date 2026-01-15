@@ -355,7 +355,7 @@ export default function Dashboard() {
               <Button variant="outline" className="flex-1" onClick={() => setWalletAddressOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="cta" className="flex-1" onClick={handleWalletAddressSubmit}>
+              <Button variant="outline" className="flex-1" onClick={handleWalletAddressSubmit}>
                 View Portfolio
               </Button>
             </div>
@@ -474,7 +474,7 @@ export default function Dashboard() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setStakeDialogOpen(false)}>Cancel</Button>
-            <Button variant="cta" onClick={handleConfirmStake}>
+            <Button variant="outline" onClick={handleConfirmStake}>
               Confirm Stake
             </Button>
           </DialogFooter>
@@ -587,7 +587,7 @@ export default function Dashboard() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setCalculatorOpen(false)}>Close</Button>
-            <Button variant="cta" onClick={() => { setCalculatorOpen(false); handleStake(); }}>
+            <Button variant="outline" onClick={() => { setCalculatorOpen(false); handleStake(); }}>
               Stake Now
             </Button>
           </DialogFooter>

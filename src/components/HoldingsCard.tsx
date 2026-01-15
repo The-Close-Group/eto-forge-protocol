@@ -120,3 +120,4 @@ export function HoldingsCard({ holdings, className = '' }: HoldingsCardProps) {
 export default HoldingsCard;
 
 
+

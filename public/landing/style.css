@@ -216,7 +216,7 @@ body {
     font-family: 'Inter', sans-serif;
     font-size: 2rem;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 300;
     line-height: 2.1875rem;
     letter-spacing: -0.18rem;
 }
@@ -508,14 +508,16 @@ body {
     padding-top: 124px; /* 188px from top - 64px navbar */
     padding-left: 63px;
     margin-bottom: 0;
-    max-width: 660px;
+    max-width: 900px;
     position: relative;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .hero-title {
-    width: 54.4375rem;
-    height: 12.58138rem;
+    max-width: 54.4375rem;
     color: #FFF;
     text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     font-family: 'Inter', sans-serif;
@@ -525,11 +527,11 @@ body {
     line-height: 5.25rem;
     letter-spacing: -0.13313rem;
     margin-bottom: 20px;
+    text-align: left;
 }
 
 .hero-subtitle {
-    width: 51.3125rem;
-    height: 1.82431rem;
+    max-width: 51.3125rem;
     color: #FFF;
     font-family: 'Inter', sans-serif;
     font-size: 1.5rem;
@@ -538,6 +540,7 @@ body {
     line-height: normal;
     letter-spacing: -0.03rem;
     margin-bottom: 28px;
+    text-align: left;
 }
 
 .hero-subtitle sup {

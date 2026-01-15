@@ -313,7 +313,7 @@ export default function Profile() {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-2">
-                  <Button variant="cta" onClick={handleViewOnExplorer}>
+                  <Button variant="outline" onClick={handleViewOnExplorer}>
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View on Explorer
                   </Button>
@@ -516,7 +516,7 @@ export default function Profile() {
                   <div className="active-staking-card">
                     <div className="flex items-center justify-between mb-5">
                       <h3 className="text-[15px] font-medium">Staking Positions</h3>
-                      <Button variant="cta" size="sm" asChild>
+                      <Button variant="outline" size="sm" asChild>
                         <Link to="/staking">
                           <Zap className="w-4 h-4 mr-1" />
                           Stake More
@@ -563,7 +563,7 @@ export default function Profile() {
                         <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
                           Start staking to earn rewards on your assets
                         </p>
-                        <Button variant="cta" asChild>
+                        <Button variant="outline" asChild>
                           <Link to="/staking">
                             Start Staking
                             <ChevronRight className="w-4 h-4 ml-1" />
