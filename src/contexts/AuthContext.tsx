@@ -1,66 +1,47 @@
-
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-
-interface User {
-  id?: string;
-  email?: string | null;
-}
+import React, { createContext, useContext, useCallback } from 'react';
+import { useActiveAccount, useActiveWallet, useDisconnect } from 'thirdweb/react';
 
 interface AuthContextType {
-  user: User | null;
+  // Wallet address (primary identifier)
+  address: string | null;
+  // Whether user has connected wallet
   isAuthenticated: boolean;
-  signOut: () => void;
+  // Whether wallet is currently connecting
+  isConnecting: boolean;
+  // Disconnect wallet
+  disconnect: () => void;
+  // Shortened address for display (0x1234...5678)
+  shortAddress: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const account = useActiveAccount();
+  const wallet = useActiveWallet();
+  const { disconnect: thirdwebDisconnect } = useDisconnect();
 
-  useEffect(() => {
-    let isMounted = true;
+  const address = account?.address ?? null;
+  const isAuthenticated = !!address;
 
-    const init = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
+  // Format address for display
+  const shortAddress = address
+    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+    : null;
 
-      if (!isMounted) return;
-
-      const session = sessionData?.session ?? null;
-
-      if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email });
-      } else {
-        setUser(null);
-      }
-    };
-
-    init();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email });
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  const signOut = useCallback(() => {
-    supabase.auth.signOut().catch(() => {});
-    setUser(null);
-  }, []);
+  const disconnect = useCallback(() => {
+    if (wallet) {
+      thirdwebDisconnect(wallet);
+    }
+  }, [wallet, thirdwebDisconnect]);
 
   return (
     <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user?.id, // Auth is true only when a Supabase session exists
-      signOut
+      address,
+      isAuthenticated,
+      isConnecting: false, // Thirdweb handles this internally
+      disconnect,
+      shortAddress,
     }}>
       {children}
     </AuthContext.Provider>

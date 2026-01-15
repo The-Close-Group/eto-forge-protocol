@@ -62,7 +62,7 @@ interface APIKey {
 }
 
 export default function UserSettings() {
-  const { user } = useAuth();
+  const { address } = useAuth();
   const { logSecurityEvent } = useSecurity();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -93,20 +93,20 @@ export default function UserSettings() {
   });
 
   useEffect(() => {
-    if (user?.id) {
+    if (address) {
       loadUserProfile();
       loadAPIKeys();
     }
-  }, [user?.id]);
+  }, [address]);
 
   const loadUserProfile = async () => {
-    if (!user?.id) return;
+    if (!address) return;
 
     try {
       const { data } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', address!)
         .single();
 
       if (data) {
@@ -141,13 +141,13 @@ export default function UserSettings() {
   };
 
   const loadAPIKeys = async () => {
-    if (!user?.id) return;
+    if (!address) return;
 
     try {
       const { data } = await supabase
         .from('api_keys')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', address!)
         .order('created_at', { ascending: false });
 
       if (data) {
@@ -168,14 +168,14 @@ export default function UserSettings() {
   };
 
   const onProfileSubmit = async (data: ProfileFormData) => {
-    if (!user?.id) return;
+    if (!address) return;
 
     setIsLoading(true);
     try {
       await supabase
         .from('profiles')
         .upsert({
-          user_id: user.id,
+          user_id: address,
           display_name: data.displayName,
           bio: data.bio,
           company: data.company,
@@ -183,7 +183,7 @@ export default function UserSettings() {
           phone: data.phone
         });
 
-      await auditLogger.logSettingsChange(user.id, 'profile', { changes: data });
+      await auditLogger.logSettingsChange(address!, 'profile', { changes: data });
 
       toast({
         title: "Success",
@@ -204,7 +204,7 @@ export default function UserSettings() {
   };
 
   const onNotificationSubmit = async (data: NotificationFormData) => {
-    if (!user?.id) return;
+    if (!address) return;
 
     setIsLoading(true);
     try {
@@ -218,7 +218,7 @@ export default function UserSettings() {
         orderAlerts: data.orderAlerts
       });
 
-      await auditLogger.logSettingsChange(user.id, 'notifications', { preferences: data });
+      await auditLogger.logSettingsChange(address!, 'notifications', { preferences: data });
 
       toast({
         title: "Success",
@@ -237,7 +237,7 @@ export default function UserSettings() {
   };
 
   const generateAPIKey = async () => {
-    if (!user?.id) return;
+    if (!address) return;
 
     const keyName = prompt('Enter a name for this API key:');
     if (!keyName) return;
@@ -248,7 +248,7 @@ export default function UserSettings() {
       await supabase
         .from('api_keys')
         .insert({
-          user_id: user.id,
+          user_id: address,
           name: keyName,
           key_hash: keyHash,
           permissions: ['read'],
@@ -258,7 +258,7 @@ export default function UserSettings() {
       await auditLogger.log({
         action: 'api_key_created',
         resource: 'api_key',
-        userId: user.id,
+        userId: address!,
         details: { keyName },
         riskLevel: 'medium'
       });
@@ -280,7 +280,7 @@ export default function UserSettings() {
   };
 
   const revokeAPIKey = async (keyId: string) => {
-    if (!user?.id) return;
+    if (!address) return;
 
     try {
       await supabase
@@ -291,7 +291,7 @@ export default function UserSettings() {
       await auditLogger.log({
         action: 'api_key_revoked',
         resource: 'api_key',
-        userId: user.id,
+        userId: address!,
         details: { keyId },
         riskLevel: 'medium'
       });

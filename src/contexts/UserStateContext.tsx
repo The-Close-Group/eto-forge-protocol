@@ -17,7 +17,7 @@ interface UserStateContextType {
 const UserStateContext = createContext<UserStateContextType | undefined>(undefined);
 
 export function UserStateProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { address } = useAuth();
   const balanceHook = useUserBalances();
   
   // Check if user is new (no balances or all balances are zero)
