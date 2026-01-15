@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
+import {
   Search, Settings, Bell, Plus, Wallet,
-  Copy, Check, RefreshCw, FlaskConical, TrendingUp, ArrowRight
+  Copy, Check, RefreshCw, FlaskConical, TrendingUp, ArrowRight,
+  LogOut, User, ExternalLink
 } from "lucide-react";
 import { useActiveAccount } from "thirdweb/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import {
@@ -108,7 +110,8 @@ interface TopNavBarProps {
 export function TopNavBar({ onRefresh, onDeposit }: TopNavBarProps) {
   const navigate = useNavigate();
   const account = useActiveAccount();
-  
+  const { disconnect, shortAddress, isAuthenticated } = useAuth();
+
   const [addressCopied, setAddressCopied] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,11 +119,17 @@ export function TopNavBar({ onRefresh, onDeposit }: TopNavBarProps) {
   const [notifications] = useState<Array<{ id: number; title: string; message: string; time: string; read: boolean }>>([]);
 
   // Wallet address formatting
-  const displayAddress = account?.address || "0x44A5...50B3";
-  const shortAddress = displayAddress.length > 10 
+  const displayAddress = account?.address || "0x0000...0000";
+  const walletShortAddress = shortAddress || (displayAddress.length > 10
     ? `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`
-    : displayAddress;
+    : displayAddress);
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleDisconnect = () => {
+    disconnect();
+    toast.success("Wallet disconnected");
+    navigate('/');
+  };
 
   // Filter assets based on search query
   const filteredAssets = useMemo(() => {
@@ -280,19 +289,41 @@ export function TopNavBar({ onRefresh, onDeposit }: TopNavBarProps) {
                 <span className="text-[11px] font-medium text-foreground">ETO L1</span>
               </div>
 
-              {/* Wallet Address */}
-              <button 
-                onClick={handleCopyAddress}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group"
-              >
-                <Wallet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                <span className="text-[11px] font-mono text-foreground max-w-[80px] sm:max-w-none truncate">{shortAddress}</span>
-                {addressCopied ? (
-                  <Check className="w-3 h-3 text-primary flex-shrink-0" />
-                ) : (
-                  <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                )}
-              </button>
+              {/* Wallet Address Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 transition-all group">
+                    <Wallet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <span className="text-[11px] font-mono text-foreground max-w-[80px] sm:max-w-none truncate">{walletShortAddress}</span>
+                    {isAuthenticated && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuItem onClick={handleCopyAddress}>
+                    {addressCopied ? (
+                      <Check className="w-4 h-4 mr-2 text-primary" />
+                    ) : (
+                      <Copy className="w-4 h-4 mr-2" />
+                    )}
+                    Copy Address
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.open(`https://eto-explorer.ash.center/address/${displayAddress}`, '_blank')}>
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View on Explorer
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Disconnect
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Center Section - Search */}

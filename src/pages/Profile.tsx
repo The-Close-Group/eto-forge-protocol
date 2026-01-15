@@ -48,7 +48,7 @@ const getAddressColor = (address: string) => {
 export default function Profile() {
   const account = useActiveAccount();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { disconnect } = useAuth();
   const { positions, getTotalStaked, getTotalRewards } = useStakingContext();
   
   const [isVisible, setIsVisible] = useState(false);
@@ -699,11 +699,11 @@ export default function Profile() {
                   <CardTitle className="text-[14px] text-destructive">Disconnect</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    variant="destructive" 
-                    className="w-full" 
+                  <Button
+                    variant="destructive"
+                    className="w-full"
                     onClick={() => {
-                      signOut();
+                      disconnect();
                       toast.success("Wallet disconnected");
                       navigate('/');
                     }}

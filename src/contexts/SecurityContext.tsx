@@ -36,19 +36,19 @@ interface SecurityContextType {
 const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
 
 export function SecurityProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { address } = useAuth();
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const logSecurityEvent = useCallback(async (event: Omit<SecurityEvent, 'id' | 'userId' | 'timestamp'>) => {
-    if (!user?.id) return;
+    if (!address) return;
 
     try {
       const securityEvent: SecurityEvent = {
         ...event,
         id: generateUUID(),
-        userId: user.id,
+        userId: address!,
         timestamp: new Date(),
         ipAddress: await fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => 'unknown'),
         userAgent: navigator.userAgent
@@ -81,7 +81,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to log security event:', error);
     }
-  }, [user?.id]);
+  }, [address]);
 
   const acknowledgeAlert = useCallback(async (alertId: string) => {
     try {
@@ -108,7 +108,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   }, [securityEvents]);
 
   const refreshSecurityData = useCallback(async () => {
-    if (!user?.id) return;
+    if (!address) return;
 
     setIsLoading(true);
     try {
@@ -116,7 +116,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       const { data: events } = await supabase
         .from('security_events')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', address!)
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -139,7 +139,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       const { data: alerts } = await supabase
         .from('security_alerts')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', address!)
         .eq('acknowledged', false)
         .order('created_at', { ascending: false });
 
@@ -158,13 +158,13 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [address]);
 
   useEffect(() => {
-    if (user?.id) {
+    if (address) {
       refreshSecurityData();
     }
-  }, [user?.id, refreshSecurityData]);
+  }, [address, refreshSecurityData]);
 
   const value: SecurityContextType = {
     securityEvents,

@@ -69,7 +69,7 @@ const wallets = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const account = useActiveAccount();
-  const { signOut } = useAuth();
+  const { disconnect } = useAuth();
   
   // Staking context
   const { 
@@ -234,9 +234,10 @@ export default function Dashboard() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Signed out successfully");
+  const handleSignOut = () => {
+    disconnect();
+    toast.success("Wallet disconnected");
+    navigate('/');
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;

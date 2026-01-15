@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useDeFiPrices } from "@/hooks/useDeFiPrices";
+import { useDeFiPrices, usePriceHistory } from "@/hooks/useDeFiPrices";
 import { TopNavBar } from "@/components/layout/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDirectSwap } from "@/hooks/useDirectSwap";
@@ -164,7 +164,7 @@ export default function Execution() {
   const { assetId } = useParams<{ assetId: string }>();
   const navigate = useNavigate();
   const { setOpen } = useSidebar();
-  const { dmmPrice } = useDeFiPrices();
+  const { dmmPrice, oraclePrice } = useDeFiPrices();
   const { isAuthenticated } = useAuth();
 
   // Real contract hooks
@@ -191,6 +191,21 @@ export default function Execution() {
   const [showHelp, setShowHelp] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
   const [userBalances, setUserBalances] = useState<{ usdc: string; dri: string }>({ usdc: '0', dri: '0' });
+  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
+
+  // Real price history for charts - map timeRange to hook format
+  const priceHistoryRange = useMemo((): "1h" | "24h" | "7d" | "30d" => {
+    const rangeMap: Record<string, "1h" | "24h" | "7d" | "30d"> = {
+      '1D': '24h',
+      '1W': '7d',
+      '1M': '30d',
+      '3M': '30d',
+      '1Y': '30d',
+      'ALL': '30d'
+    };
+    return rangeMap[timeRange] || '24h';
+  }, [timeRange]);
+  const { data: priceHistoryData } = usePriceHistory(priceHistoryRange);
 
   const asset = assetConfigs[assetId || 'maang'] || assetConfigs.maang;
 
@@ -202,39 +217,101 @@ export default function Execution() {
     };
     fetchBalances();
   }, [getBalances, isProcessing]); // Refetch after trades
-  
-  // Calculate current price based on asset
+
+  // Calculate current price based on asset - use real DMM price
   const currentPrice = useMemo(() => {
     if (assetId === 'usdc') return 1.00;
     if (assetId === 'maang' || assetId === 'smaang') return dmmPrice || asset.basePrice;
     return asset.basePrice;
   }, [assetId, dmmPrice, asset.basePrice]);
 
+  // Calculate real price change from price history
   const priceChange = useMemo(() => {
     if (assetId === 'usdc') return { value: 0, percent: 0 };
-    const change = (Math.random() * 4 - 1).toFixed(4);
-    return { value: parseFloat(change) * 0.1, percent: parseFloat(change) };
-  }, [assetId]);
-
-  // Generate chart data based on time range
-  const chartData = useMemo(() => {
-    const days = timeRange === '1D' ? 1 : timeRange === '1W' ? 7 : timeRange === '1M' ? 30 : timeRange === '3M' ? 90 : timeRange === '1Y' ? 365 : 730;
-    return generatePriceData(days, currentPrice);
-  }, [timeRange, currentPrice]);
-
-  // Calculate receive amount based on pay amount
-  useEffect(() => {
-    if (payAmount && !isNaN(parseFloat(payAmount))) {
-      const pay = parseFloat(payAmount);
-      if (activeTab === 'buy') {
-        setReceiveAmount((pay / currentPrice).toFixed(6));
-      } else {
-        setReceiveAmount((pay * currentPrice).toFixed(2));
-      }
-    } else {
-      setReceiveAmount('');
+    if (!priceHistoryData || priceHistoryData.length < 2) {
+      return { value: 0, percent: 0 };
     }
-  }, [payAmount, currentPrice, activeTab]);
+
+    const oldPrice = priceHistoryData[0]?.dmmPrice || currentPrice;
+    const newPrice = currentPrice;
+    const change = newPrice - oldPrice;
+    const percentChange = oldPrice > 0 ? (change / oldPrice) * 100 : 0;
+
+    return {
+      value: change,
+      percent: percentChange
+    };
+  }, [assetId, priceHistoryData, currentPrice]);
+
+  // Use real price history for chart data
+  const chartData = useMemo(() => {
+    if (!priceHistoryData || priceHistoryData.length === 0) {
+      // Fallback to generated data if no history available
+      const days = timeRange === '1D' ? 1 : timeRange === '1W' ? 7 : timeRange === '1M' ? 30 : timeRange === '3M' ? 90 : timeRange === '1Y' ? 365 : 730;
+      return generatePriceData(days, currentPrice);
+    }
+
+    // Transform price history to chart format
+    return priceHistoryData.map(point => ({
+      time: new Date(point.timestamp).toLocaleString(),
+      timestamp: point.timestamp,
+      price: assetId === 'usdc' ? 1.00 : point.dmmPrice,
+    }));
+  }, [priceHistoryData, timeRange, currentPrice, assetId]);
+
+  // Fetch real quotes from contract when pay amount changes
+  useEffect(() => {
+    const fetchQuote = async () => {
+      if (!payAmount || isNaN(parseFloat(payAmount)) || parseFloat(payAmount) <= 0) {
+        setReceiveAmount('');
+        return;
+      }
+
+      // Only fetch real quotes for MAANG trades
+      if (assetId !== 'maang') {
+        // Fallback calculation for non-MAANG assets
+        const pay = parseFloat(payAmount);
+        if (activeTab === 'buy') {
+          setReceiveAmount((pay / currentPrice).toFixed(6));
+        } else {
+          setReceiveAmount((pay * currentPrice).toFixed(2));
+        }
+        return;
+      }
+
+      setIsLoadingQuote(true);
+      try {
+        if (activeTab === 'buy') {
+          // Buy MAANG with USDC - get quote
+          const quote = await getBuyQuote(payAmount);
+          if (quote) {
+            setReceiveAmount(quote.outputAmount);
+          }
+        } else {
+          // Sell MAANG for USDC - get quote
+          const quote = await getSellQuote(payAmount);
+          if (quote) {
+            setReceiveAmount(quote.outputAmount);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching quote:', error);
+        // Fallback to simple calculation
+        const pay = parseFloat(payAmount);
+        if (activeTab === 'buy') {
+          setReceiveAmount((pay / currentPrice).toFixed(6));
+        } else {
+          setReceiveAmount((pay * currentPrice).toFixed(2));
+        }
+      } finally {
+        setIsLoadingQuote(false);
+      }
+    };
+
+    // Debounce quote fetching
+    const timeoutId = setTimeout(fetchQuote, 300);
+    return () => clearTimeout(timeoutId);
+  }, [payAmount, currentPrice, activeTab, assetId, getBuyQuote, getSellQuote]);
 
   useEffect(() => {
     setOpen(false);
@@ -629,13 +706,20 @@ export default function Execution() {
                   <div>
                     <label className="text-[11px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2 block">You Receive</label>
                     <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border-subtle">
-                      <input
-                        type="text"
-                        placeholder="0.00"
-                        value={receiveAmount}
-                        readOnly
-                        className="bg-transparent text-xl sm:text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40"
-                      />
+                      {isLoadingQuote ? (
+                        <div className="flex items-center gap-2 w-full">
+                          <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-muted-foreground" />
+                          <span className="text-xl sm:text-2xl font-semibold text-muted-foreground/60">Fetching quote...</span>
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          placeholder="0.00"
+                          value={receiveAmount}
+                          readOnly
+                          className="bg-transparent text-xl sm:text-2xl font-semibold w-full outline-none placeholder:text-muted-foreground/40"
+                        />
+                      )}
                       <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-background border border-border-subtle flex-shrink-0">
                         <img 
                           src={activeTab === 'buy' ? asset.logo : 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040'} 
