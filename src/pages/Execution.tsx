@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +6,10 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useDeFiPrices } from "@/hooks/useDeFiPrices";
 import { TopNavBar } from "@/components/layout/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDirectSwap } from "@/hooks/useDirectSwap";
+import { useBalances } from "@/hooks/useBalances";
+import { CONTRACTS } from "@/config/contracts";
+import { toast } from "sonner";
 import { 
   ArrowLeft, 
   ArrowDown, 
@@ -35,9 +39,10 @@ import a16zLogo from "@/assets/a16z-logo.svg";
 import ycLogo from "@/assets/ycombinator-logo.svg";
 import sequoiaLogo from "@/assets/sequoia-logo.svg";
 import lightspeedLogo from "@/assets/lightspeed-logo.svg";
-import etoLogo from "/eto-logo.svg";
+// ETO logo from public folder
+const etoLogo = "/eto-logo.svg";
 
-// Asset configurations
+// Asset configurations with real contract addresses
 const assetConfigs: Record<string, {
   name: string;
   symbol: string;
@@ -48,6 +53,7 @@ const assetConfigs: Record<string, {
   underlyingAsset: string;
   underlyingTicker: string;
   basePrice: number;
+  tradeable: boolean; // Whether this asset can be traded via DMM
 }> = {
   maang: {
     name: 'MAANG',
@@ -55,10 +61,11 @@ const assetConfigs: Record<string, {
     logo: maangLogo,
     color: '#10b981',
     description: 'MAANG is the native utility token of the ETO Protocol, providing holders with governance rights, staking rewards, and access to premium features. The token powers the Dynamic Market Maker (DMM) and enables decentralized trading of tokenized assets.',
-    contractAddress: '0x2d1f...bdee',
+    contractAddress: CONTRACTS.MAANG_TOKEN,
     underlyingAsset: 'ETO Protocol Token',
     underlyingTicker: 'MAANG',
-    basePrice: 12.50,
+    basePrice: 328.00,
+    tradeable: true,
   },
   smaang: {
     name: 'Staked MAANG',
@@ -66,10 +73,11 @@ const assetConfigs: Record<string, {
     logo: maangLogo,
     color: '#8b5cf6',
     description: 'sMAANG represents staked MAANG tokens in the ETO Protocol. Holders earn continuous staking rewards while maintaining liquidity through the liquid staking derivative. sMAANG can be traded or used as collateral across DeFi protocols.',
-    contractAddress: '0x8f3a...c421',
+    contractAddress: CONTRACTS.SMAANG_VAULT,
     underlyingAsset: 'Staked MAANG Token',
     underlyingTicker: 'sMAANG',
-    basePrice: 13.25,
+    basePrice: 345.00,
+    tradeable: false, // Staking only
   },
   usdc: {
     name: 'USD Coin',
@@ -77,10 +85,11 @@ const assetConfigs: Record<string, {
     logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
     color: '#2775ca',
     description: 'USDC is a fully reserved stablecoin pegged 1:1 to the US dollar. It serves as the primary settlement currency on the ETO Protocol for trading and staking operations.',
-    contractAddress: '0x1c7d...9a12',
+    contractAddress: CONTRACTS.USDC,
     underlyingAsset: 'USD Coin',
     underlyingTicker: 'USDC',
     basePrice: 1.00,
+    tradeable: true,
   },
   ycombinator: {
     name: 'Y Combinator',
@@ -88,10 +97,11 @@ const assetConfigs: Record<string, {
     logo: ycLogo,
     color: '#E87136',
     description: 'The Y Combinator Index tracks the performance of top YC-backed companies that have tokenized their equity on the ETO Protocol. This thematic index provides exposure to high-growth startups across AI, fintech, and enterprise software sectors.',
-    contractAddress: '0x4a2b...7f31',
+    contractAddress: '0x0000000000000000000000000000000000000000', // Coming soon
     underlyingAsset: 'YC Portfolio Index',
     underlyingTicker: 'YC',
     basePrice: 156.80,
+    tradeable: false, // Coming soon
   },
   sequoia: {
     name: 'Sequoia Capital',
@@ -99,10 +109,11 @@ const assetConfigs: Record<string, {
     logo: sequoiaLogo,
     color: '#00713A',
     description: 'The Sequoia Index provides tokenized exposure to Sequoia Capital portfolio companies available on ETO. This prestigious fund tracks companies across consumer, enterprise, and crypto sectors.',
-    contractAddress: '0x6c3d...8e42',
+    contractAddress: '0x0000000000000000000000000000000000000000', // Coming soon
     underlyingAsset: 'Sequoia Portfolio Index',
     underlyingTicker: 'SEQ',
     basePrice: 234.50,
+    tradeable: false, // Coming soon
   },
   lightspeed: {
     name: 'Lightspeed',
@@ -110,10 +121,11 @@ const assetConfigs: Record<string, {
     logo: lightspeedLogo,
     color: '#DE7564',
     description: 'The Lightspeed Venture Partners Index tracks tokenized equity from LSVP portfolio companies on ETO. This fund focuses on consumer internet, enterprise technology, and cleantech sectors.',
-    contractAddress: '0x9d4e...2a53',
+    contractAddress: '0x0000000000000000000000000000000000000000', // Coming soon
     underlyingAsset: 'Lightspeed Portfolio Index',
     underlyingTicker: 'LSVP',
     basePrice: 89.25,
+    tradeable: false, // Coming soon
   },
   a16z: {
     name: 'a16z',
@@ -121,10 +133,11 @@ const assetConfigs: Record<string, {
     logo: a16zLogo,
     color: '#5E1D23',
     description: 'The Andreessen Horowitz Index offers exposure to a16z portfolio companies tokenized on ETO Protocol. This flagship fund tracks investments across crypto, bio, fintech, and enterprise software.',
-    contractAddress: '0x1f5a...6b64',
+    contractAddress: '0x0000000000000000000000000000000000000000', // Coming soon
     underlyingAsset: 'a16z Portfolio Index',
     underlyingTicker: 'A16Z',
     basePrice: 312.00,
+    tradeable: false, // Coming soon
   },
 };
 
@@ -153,7 +166,19 @@ export default function Execution() {
   const { setOpen } = useSidebar();
   const { dmmPrice } = useDeFiPrices();
   const { isAuthenticated } = useAuth();
-  
+
+  // Real contract hooks
+  const {
+    buyDRI,
+    sellDRI,
+    getBuyQuote,
+    getSellQuote,
+    getBalances,
+    isLoading: isSwapLoading,
+    isApproving
+  } = useDirectSwap();
+  const { blockchainBalances, getBlockchainBalance } = useBalances();
+
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL'>('1D');
@@ -165,8 +190,18 @@ export default function Execution() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [userBalances, setUserBalances] = useState<{ usdc: string; dri: string }>({ usdc: '0', dri: '0' });
 
   const asset = assetConfigs[assetId || 'maang'] || assetConfigs.maang;
+
+  // Fetch real user balances
+  useEffect(() => {
+    const fetchBalances = async () => {
+      const balances = await getBalances();
+      setUserBalances(balances);
+    };
+    fetchBalances();
+  }, [getBalances, isProcessing]); // Refetch after trades
   
   // Calculate current price based on asset
   const currentPrice = useMemo(() => {
@@ -253,24 +288,53 @@ export default function Execution() {
   };
 
   const confirmOrder = async () => {
+    // Check if asset is tradeable
+    if (!asset.tradeable) {
+      toast.error(`${asset.symbol} trading coming soon!`);
+      setShowConfirmation(false);
+      return;
+    }
+
+    // Only MAANG can be traded via DMM currently
+    if (assetId !== 'maang' && assetId !== 'usdc') {
+      toast.error(`Only MAANG trading is available. ${asset.symbol} coming soon!`);
+      setShowConfirmation(false);
+      return;
+    }
+
     setIsProcessing(true);
-    
-    // Simulate order processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsProcessing(false);
-    setShowConfirmation(false);
-    
-    // Navigate to order confirmation page
-    navigate('/transaction-complete', {
-      state: {
-        type: activeTab,
-        asset: asset.symbol,
-        payAmount: payAmount,
-        receiveAmount: receiveAmount,
-        price: currentPrice,
+
+    try {
+      let txHash: string | null = null;
+
+      if (activeTab === 'buy') {
+        // Buy MAANG with USDC
+        txHash = await buyDRI(payAmount);
+      } else {
+        // Sell MAANG for USDC
+        txHash = await sellDRI(payAmount);
       }
-    });
+
+      if (txHash) {
+        // Navigate to order confirmation page
+        navigate('/transaction-complete', {
+          state: {
+            type: activeTab,
+            asset: asset.symbol,
+            payAmount: payAmount,
+            receiveAmount: receiveAmount,
+            price: currentPrice,
+            txHash: txHash,
+          }
+        });
+      }
+    } catch (error: any) {
+      console.error('Trade error:', error);
+      toast.error(error.message || 'Trade failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+      setShowConfirmation(false);
+    }
   };
 
   const estimatedFee = useMemo(() => {
@@ -524,9 +588,12 @@ export default function Execution() {
                   <div>
                     <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                       <label className="text-[11px] sm:text-xs text-muted-foreground">You Pay</label>
-                      <button className="text-[10px] sm:text-xs text-primary hover:underline flex items-center gap-1">
+                      <button
+                        onClick={() => setPayAmount(activeTab === 'buy' ? userBalances.usdc : userBalances.dri)}
+                        className="text-[10px] sm:text-xs text-primary hover:underline flex items-center gap-1"
+                      >
                         <Wallet className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                        Balance: $0.00
+                        Balance: {activeTab === 'buy' ? `${userBalances.usdc} USDC` : `${userBalances.dri} MAANG`}
                       </button>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border-subtle focus-within:border-primary/50 transition-colors">
@@ -608,17 +675,22 @@ export default function Execution() {
                 </div>
 
                 {/* Action Button */}
-                <Button 
+                <Button
                   className={`w-full mt-4 sm:mt-5 h-10 sm:h-12 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base ${
-                    activeTab === 'buy' 
-                      ? 'bg-data-positive hover:bg-data-positive/90' 
+                    activeTab === 'buy'
+                      ? 'bg-data-positive hover:bg-data-positive/90'
                       : 'bg-data-negative hover:bg-data-negative/90'
                   }`}
                   size="lg"
                   onClick={handleExecuteOrder}
-                  disabled={isProcessing || !payAmount}
+                  disabled={isProcessing || isSwapLoading || isApproving || !payAmount || !asset.tradeable}
                 >
-                  {isProcessing ? (
+                  {isApproving ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 animate-spin" />
+                      Approving...
+                    </>
+                  ) : isProcessing || isSwapLoading ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 animate-spin" />
                       Processing...
@@ -627,6 +699,8 @@ export default function Execution() {
                     'Connect Wallet'
                   ) : !payAmount ? (
                     'Enter Amount'
+                  ) : !asset.tradeable ? (
+                    'Coming Soon'
                   ) : (
                     `${activeTab === 'buy' ? 'Buy' : 'Sell'} ${asset.symbol}`
                   )}
