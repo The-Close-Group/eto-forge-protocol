@@ -2,23 +2,28 @@
    CSS CUSTOM PROPERTIES - THEME SYSTEM
    ======================================== */
 :root {
-    /* Dark Theme (Default) */
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --bg-card: rgba(26, 26, 26, 0.7);
-    --bg-card-solid: #1a1a1a;
-    --bg-card-hover: rgba(26, 26, 26, 0.9);
+    /* Dark Theme (Default) - Trust & Sophistication Palette */
+    --bg-primary: #0C0C0C;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1a1a1a;
+    --bg-card: rgba(42, 42, 42, 0.7);
+    --bg-card-solid: #2a2a2a;
+    --bg-card-hover: rgba(42, 42, 42, 0.9);
     
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-tertiary: rgba(255, 255, 255, 0.5);
-    --text-muted: rgba(255, 255, 255, 0.4);
+    --text-primary: #F8F9EB;
+    --text-secondary: rgba(248, 249, 235, 0.7);
+    --text-tertiary: rgba(248, 249, 235, 0.5);
+    --text-muted: rgba(248, 249, 235, 0.4);
     
-    --accent-green: #57FEC7;
-    --accent-green-hover: #3de0ab;
-    --accent-green-bg: rgba(87, 254, 199, 0.2);
-    --accent-red: #ff4d4d;
+    --accent-green: #F8F9EB;
+    --accent-green-hover: #FFFFFF;
+    --accent-green-bg: rgba(248, 249, 235, 0.15);
+    --accent-chart-green: #52C793;
+    --accent-chart-green-dark: #013D21;
+    --accent-blue: #4A7FFF;
+    --accent-blue-dark: #021768;
+    --accent-gold: #D4AF37;
+    --accent-red: #8B2635;
     
     --border-primary: rgba(255, 255, 255, 0.1);
     --border-secondary: rgba(255, 255, 255, 0.2);
@@ -102,13 +107,24 @@ html {
 }
 
 body {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     overflow-x: hidden;
     position: relative;
     width: 100%;
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Data Font - Apply to all numbers, prices, tickers */
+.data-mono,
+[data-type="price"],
+[data-type="ticker"],
+[data-type="percentage"],
+[data-type="number"] {
+    font-family: 'JetBrains Mono', 'Space Mono', 'Roboto Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
 }
 
 /* ========================================
@@ -127,36 +143,33 @@ body {
     position: relative;
     overflow: hidden;
     width: 100%;
+    min-height: 100vh;
+    height: auto;
     box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: 100px;
+    background: #0C0C0C;
 }
 
-/* Fade transition at bottom of hero into next section */
+/* Fade transition at bottom of hero into next section - REMOVED for clean separation */
 .page-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 450px;
-    background: var(--gradient-fade);
-    pointer-events: none;
-    z-index: 5;
-    transition: background 0.3s ease;
+    display: none;
 }
 
 /* ========================================
    HERO GLOBE - HORIZON EFFECT
    ======================================== */
 .hero-globe-container {
+    display: none; /* Globe component removed */
     position: absolute;
-    bottom: -650px;
+    bottom: -850px;
     left: 50%;
     transform: translateX(-50%);
     width: 1400px;
     height: 1400px;
     z-index: 1;
     pointer-events: auto;
-    display: flex;
+    /* display: flex; */
     align-items: center;
     justify-content: center;
 }
@@ -175,108 +188,120 @@ body {
    NAVIGATION
    ======================================== */
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 6px 0 6px 64px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 20px 60px;
-    position: relative;
-    z-index: 100;
-    transition: background-color 0.3s ease;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    width: 28px;
-    height: 28px;
-}
-
-.logo-icon path {
-    fill: var(--logo-fill);
-    transition: fill 0.3s ease;
-}
-
-.logo-text {
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-    transition: color 0.3s ease;
-}
-
-/* Navbar Right Section */
-.navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* Theme Toggle Button */
-.theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--border-primary);
-    background: var(--bg-card);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    cursor: pointer;
+    align-items: flex-start;
     transition: all 0.3s ease;
 }
 
-.theme-toggle:hover {
-    border-color: var(--border-secondary);
-    transform: scale(1.05);
+/* Left side - Brand + Tickers */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-top: 20px;
 }
 
-.theme-toggle svg {
-    width: 18px;
-    height: 18px;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
+.brand-name {
+    width: 10.125rem;
+    height: 2rem;
+    color: #F8F9EB;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 2.1875rem;
+    letter-spacing: -0.18rem;
 }
 
-/* Sun icon visible in dark mode, moon in light mode */
-.theme-toggle .icon-sun {
-    display: block;
+.ticker-divider {
+    width: 1.4375rem;
+    height: 2rem;
+    color: #F8F9EB;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 2.1875rem;
+    letter-spacing: -0.18rem;
+    margin: 0 12px;
 }
 
-.theme-toggle .icon-moon {
-    display: none;
+.ticker-item {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 12px;
+    font-weight: 100; /* Thin */
+    color: white;
+    letter-spacing: -1.08px;
+    line-height: 35px;
 }
 
-[data-theme="light"] .theme-toggle .icon-sun {
-    display: none;
+.ticker-status {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 9px;
+    font-weight: 100; /* Thin */
+    color: white;
+    letter-spacing: -1.08px;
+    margin-left: 4px;
 }
 
-[data-theme="light"] .theme-toggle .icon-moon {
-    display: block;
+/* Navigation Pill - Right Side */
+.navbar-pill {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    height: 52px;
+    width: 467px;
+    padding: 0 10px 0 32px;
+    background: #202020;
+    border: 0.5px solid white;
+    border-radius: 133px;
+}
+
+.nav-link {
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 15px;
+    font-weight: 700; /* Bold */
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    letter-spacing: -0.3px;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .launch-btn {
-    background: var(--accent-green);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
+    font-family: 'JetBrains Mono', sans-serif;
+    background: rgba(255, 255, 255, 0.95);
+    color: #202020;
+    border: 0.5px solid #4D4D4D;
+    border-radius: 100px;
+    height: 33px;
+    width: 114px;
+    padding: 0;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-weight: 700; /* Bold */
+    letter-spacing: -0.22px;
+    line-height: normal;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
 }
 
 .launch-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(87, 254, 199, 0.4);
-    background: var(--accent-green-hover);
+    background: #FFFFFF;
 }
 
 /* ========================================
@@ -287,68 +312,332 @@ body {
     z-index: 10;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     padding-bottom: 150px;
+}
+
+/* ========================================
+   BINARY BACKGROUND
+   ======================================== */
+.binary-background {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1512px; /* Exact SVG canvas width */
+    height: 100%;
+    min-height: 100vh;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Binary Cluster Base Styles - Exact SVG positions (1512x900 canvas) */
+.binary-cluster {
+    position: absolute;
+    display: flex;
+    width: 5.8125rem;
+    height: 5.8125rem;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.03563rem;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.binary-cluster span {
+    display: block;
+}
+
+/* ========================================
+   CLUSTER POSITIONS - EXACT SVG COORDINATES
+   SVG Canvas: 1512px x 900px
+   Using exact x/y from SVG path data
+   ======================================== */
+
+/* Cluster A: x=1101, y=175, GREEN (#57FEC7) */
+.binary-cluster.cluster-a.green {
+    top: 175px;
+    left: 1101px;
+    color: #57FEC7;
+}
+
+/* Cluster B: x=1272, y=267, GREEN (#57FEC7) */
+.binary-cluster.cluster-b.green {
+    top: 267px;
+    left: 1272px;
+    color: #57FEC7;
+}
+
+/* Cluster 1: x=795, y=183, opacity 0.49 - white */
+.binary-cluster.cluster-1 {
+    top: 183px;
+    left: 795px;
+    color: #FFFFFF;
+    opacity: 0.49;
+}
+
+/* Cluster 2: x=888, y=279, opacity 0.22 - white */
+.binary-cluster.cluster-2 {
+    top: 279px;
+    left: 888px;
+    color: #FFFFFF;
+    opacity: 0.22;
+}
+
+/* Cluster 3: x=663, y=367, opacity 0.22 - white */
+.binary-cluster.cluster-3 {
+    top: 367px;
+    left: 663px;
+    color: #FFFFFF;
+    opacity: 0.22;
+}
+
+/* Cluster 4: x=1076, y=360, GREEN (#57FEC7) */
+.binary-cluster.cluster-4.green {
+    top: 360px;
+    left: 1076px;
+    color: #57FEC7;
+}
+
+/* Cluster 5: x=1272, y=360, GREEN (#57FEC7) */
+.binary-cluster.cluster-5.green {
+    top: 360px;
+    left: 1272px;
+    color: #57FEC7;
+}
+
+/* Cluster 6: x=1174, y=447, opacity 0.45 - white */
+.binary-cluster.cluster-6 {
+    top: 447px;
+    left: 1174px;
+    color: #FFFFFF;
+    opacity: 0.45;
+}
+
+/* Cluster 7: x=795, y=477, opacity 0.42 - white */
+.binary-cluster.cluster-7 {
+    top: 477px;
+    left: 795px;
+    color: #FFFFFF;
+    opacity: 0.42;
+}
+
+/* Cluster 8: x=1076, y=546, GREEN (#57FEC7) */
+.binary-cluster.cluster-8.green {
+    top: 546px;
+    left: 1076px;
+    color: #57FEC7;
+}
+
+/* Cluster 9: x=1263, y=545, GREEN (#57FEC7) */
+.binary-cluster.cluster-9.green {
+    top: 545px;
+    left: 1263px;
+    color: #57FEC7;
+}
+
+/* ========================================
+   BOTTOM BLOCKS - EXACT SVG COORDINATES
+   y=763 (relative to 900px height)
+   ======================================== */
+.binary-block {
+    position: absolute;
+    display: flex;
+    width: 5.8125rem;
+    height: 5.8125rem;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.03563rem;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.binary-block span {
+    display: block;
+}
+
+/* Bottom left primary: x=117, y=777, opacity 0.6 */
+.binary-block.bottom-left {
+    top: 777px;
+    left: 117px;
+    color: #FFFFFF;
+    opacity: 0.6;
+}
+
+/* Bottom left secondary: x=210, y=777, opacity 0.45 */
+.binary-block.bottom-left-2 {
+    top: 777px;
+    left: 210px;
+    color: #FFFFFF;
+    opacity: 0.45;
+}
+
+/* Bottom right primary: x=1386, y=777, opacity 0.6 */
+.binary-block.bottom-right {
+    top: 777px;
+    left: 1386px;
+    color: #FFFFFF;
+    opacity: 0.6;
+}
+
+/* Bottom right secondary: x=1293, y=777, opacity 0.45 */
+.binary-block.bottom-right-2 {
+    top: 777px;
+    left: 1293px;
+    color: #FFFFFF;
+    opacity: 0.45;
 }
 
 /* ========================================
    HERO SECTION
    ======================================== */
 .hero-section {
-    text-align: center;
-    padding-top: 60px;
-    margin-bottom: 40px;
+    text-align: left;
+    padding-top: 124px; /* 188px from top - 64px navbar */
+    padding-left: 63px;
+    margin-bottom: 0;
+    max-width: 900px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .hero-title {
-    font-size: 88px;
-    font-weight: 700;
-    line-height: 1.05;
-    margin-bottom: 28px;
-    color: var(--text-primary);
-    letter-spacing: -1.5px;
-    transition: color 0.3s ease;
+    max-width: 54.4375rem;
+    color: #FFF;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    font-family: 'Inter', sans-serif;
+    font-size: 4.4375rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 5.25rem;
+    letter-spacing: -0.13313rem;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
 .hero-subtitle {
-    font-size: 20px;
+    max-width: 51.3125rem;
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-style: normal;
     font-weight: 400;
-    margin-bottom: 38px;
-    color: rgba(255, 255, 255, 0.92);
-    letter-spacing: 0.2px;
+    line-height: normal;
+    letter-spacing: -0.03rem;
+    margin-bottom: 28px;
+    text-align: left;
 }
 
-.explore-btn {
+.hero-subtitle sup {
+    font-size: 11px;
+    vertical-align: super;
+    line-height: 0;
+}
+
+/* Start Trading Button - Pill with white fill - exact SVG coords */
+.start-trading-btn {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     background: white;
-    color: black;
+    color: #000;
     border: none;
     border-radius: 100px;
-    padding: 8px 8px 8px 24px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    height: 44.143px;
+    width: 180.585px;
+    padding: 0 3px 0 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.01875rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.explore-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+.start-trading-btn span {
+    flex: 1;
 }
 
-.btn-icon {
-    width: 36px;
-    height: 36px;
-    background: black;
+.start-trading-btn .btn-icon-circle {
+    width: 38px;
+    height: 38px;
+    background: #000000;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease;
+    color: #FFFFFF;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.start-trading-btn:hover {
+    background: #F0F0F0;
+}
+
+.start-trading-btn:hover .btn-icon-circle {
+    transform: rotate(45deg);
+}
+
+/* Legacy explore button */
+.explore-btn {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: #F8F9EB;
+    color: #202020;
+    border: none;
+    border-radius: 40px;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.explore-btn span {
+    padding-right: 12px;
+}
+
+.explore-btn .btn-icon {
+    width: 36px;
+    height: 36px;
+    background: #202020;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -16px -10px -16px 0;
+}
+
+.explore-btn:hover {
+    background: #FFFFFF;
+    transform: scale(1.02);
+}
+
+.explore-btn .btn-icon svg {
+    color: #F8F9EB;
 }
 
 .explore-btn:hover .btn-icon {
@@ -504,7 +793,7 @@ body {
     font-size: 22px;
     font-weight: 700;
     line-height: 1.25;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin: 0;
 }
 
@@ -549,50 +838,226 @@ body {
 }
 
 /* ========================================
-   PARTNER LOGOS - FULL WIDTH INFINITE SCROLL
+   MARKET DECK - HERO ASSET CARDS
    ======================================== */
+.market-deck {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 50px auto 0;
+    padding: 0 20px;
+}
+
+.asset-card {
+    background: #2a2a2a;
+    border: 1px solid rgba(248, 249, 235, 0.1);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    height: 85px;
+}
+
+.asset-card:hover {
+    border-color: rgba(248, 249, 235, 0.2);
+    transform: scale(1.01);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.asset-card[data-accent="green"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(82, 199, 147, 0.12);
+}
+
+.asset-card[data-accent="blue"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(74, 127, 255, 0.12);
+}
+
+.asset-card[data-accent="gold"]:hover {
+    border-color: rgba(248, 249, 235, 0.3);
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.12);
+}
+
+/* Logo Section - Left */
+.asset-logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.asset-logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(248, 249, 235, 0.05);
+}
+
+.asset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.asset-ticker {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #F8F9EB;
+    letter-spacing: 0;
+}
+
+.asset-name {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(248, 249, 235, 0.5);
+}
+
+/* Price Section - Middle */
+.asset-price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    justify-self: end;
+}
+
+.asset-price {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.01em;
+}
+
+.asset-change-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.asset-change {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.asset-change.positive {
+    color: #52C793;
+}
+
+.asset-change.negative {
+    color: #C75252;
+}
+
+/* Chart Section - Right */
+.asset-chart {
+    width: 150px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+.asset-sparkline {
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .market-deck {
+        gap: 10px;
+        margin-top: 40px;
+    }
+    
+    .asset-card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        padding: 18px 20px;
+        gap: 16px;
+    }
+    
+    .asset-logo-section {
+        grid-column: 1;
+    }
+    
+    .asset-price-section {
+        align-items: flex-start;
+        grid-column: 1;
+        grid-row: 2;
+    }
+    
+    .asset-chart {
+        grid-column: 1;
+        grid-row: 3;
+        width: 100%;
+        height: 60px;
+    }
+    
+    .asset-price {
+        font-size: 18px;
+    }
+    
+    .asset-change {
+        font-size: 12px;
+    }
+    
+    .asset-logo-img {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ========================================
+   PARTNER LOGOS - STANDALONE SECTION
+   ======================================== */
+.page-partners {
+    background: #202020;
+    padding: 80px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.partners-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+}
+
 .partners-section {
-    position: absolute;
-    bottom: 120px;
-    left: 0;
-    width: 100vw;
+    position: relative;
+    width: 100%;
+    max-width: 900px;
     height: 60px;
     overflow: hidden;
     z-index: 50;
     pointer-events: auto;
     background: transparent;
-    /* Smooth fade edges */
-    mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        white 5%,
-        white 95%,
-        transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        white 5%,
-        white 95%,
-        transparent 100%
-    );
 }
 
 .partners-track {
     display: flex;
     align-items: center;
-    gap: 100px;
-    animation: scrollLogos 30s linear infinite;
+    gap: 60px;
+    animation: scrollCarousel 20s linear infinite;
     width: max-content;
-    padding: 0 50px;
-    will-change: transform;
 }
 
 .partners-track:hover {
     animation-play-state: paused;
 }
 
-@keyframes scrollLogos {
+@keyframes scrollCarousel {
     0% {
         transform: translateX(0);
     }
@@ -604,59 +1069,56 @@ body {
 .partner-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    opacity: 0.85;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 8px;
+    opacity: 1;
+    transition: all 0.3s ease;
     cursor: pointer;
-    flex-shrink: 0;
-    filter: grayscale(0.2);
 }
 
 .partner-logo:hover {
     opacity: 1;
-    transform: translateY(-3px) scale(1.05);
-    filter: grayscale(0) brightness(1.1);
+    transform: translateY(-3px);
 }
 
 .partner-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
 }
 
 .partner-text {
-    color: white;
-    font-size: 16px;
+    color: #F8F9EB;
+    font-size: 15px;
     font-weight: 500;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .partner-img {
-    height: 32px;
+    height: 24px;
     width: auto;
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
 
 .partner-svg {
-    height: 32px;
+    height: 24px;
     width: auto;
     filter: none;
 }
 
 .partner-svg-wide {
-    height: 32px;
+    height: 24px;
     width: auto;
     filter: none;
 }
 
 .partner-img-dark {
     filter: none;
-    height: 28px;
+    height: 18px;
 }
 
 .suzaku-logo {
-    height: 36px;
+    height: 28px;
     filter: none;
 }
 
@@ -890,11 +1352,27 @@ body {
 
 @media (max-width: 768px) {
     .navbar {
-        padding: 16px 30px;
+        padding: 24px 30px;
+    }
+    
+    .navbar-pill .nav-link {
+        display: none;
+    }
+    
+    .navbar-pill {
+        gap: 0;
+        padding: 14px 20px;
+    }
+    
+    .launch-btn {
+        padding: 10px 18px;
+        font-size: 11px;
     }
     
     .hero-title {
         font-size: 48px;
+        line-height: 52px;
+        letter-spacing: -0.02em;
     }
     
     .hero-subtitle {
@@ -941,12 +1419,12 @@ body {
         height: 65px;
     }
     
+    .page-partners {
+        padding: 60px 30px;
+    }
+    
     .partners-section {
-        position: relative;
-        bottom: auto;
-        height: 40px;
-        margin-top: 40px;
-        max-width: 100%;
+        height: 45px;
     }
     
     .partners-track {
@@ -954,7 +1432,7 @@ body {
     }
     
     .hero-globe-container {
-        bottom: -800px;
+        bottom: -900px; /* Pushed down for mobile eclipse effect */
         width: 1200px;
         height: 1200px;
     }
@@ -1046,7 +1524,7 @@ body {
    PAGE 2: FEATURES SECTION
    ======================================== */
 .page-features {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1073,20 +1551,21 @@ body {
 
 .features-label {
     display: block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .features-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -1137,7 +1616,7 @@ body {
 }
 
 .grid-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 32px;
     position: relative;
@@ -1186,10 +1665,12 @@ body {
 }
 
 .grid-card-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 8px;
+    letter-spacing: -0.01em;
 }
 
 .grid-card-subtitle {
@@ -1326,7 +1807,7 @@ body {
 .yield-dollar {
     font-size: 80px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
     position: relative;
     z-index: 2;
@@ -1507,7 +1988,7 @@ body {
 
 .grid-card:hover .wallet-icon {
     transform: scale(1.08) translateY(-8px);
-    color: #57FEC7;
+    color: #F8F9EB;
     filter: drop-shadow(0 15px 40px rgba(87, 254, 199, 0.3));
 }
 
@@ -1581,7 +2062,7 @@ body {
 .yield-dollar {
     font-size: 80px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
     position: relative;
     z-index: 2;
@@ -1820,7 +2301,7 @@ body {
    PAGE 3: MAANG TOKEN SECTION
    ======================================== */
 .page-maang {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1842,44 +2323,47 @@ body {
     width: 100%;
 }
 
-/* ========================================
-   MAANG TOKEN CAROUSEL - PREMIUM DESIGN
-   ======================================== */
+/* Horizontal 3D Token Carousel - Centered 5 Tokens */
 .h-carousel-wrapper {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 0 40px 0;
     overflow: hidden;
-    padding: 60px 0;
+    padding: 40px 0;
     position: relative;
-    /* Premium fade effect */
-    mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        white 8%,
-        white 92%,
-        transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        white 8%,
-        white 92%,
-        transparent 100%
-    );
+}
+
+/* Fade edges */
+.h-carousel-wrapper::before,
+.h-carousel-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.h-carousel-wrapper::before {
+    left: 0;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.h-carousel-wrapper::after {
+    right: 0;
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
 }
 
 .h-carousel-track {
     display: flex;
-    gap: 60px;
-    animation: hCarouselScroll 20s linear infinite;
+    gap: 40px;
+    animation: hCarouselScroll 15s linear infinite;
     width: max-content;
-    padding: 30px 80px;
-    will-change: transform;
+    padding: 20px 40px;
 }
 
-.h-carousel-track:hover {
-    animation-play-state: paused;
-}
+/* Removed hover pause for seamless infinite loop */
 
 @keyframes hCarouselScroll {
     0% {
@@ -1892,9 +2376,9 @@ body {
 
 .h-token {
     flex-shrink: 0;
-    width: 160px;
-    height: 160px;
-    perspective: 800px;
+    width: 140px;
+    height: 140px;
+    perspective: 600px;
     cursor: pointer;
     /* Button reset */
     background: none;
@@ -1910,41 +2394,28 @@ body {
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
-    animation: tokenFloat 6s ease-in-out infinite;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: tokenTilt 4s ease-in-out infinite;
+    transition: transform 0.4s ease, filter 0.3s ease;
 }
-
-/* Staggered animation delays for organic feel */
-.h-token:nth-child(1) .h-token-3d { animation-delay: 0s; }
-.h-token:nth-child(2) .h-token-3d { animation-delay: 0.5s; }
-.h-token:nth-child(3) .h-token-3d { animation-delay: 1s; }
-.h-token:nth-child(4) .h-token-3d { animation-delay: 1.5s; }
-.h-token:nth-child(5) .h-token-3d { animation-delay: 2s; }
-.h-token:nth-child(6) .h-token-3d { animation-delay: 0.3s; }
-.h-token:nth-child(7) .h-token-3d { animation-delay: 0.8s; }
-.h-token:nth-child(8) .h-token-3d { animation-delay: 1.3s; }
-.h-token:nth-child(9) .h-token-3d { animation-delay: 1.8s; }
-.h-token:nth-child(10) .h-token-3d { animation-delay: 0.2s; }
 
 /* Non-hovered tokens dim when any token is hovered */
 .h-carousel-track:hover .h-token .h-token-3d {
-    filter: brightness(0.4) blur(1px);
-    transform: scale(0.95);
+    filter: brightness(0.5);
 }
 
-/* Hovered token highlights with dramatic effect */
+/* Hovered token highlights */
 .h-carousel-track:hover .h-token:hover .h-token-3d {
-    filter: brightness(1.2) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
-    transform: rotateY(0deg) rotateX(5deg) scale(1.2) translateY(-10px);
+    filter: brightness(1.1);
+    transform: rotateY(0deg) rotateX(5deg) scale(1.15);
     animation-play-state: paused;
 }
 
-@keyframes tokenFloat {
+@keyframes tokenTilt {
     0%, 100% {
-        transform: rotateY(-12deg) rotateX(6deg) translateY(0);
+        transform: rotateY(-15deg) rotateX(8deg);
     }
     50% {
-        transform: rotateY(12deg) rotateX(-4deg) translateY(-8px);
+        transform: rotateY(15deg) rotateX(-3deg);
     }
 }
 
@@ -1953,41 +2424,26 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    /* Premium silver metallic gradient */
-    background: 
-        radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
-        linear-gradient(160deg, 
-            #606060 0%, 
-            #505050 15%, 
-            #3a3a3a 30%, 
-            #2a2a2a 50%, 
-            #1f1f1f 70%, 
-            #252525 85%,
-            #303030 100%
-        );
+    background: linear-gradient(145deg, #505050 0%, #3a3a3a 20%, #252525 50%, #1a1a1a 80%, #151515 100%);
     box-shadow: 
-        inset -8px -8px 25px rgba(0, 0, 0, 0.9),
-        inset 8px 8px 20px rgba(150, 150, 150, 0.12),
-        inset 0 0 60px rgba(0, 0, 0, 0.4),
-        0 20px 50px rgba(0, 0, 0, 0.6),
-        0 10px 30px rgba(0, 0, 0, 0.4);
+        inset -6px -6px 20px rgba(0, 0, 0, 0.8),
+        inset 6px 6px 15px rgba(100, 100, 100, 0.15),
+        0 15px 35px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     backface-visibility: hidden;
-    transform: translateZ(12px);
-    border: 4px solid #555;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(10px);
+    border: 3px solid #4a4a4a;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .h-token:hover .h-token-front {
     box-shadow: 
-        inset -8px -8px 25px rgba(0, 0, 0, 0.9),
-        inset 8px 8px 20px rgba(150, 150, 150, 0.15),
-        inset 0 0 60px rgba(0, 0, 0, 0.3),
-        0 30px 70px rgba(0, 0, 0, 0.7),
-        0 0 50px rgba(87, 254, 199, 0.4),
-        0 0 100px rgba(87, 254, 199, 0.15);
+        inset -6px -6px 20px rgba(0, 0, 0, 0.8),
+        inset 6px 6px 15px rgba(100, 100, 100, 0.15),
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(87, 254, 199, 0.3);
     border-color: #57FEC7;
 }
 
@@ -2123,19 +2579,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -2154,10 +2610,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -2179,7 +2635,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -2204,17 +2660,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -2391,7 +2847,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -2400,16 +2856,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -2419,7 +2875,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -2609,7 +3065,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -2626,20 +3082,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -2877,7 +3333,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2895,10 +3351,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -2945,7 +3401,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2971,18 +3427,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -2999,7 +3455,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -3022,13 +3478,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -3147,7 +3603,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -3162,7 +3618,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -3173,7 +3629,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -3318,7 +3774,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -3377,7 +3833,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -3551,7 +4007,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -3569,16 +4025,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -3625,7 +4081,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -3793,19 +4249,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -3824,10 +4280,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -3849,7 +4305,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -3874,17 +4330,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -4061,7 +4517,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -4070,16 +4526,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -4089,7 +4545,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -4279,7 +4735,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -4296,20 +4752,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -4547,7 +5003,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4565,10 +5021,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -4615,7 +5071,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4641,18 +5097,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -4669,7 +5125,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -4692,13 +5148,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -4817,7 +5273,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -4832,7 +5288,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -4843,7 +5299,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -4988,7 +5444,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -5047,7 +5503,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -5221,7 +5677,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -5239,16 +5695,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -5295,7 +5751,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -5463,19 +5919,19 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     max-width: 850px;
     line-height: 1.2;
     text-align: left;
@@ -5494,10 +5950,10 @@ body {
 }
 
 .maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 32px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin-top: 48px;
     margin-bottom: 0;
     letter-spacing: -0.5px;
@@ -5519,7 +5975,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     position: relative;
 }
@@ -5544,17 +6000,17 @@ body {
     font-weight: 500;
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 12px;
 }
 
 .highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    color: #ffffff;
+    color: #F8F9EB;
 }
 
 /* Dual Display Cards Container */
@@ -5731,7 +6187,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -5740,16 +6196,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -5759,7 +6215,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -5949,7 +6405,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -5966,20 +6422,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -6217,7 +6673,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6235,10 +6691,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -6285,7 +6741,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6311,18 +6767,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -6339,7 +6795,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -6362,13 +6818,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -6487,7 +6943,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -6502,7 +6958,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -6513,7 +6969,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -6658,7 +7114,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -6717,7 +7173,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -6891,7 +7347,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -6909,16 +7365,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -6965,7 +7421,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -7630,7 +8086,7 @@ body {
     height: 36px;
     background: rgba(87, 254, 199, 0.2);
     border-radius: 50%;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .display-card-icon svg {
@@ -7639,16 +8095,16 @@ body {
 }
 
 .display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 20px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.02em;
 }
 
 /* Card Description */
 .display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
@@ -7658,437 +8114,7 @@ body {
 
 /* Card Date/Tag */
 .display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.5);
-    position: relative;
-    z-index: 1;
-}
-
-/* Responsive - Highlights Section */
-@media (max-width: 1200px) {
-    .display-cards-dual {
-        gap: 60px;
-    }
-    
-    .display-card {
-        width: 22rem;
-        height: 10rem;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(48px) translateY(40px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(48px) translateY(-10px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(96px) translateY(80px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(96px) translateY(30px);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: scaleX(-1) skewY(-8deg) translateX(48px) translateY(40px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: scaleX(-1) skewY(-8deg) translateX(96px) translateY(80px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: scaleX(-1) skewY(-8deg) translateX(48px) translateY(-10px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: scaleX(-1) skewY(-8deg) translateX(96px) translateY(30px);
-    }
-}
-
-@media (max-width: 900px) {
-    .display-cards-dual {
-        flex-direction: column;
-        gap: 100px;
-    }
-    
-    .display-cards-stack-right {
-        transform: none;
-    }
-    
-    .display-cards-stack-right .display-card {
-        transform: skewY(-8deg);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: skewY(-8deg) translateX(40px) translateY(40px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: skewY(-8deg) translateX(80px) translateY(80px);
-    }
-    
-    .display-cards-stack-right .display-card-1:hover {
-        transform: skewY(-8deg) translateY(-40px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: skewY(-8deg) translateX(40px) translateY(-10px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: skewY(-8deg) translateX(80px) translateY(30px);
-    }
-}
-
-@media (max-width: 768px) {
-    .page-highlights {
-        padding: 100px 30px;
-    }
-    
-    .highlights-title {
-        font-size: 32px;
-    }
-    
-    .display-card {
-        width: 18rem;
-        height: 9rem;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(32px) translateY(32px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(32px) translateY(-8px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(64px) translateY(64px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(64px) translateY(32px);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: skewY(-8deg) translateX(32px) translateY(32px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: skewY(-8deg) translateX(64px) translateY(64px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: skewY(-8deg) translateX(32px) translateY(-8px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: skewY(-8deg) translateX(64px) translateY(32px);
-    }
-}
-
-@media (max-width: 480px) {
-    .page-highlights {
-        padding: 60px 20px;
-    }
-    
-    .highlights-title {
-        font-size: 26px;
-    }
-    
-    .highlights-header {
-        margin-bottom: 60px;
-    }
-    
-    .display-cards-container {
-        min-height: 320px;
-    }
-    
-    .display-card {
-        width: 15rem;
-        height: 7rem;
-        padding: 12px 16px;
-    }
-    
-    .display-card::after {
-        width: 14rem;
-    }
-    
-    .display-card-description {
-        font-size: 14px;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(24px) translateY(28px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(24px) translateY(-8px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(48px) translateY(56px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(48px) translateY(28px);
-    }
-}
-
-/* ========================================
-   PAGE 6: TOKENIZATION AS A SERVICE
-   ======================================== */
-.page-highlights {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #0a0a0a;
-    padding: 150px 60px;
-    position: relative;
-}
-
-.highlights-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 1600px;
-    margin: 0 auto;
-}
-
-.highlights-header {
-    text-align: center;
-    margin-bottom: 80px;
-}
-
-.highlights-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    color: #57FEC7;
-    margin-bottom: 12px;
-}
-
-.highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-    color: #ffffff;
-}
-
-/* Dual Display Cards Container */
-.display-cards-dual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 120px;
-    width: 100%;
-    padding: 40px 0;
-}
-
-/* Display Cards Stack Container */
-.display-cards-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 450px;
-    padding: 40px 0;
-}
-
-.display-cards-stack {
-    display: grid;
-    grid-template-areas: "stack";
-    place-items: center;
-    opacity: 1;
-}
-
-/* Right stack - mirror the skew */
-.display-cards-stack-right {
-    transform: scaleX(-1);
-}
-
-.display-cards-stack-right .display-card {
-    transform: scaleX(-1) skewY(-8deg);
-}
-
-.display-cards-stack-right .display-card-2 {
-    transform: scaleX(-1) skewY(-8deg) translateX(60px) translateY(50px);
-}
-
-.display-cards-stack-right .display-card-3 {
-    transform: scaleX(-1) skewY(-8deg) translateX(120px) translateY(100px);
-}
-
-.display-cards-stack-right .display-card-1:hover {
-    transform: scaleX(-1) skewY(-8deg) translateY(-50px);
-}
-
-.display-cards-stack-right .display-card-2:hover {
-    transform: scaleX(-1) skewY(-8deg) translateX(60px) translateY(0px);
-}
-
-.display-cards-stack-right .display-card-3:hover {
-    transform: scaleX(-1) skewY(-8deg) translateX(120px) translateY(50px);
-}
-
-/* Individual Display Card - LARGER SIZE */
-.display-card {
-    grid-area: stack;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 26rem;
-    height: 11rem;
-    padding: 20px 24px;
-    background: rgba(26, 26, 26, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
-    transform: skewY(-8deg);
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Fade gradient on right side of cards */
-.display-card::after {
-    content: '';
-    position: absolute;
-    right: -4px;
-    top: -5%;
-    height: 110%;
-    width: 24rem;
-    background: linear-gradient(to left, #0a0a0a, transparent);
-    pointer-events: none;
-}
-
-/* Card 1 - Back (grayscale, inactive) */
-.display-card-1 {
-    filter: grayscale(100%);
-    z-index: 1;
-}
-
-.display-card-1::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: rgba(10, 10, 10, 0.5);
-    outline: 1px solid rgba(255, 255, 255, 0.1);
-    transition: opacity 0.5s ease;
-    z-index: 10;
-}
-
-.display-card-1:hover {
-    transform: skewY(-8deg) translateY(-50px);
-    filter: grayscale(0%);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-.display-card-1:hover::before {
-    opacity: 0;
-}
-
-/* Card 2 - Middle (grayscale, inactive) */
-.display-card-2 {
-    transform: skewY(-8deg) translateX(60px) translateY(50px);
-    filter: grayscale(100%);
-    z-index: 2;
-}
-
-.display-card-2::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: rgba(10, 10, 10, 0.5);
-    outline: 1px solid rgba(255, 255, 255, 0.1);
-    transition: opacity 0.5s ease;
-    z-index: 10;
-}
-
-.display-card-2:hover {
-    transform: skewY(-8deg) translateX(60px) translateY(0px);
-    filter: grayscale(0%);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-.display-card-2:hover::before {
-    opacity: 0;
-}
-
-/* Card 3 - Front (active, no grayscale) */
-.display-card-3 {
-    transform: skewY(-8deg) translateX(120px) translateY(100px);
-    z-index: 3;
-}
-
-.display-card-3:hover {
-    transform: skewY(-8deg) translateX(120px) translateY(50px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-/* Card Top Row (Icon + Title) */
-.display-card-top {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-}
-
-.display-card-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: rgba(87, 254, 199, 0.2);
-    border-radius: 50%;
-    color: #57FEC7;
-}
-
-.display-card-icon svg {
-    width: 18px;
-    height: 18px;
-}
-
-.display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: #57FEC7;
-    letter-spacing: -0.02em;
-}
-
-/* Card Description */
-.display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.9);
-    white-space: nowrap;
-    position: relative;
-    z-index: 1;
-}
-
-/* Card Date/Tag */
-.display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
     color: rgba(255, 255, 255, 0.5);
     position: relative;
@@ -8278,7 +8304,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 150px 60px;
     margin-top: 350px;
     position: relative;
@@ -8295,20 +8321,20 @@ body {
 }
 
 .taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 72px;
     font-weight: 800;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 40px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -8546,7 +8572,7 @@ body {
    ======================================== */
 
 .page-cta {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8564,10 +8590,10 @@ body {
 }
 
 .cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 64px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     letter-spacing: -1px;
     line-height: 1.1;
     margin: 0;
@@ -8614,7 +8640,7 @@ body {
    ======================================== */
 
 .page-engine {
-    background: #0a0a0a;
+    background: #202020;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8640,18 +8666,18 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #57FEC7;
+    color: #F8F9EB;
     text-transform: capitalize;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
 .engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #F8F9EB;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
 }
@@ -8668,7 +8694,7 @@ body {
 }
 
 .stake-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 28px;
     position: relative;
@@ -8691,13 +8717,13 @@ body {
 .stake-card-title {
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .stake-card-title.title-yield {
-    color: #57FEC7;
+    color: #F8F9EB;
     text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
 }
 
@@ -8816,7 +8842,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0;
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 16px;
     padding: 24px 32px;
 }
@@ -8831,7 +8857,7 @@ body {
 .step-num {
     font-size: 24px;
     font-weight: 700;
-    color: #57FEC7;
+    color: #F8F9EB;
     letter-spacing: -0.5px;
 }
 
@@ -8842,7 +8868,7 @@ body {
 .step-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #F8F9EB;
     margin-bottom: 2px;
 }
 
@@ -8987,7 +9013,7 @@ body {
 
 /* Staking Card Container */
 .staking-card {
-    background: #1a1a1a;
+    background: #2a2a2a;
     border-radius: 20px;
     padding: 60px;
     width: 100%;
@@ -9046,7 +9072,7 @@ body {
 }
 
 .staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
     color: #1a1a1a;
@@ -9220,7 +9246,7 @@ body {
     right: -20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #F8F9EB;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -9238,16 +9264,16 @@ body {
 
 /* Panel Typography */
 .panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: white;
+    color: #F8F9EB;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
 }
 
 .panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.5);
@@ -9294,1677 +9320,7 @@ body {
 }
 
 .benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 400;
-}
-
-.benefit-pill svg {
-    flex-shrink: 0;
-}
-
-/* Staking Visual Responsive */
-@media (max-width: 900px) {
-    .staking-visual {
-        flex-direction: column;
-        gap: 48px;
-        padding: 60px 0;
-    }
-    
-    .stake-arrow {
-        transform: rotate(90deg);
-        padding: 20px 0;
-    }
-    
-    .stake-panel {
-        max-width: 280px;
-    }
-    
-    .staking-benefits-row {
-        flex-wrap: wrap;
-        gap: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .staking-visual {
-        gap: 36px;
-        padding: 40px 0;
-    }
-    
-    .panel-token {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .token-stack-visual {
-        width: 180px;
-        height: 130px;
-    }
-    
-    .stack-coin {
-        width: 110px;
-        height: 110px;
-    }
-    
-    .earn-coin {
-        width: 110px;
-        height: 110px;
-    }
-    
-    .staking-token-large {
-        width: 110px;
-        height: 110px;
-    }
-    
-    .panel-title {
-        font-size: 22px;
-    }
-    
-    .panel-subtitle {
-        font-size: 13px;
-    }
-    
-    .staking-benefits-row {
-        flex-direction: column;
-        gap: 12px;
-    }
-}
-
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    opacity: 0.4;
-    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
-    background-size: 7px 7px;
-    animation: hDotsMove 3s linear infinite;
-    mask-image: radial-gradient(circle, black 50%, transparent 65%);
-    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
-}
-
-@keyframes hDotsMove {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 35px 35px;
-    }
-}
-
-.h-token-ring {
-    position: absolute;
-    width: 75%;
-    height: 75%;
-    border-radius: 50%;
-    border: 2px solid rgba(120, 120, 120, 0.4);
-    box-shadow: 
-        inset 0 0 20px rgba(0, 0, 0, 0.5),
-        0 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1;
-    transition: border-color 0.3s ease;
-}
-
-.h-token:hover .h-token-ring {
-    border-color: rgba(87, 254, 199, 0.5);
-}
-
-.h-token-logo {
-    width: 55px;
-    height: 55px;
-    position: relative;
-    z-index: 5;
-}
-
-.h-token-logo svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
-    transition: filter 0.3s ease;
-}
-
-.h-token:hover .h-token-logo svg {
-    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
-}
-
-.h-token-logo-full {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.h-token-logo-full svg {
-    width: 100%;
-    height: 100%;
-}
-
-.h-token-shine {
-    position: absolute;
-    top: 8%;
-    left: 12%;
-    width: 40%;
-    height: 30%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
-    border-radius: 50%;
-    transform: rotate(-30deg);
-    filter: blur(3px);
-    z-index: 3;
-}
-
-.maang-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #57FEC7;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-}
-
-.maang-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-    max-width: 850px;
-    line-height: 1.2;
-    text-align: left;
-}
-
-.maang-subtitle {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 32px;
-    max-width: 500px;
-    line-height: 1.5;
-}
-
-.maang-trade-btn {
-    margin-bottom: 48px;
-}
-
-.maang-tagline {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 32px;
-    font-weight: 500;
-    color: white;
-    margin-top: 48px;
-    margin-bottom: 0;
-    letter-spacing: -0.5px;
-    text-align: left;
-}
-
-.maang-btn {
-    opacity: 1;
-    animation: none;
-    margin-top: 32px;
-}
-
-/* ========================================
-   PAGE 5: PROTOCOL HIGHLIGHTS - DISPLAY CARDS
-   ======================================== */
-.page-highlights {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #0a0a0a;
-    padding: 150px 60px;
-    position: relative;
-}
-
-.highlights-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 1600px;
-    margin: 0 auto;
-}
-
-.highlights-header {
-    text-align: center;
-    margin-bottom: 80px;
-}
-
-.highlights-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    color: #57FEC7;
-    margin-bottom: 12px;
-}
-
-.highlights-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-    color: #ffffff;
-}
-
-/* Dual Display Cards Container */
-.display-cards-dual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 120px;
-    width: 100%;
-    padding: 40px 0;
-}
-
-/* Display Cards Stack Container */
-.display-cards-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 450px;
-    padding: 40px 0;
-}
-
-.display-cards-stack {
-    display: grid;
-    grid-template-areas: "stack";
-    place-items: center;
-    opacity: 1;
-}
-
-/* Right stack - mirror the skew */
-.display-cards-stack-right {
-    transform: scaleX(-1);
-}
-
-.display-cards-stack-right .display-card {
-    transform: scaleX(-1) skewY(-8deg);
-}
-
-.display-cards-stack-right .display-card-2 {
-    transform: scaleX(-1) skewY(-8deg) translateX(60px) translateY(50px);
-}
-
-.display-cards-stack-right .display-card-3 {
-    transform: scaleX(-1) skewY(-8deg) translateX(120px) translateY(100px);
-}
-
-.display-cards-stack-right .display-card-1:hover {
-    transform: scaleX(-1) skewY(-8deg) translateY(-50px);
-}
-
-.display-cards-stack-right .display-card-2:hover {
-    transform: scaleX(-1) skewY(-8deg) translateX(60px) translateY(0px);
-}
-
-.display-cards-stack-right .display-card-3:hover {
-    transform: scaleX(-1) skewY(-8deg) translateX(120px) translateY(50px);
-}
-
-/* Individual Display Card - LARGER SIZE */
-.display-card {
-    grid-area: stack;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 26rem;
-    height: 11rem;
-    padding: 20px 24px;
-    background: rgba(26, 26, 26, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
-    transform: skewY(-8deg);
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Fade gradient on right side of cards */
-.display-card::after {
-    content: '';
-    position: absolute;
-    right: -4px;
-    top: -5%;
-    height: 110%;
-    width: 24rem;
-    background: linear-gradient(to left, #0a0a0a, transparent);
-    pointer-events: none;
-}
-
-/* Card 1 - Back (grayscale, inactive) */
-.display-card-1 {
-    filter: grayscale(100%);
-    z-index: 1;
-}
-
-.display-card-1::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: rgba(10, 10, 10, 0.5);
-    outline: 1px solid rgba(255, 255, 255, 0.1);
-    transition: opacity 0.5s ease;
-    z-index: 10;
-}
-
-.display-card-1:hover {
-    transform: skewY(-8deg) translateY(-50px);
-    filter: grayscale(0%);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-.display-card-1:hover::before {
-    opacity: 0;
-}
-
-/* Card 2 - Middle (grayscale, inactive) */
-.display-card-2 {
-    transform: skewY(-8deg) translateX(60px) translateY(50px);
-    filter: grayscale(100%);
-    z-index: 2;
-}
-
-.display-card-2::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: rgba(10, 10, 10, 0.5);
-    outline: 1px solid rgba(255, 255, 255, 0.1);
-    transition: opacity 0.5s ease;
-    z-index: 10;
-}
-
-.display-card-2:hover {
-    transform: skewY(-8deg) translateX(60px) translateY(0px);
-    filter: grayscale(0%);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-.display-card-2:hover::before {
-    opacity: 0;
-}
-
-/* Card 3 - Front (active, no grayscale) */
-.display-card-3 {
-    transform: skewY(-8deg) translateX(120px) translateY(100px);
-    z-index: 3;
-}
-
-.display-card-3:hover {
-    transform: skewY(-8deg) translateX(120px) translateY(50px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(26, 26, 26, 0.9);
-}
-
-/* Card Top Row (Icon + Title) */
-.display-card-top {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-}
-
-.display-card-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: rgba(87, 254, 199, 0.2);
-    border-radius: 50%;
-    color: #57FEC7;
-}
-
-.display-card-icon svg {
-    width: 18px;
-    height: 18px;
-}
-
-.display-card-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: #57FEC7;
-    letter-spacing: -0.02em;
-}
-
-/* Card Description */
-.display-card-description {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.9);
-    white-space: nowrap;
-    position: relative;
-    z-index: 1;
-}
-
-/* Card Date/Tag */
-.display-card-date {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.5);
-    position: relative;
-    z-index: 1;
-}
-
-/* Responsive - Highlights Section */
-@media (max-width: 1200px) {
-    .display-cards-dual {
-        gap: 60px;
-    }
-    
-    .display-card {
-        width: 22rem;
-        height: 10rem;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(48px) translateY(40px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(48px) translateY(-10px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(96px) translateY(80px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(96px) translateY(30px);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: scaleX(-1) skewY(-8deg) translateX(48px) translateY(40px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: scaleX(-1) skewY(-8deg) translateX(96px) translateY(80px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: scaleX(-1) skewY(-8deg) translateX(48px) translateY(-10px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: scaleX(-1) skewY(-8deg) translateX(96px) translateY(30px);
-    }
-}
-
-@media (max-width: 900px) {
-    .display-cards-dual {
-        flex-direction: column;
-        gap: 100px;
-    }
-    
-    .display-cards-stack-right {
-        transform: none;
-    }
-    
-    .display-cards-stack-right .display-card {
-        transform: skewY(-8deg);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: skewY(-8deg) translateX(40px) translateY(40px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: skewY(-8deg) translateX(80px) translateY(80px);
-    }
-    
-    .display-cards-stack-right .display-card-1:hover {
-        transform: skewY(-8deg) translateY(-40px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: skewY(-8deg) translateX(40px) translateY(-10px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: skewY(-8deg) translateX(80px) translateY(30px);
-    }
-}
-
-@media (max-width: 768px) {
-    .page-highlights {
-        padding: 100px 30px;
-    }
-    
-    .highlights-title {
-        font-size: 32px;
-    }
-    
-    .display-card {
-        width: 18rem;
-        height: 9rem;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(32px) translateY(32px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(32px) translateY(-8px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(64px) translateY(64px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(64px) translateY(32px);
-    }
-    
-    .display-cards-stack-right .display-card-2 {
-        transform: skewY(-8deg) translateX(32px) translateY(32px);
-    }
-    
-    .display-cards-stack-right .display-card-3 {
-        transform: skewY(-8deg) translateX(64px) translateY(64px);
-    }
-    
-    .display-cards-stack-right .display-card-2:hover {
-        transform: skewY(-8deg) translateX(32px) translateY(-8px);
-    }
-    
-    .display-cards-stack-right .display-card-3:hover {
-        transform: skewY(-8deg) translateX(64px) translateY(32px);
-    }
-}
-
-@media (max-width: 480px) {
-    .page-highlights {
-        padding: 60px 20px;
-    }
-    
-    .highlights-title {
-        font-size: 26px;
-    }
-    
-    .highlights-header {
-        margin-bottom: 60px;
-    }
-    
-    .display-cards-container {
-        min-height: 320px;
-    }
-    
-    .display-card {
-        width: 15rem;
-        height: 7rem;
-        padding: 12px 16px;
-    }
-    
-    .display-card::after {
-        width: 14rem;
-    }
-    
-    .display-card-description {
-        font-size: 14px;
-    }
-    
-    .display-card-2 {
-        transform: skewY(-8deg) translateX(24px) translateY(28px);
-    }
-    
-    .display-card-2:hover {
-        transform: skewY(-8deg) translateX(24px) translateY(-8px);
-    }
-    
-    .display-card-3 {
-        transform: skewY(-8deg) translateX(48px) translateY(56px);
-    }
-    
-    .display-card-3:hover {
-        transform: skewY(-8deg) translateX(48px) translateY(28px);
-    }
-}
-
-/* ========================================
-   PAGE 6: TOKENIZATION AS A SERVICE
-   ======================================== */
-.page-taas {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #0a0a0a;
-    padding: 150px 60px;
-    margin-top: 350px;
-    position: relative;
-    gap: 60px;
-    overflow-x: hidden;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.taas-content {
-    text-align: center;
-    max-width: 900px;
-    flex-shrink: 0;
-}
-
-.taas-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: #57FEC7;
-    letter-spacing: 0.5px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-.taas-title {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 72px;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 40px;
-    letter-spacing: -2px;
-    line-height: 1.1;
-}
-
-.taas-btn {
-    opacity: 1;
-    animation: none;
-}
-
-/* Dual Carousel Container */
-.dual-carousel-container {
-    position: relative;
-    width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex-shrink: 0;
-}
-
-/* Full width carousels for TAAS page */
-.dual-carousel-container .h-carousel-wrapper {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    padding: 10px 0;
-}
-
-.dual-carousel-container .h-carousel-wrapper::before,
-.dual-carousel-container .h-carousel-wrapper::after {
-    width: 100px;
-    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
-}
-
-.dual-carousel-container .h-carousel-wrapper::after {
-    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
-}
-
-/* Track moving right (reverse direction) */
-.track-right {
-    animation: hCarouselScrollRight 18s linear infinite;
-}
-
-/* Track moving left (original direction) */
-.track-left {
-    animation: hCarouselScroll 18s linear infinite;
-}
-
-@keyframes hCarouselScrollRight {
-    0% {
-        transform: translateX(-50%);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-/* Responsive - TAAS Section */
-@media (max-width: 768px) {
-    .page-taas {
-        padding: 100px 30px;
-        margin-top: 200px;
-        gap: 50px;
-    }
-    
-    .taas-title {
-        font-size: 48px;
-        letter-spacing: -1px;
-    }
-    
-    .taas-subtitle {
-        font-size: 14px;
-    }
-    
-    .dual-carousel-container {
-        gap: 5px;
-    }
-    
-    .dual-carousel-container .h-carousel-wrapper::before,
-    .dual-carousel-container .h-carousel-wrapper::after {
-        width: 60px;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-taas {
-        padding: 60px 20px;
-        gap: 40px;
-    }
-    
-    .taas-title {
-        font-size: 36px;
-    }
-    
-    .dual-carousel-container {
-        gap: 5px;
-    }
-    
-    .dual-carousel-container .h-carousel-wrapper::before,
-    .dual-carousel-container .h-carousel-wrapper::after {
-        width: 40px;
-    }
-}
-
-/* Responsive - MAANG Section */
-@media (max-width: 768px) {
-    .page-maang {
-        padding: 100px 30px;
-        margin-top: 60px;
-    }
-    
-    .h-carousel-wrapper {
-        max-width: 600px;
-        padding: 30px 0;
-        margin-bottom: 30px;
-    }
-    
-    .h-carousel-wrapper::before,
-    .h-carousel-wrapper::after {
-        width: 50px;
-    }
-    
-    .h-carousel-track {
-        gap: 30px;
-    }
-    
-    .h-token {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .h-token-logo {
-        width: 42px;
-        height: 42px;
-    }
-    
-    .h-token-logo.h-token-logo-full {
-        width: 100%;
-        height: 100%;
-    }
-    
-    .h-token-front {
-        transform: translateZ(6px);
-    }
-    
-    .h-token-back {
-        transform: rotateY(180deg) translateZ(6px);
-    }
-    
-    .h-token-edge::before {
-        height: 12px;
-    }
-    
-    .maang-title {
-        font-size: 32px;
-    }
-    
-    .maang-label {
-        font-size: 13px;
-    }
-    
-    .maang-tagline {
-        font-size: 24px;
-    }
-    
-    .maang-available {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-maang {
-        padding: 60px 20px;
-    }
-    
-    .h-carousel-wrapper {
-        max-width: 100%;
-    }
-    
-    .h-carousel-wrapper::before,
-    .h-carousel-wrapper::after {
-        width: 30px;
-    }
-    
-    .h-carousel-track {
-        gap: 20px;
-    }
-    
-    .h-token {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .h-token-logo {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .h-token-logo.h-token-logo-full {
-        width: 100%;
-        height: 100%;
-    }
-    
-    .h-token-front {
-        transform: translateZ(5px);
-    }
-    
-    .h-token-back {
-        transform: rotateY(180deg) translateZ(5px);
-    }
-    
-    .h-token-edge::before {
-        height: 10px;
-    }
-    
-    .maang-title {
-        font-size: 26px;
-    }
-    
-    .maang-label {
-        font-size: 12px;
-    }
-    
-    .maang-tagline {
-        font-size: 20px;
-        margin-top: 32px;
-    }
-}
-
-/* ========================================
-   CTA SECTION
-   Five Giants. One Token. Call to Action
-   ======================================== */
-
-.page-cta {
-    background: #0a0a0a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 120px 40px;
-    min-height: 60vh;
-    position: relative;
-}
-
-.cta-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 40px;
-}
-
-.cta-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 64px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    margin: 0;
-}
-
-.cta-btn {
-    opacity: 1;
-    animation: none;
-}
-
-@media (max-width: 768px) {
-    .page-cta {
-        padding: 80px 30px;
-        min-height: 50vh;
-    }
-    
-    .cta-title {
-        font-size: 42px;
-    }
-    
-    .cta-content {
-        gap: 32px;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-cta {
-        padding: 60px 20px;
-        min-height: 40vh;
-    }
-    
-    .cta-title {
-        font-size: 32px;
-    }
-    
-    .cta-content {
-        gap: 24px;
-    }
-}
-
-/* ========================================
-   STAKING SECTION
-   Matches grid-card design language
-   ======================================== */
-
-.page-engine {
-    background: #0a0a0a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 150px 60px;
-    min-height: 100vh;
-    margin-top: 200px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.engine-content {
-    max-width: 1200px;
-    width: 100%;
-}
-
-.engine-header {
-    text-align: left;
-    margin-bottom: 60px;
-    padding-left: 0;
-}
-
-.engine-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #57FEC7;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-}
-
-.engine-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-    margin: 0;
-}
-
-/* ═══════════════════════════════════════
-   STAKE CARD GRID - 2 columns
-   ═══════════════════════════════════════ */
-
-.stake-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    margin-bottom: 60px;
-}
-
-.stake-card {
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 28px;
-    position: relative;
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.stake-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.stake-card-header {
-    margin-bottom: 30px;
-}
-
-.stake-card-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-}
-
-.stake-card-title.title-yield {
-    color: #57FEC7;
-    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
-}
-
-.stake-card-subtitle {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
-    line-height: 1.5;
-    max-width: 280px;
-}
-
-.stake-card-graphic {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.stake-card-arrow {
-    position: absolute;
-    bottom: 24px;
-    left: 24px;
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.stake-card-arrow:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-/* USDC Logo */
-.usdc-logo {
-    width: 160px;
-    height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-.usdc-logo svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
-}
-
-/* Stacked USDC Tokens */
-.usdc-stack {
-    position: relative;
-    width: 160px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-.usdc-stack-token {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-}
-
-.usdc-stack-token svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-}
-
-.usdc-stack-1 {
-    z-index: 3;
-    transform: translateY(0);
-}
-
-.usdc-stack-2 {
-    z-index: 2;
-    transform: translateY(-24px);
-    opacity: 0.85;
-}
-
-.usdc-stack-3 {
-    z-index: 1;
-    transform: translateY(-48px);
-    opacity: 0.7;
-}
-
-.stake-card:hover .usdc-stack-1 {
-    transform: translateY(8px);
-}
-
-.stake-card:hover .usdc-stack-2 {
-    transform: translateY(-28px);
-}
-
-.stake-card:hover .usdc-stack-3 {
-    transform: translateY(-56px);
-}
-
-
-/* ═══════════════════════════════════════
-   STEPS ROW
-   ═══════════════════════════════════════ */
-
-.stake-steps {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 24px 32px;
-}
-
-.stake-step {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 0 24px;
-}
-
-.step-num {
-    font-size: 24px;
-    font-weight: 700;
-    color: #57FEC7;
-    letter-spacing: -0.5px;
-}
-
-.step-content {
-    text-align: left;
-}
-
-.step-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 2px;
-}
-
-.step-desc {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.step-connector {
-    width: 40px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* ═══════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════ */
-
-@media (max-width: 900px) {
-    .stake-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .stake-card {
-        min-height: 320px;
-    }
-    
-    .usdc-sphere {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .usdc-symbol {
-        font-size: 56px;
-    }
-    
-    .usdc-stack {
-        width: 140px;
-        height: 160px;
-    }
-    
-    .usdc-stack-token {
-        width: 90px;
-        height: 90px;
-    }
-}
-
-@media (max-width: 768px) {
-    .page-engine {
-        padding: 100px 24px;
-        min-height: auto;
-    }
-    
-    .engine-title {
-        font-size: 32px;
-        font-weight: 500;
-        letter-spacing: -0.3px;
-    }
-    
-    .engine-label {
-        font-size: 13px;
-    }
-    
-    .engine-header {
-        margin-bottom: 40px;
-    }
-    
-    .stake-card-title {
-        font-size: 28px;
-    }
-    
-    .stake-card-subtitle {
-        font-size: 13px;
-    }
-    
-    .stake-steps {
-        flex-direction: column;
-        gap: 20px;
-        padding: 24px;
-    }
-    
-    .stake-step {
-        width: 100%;
-        padding: 0;
-    }
-    
-    .step-connector {
-        width: 1px;
-        height: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .stake-card {
-        padding: 20px;
-        min-height: 280px;
-    }
-    
-    .stake-card-title {
-        font-size: 24px;
-    }
-    
-    .usdc-sphere {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .usdc-symbol {
-        font-size: 48px;
-    }
-    
-    .step-num {
-        font-size: 20px;
-    }
-    
-    .step-title {
-        font-size: 14px;
-    }
-    
-    .step-desc {
-        font-size: 12px;
-    }
-}
-
-
-/* ═══════════════════════════════════════
-   STAKING FLOW VISUAL
-   ═══════════════════════════════════════ */
-
-.staking-label {
-    color: #57FEC7 !important;
-}
-
-/* Staking Card Wrapper */
-.staking-card-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-
-/* Staking Card Container */
-.staking-card {
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 60px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.staking-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* Arrow Button */
-.staking-card-arrow {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 56px;
-    height: 56px;
-    background: #ffffff;
-    border-radius: 0 14px 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.staking-card-arrow svg {
-    transition: transform 0.3s ease;
-}
-
-.staking-card-arrow svg path {
-    stroke: #1a1a1a;
-}
-
-.staking-card:hover .staking-card-arrow {
-    background: #f0f0f0;
-}
-
-.staking-card:hover .staking-card-arrow svg {
-    transform: translate(2px, 2px);
-}
-
-/* Staking Sub-box */
-.staking-subbox {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 24px 48px;
-    margin-left: 40px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-}
-
-.staking-subbox p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #1a1a1a;
-    margin: 0;
-    line-height: 1.4;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-}
-
-@media (max-width: 900px) {
-    .staking-subbox {
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px 24px;
-        margin-left: 0;
-    }
-    
-    .staking-subbox p {
-        font-size: 14px;
-    }
-}
-
-/* Two-Panel Staking Visual */
-.staking-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 80px;
-    padding: 40px 0;
-    width: 100%;
-}
-
-.stake-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    flex: 0 0 auto;
-    max-width: 320px;
-}
-
-.panel-token {
-    position: relative;
-    width: 280px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Flipped panel layout - text above tokens */
-.stake-panel-flipped {
-    flex-direction: column;
-}
-
-.stake-panel-flipped .panel-title {
-    margin-bottom: 8px;
-}
-
-.stake-panel-flipped .panel-subtitle {
-    margin-bottom: 24px;
-}
-
-.stake-panel-flipped .panel-token {
-    margin-bottom: 0;
-    margin-top: 0;
-}
-
-/* Stacked Token Visual */
-.token-stack-visual {
-    position: relative;
-    width: 280px;
-    height: 180px;
-    z-index: 1;
-}
-
-.stack-coin {
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.stack-usdc-coin {
-    left: 0;
-    top: 10px;
-    z-index: 1;
-}
-
-.stack-maang-coin {
-    right: 0;
-    top: 10px;
-    z-index: 2;
-}
-
-.stake-panel:hover .stack-usdc-coin {
-    transform: translateX(-8px) translateY(-4px);
-}
-
-.stake-panel:hover .stack-maang-coin {
-    transform: translateX(8px) translateY(-4px);
-}
-
-/* Staking Token 3D Style (matching carousel) */
-.staking-token-3d {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.4s ease;
-}
-
-.staking-token-front {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.3),
-        inset 0 2px 4px rgba(255, 255, 255, 0.3),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.staking-token-front svg {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-}
-
-.staking-token-edge {
-    position: absolute;
-    bottom: -4px;
-    left: 4px;
-    right: 4px;
-    height: 8px;
-    background: linear-gradient(to bottom, #bbb 0%, #999 100%);
-    border-radius: 0 0 50% 50% / 0 0 100% 100%;
-    z-index: -1;
-}
-
-.staking-token-large {
-    width: 160px;
-    height: 160px;
-}
-
-.stake-panel:hover .staking-token-3d {
-    transform: translateY(-4px);
-}
-
-/* Earn Token Visual */
-.earn-coin {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    z-index: 1;
-    transition: all 0.4s ease;
-}
-
-.stake-panel:hover .earn-coin {
-    transform: translateY(-4px);
-}
-
-/* APY Badge */
-.apy-badge {
-    position: absolute;
-    bottom: 0;
-    right: -20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 20px;
-    z-index: 2;
-    backdrop-filter: blur(8px);
-    transition: all 0.3s ease;
-}
-
-.stake-panel:hover .apy-badge {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Panel Typography */
-.panel-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 24px;
-    font-weight: 500;
-    color: white;
-    margin: 0 0 12px 0;
-    letter-spacing: -0.02em;
-}
-
-.panel-subtitle {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.5);
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Dashed Arrow */
-.stake-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 24px;
-    transition: all 0.3s ease;
-}
-
-.stake-arrow svg {
-    width: 140px;
-    height: 24px;
-}
-
-/* Benefits Row */
-.staking-benefits-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    padding-top: 20px;
-    margin-top: 20px;
-}
-
-.benefit-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 100px;
-    transition: all 0.3s ease;
-}
-
-.benefit-pill:hover {
-    background: rgba(87, 254, 199, 0.08);
-}
-
-.benefit-pill span {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
@@ -11506,631 +9862,199 @@ body {
         gap: 8px;
     }
 }
-
 /* ========================================
-   LIGHT MODE OVERRIDES
-   ======================================== */
-[data-theme="light"] body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-/* Navbar Light Mode */
-[data-theme="light"] .navbar {
-    background: var(--navbar-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-primary);
-}
-
-[data-theme="light"] .logo-text {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .launch-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .launch-btn:hover {
-    background: var(--btn-hover-bg);
-    box-shadow: var(--shadow-button);
-}
-
-/* Hero Section Light Mode */
-[data-theme="light"] .hero-title,
-[data-theme="light"] .hero-subtitle {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .hero-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .page-hero::after {
-    background: var(--gradient-fade);
-}
-
-/* Feature Cards Light Mode */
-[data-theme="light"] .feature-card {
-    background: var(--bg-card);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .feature-card:hover {
-    background: var(--bg-card-hover);
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .card-title,
-[data-theme="light"] .card-subtitle {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .card-subtitle {
-    color: var(--text-secondary);
-}
-
-/* Explore Button Light Mode */
-[data-theme="light"] .explore-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .explore-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-[data-theme="light"] .explore-btn .btn-icon {
-    background: var(--accent-green);
-}
-
-[data-theme="light"] .explore-btn .btn-icon svg path {
-    stroke: var(--btn-bg);
-}
-
-/* Partners Section Light Mode */
-[data-theme="light"] .partners-section {
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .partner-svg-wide,
-[data-theme="light"] .partner-svg path {
-    fill: var(--text-primary);
-}
-
-/* Page Backgrounds Light Mode */
-[data-theme="light"] .page-maang,
-[data-theme="light"] .page-features,
-[data-theme="light"] .page-engine,
-[data-theme="light"] .page-highlights,
-[data-theme="light"] .page-taas,
-[data-theme="light"] .page-how,
-[data-theme="light"] .page-cta {
-    background: var(--bg-primary);
-}
-
-/* MAANG Section Light Mode */
-[data-theme="light"] .maang-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .maang-title,
-[data-theme="light"] .maang-subtitle,
-[data-theme="light"] .maang-tagline {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .maang-subtitle {
-    color: var(--text-secondary);
-}
-
-/* Token Carousel Light Mode */
-[data-theme="light"] .token-3d .token-front {
-    background: var(--bg-secondary);
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .token-3d .token-edge {
-    background: var(--bg-tertiary);
-}
-
-[data-theme="light"] .token-3d svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .token-3d svg path {
-    fill: var(--text-primary);
-}
-
-/* Features Section Light Mode */
-[data-theme="light"] .features-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .features-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .grid-card {
-    background: var(--bg-card-solid);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .grid-card:hover {
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .grid-card-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .grid-card-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .grid-card-arrow {
-    background: var(--btn-bg);
-}
-
-[data-theme="light"] .grid-card-arrow svg path {
-    stroke: var(--btn-text);
-}
-
-[data-theme="light"] .grid-card-subbox {
-    background: var(--subbox-bg);
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .grid-card-subbox p {
-    color: var(--subbox-text);
-}
-
-/* Staking Section Light Mode */
-[data-theme="light"] .engine-label,
-[data-theme="light"] .staking-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .engine-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .staking-card-wrapper .staking-card {
-    background: var(--bg-card-solid);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .staking-card:hover {
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .panel-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .panel-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .staking-token-front {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .staking-token-front svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .staking-token-front svg path {
-    fill: var(--text-primary);
-}
-
-[data-theme="light"] .staking-token-edge {
-    background: var(--bg-tertiary);
-}
-
-[data-theme="light"] .stake-arrow svg path {
-    stroke: var(--text-tertiary);
-}
-
-[data-theme="light"] .apy-badge {
-    background: var(--accent-green-bg);
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .staking-card-arrow {
-    background: var(--btn-bg);
-}
-
-[data-theme="light"] .staking-card-arrow svg path {
-    stroke: var(--btn-text);
-}
-
-[data-theme="light"] .staking-card-subbox,
-[data-theme="light"] .staking-subbox {
-    background: var(--subbox-bg);
-}
-
-[data-theme="light"] .staking-card-subbox span,
-[data-theme="light"] .staking-card-subbox p,
-[data-theme="light"] .staking-subbox p {
-    color: var(--subbox-text);
-}
-
-/* Display Cards Light Mode */
-[data-theme="light"] .highlights-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .highlights-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .display-card {
-    background: var(--bg-card);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .display-card:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-secondary);
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .display-card::after {
-    background: var(--gradient-card-right);
-}
-
-[data-theme="light"] .display-card-1::before,
-[data-theme="light"] .display-card-2::before {
-    background: var(--overlay-bg);
-}
-
-[data-theme="light"] .display-card-icon {
-    background: var(--accent-green-bg);
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .display-card-title {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .display-card-description {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .display-card-date {
-    color: var(--text-tertiary);
-}
-
-/* TAAS Section Light Mode */
-[data-theme="light"] .taas-subtitle {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .taas-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .taas-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .taas-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-[data-theme="light"] .h-token-front {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .h-token-front svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .h-token-front svg path {
-    fill: var(--text-primary);
-}
-
-[data-theme="light"] .h-token-edge {
-    background: var(--bg-tertiary);
-}
-
-/* How It Works Light Mode */
-[data-theme="light"] .how-subtitle {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .how-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .step-number {
-    color: var(--accent-green);
-    border-color: var(--accent-green);
-}
-
-[data-theme="light"] .step-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .step-description {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .step-arrow svg {
-    color: var(--text-tertiary);
-}
-
-/* CTA Section Light Mode */
-[data-theme="light"] .cta-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .cta-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .cta-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .cta-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-/* Footer Light Mode */
-[data-theme="light"] .footer {
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-primary);
-}
-
-[data-theme="light"] .footer-text,
-[data-theme="light"] .footer-link {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .footer-link:hover {
-    color: var(--text-primary);
-}
-
-/* Benefit Pills Light Mode */
-[data-theme="light"] .benefit-pill {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .benefit-pill:hover {
-    background: var(--accent-green-bg);
-}
-
-[data-theme="light"] .benefit-pill span {
-    color: var(--text-secondary);
-}
-
-/* Globe adjustments for light mode */
-[data-theme="light"] .hero-globe-container {
-    opacity: 0.15;
-}
-
-/* Card Hover Overlay Light Mode */
-[data-theme="light"] .card-hover-overlay {
-    background: var(--bg-card-solid);
-}
-
-[data-theme="light"] .card-hover-overlay p {
-    color: var(--text-secondary);
-}
-
-/* Scrollbar Light Mode */
-[data-theme="light"] ::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-    background: var(--border-secondary);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-tertiary);
-}
-
-/* Theme Toggle Responsive */
-@media (max-width: 768px) {
-    .theme-toggle {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .theme-toggle svg {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .navbar-right {
-        gap: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .theme-toggle {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .theme-toggle svg {
-        width: 14px;
-        height: 14px;
-    }
-    
-    .navbar-right {
-        gap: 8px;
-    }
-}
-/* ========================================
-   PROFESSIONAL FOOTER
+   STACKED CIRCULAR FOOTER
    ======================================== */
 
 .site-footer {
     background: var(--bg-primary);
-    padding: 80px 40px 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 80px 20px 40px;
+    border-top: 1px solid var(--border-primary);
 }
 
-.footer-wrapper {
-    max-width: 1200px;
+.footer-container {
+    max-width: 800px;
     margin: 0 auto;
-}
-
-.footer-top {
     display: flex;
-    justify-content: space-between;
-    gap: 80px;
-    margin-bottom: 60px;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
 }
 
-.footer-brand {
-    max-width: 280px;
-}
-
-.footer-logo-wrap {
+/* Logo Circle */
+.footer-logo-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(87, 254, 199, 0.1);
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.footer-logo-circle:hover {
+    background: rgba(87, 254, 199, 0.15);
+    transform: scale(1.05);
 }
 
 .footer-logo {
-    color: var(--text-primary);
+    color: var(--accent-green);
 }
 
-.footer-logo-text {
-    font-family: 'Outfit', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.footer-tagline {
-    font-family: 'Outfit', sans-serif;
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-.footer-links-grid {
+/* Navigation */
+.footer-nav {
     display: flex;
-    gap: 80px;
-}
-
-.footer-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.footer-heading {
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0 0 8px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
 }
 
 .footer-link {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
+    font-weight: 500;
     color: var(--text-secondary);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-    color: #57FEC7;
+    color: var(--accent-green);
 }
 
-.footer-bottom {
+/* Social Icons */
+.footer-socials {
     display: flex;
-    justify-content: space-between;
+    gap: 12px;
+}
+
+.footer-social-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border-secondary);
+    background: transparent;
+    display: flex;
     align-items: center;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.footer-copyright {
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    color: var(--text-tertiary);
-    margin: 0;
-}
-
-.footer-legal {
-    display: flex;
-    gap: 24px;
-}
-
-.footer-legal-link {
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    color: var(--text-tertiary);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.footer-legal-link:hover {
+    justify-content: center;
     color: var(--text-secondary);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.footer-social-btn:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    background: rgba(87, 254, 199, 0.1);
+}
+
+/* Newsletter */
+.footer-newsletter {
+    width: 100%;
+    max-width: 400px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 12px;
+}
+
+.newsletter-input {
+    flex: 1;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 22px;
+    border: 1px solid var(--border-secondary);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.newsletter-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.newsletter-input:focus {
+    border-color: var(--accent-green);
+}
+
+.newsletter-btn {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 22px;
+    border: none;
+    background: var(--accent-green);
+    color: #0a0a0a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.newsletter-btn:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+}
+
+/* Copyright */
+.footer-copyright {
+    text-align: center;
+}
+
+.footer-copyright p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-tertiary);
 }
 
 /* Light Theme */
 [data-theme="light"] .site-footer {
-    border-top-color: rgba(0, 0, 0, 0.08);
+    background: var(--bg-secondary);
 }
 
-[data-theme="light"] .footer-bottom {
-    border-top-color: rgba(0, 0, 0, 0.08);
+[data-theme="light"] .footer-logo-circle {
+    background: rgba(0, 200, 83, 0.1);
 }
 
 [data-theme="light"] .footer-logo-circle:hover {
     background: rgba(0, 200, 83, 0.15);
 }
 
-/* Footer Responsive */
-@media (max-width: 900px) {
-    .footer-top {
-        flex-direction: column;
-        gap: 48px;
-    }
-    
-    .footer-links-grid {
-        gap: 48px;
-    }
+[data-theme="light"] .newsletter-btn {
+    color: #F8F9EB;
 }
 
+/* Responsive */
 @media (max-width: 600px) {
     .site-footer {
-        padding: 60px 24px 32px;
+        padding: 60px 16px 32px;
     }
     
-    .footer-links-grid {
-        flex-wrap: wrap;
-        gap: 32px;
+    .footer-container {
+        gap: 24px;
     }
     
-    .footer-col {
-        min-width: 120px;
+    .footer-logo-circle {
+        width: 64px;
+        height: 64px;
     }
     
-    .footer-bottom {
-        flex-direction: column;
+    .footer-logo {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .footer-nav {
         gap: 16px;
-        text-align: center;
+    }
+    
+    .footer-link {
+        font-size: 13px;
     }
     
     .footer-social-btn {
@@ -12222,36 +10146,33 @@ body {
 .fade-delay-5 { transition-delay: 0.5s; }
 .fade-delay-6 { transition-delay: 0.6s; }
 
-/* Hero section - visible with subtle animation */
+/* Hero section specific animations */
 .hero-title {
-    opacity: 1;
-    transform: translateY(0);
-    animation: heroFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroFadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
 }
 
 .hero-subtitle {
-    opacity: 1;
-    transform: translateY(0);
-    animation: heroFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
 }
 
 .explore-btn {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
 }
 
 @keyframes heroFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* Partner logos - always visible, smooth scroll */
+/* Partner logos fade in - no transform needed in standalone section */
 .partners-section {
     opacity: 1;
 }
@@ -12288,7 +10209,16 @@ body {
 
 /* Card animations with stagger */
 .feature-card,
-.grid-card,
+.grid-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.grid-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .display-card,
 .orbital-node {
     opacity: 0;
@@ -12333,11 +10263,7 @@ body {
 }
 
 /* Smooth reveal for content blocks */
-.main-content {
-    opacity: 1;
-    transform: translateY(0);
-}
-
+.main-content,
 .taas-content,
 .cta-content {
     opacity: 0;
@@ -12346,6 +10272,7 @@ body {
                 transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.main-content.visible,
 .taas-content.visible,
 .cta-content.visible {
     opacity: 1;
@@ -12394,99 +10321,100 @@ body {
 }
 
 .why-eto-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
 }
 
 .why-eto-sticky {
-    text-align: center;
-    padding-bottom: 20px;
+    position: sticky;
+    top: 120px;
+    padding-bottom: 40px;
 }
 
 .why-eto-label {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #57FEC7;
+    color: #F8F9EB;
     margin-bottom: 16px;
 }
 
 .why-eto-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 42px;
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.5px;
-    color: #ffffff;
+    color: #F8F9EB;
     margin: 0 0 20px 0;
 }
 
 .why-eto-subtitle {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.6);
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 380px;
 }
 
 .why-eto-stats {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
 }
 
 .why-eto-stat-card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 .why-eto-stat-visual {
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 16px;
     background: #0d1a17;
     border: 1px solid rgba(87, 254, 199, 0.1);
     transition: border-color 0.3s ease, transform 0.3s ease;
-    aspect-ratio: 1;
 }
 
 .why-eto-stat-visual:hover {
     border-color: rgba(87, 254, 199, 0.25);
-    transform: translateY(-4px);
+    transform: translateY(-2px);
 }
 
 .why-eto-svg {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 .why-eto-stat-info {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 4px 0;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 0;
 }
 
 .why-eto-stat-number {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
     font-weight: 600;
-    letter-spacing: -0.2px;
-    color: #57FEC7;
+    letter-spacing: -0.3px;
+    color: #F8F9EB;
+    white-space: nowrap;
 }
 
 .why-eto-stat-desc {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 13px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
     font-weight: 400;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Hide progress dots in normal mode */
@@ -12520,20 +10448,15 @@ body {
 }
 
 /* Responsive styles for Why ETO */
-@media (max-width: 1200px) {
-    .why-eto-stats {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 @media (max-width: 900px) {
     .why-eto-grid {
-        gap: 40px;
+        grid-template-columns: 1fr;
+        gap: 48px;
     }
     
-    .why-eto-stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+    .why-eto-sticky {
+        position: relative;
+        top: 0;
     }
     
     .why-eto-title {
@@ -12572,7 +10495,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #0a0a0a;
+    background: #202020;
     padding: 100px 60px;
     position: relative;
 }
@@ -12585,8 +10508,8 @@ body {
 
 .faq-grid {
     display: grid;
-    grid-template-columns: minmax(280px, 400px) 1fr;
-    gap: 100px;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
     align-items: start;
 }
 
@@ -12595,16 +10518,16 @@ body {
     top: 120px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
 }
 
 .faq-label {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #57FEC7;
+    color: #F8F9EB;
     display: inline-block;
     padding: 6px 14px;
     border: 1px solid rgba(87, 254, 199, 0.3);
@@ -12613,12 +10536,12 @@ body {
 }
 
 .faq-title {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 42px;
-    font-weight: 500;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
     line-height: 1.2;
-    letter-spacing: -0.5px;
-    color: #ffffff;
+    letter-spacing: -0.02em;
+    color: #F8F9EB;
     margin: 0;
     max-width: 400px;
 }
@@ -12627,10 +10550,10 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 500;
-    color: #ffffff;
+    color: #F8F9EB;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
@@ -12644,7 +10567,7 @@ body {
 
 .faq-docs-btn:hover {
     border-color: #57FEC7;
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-docs-btn svg {
@@ -12681,15 +10604,15 @@ body {
 }
 
 .faq-trigger span {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     font-weight: 500;
-    color: #ffffff;
+    color: #F8F9EB;
     transition: color 0.3s ease;
 }
 
 .faq-trigger:hover span {
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-chevron {
@@ -12700,7 +10623,7 @@ body {
 
 .faq-trigger[aria-expanded="true"] .faq-chevron {
     transform: rotate(180deg);
-    color: #57FEC7;
+    color: #F8F9EB;
 }
 
 .faq-content {
@@ -12715,7 +10638,7 @@ body {
 }
 
 .faq-content p {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 1.6;
@@ -12803,470 +10726,5 @@ body {
     
     .faq-content p {
         font-size: 15px;
-    }
-}
-
-/* ========================================
-   LIGHT MODE OVERRIDES
-   ======================================== */
-[data-theme="light"] body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-/* Navbar Light Mode */
-[data-theme="light"] .navbar {
-    background: var(--navbar-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-primary);
-}
-
-[data-theme="light"] .logo-text {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .launch-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .launch-btn:hover {
-    background: var(--btn-hover-bg);
-    box-shadow: var(--shadow-button);
-}
-
-/* Hero Section Light Mode */
-[data-theme="light"] .hero-title,
-[data-theme="light"] .hero-subtitle {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .hero-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .page-hero::after {
-    background: var(--gradient-fade);
-}
-
-/* Feature Cards Light Mode */
-[data-theme="light"] .feature-card {
-    background: var(--bg-card);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .feature-card:hover {
-    background: var(--bg-card-hover);
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .card-title,
-[data-theme="light"] .card-subtitle {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .card-subtitle {
-    color: var(--text-secondary);
-}
-
-/* Explore Button Light Mode */
-[data-theme="light"] .explore-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .explore-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-[data-theme="light"] .explore-btn .btn-icon {
-    background: var(--accent-green);
-}
-
-[data-theme="light"] .explore-btn .btn-icon svg path {
-    stroke: var(--btn-bg);
-}
-
-/* Partners Section Light Mode */
-[data-theme="light"] .partners-section {
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .partner-svg-wide,
-[data-theme="light"] .partner-svg path {
-    fill: var(--text-primary);
-}
-
-/* Page Backgrounds Light Mode */
-[data-theme="light"] .page-maang,
-[data-theme="light"] .page-features,
-[data-theme="light"] .page-engine,
-[data-theme="light"] .page-highlights,
-[data-theme="light"] .page-taas,
-[data-theme="light"] .page-how,
-[data-theme="light"] .page-cta {
-    background: var(--bg-primary);
-}
-
-/* MAANG Section Light Mode */
-[data-theme="light"] .maang-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .maang-title,
-[data-theme="light"] .maang-subtitle,
-[data-theme="light"] .maang-tagline {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .maang-subtitle {
-    color: var(--text-secondary);
-}
-
-/* Token Carousel Light Mode */
-[data-theme="light"] .token-3d .token-front {
-    background: var(--bg-secondary);
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .token-3d .token-edge {
-    background: var(--bg-tertiary);
-}
-
-[data-theme="light"] .token-3d svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .token-3d svg path {
-    fill: var(--text-primary);
-}
-
-/* Features Section Light Mode */
-[data-theme="light"] .features-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .features-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .grid-card {
-    background: var(--bg-card-solid);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .grid-card:hover {
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .grid-card-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .grid-card-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .grid-card-arrow {
-    background: var(--btn-bg);
-}
-
-[data-theme="light"] .grid-card-arrow svg path {
-    stroke: var(--btn-text);
-}
-
-[data-theme="light"] .grid-card-subbox {
-    background: var(--subbox-bg);
-    border-color: var(--border-primary);
-}
-
-[data-theme="light"] .grid-card-subbox p {
-    color: var(--subbox-text);
-}
-
-/* Staking Section Light Mode */
-[data-theme="light"] .engine-label,
-[data-theme="light"] .staking-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .engine-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .staking-card-wrapper .staking-card {
-    background: var(--bg-card-solid);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .staking-card:hover {
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .panel-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .panel-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .staking-token-front {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .staking-token-front svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .staking-token-front svg path {
-    fill: var(--text-primary);
-}
-
-[data-theme="light"] .staking-token-edge {
-    background: var(--bg-tertiary);
-}
-
-[data-theme="light"] .stake-arrow svg path {
-    stroke: var(--text-tertiary);
-}
-
-[data-theme="light"] .apy-badge {
-    background: var(--accent-green-bg);
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .staking-card-arrow {
-    background: var(--btn-bg);
-}
-
-[data-theme="light"] .staking-card-arrow svg path {
-    stroke: var(--btn-text);
-}
-
-[data-theme="light"] .staking-card-subbox,
-[data-theme="light"] .staking-subbox {
-    background: var(--subbox-bg);
-}
-
-[data-theme="light"] .staking-card-subbox span,
-[data-theme="light"] .staking-card-subbox p,
-[data-theme="light"] .staking-subbox p {
-    color: var(--subbox-text);
-}
-
-/* Display Cards Light Mode */
-[data-theme="light"] .highlights-label {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .highlights-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .display-card {
-    background: var(--bg-card);
-    border-color: var(--border-card);
-    box-shadow: var(--shadow-card);
-}
-
-[data-theme="light"] .display-card:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-secondary);
-    box-shadow: var(--shadow-card-hover);
-}
-
-[data-theme="light"] .display-card::after {
-    background: var(--gradient-card-right);
-}
-
-[data-theme="light"] .display-card-1::before,
-[data-theme="light"] .display-card-2::before {
-    background: var(--overlay-bg);
-}
-
-[data-theme="light"] .display-card-icon {
-    background: var(--accent-green-bg);
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .display-card-title {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .display-card-description {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .display-card-date {
-    color: var(--text-tertiary);
-}
-
-/* TAAS Section Light Mode */
-[data-theme="light"] .taas-subtitle {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .taas-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .taas-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .taas-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-[data-theme="light"] .h-token-front {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .h-token-front svg circle {
-    fill: var(--bg-secondary);
-}
-
-[data-theme="light"] .h-token-front svg path {
-    fill: var(--text-primary);
-}
-
-[data-theme="light"] .h-token-edge {
-    background: var(--bg-tertiary);
-}
-
-/* How It Works Light Mode */
-[data-theme="light"] .how-subtitle {
-    color: var(--accent-green);
-}
-
-[data-theme="light"] .how-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .step-number {
-    color: var(--accent-green);
-    border-color: var(--accent-green);
-}
-
-[data-theme="light"] .step-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .step-description {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .step-arrow svg {
-    color: var(--text-tertiary);
-}
-
-/* CTA Section Light Mode */
-[data-theme="light"] .cta-title {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .cta-subtitle {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .cta-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-}
-
-[data-theme="light"] .cta-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-/* Footer Light Mode */
-[data-theme="light"] .footer {
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-primary);
-}
-
-[data-theme="light"] .footer-text,
-[data-theme="light"] .footer-link {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .footer-link:hover {
-    color: var(--text-primary);
-}
-
-/* Benefit Pills Light Mode */
-[data-theme="light"] .benefit-pill {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] .benefit-pill:hover {
-    background: var(--accent-green-bg);
-}
-
-[data-theme="light"] .benefit-pill span {
-    color: var(--text-secondary);
-}
-
-/* Globe adjustments for light mode */
-[data-theme="light"] .hero-globe-container {
-    opacity: 0.15;
-}
-
-/* Card Hover Overlay Light Mode */
-[data-theme="light"] .card-hover-overlay {
-    background: var(--bg-card-solid);
-}
-
-[data-theme="light"] .card-hover-overlay p {
-    color: var(--text-secondary);
-}
-
-/* Scrollbar Light Mode */
-[data-theme="light"] ::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-    background: var(--border-secondary);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-tertiary);
-}
-
-/* Theme Toggle Responsive */
-@media (max-width: 768px) {
-    .theme-toggle {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .theme-toggle svg {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .navbar-right {
-        gap: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .theme-toggle {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .theme-toggle svg {
-        width: 14px;
-        height: 14px;
-    }
-    
-    .navbar-right {
-        gap: 8px;
     }
 }

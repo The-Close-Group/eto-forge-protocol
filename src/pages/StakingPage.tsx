@@ -1,29 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useActiveAccount, ConnectButton } from 'thirdweb/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TopNavBar } from '@/components/layout/TopNavBar';
 import { 
   TrendingUp, TrendingDown, Shield, Vault, Info, Loader2, 
-  ChevronRight, RefreshCw, Zap,
-  Sparkles, Calculator, Wallet, Plus, Target,
+  ChevronRight, RefreshCw, Zap, Lock, ArrowUpRight, Clock,
+  Sparkles, Calculator, Wallet, ChevronDown, Plus, Target,
   ArrowDownUp, Check
 } from 'lucide-react';
 import { useVaultStaking } from '@/hooks/useVaultStaking';
 import { useQuery } from '@tanstack/react-query';
 import { etoPublicClient } from '@/lib/etoRpc';
 import { DRI_TOKEN_ADDRESS, USDC_ADDRESS } from '@/config/contracts';
-import { useProtocolStore, selectPrices } from '@/stores/protocolStore';
 import { toast } from 'sonner';
+import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
 import { Link } from 'react-router-dom';
 import maangLogo from '@/assets/maang-logo.svg';
+import { InfoButton } from '@/components/InfoButton';
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
 ];
@@ -38,13 +41,17 @@ const ERC20_ABI = [
   }
 ] as const;
 
+// NOTE: Staking tiers data is placeholder - real APY values should come from on-chain
+const stakingTiers = [
+  { name: 'Bronze', minStake: 0, apy: 0, color: '#CD7F32' },
+  { name: 'Silver', minStake: 1000, apy: 0, color: '#C0C0C0' },
+  { name: 'Gold', minStake: 5000, apy: 0, color: '#FFD700' },
+  { name: 'Platinum', minStake: 25000, apy: 0, color: '#E5E4E2' },
+];
+
 export default function StakingPage() {
   const account = useActiveAccount();
   const { depositUSDC, depositDRI, redeemShares, getVaultShares, getVaultStats, isLoading } = useVaultStaking();
-  
-  // Get real MAANG price from protocol store
-  const prices = useProtocolStore(selectPrices);
-  const maangPrice = prices.dmmPrice || 318;
   
   // Animation state
   const [isVisible, setIsVisible] = useState(false);
@@ -52,6 +59,7 @@ export default function StakingPage() {
   const [depositMode, setDepositMode] = useState<'usdc' | 'maang'>('usdc');
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawShares, setWithdrawShares] = useState('');
+  const [investmentPeriod, setInvestmentPeriod] = useState(6);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -92,8 +100,13 @@ export default function StakingPage() {
     queryKey: ['vault-stats'],
     queryFn: getVaultStats,
     refetchInterval: 10000,
-    retry: 2,
   });
+
+  // Calculate current tier
+  const currentTier = useMemo(() => {
+    const staked = balances?.shares ? Number(balances.shares) / 1e18 : 0;
+    return stakingTiers.reduce((acc, tier) => staked >= tier.minStake ? tier : acc, stakingTiers[0]);
+  }, [balances?.shares]);
 
   // Handlers
   const handleRefresh = async () => {
@@ -116,7 +129,6 @@ export default function StakingPage() {
       if (hash) {
         setDepositAmount('');
         refetchBalances();
-        refetchStats();
       }
     } catch (err) {
       toast.error('Deposit failed: ' + (err as Error).message);
@@ -134,7 +146,6 @@ export default function StakingPage() {
       if (hash) {
         setWithdrawShares('');
         refetchBalances();
-        refetchStats();
       }
     } catch (err) {
       toast.error('Withdrawal failed: ' + (err as Error).message);
@@ -158,69 +169,45 @@ export default function StakingPage() {
   const sharesBalance = balances ? (Number(balances.shares) / 1e18).toFixed(4) : '0';
   const sharePrice = vaultStats?.sharePrice?.toFixed(4) || '1.0000';
   const totalAssets = vaultStats?.totalAssets ? (Number(vaultStats.totalAssets) / 1e18) : 0;
-  
-  // Calculate estimated value in USD: shares × sharePrice (MAANG per share) × MAANG price (USD)
-  const sharesInMAANG = balances?.shares ? (Number(balances.shares) / 1e18) * (vaultStats?.sharePrice || 1) : 0;
-  const estimatedValue = sharesInMAANG * maangPrice;
+  const estimatedValue = balances?.shares ? (Number(balances.shares) / 1e18) * (vaultStats?.sharePrice || 1) : 0;
+  const sliderPosition = ((investmentPeriod - 1) / 11) * 100;
 
   return (
     <div className="min-h-screen bg-background">
+      <TopNavBar onRefresh={async () => { await Promise.all([refetchBalances(), refetchStats()]); }} />
       {/* Page Header */}
-      <div className="max-w-[1440px] mx-auto p-6">
+      <div className="max-w-[1440px] mx-auto p-6 pt-20">
         <div 
           className={`mb-8 transition-all duration-700 ease-out ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-2">
-            <Vault className="w-4 h-4" />
-            <span>sMAANG Vault • Liquid Staking</span>
-            <Badge variant="outline" className="ml-2 text-[10px]">Live</Badge>
-          </div>
-          <h1 className="text-[32px] font-semibold tracking-tight mb-2">Staking & Liquidity</h1>
-          <p className="text-muted-foreground text-[15px]">
-            Deposit assets to earn yield from protocol trading fees
-        </p>
-      </div>
+          <h1 className="text-[32px] font-semibold tracking-tight">Staking & Liquidity</h1>
+        </div>
 
-        {/* Main Grid - Dashboard Style */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+        {/* Main Content - Full Width */}
+        <div className="w-full">
           {/* Left Column */}
           <div 
             className={`space-y-6 transition-all duration-700 delay-100 ease-out ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
             }`}
           >
-            {/* Vault Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Vault Assets', value: `${totalAssets.toLocaleString()} MAANG`, icon: <Vault className="w-4 h-4" /> },
-                { label: 'Share Price', value: sharePrice, icon: <TrendingUp className="w-4 h-4" /> },
-                { label: 'Your Shares', value: sharesBalance, icon: <Wallet className="w-4 h-4" /> },
-                { label: 'Est. Value', value: `$${estimatedValue.toFixed(2)}`, icon: <Calculator className="w-4 h-4" />, highlight: true },
-              ].map((stat) => (
-                <Card key={stat.label} className="group hover:border-primary/30 transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                      {stat.icon}
-                      <span className="text-[12px]">{stat.label}</span>
-            </div>
-                    <div className={`text-xl font-semibold ${stat.highlight ? 'text-primary' : ''}`}>
-                      {stat.value}
-            </div>
-        </CardContent>
-      </Card>
-              ))}
-              </div>
-
-            {/* Main Action Card */}
+              {/* Main Action Card */}
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-[16px] flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    Vault Operations
-                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-[16px] flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      Vault Operations
+                    </CardTitle>
+                    <InfoButton
+                      title="Vault Operations"
+                      description="Deposit USDC or MAANG tokens into the sMAANG vault to earn yield from protocol trading fees. When you deposit, you receive sMAANG shares that represent your portion of the vault. The share price increases over time as the vault earns fees, meaning your shares become worth more. You can withdraw anytime by redeeming your shares for MAANG tokens."
+                      size="sm"
+                    />
+                  </div>
                   <div className="flex gap-1 p-1 bg-muted rounded-lg">
                     <button
                       className={`px-4 py-1.5 rounded-md text-[13px] font-medium transition-all ${
@@ -253,7 +240,7 @@ export default function StakingPage() {
                       ].map((token) => (
                         <button
                           key={token.id}
-                          className={`p-4 rounded-xl border-2 transition-all duration-200 text-left relative ${
+                          className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                             depositMode === token.id 
                               ? 'border-primary bg-primary/5' 
                               : 'border-border hover:border-primary/50'
@@ -348,25 +335,25 @@ export default function StakingPage() {
                         }}
                       />
                     ) : (
-                      <Button
-                        variant="cta"
+              <Button
+                        variant="outline"
                         size="xl"
-                        className="w-full"
+                className="w-full"
                         onClick={handleDeposit}
                         disabled={isLoading || !depositAmount || vaultStats?.depositsPaused}
-                      >
-                        {isLoading ? (
-                          <>
+              >
+                {isLoading ? (
+                  <>
                             <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                            Processing...
-                          </>
-                        ) : (
+                    Processing...
+                  </>
+                ) : (
                           <>
                             <Plus className="w-4 h-4 mr-2" />
                             Deposit {depositMode.toUpperCase()}
                           </>
-                        )}
-                      </Button>
+                )}
+              </Button>
                     )}
 
                     {/* Gas Sponsored */}
@@ -454,12 +441,19 @@ export default function StakingPage() {
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-[15px] flex items-center gap-2">
-                      <Target className="w-4 h-4 text-primary" />
-                      Your Position
-                    </CardTitle>
-                    <Badge variant="outline" className="text-primary border-primary/30">
-                      Active
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-[15px] flex items-center gap-2">
+                        <Target className="w-4 h-4 text-primary" />
+                        Your Position
+                      </CardTitle>
+                      <InfoButton
+                        title="Your Position"
+                        description="This shows your current staking position in the sMAANG vault. Your staked value is calculated by multiplying your shares by the current share price. The APY shows your current earning rate based on your tier. Pending rewards are estimated based on your position and will compound automatically into your share value."
+                        size="sm"
+                      />
+                    </div>
+                    <Badge style={{ background: currentTier.color + '20', color: currentTier.color }}>
+                      {currentTier.name} Tier
                     </Badge>
                   </div>
                 </CardHeader>
@@ -470,13 +464,13 @@ export default function StakingPage() {
                       <div className="stat-value text-lg">${estimatedValue.toFixed(2)}</div>
                     </div>
                     <div className="stat-item">
-                      <div className="stat-label">Your Shares</div>
-                      <div className="stat-value text-lg text-primary">{sharesBalance}</div>
+                      <div className="stat-label">Current APY</div>
+                      <div className="stat-value text-lg text-primary">{currentTier.apy}%</div>
                     </div>
                     <div className="stat-item">
-                      <div className="stat-label">MAANG Value</div>
+                      <div className="stat-label">Pending Rewards</div>
                       <div className="stat-value text-lg text-data-positive">
-                        {sharesInMAANG.toFixed(4)}
+                        +{((estimatedValue * currentTier.apy / 100) / 12).toFixed(4)}
                       </div>
                     </div>
                   </div>
@@ -519,88 +513,6 @@ export default function StakingPage() {
             </Card>
           </div>
 
-          {/* Right Sidebar */}
-          <div 
-            className={`space-y-5 transition-all duration-700 delay-200 ease-out ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-          >
-            {/* CTA Card */}
-            <div className="cta-card">
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center p-1.5">
-                    <img src={maangLogo} alt="" className="w-full h-full" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">sMAANG Vault</div>
-                    <div className="text-[11px] text-muted-foreground">Liquid Staking</div>
-                  </div>
-                </div>
-                
-                <div className="mb-6">
-                  <div className="text-[11px] text-muted-foreground mb-1">Share Price</div>
-                  <div className="text-[42px] font-semibold tracking-tight leading-none text-primary">
-                    {sharePrice}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground mt-1">MAANG per share</div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>No lock-up period</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>Compound rewards automatically</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-4 h-4 text-data-positive" />
-                    <span>Withdraw anytime</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-        </CardHeader>
-              <CardContent className="space-y-0.5">
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/trade">
-                    <span className="text-[13px]">Trade MAANG</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/dashboard">
-                    <span className="text-[13px]">View Dashboard</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                  <Link to="/faucet">
-                    <span className="text-[13px]">Get Test Tokens</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-                </Button>
-        </CardContent>
-      </Card>
-
-            {/* Refresh Button */}
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </Button>
-          </div>
         </div>
       </div>
     </div>

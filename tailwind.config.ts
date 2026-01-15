@@ -18,10 +18,10 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				'sans': ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-				'mono': ['JetBrains Mono', 'SF Mono', 'Consolas', 'monospace'],
-			},
+		fontFamily: {
+			'sans': ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+			'mono': ['JetBrains Mono', 'SF Mono', 'Consolas', 'monospace'],
+		},
 			fontSize: {
 				'xs': ['12px', { lineHeight: '16px' }],
 				'sm': ['13px', { lineHeight: '20px' }],

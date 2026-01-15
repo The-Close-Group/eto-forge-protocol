@@ -27,18 +27,18 @@ import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
 // import Bridge from "@/pages/Bridge"; // Temporarily removed
-import BuyMAANG from "@/pages/BuyMAANG";
 import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
 import StakingPage from "@/pages/StakingPage";
-import Shortcuts from "@/pages/Shortcuts";
+// Removed: BuyMAANG, Shortcuts - moved to _scrap folder
 
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
 import Profile from "@/pages/Profile";
 import PointsDashboard from "@/pages/PointsDashboard";
+import Execution from "@/pages/Execution";
 
 const queryClient = new QueryClient();
 
@@ -70,14 +70,13 @@ const App = () => (
                         <RouteTransition>
                           <Routes>
                             <Route path="/trade" element={<Trade />} />
-                            {/* <Route path="/bridge" element={<Bridge />} /> */} {/* Temporarily removed */}
-                            <Route path="/buy-maang" element={<BuyMAANG />} />
+                            <Route path="/execute/:assetId" element={<Execution />} />
+                            {/* Removed: /bridge, /buy-maang, /shortcuts routes - moved to _scrap */}
                             <Route path="/order" element={<OrderPage />} />
                             <Route path="/transaction-complete" element={<TransactionComplete />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
                             <Route path="/staking" element={<StakingPage />} />
-                            <Route path="/shortcuts" element={<Shortcuts />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
                             <Route path="/profile" element={<Profile />} />

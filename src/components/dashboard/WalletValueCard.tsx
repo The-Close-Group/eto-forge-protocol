@@ -1,14 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
-import { useStockPrices, MAANG_STOCKS, StockSymbol } from '@/hooks/useStockPrices';
-import { ProTradingChart } from '@/components/charts';
-import {
-  createChart,
-  IChartApi,
-  ColorType,
-  CrosshairMode,
-  AreaSeries,
-  HistogramSeries,
-} from 'lightweight-charts';
+import { useState, useMemo } from 'react';
+import { TrendingUp, TrendingDown, Grid3X3, Settings2, Plus, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
+import { ResponsiveContainer, Area, AreaChart, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface WalletValueCardProps {
   totalValue: number;
@@ -20,7 +12,38 @@ interface WalletValueCardProps {
   className?: string;
 }
 
-type ChartMode = 'simple' | 'pro';
+// Generate chart data matching the Execution page format
+const generateChartData = (days: number = 180, basePrice: number = 40000, volatility: number = 0.015) => {
+  const data = [];
+  let price = basePrice * 0.92;
+  const now = Date.now();
+  const interval = (days * 24 * 60 * 60 * 1000) / 100;
+  
+  for (let i = 0; i < 100; i++) {
+    const change = (Math.random() - 0.42) * volatility * price;
+    price = Math.max(price + change, basePrice * 0.8);
+    data.push({
+      time: new Date(now - (100 - i) * interval).toLocaleString(),
+      timestamp: now - (100 - i) * interval,
+      price: price,
+    });
+  }
+  return data;
+};
+
+const timeFilters = ['1h', '8h', '1d', '1w', '1m', '6m', '1y'] as const;
+type TimeFilter = typeof timeFilters[number];
+
+// Map time filters to days
+const timeFilterToDays: Record<TimeFilter, number> = {
+  '1h': 0.04,
+  '8h': 0.33,
+  '1d': 1,
+  '1w': 7,
+  '1m': 30,
+  '6m': 180,
+  '1y': 365,
+};
 
 export function WalletValueCard({
   totalValue,
@@ -31,26 +54,13 @@ export function WalletValueCard({
   netChange,
   className = '',
 }: WalletValueCardProps) {
-  const [chartMode, setChartMode] = useState<ChartMode>('pro');
-  const simpleChartRef = useRef<HTMLDivElement>(null);
-  const chartInstanceRef = useRef<IChartApi | null>(null);
+  const [activeFilter, setActiveFilter] = useState<TimeFilter>('6m');
   
-  // Use live MAANG stock prices from Yahoo Finance
-  const {
-    portfolioValue,
-    portfolioChangePercent,
-    chartData,
-    candleData,
-    yahooCandleData,
-    stocks,
-    isLoading,
-    lastUpdated,
-  } = useStockPrices(totalValue);
-
-  // Detect theme
-  const isDark = typeof document !== 'undefined'
-    ? !document.documentElement.classList.contains('light')
-    : true;
+  // Generate chart data based on selected time filter
+  const chartData = useMemo(() => 
+    generateChartData(timeFilterToDays[activeFilter], totalValue),
+    [activeFilter, totalValue]
+  );
 
   const formatCurrency = (value: number, showSign = false) => {
     const abs = Math.abs(value);
@@ -63,232 +73,188 @@ export function WalletValueCard({
     return formatted;
   };
 
-  // Simple area chart for "Simple" mode
-  useEffect(() => {
-    if (chartMode !== 'simple' || !simpleChartRef.current || !chartData.length) return;
-
-    // Clean up previous chart
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.remove();
-    }
-
-    const accentColor = '#CDFF00';
-    const gridColor = isDark ? 'hsl(240, 4%, 12%)' : 'hsl(214, 20%, 94%)';
-    const borderColor = isDark ? 'hsl(240, 4%, 16%)' : 'hsl(214, 32%, 91%)';
-    const textColor = isDark ? 'hsl(240, 4%, 52%)' : 'hsl(215, 16%, 47%)';
-
-    const chart = createChart(simpleChartRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor,
-        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        fontSize: 11,
-      },
-      grid: {
-        vertLines: { color: gridColor, style: 1 },
-        horzLines: { color: gridColor, style: 1 },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-        vertLine: { color: `${accentColor}80`, width: 1, style: 2, labelBackgroundColor: borderColor },
-        horzLine: { color: `${accentColor}80`, width: 1, style: 2, labelBackgroundColor: borderColor },
-      },
-      rightPriceScale: { visible: true, borderColor, scaleMargins: { top: 0.1, bottom: 0.2 } },
-      timeScale: { visible: true, borderColor, timeVisible: true, secondsVisible: false },
-      handleScroll: true,
-      handleScale: true,
-    });
-
-    chartInstanceRef.current = chart;
-
-    // Volume series
-    const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: 'rgba(205, 255, 0, 0.15)',
-      priceFormat: { type: 'volume' },
-      priceScaleId: 'volume',
-    });
-    chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
-
-    // Area series
-    const areaSeries = chart.addSeries(AreaSeries, {
-      lineColor: accentColor,
-      topColor: 'rgba(205, 255, 0, 0.35)',
-      bottomColor: 'rgba(205, 255, 0, 0.0)',
-      lineWidth: 3,
-      crosshairMarkerVisible: true,
-      crosshairMarkerRadius: 6,
-      crosshairMarkerBorderColor: accentColor,
-      crosshairMarkerBackgroundColor: isDark ? '#1a1a1a' : '#ffffff',
-      lastValueVisible: true,
-    });
-
-    const areaData = chartData.map(d => ({ time: d.time, value: d.value }));
-    const volumeData = chartData.map(d => ({ time: d.time, value: d.volume * 100, color: 'rgba(205, 255, 0, 0.2)' }));
-
-    areaSeries.setData(areaData);
-    volumeSeries.setData(volumeData);
-    chart.timeScale().fitContent();
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (simpleChartRef.current && chartInstanceRef.current) {
-        chartInstanceRef.current.applyOptions({
-          width: simpleChartRef.current.clientWidth,
-          height: simpleChartRef.current.clientHeight,
-        });
-      }
-    });
-    resizeObserver.observe(simpleChartRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-      chart.remove();
-      chartInstanceRef.current = null;
-    };
-  }, [chartMode, chartData, isDark]);
-
-  // Use Yahoo Finance live candles if available, otherwise fall back to generated candles
-  // Always show generated candles while Yahoo data is loading
-  const tradingChartData = candleData && candleData.length > 0 ? candleData : [];
-  const hasLiveData = yahooCandleData && yahooCandleData.length > 0;
+  // Primary green color for the chart
+  const chartColor = '#10b981';
 
   return (
     <div className={`wvc ${className}`}>
       {/* Header */}
       <div className="wvc-head">
         <div className="wvc-info">
-          <div className="wvc-title flex items-center gap-2">
-            <span className="flex items-center gap-2">
-              Wallet Value
-              {isLoading && (
-                <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
-              )}
+          <div className="wvc-title-line">
+            <span className="wvc-title">Portfolio Value</span>
+            <span className="wvc-live-badge">
+              <span className="wvc-live-dot" />
+              Live
             </span>
-            {lastUpdated && (
-              <span className="text-[10px] text-muted-foreground font-normal ml-2">
-                Updated: {new Date(lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
           </div>
           <div className="wvc-amount-line">
-            <span className="wvc-amount">{formatCurrency(portfolioValue)}</span>
-            <span className={`wvc-pct ${portfolioChangePercent >= 0 ? '' : 'negative'}`}>
-              <span className="wvc-pct-icon">◐</span>
-              {portfolioChangePercent >= 0 ? '+' : ''}{portfolioChangePercent.toFixed(1)}%
+            <span className="wvc-amount">{formatCurrency(totalValue)}</span>
+            <span className={`wvc-pct ${changePercent >= 0 ? 'positive' : 'negative'}`}>
+              {changePercent >= 0 ? (
+                <ArrowUpRight className="w-4 h-4" />
+              ) : (
+                <ArrowDownRight className="w-4 h-4" />
+              )}
+              {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(1)}%
             </span>
           </div>
-          {/* MAANG Stock Pills */}
-          {stocks && (
-            <div className="flex gap-1 mt-2 flex-wrap">
-              {(Object.keys(MAANG_STOCKS) as StockSymbol[]).map((symbol) => {
-                const quote = stocks[symbol];
-                const info = MAANG_STOCKS[symbol];
-                const isPositive = quote?.changePercent >= 0;
-                return (
-                  <span
-                    key={symbol}
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium"
-                    style={{ 
-                      backgroundColor: `${info.color}15`,
-                      color: info.color,
-                      border: `1px solid ${info.color}30`
-                    }}
-                    title={`${info.name}: $${quote?.price?.toFixed(2) || '---'} (${isPositive ? '+' : ''}${quote?.changePercent?.toFixed(2) || '0'}%)`}
-                  >
-                    {symbol}
-                    <span className={isPositive ? 'text-data-positive' : 'text-data-negative'}>
-                      {isPositive ? '↑' : '↓'}
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-          )}
         </div>
         
-        {/* Chart Mode Toggle */}
-        <div className="flex items-center gap-2">
-          <div className="flex p-0.5 rounded-lg bg-muted/50 border border-border/50">
-            <button
-              onClick={() => setChartMode('simple')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                chartMode === 'simple'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Simple
+        <div className="wvc-controls">
+          <div className="wvc-actions">
+            <button className="wvc-action-btn" title="Add funds">
+              <Plus className="w-[18px] h-[18px]" />
             </button>
-            <button
-              onClick={() => setChartMode('pro')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                chartMode === 'pro'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Pro
+            <button className="wvc-action-btn" title="Analytics">
+              <BarChart3 className="w-[18px] h-[18px]" />
+            </button>
+            <button className="wvc-action-btn" title="Grid view">
+              <Grid3X3 className="w-[18px] h-[18px]" />
+            </button>
+            <button className="wvc-action-btn" title="Settings">
+              <Settings2 className="w-[18px] h-[18px]" />
             </button>
           </div>
-          {hasLiveData && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-medium">
-              LIVE
-            </span>
-          )}
-          {!hasLiveData && !isLoading && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium">
-              SIMULATED
-            </span>
-          )}
+          <div className="wvc-time-btns">
+            {timeFilters.map((f) => (
+              <button
+                key={f}
+                className={`wvc-time-btn ${activeFilter === f ? 'active' : ''}`}
+                onClick={() => setActiveFilter(f)}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Chart Container */}
+      {/* Chart Container - Using Recharts like Execution page */}
       <div className="wvc-chart-wrap">
-        {chartMode === 'simple' ? (
-          // Simple Area Chart
-          <div 
-            ref={simpleChartRef} 
-            className="w-full"
-            style={{ height: 480 }}
-          />
-        ) : (
-          // Pro Trading Chart with Candlesticks - Full height professional view
-          <ProTradingChart
-            symbol="MAANG Portfolio"
-            data={hasLiveData ? yahooCandleData : tradingChartData}
-            height={560}
-            theme={isDark ? 'dark' : 'light'}
-            showToolbar={true}
-            showIndicators={true}
-            showVolume={true}
-          />
-        )}
+        <div className="h-64 md:h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="portfolioGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={chartColor} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis 
+                dataKey="time" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  if (activeFilter === '1h' || activeFilter === '8h') {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  }
+                  if (activeFilter === '1d') {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  }
+                  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                }}
+                interval="preserveStartEnd"
+                minTickGap={50}
+              />
+              <YAxis 
+                domain={['dataMin - 500', 'dataMax + 500']}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                orientation="right"
+                width={50}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const value = Number(payload[0].value);
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="text-sm font-medium">${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="text-xs text-muted-foreground">{payload[0].payload.time}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke={chartColor}
+                strokeWidth={2}
+                fill="url(#portfolioGradient)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      {/* Minimal Stats Bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-border/30 bg-card/30">
-        <div className="flex items-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Realized</span>
-            <span className={realizedPL >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
-            {formatCurrency(realizedPL, true)}
-            </span>
+      {/* Bottom Stats */}
+      <div className="wvc-bottom">
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-icon-wrap positive">
+            <TrendingUp className="w-4 h-4" />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Unrealized</span>
-            <span className={unrealizedPL >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
-            {formatCurrency(unrealizedPL, true)}
-            </span>
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Realized P&L</div>
+            <div className={`wvc-stat-num ${realizedPL >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(realizedPL, true)}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Net Change</span>
-            <span className={netChange >= 0 ? 'text-data-positive font-medium' : 'text-data-negative font-medium'}>
-              {formatCurrency(netChange, true)}
-            </span>
+          <div className="wvc-stat-trend positive">
+            <ArrowUpRight className="w-3 h-3" />
+            +27%
           </div>
         </div>
-        <div className="text-xs text-muted-foreground">
-          Data from Yahoo Finance • 20% each: META, AAPL, AMZN, NVDA, GOOG
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-icon-wrap negative">
+            <TrendingDown className="w-4 h-4" />
+          </div>
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Unrealized P&L</div>
+            <div className={`wvc-stat-num ${unrealizedPL >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(unrealizedPL, true)}
+            </div>
+          </div>
+          <div className="wvc-stat-trend negative">
+            <ArrowDownRight className="w-3 h-3" />
+            -11.8%
+          </div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-icon-wrap positive">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Projected Growth</div>
+            <div className={`wvc-stat-num ${projectedGrowth >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(projectedGrowth, true)}
+            </div>
+          </div>
+          <div className="wvc-stat-trend positive">
+            <ArrowUpRight className="w-3 h-3" />
+            +3.2%
+          </div>
+        </div>
+        <div className="wvc-stat-card">
+          <div className="wvc-stat-icon-wrap neutral">
+            <BarChart3 className="w-4 h-4" />
+          </div>
+          <div className="wvc-stat-content">
+            <div className="wvc-stat-name">Net Change</div>
+            <div className={`wvc-stat-num ${netChange >= 0 ? 'green' : 'red'}`}>
+              {formatCurrency(netChange, true)}
+            </div>
+          </div>
+          <div className={`wvc-stat-trend ${netChange >= 0 ? 'positive' : 'negative'}`}>
+            {netChange >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {netChange >= 0 ? '+' : ''}{(netChange / totalValue * 100).toFixed(1)}%
+          </div>
         </div>
       </div>
     </div>

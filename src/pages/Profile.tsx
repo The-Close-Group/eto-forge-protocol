@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Shield, Bell, Key, Settings, ChevronRight, Copy, ExternalLink,
   CheckCircle2, AlertTriangle, Clock, Wallet, TrendingUp, Award, Zap,
@@ -20,11 +21,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStakingContext } from "@/contexts/StakingContext";
 import Sparkline, { generateSparklineData } from "@/components/Sparkline";
 import SEO from "@/components/SEO";
-import { useGraphUserStats, getUserSwaps } from "@/lib/rpcDataLayer";
-import { useQuery } from "@tanstack/react-query";
+import metamaskLogo from '@/assets/metamask-logo.svg';
 
 const wallets = [
-  createWallet("io.metamask"),
+  createWallet("io.metamask", { metadata: { iconUrl: metamaskLogo } }),
   createWallet("com.coinbase.wallet"),
   createWallet("me.rainbow"),
   createWallet("app.phantom"),
@@ -56,33 +56,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview");
   const [showFullAddress, setShowFullAddress] = useState(false);
   
-  // Profile data - uses wallet address if available
-  const [profile, setProfile] = useState({
-    displayName: account?.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "User",
-    username: account?.address ? `@${account.address.slice(2, 10)}` : "@user",
-    email: "",
-    phone: "",
-    company: "",
-    role: "",
-    bio: "",
-    verificationStatus: "unverified",
-    kycLevel: 0,
-    riskScore: 0,
-    memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-    tier: "BASIC"
-  });
-
-  // Update profile when account changes
-  useEffect(() => {
-    if (account?.address) {
-      setProfile(prev => ({
-        ...prev,
-        displayName: `${account.address.slice(0, 6)}...${account.address.slice(-4)}`,
-        username: `@${account.address.slice(2, 10)}`,
-      }));
-    }
-  }, [account?.address]);
-
+  // Wallet-based notifications
   const [notifications, setNotifications] = useState({
     transactionAlerts: true,
     stakingRewards: true,
@@ -176,98 +150,100 @@ export default function Profile() {
     }
   };
 
-  // Fetch user activity from subgraph
-  const { data: userSwaps } = useQuery({
-    queryKey: ['user-swaps', account?.address],
-    queryFn: () => account?.address ? getUserSwaps(account.address, 10) : Promise.resolve([]),
-    enabled: !!account?.address,
-    staleTime: 30_000,
-  });
-
-  const { data: userStats } = useGraphUserStats(account?.address);
-
-  type ActivityType = 'stake' | 'claim' | 'wallet' | 'profile' | 'swap';
-  
-  // Transform subgraph data to activity format
-  const recentActivity: { action: string; time: string; type: ActivityType }[] = (userSwaps || []).slice(0, 4).map(swap => {
-    const timestamp = parseInt(swap.timestamp) * 1000;
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    let timeAgo = `${seconds}s ago`;
-    if (seconds >= 60) timeAgo = `${Math.floor(seconds / 60)}m ago`;
-    if (seconds >= 3600) timeAgo = `${Math.floor(seconds / 3600)}h ago`;
-    if (seconds >= 86400) timeAgo = `${Math.floor(seconds / 86400)}d ago`;
-    
-    return {
-      action: `Swapped ${parseFloat(swap.amountIn).toFixed(2)} tokens`,
-      time: timeAgo,
-      type: 'stake' as ActivityType, // Show as stake for UI styling
-    };
-  });
-
-  // Add placeholder if no activity yet
-  if (recentActivity.length === 0) {
-    recentActivity.push(
-      { action: 'No recent activity', time: 'Connect wallet to see history', type: 'wallet' }
-
-    );
-  }
+  // Show profile page with connect prompt if not connected
+  const isConnected = !!account?.address;
 
   return (
     <>
       <SEO
-        title={`${walletIdentity?.shortAddress} | ETO Protocol`}
+        title={isConnected ? `${walletIdentity?.shortAddress} | ETO Protocol` : "Profile | ETO Protocol"}
         description="View your wallet profile, staking positions, and transaction history."
       />
 
       <div className="min-h-screen bg-background">
-        {/* Header Bar */}
-        <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-4">
+        <TopNavBar />
+
+        <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
+          {/* Page Title */}
+          <div className="flex items-center gap-4 mb-2">
             <div className="flex items-center gap-3">
               <div 
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: `${walletIdentity?.color}20` }}
+                style={{ backgroundColor: isConnected ? `${walletIdentity?.color}20` : 'hsl(var(--muted))' }}
               >
-                <Wallet className="w-5 h-5" style={{ color: walletIdentity?.color }} />
+                <Wallet className="w-5 h-5" style={{ color: isConnected ? walletIdentity?.color : 'hsl(var(--muted-foreground))' }} />
               </div>
               <div>
-                <h1 className="text-[15px] font-semibold font-mono">{walletIdentity?.shortAddress}</h1>
-                <p className="text-[11px] text-muted-foreground">Wallet Profile</p>
+                <h1 className="text-[15px] font-semibold font-mono">
+                  {isConnected ? walletIdentity?.shortAddress : 'Profile'}
+                </h1>
+                <p className="text-[11px] text-muted-foreground">
+                  {isConnected ? 'Wallet Profile' : 'Connect wallet to view'}
+                </p>
               </div>
             </div>
-            <Badge 
-              variant="outline" 
-              className="ml-4"
-              style={{ 
-                backgroundColor: `${walletIdentity?.color}15`, 
-                color: walletIdentity?.color,
-                borderColor: `${walletIdentity?.color}40`
-              }}
-            >
-              <Award className="w-3 h-3 mr-1" />
-              {walletIdentity?.tier}
-            </Badge>
+            {isConnected && (
+              <Badge 
+                variant="outline" 
+                className="ml-4"
+                style={{ 
+                  backgroundColor: `${walletIdentity?.color}15`, 
+                  color: walletIdentity?.color,
+                  borderColor: `${walletIdentity?.color}40`
+                }}
+              >
+                <Award className="w-3 h-3 mr-1" />
+                {walletIdentity?.tier}
+              </Badge>
+            )}
           </div>
-
-          <div className="flex items-center gap-3">
-            <button className="icon-btn" onClick={handleViewOnExplorer}>
-              <ExternalLink className="w-4 h-4" />
-            </button>
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
+          {/* Connect Wallet Prompt - Show when not connected */}
+          {!isConnected && (
+            <div 
+              className={`transition-all duration-700 ease-out ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-            <button className="icon-btn flex items-center gap-1.5">
-              <span className="text-[13px]">Settings</span>
-              <Settings className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
+              <Card className="max-w-lg mx-auto">
+                <CardContent className="pt-8 pb-8 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                    <Wallet className="w-8 h-8 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
+                  <p className="text-muted-foreground text-[14px] mb-6 max-w-sm mx-auto">
+                    Your wallet address is your identity on ETO. Connect to view your profile, positions, and transaction history.
+                  </p>
+                  <ConnectButton
+                    client={client}
+                    wallets={wallets}
+                    chain={etoMainnet}
+                    chains={supportedChains}
+                    connectModal={{ size: "compact" }}
+                    connectButton={{
+                      label: "Connect Wallet",
+                      style: {
+                        background: "hsl(160, 70%, 50%)",
+                        color: "#000",
+                        borderRadius: "10px",
+                        padding: "12px 24px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        width: "100%",
+                        maxWidth: "280px",
+                      },
+                    }}
+                  />
+                  <p className="text-[11px] text-muted-foreground mt-4">
+                    We never store your private keys. Your wallet, your control.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-        <div className="max-w-[1440px] mx-auto p-6 space-y-6">
+          {/* Profile Content - Only show when connected */}
+          {isConnected && (
+            <>
           {/* Wallet Identity Card */}
           <div 
             className={`cta-card transition-all duration-700 ease-out ${
@@ -337,7 +313,7 @@ export default function Profile() {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-2">
-                  <Button variant="cta" onClick={handleViewOnExplorer}>
+                  <Button variant="outline" onClick={handleViewOnExplorer}>
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View on Explorer
                   </Button>
@@ -540,7 +516,7 @@ export default function Profile() {
                   <div className="active-staking-card">
                     <div className="flex items-center justify-between mb-5">
                       <h3 className="text-[15px] font-medium">Staking Positions</h3>
-                      <Button variant="cta" size="sm" asChild>
+                      <Button variant="outline" size="sm" asChild>
                         <Link to="/staking">
                           <Zap className="w-4 h-4 mr-1" />
                           Stake More
@@ -555,7 +531,7 @@ export default function Profile() {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-2">
                                 <Coins className="w-5 h-5 text-primary" />
-                                <span className="font-medium">{position.assetId}</span>
+                                <span className="font-medium">{position.asset.symbol}</span>
                               </div>
                               <Badge variant="outline" className="bg-data-positive/10 text-data-positive border-data-positive/30">
                                 Active
@@ -572,7 +548,7 @@ export default function Profile() {
                               </div>
                               <div>
                                 <span className="text-muted-foreground">Rewards</span>
-                                <p className="font-medium">+{position.earnedRewards.toFixed(4)}</p>
+                                <p className="font-medium">+{position.rewards.toFixed(4)}</p>
                               </div>
                             </div>
                           </div>
@@ -587,7 +563,7 @@ export default function Profile() {
                         <p className="text-[13px] text-muted-foreground mb-5 max-w-xs mx-auto">
                           Start staking to earn rewards on your assets
                         </p>
-                        <Button variant="cta" asChild>
+                        <Button variant="outline" asChild>
                           <Link to="/staking">
                             Start Staking
                             <ChevronRight className="w-4 h-4 ml-1" />
@@ -738,6 +714,8 @@ export default function Profile() {
               </Card>
             </div>
           </div>
+          </>
+          )}
         </div>
       </div>
     </>
