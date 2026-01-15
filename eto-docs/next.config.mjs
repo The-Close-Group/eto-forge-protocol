@@ -6,13 +6,11 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   output: 'export',
+  basePath: '/docs',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
-  // Asset prefix for serving from /docs subdirectory
-  assetPrefix: '/docs',
-  // Trailing slash for static export
-  trailingSlash: true,
 };
 
 export default withMDX(config);

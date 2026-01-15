@@ -1,0 +1,2721 @@
+# Welcome to ETO
+
+
+
+A quick map of the docs and where to start.
+
+## Start here
+
+* [What is ETO?](introduction/what-is-eto) — high-level protocol overview.
+* [What is MAANG?](introduction/what-is-maang) — how ETO tokens work and the MAANG index.
+
+## User Guide
+
+* [Buy MAANG](introduction/user-guide/buy) — how to buy MAANG tokens.
+* [Sell MAANG](introduction/user-guide/sell) — how to sell and redeem.
+* [Stake and Earn](introduction/user-guide/stake) — earn protocol rewards.
+
+## How it works
+
+* [Architecture Overview](architecture/overview) — system component overview.
+* [Trust and Security](introduction/trust-and-security) — risks, safeguards, and security model.
+* [Background](introduction/background) — context and motivation.
+
+## Tokenomics & Whitepaper
+
+* [DRI Protocol Whitepaper](tokenomics/overview) — technical whitepaper for the Dynamic Reflective Index Protocol.
+* [Mathematical Framework](tokenomics/mathematical-framework) — convergence proofs and core equations.
+* [Economic Model](tokenomics/economic-model) — token distribution and fee structure.
+* [Governance Framework](tokenomics/governance-framework) — voting mechanisms and emergency controls.
+
+
+# Circuit Breakers
+
+
+
+# Circuit Breakers
+
+Circuit breakers represent the final safeguard layer, activating under conditions that exceed both the DMM's normal operating range and the PSM's intervention capacity. These mechanisms monitor sustained deviations between on-chain prices and oracle references, oracle data staleness, and rapid liquidity changes. When predefined thresholds are exceeded, circuit breakers automatically throttle or halt specific protocol operations.
+
+The circuit breaker system operates in three tiers. Warning mode activates when deviation exceeds one percent for a sustained period, increasing monitoring intensity and sending alerts but making no operational changes. Throttle mode engages at two percent sustained deviation, reducing the magnitude of price updates and slowing recentering operations to prevent rapid system adjustments during uncertain conditions. Halt mode triggers at five percent sustained deviation or under severe oracle failures, temporarily pausing price updates and stabilization mechanisms entirely.
+
+During a halt, users can still exit positions but the protocol will not process new price updates or rebalancing operations until the triggering condition resolves. This prevents the protocol from making decisions based on potentially corrupted data. If a halt persists and the issue cannot be resolved through normal recovery procedures, the protocol includes emergency procedures to return user funds in stablecoins rather than leaving capital locked indefinitely.
+
+The three-tier design with explicit hysteresis prevents rapid oscillation between states. Activation thresholds differ from deactivation thresholds, ensuring the system does not rapidly toggle between warning and normal operation or between throttle and warning. This stability in state transitions makes circuit breaker behavior predictable and gives each state time to serve its intended purpose.
+
+
+# Dynamic Market Maker
+
+
+
+# Dynamic Market Maker
+
+The Dynamic Market Maker serves as the primary liquidity layer during normal market conditions. Rather than spreading liquidity across a wide price range as traditional automated market makers do, the DMM concentrates capital in a narrow band around the current oracle-referenced price. This concentrated approach delivers approximately 200 times the capital efficiency of a full-range market maker, meaning the same liquidity depth can be maintained with significantly less capital.
+
+The DMM operates within a defined band, typically set at plus or minus 0.25 percent around the reference price during market hours and slightly wider during off-hours when underlying markets are closed. When the market price approaches the edges of this band, the DMM automatically recenters its liquidity range to track the new price level. This recentering happens frequently during volatile markets and rarely during stable periods, with the gas costs of recentering operations factored into the overall economic design.
+
+Users trading within the DMM's active range experience tight spreads and minimal price impact. The concentrated liquidity means that typical trade sizes can be executed with slippage measured in basis points rather than percentage points. This first layer handles the vast majority of normal trading activity without requiring intervention from deeper stability mechanisms.
+
+
+# Oracle Aggregation
+
+
+
+# Oracle Aggregation
+
+The stability mechanisms described above all depend on accurate reference pricing. ETO aggregates price data from multiple independent oracle providers including Chainlink, Pyth, and similar services. Each data source reports prices independently, and the aggregator applies median filtering to exclude outliers before calculating the reference price used by the protocol.
+
+Oracle validation includes staleness detection, which rejects data older than a defined threshold, and deviation bounds that flag any individual feed reporting prices far from the consensus median. If sufficient feeds become unavailable or stale, the system treats this as a circuit breaker condition rather than attempting to proceed with incomplete data. This conservative approach to data quality prevents the protocol from making decisions based on potentially manipulated or failed oracle feeds.
+
+The oracle-derived reference price updates on a regular cadence, typically every 15 to 30 seconds during normal conditions. Updates include built-in rate limiting that caps how much the reference price can change in a single update, preventing sudden jumps from creating exploitable arbitrage opportunities. This price smoothing through rate-limited updates balances responsiveness to real market movements with protection against oracle manipulation or failure.
+
+
+# Architecture Overview
+
+
+
+# Architecture Overview
+
+ETO's architecture is designed to solve a specific problem: maintaining reliable on-chain prices that closely track real-world asset values while providing usable liquidity and explicit safety boundaries. The system achieves this through three integrated layers that respond to different market conditions, oracle-based pricing that aggregates multiple data sources, and token economics that keep supply and value transparent and verifiable.
+
+The architecture prioritizes predictability over complexity. Each mechanism has defined operating conditions, clear triggers for activation, and known limits on its authority. This makes system behavior understandable and allows users to reason about what will happen under various market scenarios.
+
+## The Core Challenge
+
+Traditional financial markets maintain price alignment through centralized intermediaries, custody relationships, and multi-day settlement processes. Bringing real-world asset exposure on-chain eliminates these intermediaries but creates a new challenge: how to keep the on-chain token price synchronized with external reference prices when those prices change continuously and the on-chain system has no direct authority over the underlying assets.
+
+ETO addresses this through a combination of oracle-based reference pricing, concentrated liquidity that makes arbitrage efficient, and reserve-backed stabilization that can absorb larger dislocations. The goal is not perfect alignment at every moment but rather tight tracking over relevant time horizons with explicit bounds on maximum deviation.
+
+## Three-Layer Stability System
+
+ETO employs a three-layer defense system where each layer handles progressively more severe price deviations. This layered approach concentrates capital and operational complexity where it delivers the most value while keeping the system efficient during normal conditions.
+
+## Dive Deeper
+
+* [Dynamic Market Maker](/docs/architecture/dynamic-market-maker) — Concentrated liquidity that recenters around the oracle price for tight spreads in normal conditions.
+* [Peg Stability Module](/docs/architecture/peg-stability-module) — Reserve-backed interventions when prices move outside the DMM band.
+* [Circuit Breakers](/docs/architecture/circuit-breakers) — Three-tier safety controls that throttle or halt operations during sustained deviations or oracle issues.
+* [Oracle Aggregation](/docs/architecture/oracle-aggregation) — How multiple feeds are combined, filtered, and rate-limited to produce reliable reference prices.
+* [Token Economics](/docs/architecture/reflective-price-index) — Fixed supply, reserve-backed value accrual, and composability choices that keep the index predictable.
+
+
+# Peg Stability Module
+
+
+
+# Peg Stability Module
+
+When market prices drift beyond the DMM's operating range, the Peg Stability Module activates as a second line of defense. The PSM holds reserves of both the index token and stablecoins, allowing it to trade against the market to apply corrective pressure. Unlike the DMM which provides passive liquidity, the PSM actively intervenes when deviation exceeds defined thresholds.
+
+The PSM's activation threshold is typically set at the outer edge of the DMM's band. If the on-chain market price trades at a premium to the oracle reference price beyond this threshold, the PSM can sell index tokens from its reserves to push the price down. If the market trades at a discount, the PSM can buy tokens to push the price up. These interventions are rate-limited and subject to utilization caps to prevent reserve depletion during sustained one-directional pressure.
+
+The PSM captures spread during these operations. When it intervenes, it trades at the oracle reference price plus or minus a small fee. This fee structure means the PSM tends to generate revenue during periods of elevated volatility, which helps maintain its reserve buffers over time. The captured spread does not go to any individual but rather accrues to the protocol's net asset value, benefiting all token holders proportionally.
+
+The PSM operates with explicit constraints on how much capital it can deploy per transaction, per hour, and per day. These constraints prevent the PSM from exhausting its reserves during extreme scenarios and ensure that its interventions remain economically rational. If market pressure persists beyond what the PSM can handle within its constraints, the system escalates to the third layer of protection.
+
+
+# Reflective Price Index
+
+
+
+# Reflective Price Index
+
+ETO's token supply is fixed at genesis and never inflates. All tokens are minted once into a protocol-controlled vault. Circulating supply changes only in response to net liquidity flows in or out of the protocol's controlled pools. When users deposit stablecoins to acquire index tokens, the vault releases tokens to pair with that incoming liquidity. When users redeem tokens for stablecoins, excess tokens return to the vault.
+
+This flow-based supply mechanism means circulating supply naturally tracks the amount of stablecoin capital backing the protocol. There is no minting authority that can inflate supply, and there is no burning mechanism that permanently destroys tokens. Instead, tokens move between active circulation and vault storage based purely on user demand for exposure.
+
+Value accrual happens through the protocol's net asset value rather than through token burns or buybacks. When the PSM captures spread during stabilization operations, that value flows into the protocol's reserve composition, improving the backing ratio. When trading fees are collected, they contribute to the same pool. Token holders benefit from this value accrual proportionally through the increasing net asset value of the protocol relative to circulating supply.
+
+## Integration and Composability
+
+ETO's index tokens are standard ERC-20 assets with no special transfer restrictions or complex redemption requirements. This means they integrate naturally with existing DeFi infrastructure. The tokens can serve as collateral in lending markets, be held in multi-signature wallets, participate in liquidity pools on other protocols, or be used in structured products and derivatives.
+
+The architecture deliberately avoids mechanisms that would break composability. There are no rebasing operations that automatically change user balances. There are no whitelists that restrict which addresses can hold tokens. There are no forced redemptions that could surprise downstream integrators. The stability mechanisms operate at the protocol level through liquidity pools and reserves, not at the token level through balance manipulation.
+
+This composability extends to the protocol's cross-chain design. While the core protocol operates on an Avalanche-powered subnet, the architecture includes cross-chain messaging infrastructure that allows tokens to exist as wrapped representations on other networks. Users can bridge tokens between chains through standard interfaces, and the protocol's stability mechanisms continue to operate regardless of which chain users are trading on.
+
+
+# Overview
+
+
+
+# Architecture Overview
+
+ETO's architecture is designed to solve a specific problem: maintaining reliable on-chain prices that closely track real-world asset values while providing usable liquidity and explicit safety boundaries. The system achieves this through three integrated layers that respond to different market conditions, oracle-based pricing that aggregates multiple data sources, and token economics that keep supply and value transparent and verifiable.
+
+The architecture prioritizes predictability over complexity. Each mechanism has defined operating conditions, clear triggers for activation, and known limits on its authority. This makes system behavior understandable and allows users to reason about what will happen under various market scenarios.
+
+## The Core Challenge
+
+Traditional financial markets maintain price alignment through centralized intermediaries, custody relationships, and multi-day settlement processes. Bringing real-world asset exposure on-chain eliminates these intermediaries but creates a new challenge: how to keep the on-chain token price synchronized with external reference prices when those prices change continuously and the on-chain system has no direct authority over the underlying assets.
+
+ETO addresses this through a combination of oracle-based reference pricing, concentrated liquidity that makes arbitrage efficient, and reserve-backed stabilization that can absorb larger dislocations. The goal is not perfect alignment at every moment but rather tight tracking over relevant time horizons with explicit bounds on maximum deviation.
+
+## Three-Layer Stability System
+
+ETO employs a three-layer defense system where each layer handles progressively more severe price deviations. This layered approach concentrates capital and operational complexity where it delivers the most value while keeping the system efficient during normal conditions.
+
+## Dive Deeper
+
+* [Dynamic Market Maker](/docs/architecture/dynamic-market-maker) — Concentrated liquidity that recenters around the oracle price for tight spreads in normal conditions.
+* [Peg Stability Module](/docs/architecture/peg-stability-module) — Reserve-backed interventions when prices move outside the DMM band.
+* [Circuit Breakers](/docs/architecture/circuit-breakers) — Three-tier safety controls that throttle or halt operations during sustained deviations or oracle issues.
+* [Oracle Aggregation](/docs/architecture/oracle-aggregation) — How multiple feeds are combined, filtered, and rate-limited to produce reliable reference prices.
+* [Token Economics](/docs/architecture/reflective-price-index) — Fixed supply, reserve-backed value accrual, and composability choices that keep the index predictable.
+
+***
+
+title: Reflective Price Index
+description: Understanding the Reflective Price Index mechanism
+---------------------------------------------------------------
+
+# Reflective Price Index
+
+ETO's token supply is fixed at genesis and never inflates. All tokens are minted once into a protocol-controlled vault. Circulating supply changes only in response to net liquidity flows in or out of the protocol's controlled pools. When users deposit stablecoins to acquire index tokens, the vault releases tokens to pair with that incoming liquidity. When users redeem tokens for stablecoins, excess tokens return to the vault.
+
+This flow-based supply mechanism means circulating supply naturally tracks the amount of stablecoin capital backing the protocol. There is no minting authority that can inflate supply, and there is no burning mechanism that permanently destroys tokens. Instead, tokens move between active circulation and vault storage based purely on user demand for exposure.
+
+Value accrual happens through the protocol's net asset value rather than through token burns or buybacks. When the PSM captures spread during stabilization operations, that value flows into the protocol's reserve composition, improving the backing ratio. When trading fees are collected, they contribute to the same pool. Token holders benefit from this value accrual proportionally through the increasing net asset value of the protocol relative to circulating supply.
+
+## Integration and Composability
+
+ETO's index tokens are standard ERC-20 assets with no special transfer restrictions or complex redemption requirements. This means they integrate naturally with existing DeFi infrastructure. The tokens can serve as collateral in lending markets, be held in multi-signature wallets, participate in liquidity pools on other protocols, or be used in structured products and derivatives.
+
+The architecture deliberately avoids mechanisms that would break composability. There are no rebasing operations that automatically change user balances. There are no whitelists that restrict which addresses can hold tokens. There are no forced redemptions that could surprise downstream integrators. The stability mechanisms operate at the protocol level through liquidity pools and reserves, not at the token level through balance manipulation.
+
+This composability extends to the protocol's cross-chain design. While the core protocol operates on an Avalanche-powered subnet, the architecture includes cross-chain messaging infrastructure that allows tokens to exist as wrapped representations on other networks. Users can bridge tokens between chains through standard interfaces, and the protocol's stability mechanisms continue to operate regardless of which chain users are trading on.
+
+***
+
+title: Dynamic Market Maker
+description: How the Dynamic Market Maker works
+-----------------------------------------------
+
+# Dynamic Market Maker
+
+The Dynamic Market Maker serves as the primary liquidity layer during normal market conditions. Rather than spreading liquidity across a wide price range as traditional automated market makers do, the DMM concentrates capital in a narrow band around the current oracle-referenced price. This concentrated approach delivers approximately 200 times the capital efficiency of a full-range market maker, meaning the same liquidity depth can be maintained with significantly less capital.
+
+The DMM operates within a defined band, typically set at plus or minus 0.25 percent around the reference price during market hours and slightly wider during off-hours when underlying markets are closed. When the market price approaches the edges of this band, the DMM automatically recenters its liquidity range to track the new price level. This recentering happens frequently during volatile markets and rarely during stable periods, with the gas costs of recentering operations factored into the overall economic design.
+
+Users trading within the DMM's active range experience tight spreads and minimal price impact. The concentrated liquidity means that typical trade sizes can be executed with slippage measured in basis points rather than percentage points. This first layer handles the vast majority of normal trading activity without requiring intervention from deeper stability mechanisms.
+
+***
+
+title: Peg Stability Module
+description: Understanding the Peg Stability Module
+---------------------------------------------------
+
+# Peg Stability Module
+
+When market prices drift beyond the DMM's operating range, the Peg Stability Module activates as a second line of defense. The PSM holds reserves of both the index token and stablecoins, allowing it to trade against the market to apply corrective pressure. Unlike the DMM which provides passive liquidity, the PSM actively intervenes when deviation exceeds defined thresholds.
+
+The PSM's activation threshold is typically set at the outer edge of the DMM's band. If the on-chain market price trades at a premium to the oracle reference price beyond this threshold, the PSM can sell index tokens from its reserves to push the price down. If the market trades at a discount, the PSM can buy tokens to push the price up. These interventions are rate-limited and subject to utilization caps to prevent reserve depletion during sustained one-directional pressure.
+
+The PSM captures spread during these operations. When it intervenes, it trades at the oracle reference price plus or minus a small fee. This fee structure means the PSM tends to generate revenue during periods of elevated volatility, which helps maintain its reserve buffers over time. The captured spread does not go to any individual but rather accrues to the protocol's net asset value, benefiting all token holders proportionally.
+
+The PSM operates with explicit constraints on how much capital it can deploy per transaction, per hour, and per day. These constraints prevent the PSM from exhausting its reserves during extreme scenarios and ensure that its interventions remain economically rational. If market pressure persists beyond what the PSM can handle within its constraints, the system escalates to the third layer of protection.
+
+***
+
+title: Oracle Aggregation
+description: How ETO aggregates oracle data
+-------------------------------------------
+
+# Oracle Aggregation
+
+The stability mechanisms described above all depend on accurate reference pricing. ETO aggregates price data from multiple independent oracle providers including Chainlink, Pyth, and similar services. Each data source reports prices independently, and the aggregator applies median filtering to exclude outliers before calculating the reference price used by the protocol.
+
+Oracle validation includes staleness detection, which rejects data older than a defined threshold, and deviation bounds that flag any individual feed reporting prices far from the consensus median. If sufficient feeds become unavailable or stale, the system treats this as a circuit breaker condition rather than attempting to proceed with incomplete data. This conservative approach to data quality prevents the protocol from making decisions based on potentially manipulated or failed oracle feeds.
+
+The oracle-derived reference price updates on a regular cadence, typically every 15 to 30 seconds during normal conditions. Updates include built-in rate limiting that caps how much the reference price can change in a single update, preventing sudden jumps from creating exploitable arbitrage opportunities. This price smoothing through rate-limited updates balances responsiveness to real market movements with protection against oracle manipulation or failure.
+
+***
+
+title: Circuit Breakers
+description: Safety mechanisms and circuit breakers
+---------------------------------------------------
+
+# Circuit Breakers
+
+Circuit breakers represent the final safeguard layer, activating under conditions that exceed both the DMM's normal operating range and the PSM's intervention capacity. These mechanisms monitor sustained deviations between on-chain prices and oracle references, oracle data staleness, and rapid liquidity changes. When predefined thresholds are exceeded, circuit breakers automatically throttle or halt specific protocol operations.
+
+The circuit breaker system operates in three tiers. Warning mode activates when deviation exceeds one percent for a sustained period, increasing monitoring intensity and sending alerts but making no operational changes. Throttle mode engages at two percent sustained deviation, reducing the magnitude of price updates and slowing recentering operations to prevent rapid system adjustments during uncertain conditions. Halt mode triggers at five percent sustained deviation or under severe oracle failures, temporarily pausing price updates and stabilization mechanisms entirely.
+
+During a halt, users can still exit positions but the protocol will not process new price updates or rebalancing operations until the triggering condition resolves. This prevents the protocol from making decisions based on potentially corrupted data. If a halt persists and the issue cannot be resolved through normal recovery procedures, the protocol includes emergency procedures to return user funds in stablecoins rather than leaving capital locked indefinitely.
+
+The three-tier design with explicit hysteresis prevents rapid oscillation between states. Activation thresholds differ from deactivation thresholds, ensuring the system does not rapidly toggle between warning and normal operation or between throttle and warning. This stability in state transitions makes circuit breaker behavior predictable and gives each state time to serve its intended purpose.
+
+
+# Background
+
+
+
+## The Diversification Problem
+
+Crypto portfolios tend to move together. When Bitcoin falls, most liquid tokens fall with it. When risk appetite returns, it often returns across the board. For investors trying to manage drawdowns, this correlation creates a structural constraint: there is limited diversification *within* the asset class.
+
+Public equities offer a partial counterweight. Large U.S. technology stocks, for example, have often exhibited lower correlation to crypto than crypto assets show to each other. Exposure to companies like Apple or Nvidia alongside ETH can reduce portfolio volatility without requiring an investor to fully exit on-chain markets.
+
+The target state is clear: preserve self-custody and composability, but add exposure to assets that do not move in lockstep with crypto. This objective drove the first wave of attempts to bring equity exposure on-chain.
+
+## Early Approaches to On-Chain Equity Exposure
+
+Two broad architectures emerged: synthetic assets and custody-backed tokens. Both can provide price exposure, but each introduces tradeoffs that become more visible under stress.
+
+### Synthetic Assets
+
+Early systems used synthetic tokens that tracked stock prices without holding the underlying shares. Protocols such as Mirror Protocol (Terra) and Synthetix allowed users to mint or trade synthetic exposure using overcollateralized positions and oracle price feeds.
+
+This approach avoided traditional intermediaries. There was no brokerage account holding shares, typically no KYC gate at the protocol level, and access was globally permissionless. Synthetic exposure could also trade continuously, independent of equity market hours.
+
+The limiting factor is that the peg depends on incentives and mechanism performance. Synthetic systems rely on liquidations and arbitrage to keep prices aligned with oracle references. Under extreme volatility or impaired liquidity, these mechanisms can lag, become expensive, or fail to clear. If the collateral underpinning the system becomes unstable, the synthetic market can unwind quickly. In May 2022, the Terra ecosystem collapse caused severe dislocations across dependent protocols, and Mirror’s synthetic assets did not regain durable, reliable pegs.
+
+Even in normal regimes, synthetics tend to carry ongoing frictions: oracle latency can create extractable arbitrage, and overcollateralization reduces capital efficiency relative to the exposure created.
+
+### Custody-Backed Tokens
+
+A second class of products issued tokens backed one-to-one by shares held with a custodian. In this model, when a user purchases tokenized equity, corresponding shares are held in off-chain accounts intended to support redemption.
+
+This architecture simplifies price tracking: redeemability anchors the token’s value to the underlying asset. The peg is not primarily maintained by an on-chain algorithm, but by a legal and operational claim on custody-held shares.
+
+The tradeoff is that the custody model reintroduces intermediaries. Users must trust the custodian and associated operators to remain solvent and to honor redemptions. Access commonly requires KYC and jurisdictional filtering. Settlement depends on traditional financial rails, so minting and redemption can take hours or days rather than seconds. In many implementations, tokens are also less composable with permissionless DeFi due to transfer restrictions or issuer controls.
+
+Custody-backed designs can deliver exposure with strong tracking, but they often weaken the properties that make on-chain assets useful: self-custody, programmability, and permissionless integration.
+
+## Why ETO Exists
+
+Taken together, these histories point to a consistent set of constraints that a “native” on-chain approach needs to satisfy simultaneously, rather than trading one property off against another.
+
+A viable design must maintain tight price reflection under stress, preserve self-custody in a standard token form, and keep settlement on-chain and immediate. It must also support sustainable liquidity—capital-efficient enough to be usable without permanent subsidies—while embedding explicit safety controls for oracle failure modes and market dislocations.
+
+ETO represents an iteration in this direction: a non-custodial model for equity-basket price exposure that is designed to reduce dependence on off-chain share custody, issuer-mediated redemption, and the operational gating that typically follows from those dependencies (such as KYC workflows, jurisdictional access controls, and slower settlement). The next section introduces ETO at a conceptual level, and the Architecture section details the mechanisms used to maintain price reflection, liquidity, and safety.
+
+
+# Trust and Security
+
+
+
+# Trust and Security
+
+ETO's security approach operates across three layers: independent verification through continuous auditing, protocol-level safety mechanisms encoded in smart contracts, and operational monitoring that detects and responds to emerging threats. No security model eliminates all risk, but this architecture is designed to make the most common failure modes explicit, bounded, and recoverable.
+
+## Independent Security Audits
+
+ETO maintains a continuous audit engagement with Octane Security, a smart contract security firm specializing in DeFi protocols. Unlike point-in-time audits that examine code at a single moment, this arrangement provides ongoing review as the protocol evolves. Octane Security's work includes code review for all contract deployments, monitoring of deployed contracts for anomalous behavior, security advisory support for architectural decisions, and incident response capabilities if issues are discovered.
+
+This continuous relationship means security review happens throughout the development lifecycle rather than only before launch. As new features are developed or existing contracts are upgraded, they undergo the same rigorous examination that applied to the initial implementation. The ongoing nature of this engagement also means that emerging threats or newly discovered vulnerability patterns can be assessed against ETO's deployed contracts even if those threats were unknown at the time of initial deployment.
+
+All audit reports are published once remediation is complete. Current and historical audit reports are available in the Audits section of this documentation. Each report includes scope definition, findings categorized by severity, remediation status, and any acknowledged residual risks. This transparency allows users and integrators to make informed decisions based on the same security assessment available to the development team.
+
+## Protocol-Level Safeguards
+
+Security mechanisms are encoded directly into the protocol's smart contracts, creating automated protection that operates independently of any individual's actions. These safeguards define the boundaries within which the protocol can operate and specify what happens when those boundaries are approached or exceeded.
+
+Circuit breakers monitor deviation between on-chain token prices and oracle-provided reference prices. When deviation exceeds defined thresholds for a sustained period, the system automatically pauses price updates and stabilization mechanisms. This prevents the protocol from executing trades or adjustments based on potentially compromised data. Users can still exit positions during circuit breaker activation, but the protocol will not process new pricing updates until the issue is resolved. The specific thresholds and persistence windows are calibrated to distinguish between normal market volatility and genuine system stress.
+
+Oracle validation aggregates price data from multiple independent sources and applies bounds checking before accepting any feed. If a price source reports values that deviate significantly from the median of other sources, that feed is excluded from calculations. If sufficient feeds are unavailable or stale beyond acceptable thresholds, the system treats this as a circuit breaker condition rather than proceeding with incomplete data. This multi-source approach combined with active validation reduces the risk that any single oracle failure or manipulation attempt can corrupt the protocol's price reference.
+
+Rate limiting constrains how quickly capital can flow in or out of protocol-controlled pools. These limits prevent rapid drainage scenarios where an attacker or bug could extract the majority of liquidity in a short timeframe. The limits are calibrated to allow normal trading activity while making economically significant exploits visible and interruptible. If an unusual pattern emerges that suggests coordinated extraction or a malfunctioning contract, the rate limits buy time for monitoring systems to detect the issue and for the guardian role to intervene if necessary.
+
+Administrative timelocks enforce waiting periods on protocol upgrades and parameter changes. Critical modifications cannot be executed immediately upon proposal. Instead, they must be publicly announced and wait through a defined timelock period before activation. This gives users visibility into pending changes and time to exit if they disagree with proposed modifications. The timelock mechanism makes governance actions transparent and predictable rather than allowing opaque or sudden changes to protocol behavior.
+
+For complete technical specifications of these mechanisms, see [Architecture → Safety Controls](/docs/architecture/safety-controls).
+
+## Ongoing Monitoring and Response
+
+Security is not a one-time achievement but an ongoing operational discipline. ETO maintains monitoring infrastructure that tracks protocol health metrics, oracle feed reliability, liquidity pool composition, and contract interaction patterns. This monitoring operates continuously and generates alerts when observed behavior deviates from expected patterns.
+
+When monitoring detects anomalies, automated alerts notify the security response team. For high-severity issues, the protocol's guardian role can pause affected modules immediately while the issue is investigated. This guardian capability is deliberately limited in scope. It can halt operations to prevent further damage but cannot move user funds or modify core protocol logic. The separation between emergency pause authority and fund control authority reduces the risk that any single compromised key or malicious actor could both halt the protocol and extract capital.
+
+Incident response procedures define clear escalation paths, communication protocols, and remediation workflows. If a vulnerability is discovered, the priority hierarchy is user fund safety first, protocol stability second, and feature availability third. Users will receive clear communication about any security incidents, their impact, and remediation steps through official channels. The protocol will not resume normal operations until the issue is understood, remediated, and verified.
+
+<Callout type="info">
+  ## Responsible Disclosure
+
+  If you discover a security vulnerability in ETO's contracts or infrastructure, please report it responsibly by emailing [security@eto.finance](mailto:security@eto.finance). Do not disclose vulnerabilities publicly before giving the team reasonable time to assess and remediate. Reports submitted through this channel will receive timely acknowledgment and investigation.
+</Callout>
+
+***
+
+**Next:**
+
+* [Trust and Security → Audits](/docs/security/audits) for published audit reports
+* [Architecture → Safety Controls](/docs/architecture/safety-controls) for technical implementation details
+* [Risk Disclosure](/docs/risk-disclosure) for comprehensive risk information
+
+
+# What is ETO?
+
+
+
+# What is ETO?
+
+ETO issues on-chain index tokens that provide exposure to global equities, commodities, and real-world assets through a self-custodied, permissionless infrastructure. The protocol enables users to diversify beyond crypto markets while maintaining full control of their assets and accessing the composability of DeFi.
+
+Traditional market access requires intermediaries, multi-day settlement, geographic restrictions, and custody relationships. ETO eliminates these barriers by bringing real-world market exposure directly on-chain, where it can be held in any wallet, traded against stablecoins, and integrated into DeFi protocols without relying on custody-backed redemption programs.
+
+## DeFi-Native by Design
+
+ETO's infrastructure is built on core DeFi principles that differentiate it from centralized or custody-based alternatives:
+
+**Self-custody**: Users hold assets directly in their own wallets with no intermediary control.
+
+**Permissionless access**: Interaction is wallet-based, not account-based. No gatekeepers, no application process.
+
+**Composability**: Assets behave like standard ERC-20 tokens and integrate seamlessly across protocols.
+
+**Transparency**: System behavior is defined by on-chain contracts and verifiable data inputs.
+
+**Instant settlement**: Trades and transfers finalize on-chain immediately, not in days.
+
+These properties shape both what users hold (the tokens) and how the system maintains pricing and liquidity.
+
+## The Products
+
+### On-Chain Index Tokens
+
+ETO's core products are index tokens that track real-world reference prices using oracle-based mechanisms. Users can acquire, hold, transfer, and exit these tokens with stablecoins in a way that resembles typical DeFi usage: simple custody, programmatic integrations, and on-chain settlement.
+
+### Infrastructure Layer
+
+Beyond the tokens themselves, ETO provides the underlying infrastructure for pricing, liquidity, and risk management. This infrastructure supports both ETO's own index products and potential integration partners who want to build on the same foundation.
+
+## How Pricing and Liquidity Work
+
+ETO maintains reliable pricing and usable liquidity through three integrated systems. The technical details are covered in the [Architecture](/docs/architecture/overview) section, but here's what matters for users:
+
+**Dynamic pricing**: Token prices continuously reflect real-world reference prices through oracle feeds, with built-in smoothing and bounds checking.
+
+**Concentrated liquidity**: A Dynamic Market Maker (DMM) keeps most liquidity in a tight band around the current reference price, delivering low spreads and high execution quality.
+
+**Peg stability**: When market prices drift beyond normal ranges, a Peg Stability Module (PSM) applies backstop pressure using protocol reserves to help the market re-align.
+
+**Safety controls**: Circuit breakers and rate limits throttle or pause specific actions under defined stress conditions, making failure modes explicit and system behavior predictable.
+
+These mechanisms work together to keep on-chain prices closely aligned with external reference values while maintaining usable liquidity and explicit safety controls. See [Architecture → Overview](/docs/architecture/overview) for the complete technical design.
+
+## MAANG: 5 Tech Giants, 1 Token
+
+ETO's first flagship product is **MAANG**, an index token representing exposure to five large-cap technology companies:
+
+* Meta
+* Amazon
+* Apple
+* Nvidia
+* Google (Alphabet)
+
+MAANG is designed to provide price exposure to this basket through the protocol's oracle-based tracking system. It does not confer shareholder rights, dividends, or a claim on custody-held shares. The token is held and used like any other ERC-20 asset.
+
+MAANG demonstrates ETO's core value proposition in concrete terms: "five giants in one token," with self-custody, stablecoin entry/exit, and full DeFi composability. To acquire MAANG, see the [User Guide → Buy](/docs/introduction/user-guide/buy).
+
+## Who ETO Is For
+
+ETO serves users and teams seeking real-world market exposure without leaving on-chain infrastructure:
+
+**DeFi power users** can rotate risk away from pure crypto beta while maintaining self-custody and composability.
+
+**Passive diversifiers** can hold basket-style tokens with straightforward custody and stablecoin entry/exit.
+
+**Traders and aggregators** prioritize execution quality, narrow spreads, and predictable liquidity behavior.
+
+**Builders and integrators** can use ETO assets and liquidity primitives inside wallets, applications, and other DeFi products.
+
+<Callout type="warning">
+  ## Safety, Risk, and Scope Clarity
+
+  ETO is non-custodial at the user level, but it is not risk-free.
+
+  **No guarantees**: Principal is at risk. Token prices can move against you.
+
+  **Variable outcomes**: Any yield mechanisms are market-dependent and not guaranteed.
+
+  **Scope clarity**: ETO is positioned as an on-chain index infrastructure provider and asset issuer, not a broker, ETF wrapper, or custody-backed token issuer.
+
+  Users should do their own research and consider their own risk tolerance before participating.
+</Callout>
+
+***
+
+**Next:**
+
+* Read [What is MAANG?](/docs/introduction/what-is-maang) for product specifics and trading details.
+* See [Architecture → Overview](/docs/architecture/overview) for the technical model behind pricing, liquidity, and safety.
+
+
+# What is MAANG?
+
+
+
+# What is MAANG?
+
+MAANG is an index token that provides exposure to five major technology companies—Meta, Amazon, Apple, Nvidia, and Google—through a single ERC-20 asset. The token tracks the unweighted average price of these five equities using oracle-based pricing, enabling users to hold diversified tech exposure in their own wallets and trade it with stablecoins on-chain.
+
+Traditional access to this basket would require opening a brokerage account, purchasing each stock individually, dealing with multi-day settlement, and accepting custody relationships. MAANG collapses this into a single token that can be acquired instantly with USDC, held in any wallet, and integrated into DeFi protocols without intermediaries.
+
+## The Basket
+
+MAANG tracks an **unweighted average** of five technology companies:
+
+* **Meta** (Facebook)
+* **Amazon**
+* **Apple**
+* **Nvidia**
+* **Google** (Alphabet)
+
+The basket composition never changes, and weights are never rebalanced. Each company contributes equally to the index price regardless of individual market capitalization. This design eliminates the need for ongoing rebalancing operations, which would introduce additional intermediaries and trust assumptions.
+
+MAANG does not confer ownership of the underlying shares, does not distribute dividends, and provides no shareholder rights. It is purely a price exposure instrument.
+
+## How to Access MAANG
+
+MAANG runs on an Avalanche-powered L1 subnet designed specifically for ETO's index products. Users acquire MAANG through ETO's swap interface using USDC from multiple networks. The interface includes automatic routing to the ETO subnet, eliminating manual bridging.
+
+Contract addresses should always be verified through the official ETO application interface, not documentation. The interface displays current contract addresses which can be cross-referenced against verified contracts on the block explorer.
+
+For detailed acquisition instructions, see [User Guide → Buy](/docs/introduction/user-guide/buy).
+
+<Callout type="warning">
+  ## Risk Disclosure
+
+  MAANG involves multiple risk categories that users should understand before participating:
+
+  **Smart contract risk**: Protocol functionality depends on smart contract code which may contain bugs or vulnerabilities despite security audits.
+
+  **Oracle and infrastructure risk**: Price data relies on external oracle providers. Oracle failures, delays, or manipulation could affect pricing accuracy.
+
+  **Stablecoin risk**: The system uses USDC for settlements. Issues with USDC itself would affect the ability to enter or exit positions.
+
+  **Administrative risk**: The protocol includes administrative controls for upgrades and emergency interventions. These controls could be misused or compromised.
+
+  **Regulatory risk**: The regulatory status of tokenized equity exposure varies by jurisdiction and may change over time. Users are responsible for understanding their local regulations.
+
+  **No investment advice**: Nothing in this documentation constitutes investment advice. Users should conduct their own research and consult appropriate advisors before participating.
+
+  **No underlying ownership**: MAANG does not represent ownership of the underlying stocks, does not receive dividends, and confers no shareholder rights.
+</Callout>
+
+***
+
+**Next:**
+
+* [User Guide → Buy](/docs/introduction/user-guide/buy) to acquire MAANG
+* [User Guide → Stake](/docs/introduction/user-guide/stake) to earn staking yields
+* [Architecture → Overview](/docs/architecture/overview) for technical implementation details
+
+
+# Bootstrap Deployment
+
+
+
+# Bootstrap Deployment
+
+The DRI Protocol implements a **bootstrap system** that resolves circular dependencies and enables safe initialization from zero to fully operational state.
+
+***
+
+## The Problem
+
+### Circular Dependencies
+
+```
+┌──────────────────────────────────────────────────────────┐
+│               CIRCULAR DEPENDENCY PROBLEM                 │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│   DRIController ────────▶ Needs DMM address (constructor) │
+│        ▲                                                  │
+│        │                                                  │
+│        └──────────────── DMM needs DRIController address  │
+│                                                           │
+│   Traditional deployment becomes IMPOSSIBLE               │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Additional Challenges
+
+| Challenge                  | Impact                                                 |
+| -------------------------- | ------------------------------------------------------ |
+| **Oracle Chicken-and-Egg** | System required 3+ oracles before providing price data |
+| **Strict Validation**      | Production thresholds prevented initial setup          |
+| **No Degradation**         | No graceful path from zero to operational              |
+
+***
+
+## Bootstrap Solutions
+
+### Bootstrap Oracle System
+
+| Solution            | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| Single Oracle Start | Allows starting with a single oracle source    |
+| Gradual Transition  | Smooth transition to multi-oracle requirement  |
+| Lenient Validation  | Relaxed validation during initialization phase |
+| Upgrade Path        | Clear upgrade path to production mode          |
+
+### Settable DMM Address
+
+| Solution            | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| Delayed Dependency  | DRIController deploys without DMM dependency         |
+| Post-Deploy Setting | DMM address set after DMM deployment                 |
+| One-Time Setter     | Function with proper authorization                   |
+| Security Maintained | Maintains security while solving circular dependency |
+
+### Lenient Bootstrap Mode
+
+| Solution           | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| Relaxed Thresholds | Relaxed validation thresholds during bootstrap     |
+| Higher Staleness   | Higher staleness tolerance for initial oracle data |
+| Expanded Limits    | Expanded deviation limits for circuit breakers     |
+| Auto-Transition    | Automatic transition to strict mode when ready     |
+
+***
+
+## Bootstrap Deployment Process
+
+### Phase 1: Foundation Deployment
+
+```solidity
+// Deploy core tokens
+DRIToken driToken = new DRIToken(
+    "Dynamic Reflective Index", 
+    "DRI", 
+    50_000_000e18, 
+    owner
+);
+GOVDRIToken govToken = new GOVDRIToken(owner);
+MockUSDC usdcToken = new MockUSDC();
+
+// Deploy bootstrap oracle system
+BootstrapOracle oracleAggregator = new BootstrapOracle(governance);
+MockOracle oracle1 = new MockOracle(100e18, 3600, 18);
+oracleAggregator.addOracle(address(oracle1), 10000);
+```
+
+### Phase 2: Core System Deployment
+
+```solidity
+// Deploy controller without DMM dependency
+BootstrapDRIController driController = new BootstrapDRIController(
+    address(oracleAggregator),
+    100e18, // Initial reflective price
+    owner
+);
+
+// Deploy DMM with controller reference
+DynamicMarketMaker dmm = new DynamicMarketMaker(
+    address(driToken),
+    address(usdcToken), 
+    address(driController),
+    owner
+);
+
+// Resolve circular dependency
+driController.setLiquidityPool(address(dmm));
+```
+
+### Phase 3: System Initialization
+
+```solidity
+// Fund initial liquidity
+driToken.mint(deployer, TOTAL_SUPPLY);
+driToken.approve(address(dmm), 10_000e18);
+usdcToken.approve(address(dmm), 1_000_000e6);
+dmm.addLiquidity(10_000e18, 1_000_000e6);
+
+// Fund PSM reserves  
+driToken.approve(address(psm), 100_000e18);
+usdcToken.approve(address(psm), 10_000_000e6);
+psm.fundReserve(100_000e18, 10_000_000e6);
+```
+
+### Phase 4: Production Transition
+
+```solidity
+// Add additional oracle sources
+oracleAggregator.addOracle(address(chainlinkOracle), 5000);
+oracleAggregator.addOracle(address(pythOracle), 5000);
+
+// Disable bootstrap mode when ready
+if (oracleAggregator.getActiveOracleCount() >= 3) {
+    oracleAggregator.disableBootstrapMode();
+    driController.disableBootstrapMode();
+}
+
+// Finalize token minting
+driToken.finalizeMinting();
+```
+
+***
+
+## Production Readiness Checklist
+
+### Technical Requirements
+
+<Callout>
+  **Technical Requirements Checklist:**
+
+  * **Oracle Diversity:** Minimum 3 different Oracle sources active
+  * **Liquidity Depth:** Sufficient DMM and PSM reserves funded
+  * **System Testing:** Complete end-to-end functionality verification
+  * **Performance Validation:** Gas optimization and efficiency testing
+  * **Integration Testing:** Cross-contract interaction validation
+</Callout>
+
+### Security Requirements
+
+<Callout type="warn">
+  **Security Requirements Checklist:**
+
+  * **Smart Contract Audits:** Professional audit completion and issue resolution
+  * **Bug Bounty Program:** Active bug bounty with appropriate rewards
+  * **Governance Setup:** Multisig configuration and key management
+  * **Emergency Procedures:** Response plans and contact protocols
+  * **Insurance Coverage:** Protocol insurance for major risk categories
+</Callout>
+
+### Operational Requirements
+
+<Callout type="info">
+  **Operational Requirements Checklist:**
+
+  * **Keeper Infrastructure:** Automated price sync and maintenance systems
+  * **Monitoring Systems:** Real-time system health and alerting
+  * **Documentation:** Complete user and developer documentation
+  * **Community Preparation:** Governance token distribution and education
+  * **Legal Compliance:** Regulatory review and compliance verification
+</Callout>
+
+***
+
+## Deployment Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DEPLOYMENT PHASES                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  PHASE 1: FOUNDATION                                            │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────────────┐    │
+│  │DRI Token│  │GOV-DRI  │  │  USDC   │  │BootstrapOracle  │    │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────────┬────────┘    │
+│       │            │            │                 │              │
+│       ▼            ▼            ▼                 ▼              │
+│  ═══════════════════════════════════════════════════════════    │
+│                                                                  │
+│  PHASE 2: CORE SYSTEM                                           │
+│  ┌─────────────────┐            ┌─────────────────┐             │
+│  │ DRI Controller  │◀──────────▶│      DMM        │             │
+│  │  (Bootstrap)    │            │  (Initialized)  │             │
+│  └────────┬────────┘            └────────┬────────┘             │
+│           │                              │                       │
+│           ▼                              ▼                       │
+│  ═══════════════════════════════════════════════════════════    │
+│                                                                  │
+│  PHASE 3: INITIALIZATION                                        │
+│  ┌─────────┐  ┌─────────┐  ┌─────────────────────────────┐     │
+│  │Liquidity│  │   PSM   │  │     Reserve Funding          │     │
+│  │ Funding │  │ Funding │  │ • DRI + USDC paired         │     │
+│  └─────────┘  └─────────┘  └─────────────────────────────┘     │
+│                                                                  │
+│  PHASE 4: PRODUCTION                                            │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐       │
+│  │ Multi-Oracle  │  │   Disable     │  │   Finalize    │       │
+│  │  Integration  │  │   Bootstrap   │  │    Minting    │       │
+│  └───────────────┘  └───────────────┘  └───────────────┘       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+***
+
+## Bootstrap Mode Parameters
+
+| Parameter                  | Bootstrap Mode         | Production Mode | Contract Parameter     |
+| -------------------------- | ---------------------- | --------------- | ---------------------- |
+| Min Oracle Count           | 1                      | 3               | `minQuorum`            |
+| Staleness Threshold        | 4 days (paper trading) | 15 minutes      | `maxOracleStaleness`   |
+| Sync Interval              | 30 seconds             | 15 seconds      | `syncInterval`         |
+| Max Delta Per Tick         | 3% (300 bps)           | 3% (300 bps)    | `maxDeltaPerTick: 300` |
+| Deviation Bounds           | ±20%                   | ±5%             | Circuit breaker config |
+| Circuit Breaker Thresholds | 2× normal              | 1%/2%/5%        | `warnThreshold: 100`   |
+
+<Callout type="info">
+  **Bootstrap vs Production:** The controller starts with `skipOracleValidation: true` and `maxOracleStaleness: 345600` (4 days) for paper trading. Call `disableBootstrapMode()` to switch to production parameters with 15-second sync intervals and 15-minute staleness.
+</Callout>
+
+<Callout type="warn">
+  **Security Note:** Production deployments MUST set `skipOracleValidation: false` and `maxOracleStaleness: 900` (15 minutes) to prevent stale oracle attacks.
+</Callout>
+
+***
+
+<Callout type="info">
+  **Next:** [Risk Analysis](/docs/tokenomics/risk-analysis) — Multi-dimensional risk assessment and mitigation strategies
+</Callout>
+
+
+# Capital Efficiency
+
+
+
+# Capital Efficiency
+
+The Dynamic Market Maker (DMM) achieves **200× capital efficiency** by concentrating all liquidity within a narrow band around the reflective price, rather than spreading it across all possible prices like traditional AMMs.
+
+***
+
+## Concentrated Liquidity
+
+### Core Concept
+
+| AMM Type       | Price Range                | Capital Efficiency |
+| -------------- | -------------------------- | ------------------ |
+| **Uniswap V2** | $[0, \infty]$              | 1× (baseline)      |
+| **DRI DMM**    | $[P - 0.25\%, P + 0.25\%]$ | 200×               |
+
+### Mathematical Foundation
+
+The DMM implements constant product within a restricted range:
+
+$$
+\left[P_{\text{center}} - \delta,\; P_{\text{center}} + \delta\right]
+$$
+
+Where:
+
+* $P_{\text{center}}$ = current reflective price
+* $\delta$ = band half-width (e.g., 25 basis points = 0.25%)
+
+Within this range, the traditional constant product formula applies:
+
+$$
+x \cdot y = k
+$$
+
+Where $x$ and $y$ represent token reserves and $k$ is the invariant.
+
+***
+
+## Capital Efficiency Calculation
+
+The capital efficiency gain is calculated as the ratio of the utilized price range:
+
+$$
+CE = \frac{\text{Full Range Width}}{\text{Concentrated Range Width}} = \frac{1}{2\delta}
+$$
+
+<Callout type="info">
+  **Result:** With $\delta = 0.25\%$ (25 basis points), the DMMv2\_CLMM achieves **200× capital efficiency** compared to full-range AMMs like Uniswap V2.
+</Callout>
+
+### Detailed Mathematical Derivation
+
+For a constant product AMM $x \cdot y = k$ within a price range $[P_{\min}, P_{\max}]$, the liquidity $L$ is related to reserves by:
+
+$$
+L = \sqrt{x \cdot y} = \sqrt{k}
+$$
+
+In a full-range AMM ($P_{\min} = 0$, $P_{\max} = \infty$), the relationship between price $P$ and reserves is:
+
+$$
+P = \frac{y}{x} \quad \Rightarrow \quad x = \sqrt{\frac{k}{P}},\; y = \sqrt{k \cdot P}
+$$
+
+**Full-Range AMM:**
+
+$$
+L_{\text{full}} = \frac{K}{2\sqrt{P}}
+$$
+
+**Concentrated Range AMM $[P(1-\delta), P(1+\delta)]$:**
+
+The virtual reserves at price boundaries are:
+
+$$
+x_{\text{virt}} = \frac{L}{\sqrt{P(1+\delta)}}, \quad y_{\text{virt}} = L \cdot \sqrt{P(1-\delta)}
+$$
+
+The real capital deployed is:
+
+$$
+K_{\text{concentrated}} \approx \frac{L \cdot \delta}{\sqrt{P}}
+$$
+
+The theoretical capital efficiency ratio is:
+
+$$
+CE_{\text{theoretical}} = \frac{1}{2\delta} = \frac{1}{2 \times 0.0025} = 200\times
+$$
+
+<Callout type="warn">
+  **Contract Implementation:** The DMMv2\_CLMM uses `halfWidthTicks` for band configuration. With `tickSpacing = 10` and `halfWidthTicks = 25`, this creates approximately ±0.25% bands, yielding **200× effective capital efficiency** after accounting for fees and rebalancing.
+</Callout>
+
+***
+
+## Price Impact Mathematics
+
+Within the concentrated band, the price impact function follows a modified constant product curve:
+
+### Swap Calculation
+
+For a swap of `Δx` tokens, the output `Δy` is calculated based on the constant product invariant within the band.
+
+### Slippage Analysis
+
+The slippage relative to the mid-price is approximately:
+
+$$
+\text{slippage} \approx -\frac{\Delta x}{2x}
+$$
+
+### Fee Integration
+
+With trading fee $f$, the net output becomes:
+
+$$
+\Delta y_{\text{net}} = (1-f) \cdot \Delta y
+$$
+
+***
+
+## Recentering Mechanism
+
+The DMM automatically re-centers its liquidity band when the market price deviates significantly from the reflective price.
+
+### Recentering Process
+
+| Step                       | Action                                                          |
+| -------------------------- | --------------------------------------------------------------- |
+| 1. Trigger Detection       | Monitor deviation between market and reflective price           |
+| 2. Fee Coverage Validation | Ensure accumulated fees cover impermanent loss                  |
+| 3. Band Recentering        | Shift liquidity to new price range centered on reflective price |
+| 4. State Update            | Update internal accounting and emit events                      |
+
+<Callout>
+  **Default Trigger:** 25 basis points (0.25%) deviation, matching the band half-width.
+</Callout>
+
+***
+
+## Fee Mechanism and Impermanent Loss Management
+
+### Trading Fees
+
+The DMM charges a **0.30% fee** (`feePips: 3000`) on all swaps, serving multiple purposes:
+
+| Purpose                   | Description                                   | Revenue Split  |
+| ------------------------- | --------------------------------------------- | -------------- |
+| Revenue Generation        | Provides income to cover operational costs    | 70% → Treasury |
+| Impermanent Loss Coverage | Accumulates funds to offset recentering costs | —              |
+| Governance Rewards        | Incentivizes governance participation         | 30% → Rewards  |
+| MEV Protection            | Reduces profitability of sandwich attacks     | —              |
+
+<Callout type="info">
+  **Fee Collection:** Fees accumulate in the DMM position and are collected via `collectFees(recipient)`. The 70/30 treasury/governance split should be implemented off-chain or via a fee distributor contract.
+</Callout>
+
+### Impermanent Loss Analysis
+
+Each band recentering operation incurs impermanent loss proportional to the square of the price movement:
+
+$$
+IL \approx \frac{\delta^2}{2}
+$$
+
+For $\delta = 0.25\%$, this represents approximately **0.03% of TVL** per recentering event.
+
+The fee accumulation requirement ensures:
+
+$$
+\text{Fees}_{\text{accumulated}} \geq \varphi \cdot IL_{\text{projected}}
+$$
+
+Where $\varphi$ is the fee coverage multiplier (default: 1.0).
+
+***
+
+## Liquidity-Adjusted Band Width
+
+For dynamic parameter adaptation:
+
+$$
+\delta_{\text{adaptive}} = \delta_{\text{base}} \times \sqrt{\frac{L_{\text{base}}}{L_{\text{current}}}}
+$$
+
+<Callout type="info">
+  This **widens bands when liquidity is thin**, reducing recentering frequency.
+</Callout>
+
+***
+
+## Integration with Price Updates
+
+The DMM integrates closely with the DRI Controller's price update mechanism:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   syncPrice() Flow                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. Deviation Check ──▶ Controller calculates M vs R         │
+│           │                                                  │
+│           ▼                                                  │
+│  2. Threshold Evaluation ──▶ Compare against 25bp trigger    │
+│           │                                                  │
+│           ▼                                                  │
+│  3. Fee Coverage Validation ──▶ Verify sufficient fees       │
+│           │                                                  │
+│           ▼                                                  │
+│  4. Band Shift Execution ──▶ DMM recenters around R          │
+│           │                                                  │
+│           ▼                                                  │
+│  5. State Synchronization ──▶ Update state, emit events      │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+***
+
+<Callout type="info">
+  **Next:** [Economic Model](/docs/tokenomics/economic-model) — Token architecture, distribution, and fee structure
+</Callout>
+
+
+# Economic Model
+
+
+
+# Economic Model
+
+The DRI Protocol implements a **dual-token architecture** separating economic exposure (DRI) from governance rights (GOV-DRI).
+
+***
+
+## Dual-Token Architecture
+
+### DRI Token — Economic Value
+
+| Property         | Value                                    |
+| ---------------- | ---------------------------------------- |
+| **Supply**       | 50,000,000 DRI (fixed, non-inflationary) |
+| **Purpose**      | Index tracking, economic participation   |
+| **Transferable** | ✓ Fully tradeable                        |
+| **Decimals**     | 18                                       |
+
+### GOV-DRI Token — Governance Rights
+
+| Property         | Value                       |
+| ---------------- | --------------------------- |
+| **Supply**       | 1,000,000 GOV-DRI (fixed)   |
+| **Purpose**      | Protocol governance, voting |
+| **Transferable** | ✗ Non-transferable          |
+| **Decimals**     | 18                          |
+
+<Callout type="warn">
+  **Fixed Supply:** DRI has no minting capability. The PSM contract explicitly enforces: `CRITICAL FIX: DRI has fixed supply - no minting allowed`.
+</Callout>
+
+***
+
+***
+
+## Genesis Allocation
+
+### DRI Token Distribution (50M Total)
+
+| Allocation               | Amount     | Percentage | Purpose                          |
+| ------------------------ | ---------- | ---------- | -------------------------------- |
+| **Dynamic Market Maker** | 20,000,000 | 40%        | Trading liquidity, ±0.25% bands  |
+| **Peg Stability Module** | 25,000,000 | 50%        | Reserve backing for arbitrage    |
+| **Expansion Buffer**     | 5,000,000  | 10%        | Milestone-based auction releases |
+
+### GOV-DRI Distribution
+
+Governance tokens are distributed to ensure decentralized control:
+
+| Allocation               | Percentage | Details                                                               |
+| ------------------------ | ---------- | --------------------------------------------------------------------- |
+| **Founding Team**        | 20%        | 4-year vesting with 1-year cliff, ensures long-term alignment         |
+| **Community Governance** | 60%        | Distributed through participation incentives, includes early adopters |
+| **Protocol Treasury**    | 15%        | Reserved for future initiatives, controlled by governance vote        |
+| **Strategic Reserve**    | 5%         | Emergency governance backup, requires 90% community vote to activate  |
+
+***
+
+## Supply Expansion Mechanism
+
+### Milestone-Based Tranches
+
+The DRI Protocol implements controlled supply expansion through market cap milestones:
+
+| Tranche | Market Cap Trigger | DRI Unlock       |
+| ------- | ------------------ | ---------------- |
+| **T-1** | \$350M             | 1,000,000 DRI    |
+| **T-3** | \$750M             | 1,500,000 DRI    |
+| **T-5** | \$1B               | Remaining buffer |
+
+### Expansion Auction Mechanism
+
+When milestones are reached, new tokens are distributed through sealed-bid auctions:
+
+| Phase                | Duration | Description                                    |
+| -------------------- | -------- | ---------------------------------------------- |
+| Auction Announcement | 7 days   | Notice period with full auction details        |
+| Bidding Period       | 24 hours | Sealed bid submission window                   |
+| Price Discovery      | —        | Dutch auction with oracle-anchored floor price |
+| Allocation           | —        | Pro-rata distribution based on bid prices      |
+| Settlement           | —        | Automatic token delivery and USDC collection   |
+
+### Minimum Bid Price Formula
+
+The auction mechanism prevents discount dilution:
+
+$$
+P_{\text{bid}}^{\min} = \max\left(
+  P_{\text{oracle}} \times 0.95,\;
+  P_{\text{TWAP}}^{30d} \times 0.90,\;
+  P_{\text{prev\_auction}} \times 0.98
+\right)
+$$
+
+***
+
+## Fee Structure and Revenue Model
+
+### Revenue Sources
+
+#### Trading Fees (0.30%)
+
+| Aspect              | Details                                       | Contract Parameter  |
+| ------------------- | --------------------------------------------- | ------------------- |
+| Applied to          | All DMM swaps                                 | `feePips: 3000`     |
+| Split               | 70% protocol treasury, 30% governance rewards | Via `collectFees()` |
+| Est. Annual Revenue | \$2–5M (based on projected volume)            | —                   |
+
+<Callout type="info">
+  **Fee Distribution:** DMM fees are collected via `collectFees(recipient)` and should be distributed: 70% to protocol treasury, 30% to governance reward pool.
+</Callout>
+
+#### PSM Intervention Fees (0.50%)
+
+| Aspect              | Details                                            | Contract Parameter    |
+| ------------------- | -------------------------------------------------- | --------------------- |
+| Applied to          | Arbitrage peg maintenance operations               | `feeRate: 0.005e18`   |
+| Swap Cap            | 1% of pool TVL per tick                            | `swapCap: 0.01e18`    |
+| Max USDC Draw       | 20% of reserve per operation                       | `maxUsdcDraw: 0.2e18` |
+| Purpose             | Discourages excessive PSM usage, generates revenue | —                     |
+| Est. Annual Revenue | \$200K–500K                                        | —                     |
+
+<Callout type="warn">
+  **Peg Stability Optimization:** The 0.50% PSM fee (vs 0.30% DMM) creates a fee gradient that encourages normal trading through DMM while reserving PSM for genuine peg defense. The 1% swap cap allows aggressive peg restoration when needed.
+</Callout>
+
+#### Expansion Auction Premiums
+
+| Aspect                   | Details                                   |
+| ------------------------ | ----------------------------------------- |
+| Source                   | Market-driven premiums above oracle floor |
+| Allocation               | 100% to protocol treasury                 |
+| Est. Revenue per Tranche | \$50K–200K                                |
+
+***
+
+## PSM Fee Structure
+
+The PSM applies variable fees based on utilization and market conditions:
+
+### Base Fee Calculation
+
+$$
+f_{\text{base}} = f_0 \times \left(1 + \kappa \cdot U_t\right)
+$$
+
+Where $f_0$ is the base fee rate (e.g., 0.50%) and $\kappa$ is the utilization multiplier.
+
+### Volatility Adjustment
+
+During high volatility periods, fees increase:
+
+$$
+f_{\text{vol}} = f_{\text{base}} \times \left(1 + \gamma \cdot \sigma_{\text{realized}}\right)
+$$
+
+### Final Fee Calculation
+
+$$
+f_{\text{total}} = \min(f_{\text{vol}}, f_{\max}) \times S_{\text{notional}}
+$$
+
+***
+
+## Protocol Sustainability
+
+Revenue allocation ensures long-term protocol sustainability:
+
+| Category                 | Allocation | Purpose                                        |
+| ------------------------ | ---------- | ---------------------------------------------- |
+| **Operational Expenses** | 40%        | Oracle fees, keeper incentives, infrastructure |
+| **Security Budget**      | 30%        | Audits, bug bounties, insurance reserves       |
+| **Development Fund**     | 20%        | Protocol improvements and new features         |
+| **Governance Rewards**   | 10%        | Incentives for active governance participation |
+
+***
+
+## Reserve-Adjusted PSM Threshold
+
+The PSM threshold adapts based on reserve levels:
+
+$$
+\theta_{\text{adaptive}} = \theta_{\text{base}} \times \left(1 - 0.5 \cdot U_{\text{reserve}}\right)
+$$
+
+<Callout type="info">
+  This makes PSM **more conservative as reserves are depleted**, protecting the system from over-extension.
+</Callout>
+
+***
+
+## Operational Constraints and Gas Economics
+
+### Gas Cost Analysis (Avalanche C-Chain)
+
+```solidity
+// syncPrice() function breakdown:
+Oracle calls (3 sources):           ~15,000 gas each = 45,000 gas
+Price calculations:                 ~8,000 gas  
+Storage updates:                    ~5,000 gas
+Event emissions:                    ~2,000 gas
+DMM recentering (when triggered):   ~65,000 gas
+PSM check:                          ~3,000 gas
+────────────────────────────────────────────────────────────────
+Total (normal operation):           ~63,000 gas
+Total (with recentering):           ~128,000 gas
+```
+
+### Cost Analysis at Different Gas Prices
+
+| Gas Price            | Normal Sync | With Recentering |
+| -------------------- | ----------- | ---------------- |
+| 25 gwei (calm)       | \$0.80      | \$1.60           |
+| 50 gwei (busy)       | \$1.60      | \$3.20           |
+| 100 gwei (congested) | \$3.20      | \$6.40           |
+
+### Daily Operational Costs (30-second intervals)
+
+| Gas Price | Daily Cost (2,880 syncs) |
+| --------- | ------------------------ |
+| 25 gwei   | \$2,304/day              |
+| 50 gwei   | \$4,608/day              |
+| 100 gwei  | \$9,216/day              |
+
+### Adaptive Sync Intervals
+
+To manage costs while maintaining responsiveness:
+
+$$
+T_{\text{sync}} = T_{\text{base}} \times \xi
+$$
+
+Where:
+
+$$
+\xi = \max\left(0.5,\; \min\left(4.0,\; \frac{1}{\sigma_{\text{rolling}}}\right)\right)
+$$
+
+| Market Condition             | Interval  | Gas Savings |
+| ---------------------------- | --------- | ----------- |
+| Calm (σ less than 0.5%)      | 2-minute  | \~75%       |
+| Normal (0.5% ≤ σ ≤ 2%)       | 30-second | Baseline    |
+| Volatile (σ greater than 2%) | 15-second | 2× cost     |
+
+### Gas Budget Management
+
+$$
+B_{\text{gas}}^{\text{daily}} = \min\left(
+  0.3 \times F_{\text{trading}},\;
+  0.0001 \times TVL
+\right)
+$$
+
+<Callout>
+  Maximum 30% of fees for operations, or 0.01% of TVL daily.
+</Callout>
+
+***
+
+<Callout type="info">
+  **Next:** [Governance Framework](/docs/tokenomics/governance-framework) — Voting mechanisms, circuit breakers, and emergency controls
+</Callout>
+
+
+# Governance Framework
+
+
+
+# Governance Framework
+
+The DRI Protocol implements a **capture-resistant governance system** using non-transferable tokens, supermajority requirements, and timelocked execution.
+
+***
+
+## Key Parameters
+
+| Parameter         | Value                      | Contract Constant         |
+| ----------------- | -------------------------- | ------------------------- |
+| **Quorum**        | 60% (600,000 GOV-DRI)      | `quorum: 600_000e18`      |
+| **Approval**      | 67% supermajority          | `approvalThreshold: 6700` |
+| **Voting Period** | 3 days (\~17,280 blocks)   | `votingPeriod: 17280`     |
+| **Timelock**      | 48 hours                   | `timelockDelay: 11520`    |
+| **Cooldown**      | 24 hours between proposals | `proposalCooldown: 5760`  |
+
+***
+
+## Non-Transferable Governance
+
+GOV-DRI tokens **cannot be transferred** (except multisig key rotation):
+
+| Design Choice     | Security Benefit                      |
+| ----------------- | ------------------------------------- |
+| Non-transferable  | Prevents governance capture attacks   |
+| Non-speculative   | Eliminates vote buying and trading    |
+| Long-term aligned | Ensures commitment to protocol health |
+
+### Voting Power
+
+$$
+V_{\text{power}} = \text{balanceOf}(\text{voter}) + V_{\text{delegated}}
+$$
+
+Delegation enables expert participation without token transfer.
+
+***
+
+## Proposal System
+
+### Proposal Requirements
+
+| Requirement                 | Details                                     |
+| --------------------------- | ------------------------------------------- |
+| **Minimum Stake**           | 1 GOV-DRI to submit proposals               |
+| **Proposal Content**        | Detailed specification with risk assessment |
+| **Risk Memo**               | IPFS-hosted risk analysis document          |
+| **Implementation Timeline** | Clear execution schedule                    |
+
+### Proposal Categories
+
+| Category                | Scope                                              |
+| ----------------------- | -------------------------------------------------- |
+| **Parameter Updates**   | Adjustment caps, thresholds, fee rates             |
+| **System Upgrades**     | Smart contract upgrades and new features           |
+| **Oracle Management**   | Adding/removing Oracle sources, weight adjustments |
+| **Emergency Actions**   | Circuit breaker management, emergency pauses       |
+| **Treasury Management** | Protocol treasury allocation and spending          |
+
+***
+
+## Voting Process and Timeline
+
+### Standard Governance Timeline
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  GOVERNANCE TIMELINE                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Day 0    │ Phase 1: Proposal Submission                        │
+│           │ • Proposal submitted with risk assessment            │
+│           │ • Community discussion begins                        │
+│           │ • Technical review initiated                         │
+│           │                                                      │
+│  Days 3-6 │ Phase 2: Voting Period                               │
+│           │ • 72-hour voting window                              │
+│           │ • Vote types: For, Against, Abstain                  │
+│           │ • Real-time vote tallying                            │
+│           │                                                      │
+│  Day 6    │ Phase 3: Queuing                                     │
+│           │ • Successful proposals queued for timelock           │
+│           │ • 48-hour delay before execution                     │
+│           │ • Final review period                                │
+│           │                                                      │
+│  Day 8+   │ Phase 4: Execution                                   │
+│           │ • Automated execution after timelock                 │
+│           │ • On-chain implementation                            │
+│           │ • Post-execution monitoring                          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Voting Requirements
+
+#### Quorum Thresholds
+
+| Proposal Type          | Required Quorum                | GOV-DRI Tokens  |
+| ---------------------- | ------------------------------ | --------------- |
+| Standard Proposals     | 60% of total GOV-DRI supply    | 600,000 GOV-DRI |
+| Emergency Proposals    | 40% quorum with 48-hour voting | 400,000 GOV-DRI |
+| Constitutional Changes | 75% quorum requirement         | 750,000 GOV-DRI |
+
+<Callout type="info">
+  **Contract Implementation:** Governor enforces `quorum: 600_000e18` for standard proposals (60% of 1M GOV-DRI).
+</Callout>
+
+#### Approval Thresholds
+
+| Proposal Type         | Required Approval         | Basis Points |
+| --------------------- | ------------------------- | ------------ |
+| Standard Proposals    | 67% (supermajority)       | 6,700 bps    |
+| Parameter Adjustments | 60% approval              | 6,000 bps    |
+| Emergency Actions     | 80% with reduced timelock | 8,000 bps    |
+
+<Callout type="warn">
+  **Security Design:** The 67% supermajority (`approvalThreshold: 6700`) prevents 51% attacks while ensuring meaningful consensus.
+</Callout>
+
+***
+
+## Multi-Signature Emergency Controls
+
+### Emergency Multisig Powers
+
+The protocol includes a **5-of-8 multisig** with limited emergency powers:
+
+<Callout type="warn">
+  **Authorized Emergency Actions**
+
+  * Circuit breaker reset during system halts
+  * Oracle source emergency removal (malfunction/compromise)
+  * PSM operation suspension during attacks
+  * Protocol pause during critical vulnerabilities
+</Callout>
+
+<Callout type="error">
+  **Prohibited Actions**
+
+  * Parameter changes outside hard-coded bounds
+  * Treasury fund access or reallocation
+  * Governance system modifications
+  * Token supply changes
+</Callout>
+
+### Multisig Composition and Rotation
+
+#### Initial Composition
+
+| Role                              | Count |
+| --------------------------------- | ----- |
+| Founding team members             | 3     |
+| Community-elected representatives | 2     |
+| Technical advisors                | 2     |
+| Legal/compliance representative   | 1     |
+
+#### Rotation Mechanism
+
+| Slot                 | Rotation                            |
+| -------------------- | ----------------------------------- |
+| Community slots      | Annual community election           |
+| Technical advisors   | Selected by community vote          |
+| Founding team        | Slots decrease over 4-year timeline |
+| Legal representative | Appointed by governance vote        |
+
+***
+
+## Circuit Breaker System
+
+### Three-Tier Protection Model
+
+The DRI Protocol implements a sophisticated three-tier circuit breaker system:
+
+#### Level 1 — Warning Mode
+
+| Attribute       | Value                                | Contract Parameter   |
+| --------------- | ------------------------------------ | -------------------- |
+| **Trigger**     | Sustained deviation ≥ 1% (100 bps)   | `warnThreshold: 100` |
+| **Persistence** | 150 blocks (\~5 min at 2s/block)     | `warnBlocks: 150`    |
+| **Response**    | Increased monitoring, event emission | —                    |
+| **Purpose**     | Early warning for monitoring tools   | —                    |
+
+#### Level 2 — Throttle Mode
+
+| Attribute       | Value                                       | Contract Parameter       |
+| --------------- | ------------------------------------------- | ------------------------ |
+| **Trigger**     | Sustained deviation ≥ 2% (200 bps)          | `throttleThreshold: 200` |
+| **Persistence** | 300 blocks (\~10 min at 2s/block)           | `throttleBlocks: 300`    |
+| **Response**    | Reduced Δ/2, slower rebalancing             | —                        |
+| **Purpose**     | Gradual slowdown to prevent destabilization | —                        |
+
+#### Level 3 — Halt Mode
+
+| Attribute       | Value                                     | Contract Parameter   |
+| --------------- | ----------------------------------------- | -------------------- |
+| **Trigger**     | Sustained deviation ≥ 5% (500 bps)        | `haltThreshold: 500` |
+| **Persistence** | 450 blocks (\~15 min at 2s/block)         | `haltBlocks: 450`    |
+| **Response**    | Complete suspension of operations         | —                    |
+| **Purpose**     | Full protection during extreme conditions | —                    |
+
+<Callout type="info">
+  **Block-Time Conversion:** On Avalanche (\~2s blocks), time triggers convert to: 5 min = 150 blocks, 10 min = 300 blocks, 15 min = 450 blocks. Recovery requires `recoverBlocks: 50` consecutive blocks below warn threshold.
+</Callout>
+
+### Circuit Breaker Mathematics
+
+Circuit breakers activate based on rolling maximum deviation:
+
+$$
+\varepsilon_{\max}^{(t)} = \max_{k \in [t-N+1, t]} |\varepsilon_k|
+$$
+
+Where:
+
+* $\varepsilon_{\max}^{(t)}$ = maximum absolute deviation over the last $N$ blocks
+* $\varepsilon_k$ = deviation at block $k$
+* $N$ = time window length (varies by circuit breaker level)
+
+### Level Determination
+
+| Level | Condition                                                          |
+| ----- | ------------------------------------------------------------------ |
+| 0     | $\varepsilon_{\max} \leq 1\%$                                      |
+| 1     | $1\% < \varepsilon_{\max} \leq 2\%$ AND duration $\geq$ 150 blocks |
+| 2     | $2\% < \varepsilon_{\max} \leq 5\%$ AND duration $\geq$ 300 blocks |
+| 3     | $\varepsilon_{\max} > 5\%$ AND duration $\geq$ 450 blocks          |
+
+### Hysteresis Implementation
+
+To prevent oscillation between states:
+
+* **Activation threshold:** $\varepsilon_{\text{base}}$
+* **Deactivation threshold:** $0.8 \times \varepsilon_{\text{base}}$ (20% lower for deactivation)
+
+### System Impact by Level
+
+```solidity
+// Level 1 (Warning):
+Δ_effective = Δ_normal
+monitoring_frequency = 2 × base_frequency
+alert_threshold = 0.5 × normal_threshold
+
+// Level 2 (Throttle):
+Δ_effective = Δ_normal / 2
+sync_interval = 2 × base_interval  
+fee_multiplier = 1.5
+
+// Level 3 (Halt):
+Δ_effective = 0
+sync_disabled = true
+psm_disabled = true
+emergency_mode = true
+```
+
+***
+
+## Recovery Mechanisms
+
+Circuit breakers implement hysteresis to prevent oscillation:
+
+| Mechanism              | Threshold                                          |
+| ---------------------- | -------------------------------------------------- |
+| Activation Threshold   | 1.5× base threshold to trigger                     |
+| Deactivation Threshold | 0.8× base threshold to release                     |
+| Minimum Active Time    | Each level must remain active for minimum duration |
+
+### Recovery Dynamics
+
+Recovery follows exponential decay:
+
+$$
+\rho(t) = 1 - e^{-t/\tau}
+$$
+
+Where $\tau$ is the recovery time constant, and full recovery requires $\rho \geq 0.95$.
+
+***
+
+## Governance Incentives
+
+### Voting Rewards
+
+| Reward Type             | Amount                                         |
+| ----------------------- | ---------------------------------------------- |
+| Base reward             | 0.1% of quarterly trading fees per vote        |
+| Consistency bonus       | +50% for greater than 80% voting participation |
+| Risk assessment rewards | Extra 0.05% for detailed proposal analysis     |
+
+### Proposal Rewards
+
+| Reward Type                  | Amount                                               |
+| ---------------------------- | ---------------------------------------------------- |
+| Successful proposal bonus    | 0.5% of relevant trading fees                        |
+| Quality bonus                | For well-researched proposals with community support |
+| Implementation success bonus | Based on proposal outcome metrics                    |
+
+### Delegation System
+
+| Feature               | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| **Expert Delegation** | Delegate to recognized experts without token transfer |
+| **Categories**        | Technical, Economic, Legal, Community                 |
+| **Revocable**         | Immediate effect when revoked                         |
+| **Transparent**       | On-chain tracking with performance metrics            |
+
+***
+
+<Callout type="info">
+  **Next:** [Bootstrap Deployment](/docs/tokenomics/bootstrap-deployment) — Deployment phases and circular dependency solutions
+</Callout>
+
+
+# Mathematical Framework
+
+
+
+# Mathematical Framework
+
+This section establishes the formal mathematical foundations that guarantee price convergence, stability bounds, and manipulation resistance in the DRI Protocol.
+
+***
+
+## Reflective Price Algorithm
+
+The reflective price update is the protocol's core innovation—a bounded adjustment mechanism that converges to oracle prices while preventing manipulation.
+
+### Three-Step Update
+
+**Step 1: Raw Factor Calculation**
+
+$$
+\alpha_{\text{raw}} = \frac{P_{\text{twap}}}{R_{t-1}}
+$$
+
+Where:
+
+* $P_{\text{twap}}$ = Time-weighted average price from oracle aggregation
+* $R_{t-1}$ = Previous reflective price
+
+**Step 2: Adjustment Capping**
+
+$$
+\alpha = \text{clamp}(\alpha_{\text{raw}}, 1 - \Delta, 1 + \Delta)
+$$
+
+Where $\Delta$ = maximum adjustment per tick (e.g., 3% = 0.03)
+
+**Step 3: Price Update**
+
+$$
+R_t = R_{t-1} \times \alpha
+$$
+
+<Callout type="info">
+  This ensures the new reflective price moves toward the oracle price but **cannot change by more than ±Δ% per update**.
+</Callout>
+
+***
+
+## Convergence Analysis
+
+The reflective price mechanism provides mathematical guarantees for convergence to the true oracle price.
+
+### Convergence Theorem
+
+<Callout type="warn">
+  **Theorem 1 (Convergence):** Given oracle price $P_t$ and reflective price $R_t$, if $P_t$ remains constant for time $T > \frac{\ln(1+\varepsilon)}{\ln(1+\Delta)}$, then $\frac{|R_t - P_t|}{P_t} < \varepsilon$ with probability 1.
+</Callout>
+
+**Proof Sketch:**
+
+Each update reduces the relative error by a factor $(1+\Delta)$ when $R_t < P_t$ or $(1-\Delta)$ when $R_t > P_t$. The geometric convergence rate ensures bounded convergence time.
+
+Let $e_t = \frac{|R_t - P_t|}{P_t}$ be the relative error at time $t$.
+
+For $R_t < P_t$:
+
+$$
+e_{t+1} = \frac{|R_t(1+\Delta) - P_t|}{P_t} = \frac{P_t - R_t(1+\Delta)}{P_t} = e_t - \frac{R_t \cdot \Delta}{P_t}
+$$
+
+The error decreases geometrically, giving convergence time:
+
+$$
+T_{\text{converge}} = \frac{\ln(e_0/\varepsilon)}{\ln(1+\Delta)} \approx \frac{\ln(e_0/\varepsilon)}{\Delta}
+$$
+
+***
+
+## Implementation
+
+The `syncPrice()` function in `BootstrapDRIController.sol` implements this algorithm:
+
+```solidity
+function syncPrice() external nonReentrant whenNotHalted {
+    // 1. Enforce sync interval
+    require(block.timestamp >= lastSyncTime + syncInterval, "Too frequent");
+    
+    // 2. Fetch aggregated oracle price
+    (uint256 oraclePrice, uint256 timestamp) = oracleAggregator.getAggregatedPrice();
+    require(block.timestamp - timestamp <= maxOracleStaleness, "Stale oracle");
+    
+    // 3. Calculate capped adjustment factor
+    uint256 rawFactor = oraclePrice.div(reflectivePrice);
+    uint256 upperBound = 1e18 + (maxDeltaPerTick * 1e18 / 10000);
+    uint256 lowerBound = 1e18 - (maxDeltaPerTick * 1e18 / 10000);
+    uint256 cappedFactor = clamp(rawFactor, lowerBound, upperBound);
+    
+    // 4. Update reflective price
+    reflectivePrice = reflectivePrice.mul(cappedFactor);
+    lastSyncTime = block.timestamp;
+    
+    // 5. Trigger DMM recenter and PSM arbitrage
+    _checkDeviationAndRespond();
+}
+```
+
+***
+
+## Parameter Tuning
+
+### Maximum Delta (Δ)
+
+| Parameter  | Value   | Rationale                                                  |
+| ---------- | ------- | ---------------------------------------------------------- |
+| **Δ = 3%** | 300 bps | Tracks daily index volatility while resisting manipulation |
+| Smaller Δ  | —       | Higher manipulation resistance, slower convergence         |
+| Larger Δ   | —       | Faster convergence, increased manipulation risk            |
+
+### Sync Interval
+
+| Interval                 | Trade-off                       |
+| ------------------------ | ------------------------------- |
+| **30 seconds** (default) | Balanced accuracy and gas costs |
+| 15 seconds               | Better tracking, 2× gas cost    |
+| 60+ seconds              | Lower gas, increased drift      |
+
+***
+
+## Circuit Breaker Modulation
+
+The effective Δ adapts based on circuit breaker state:
+
+| State    | Level | Effective Δ | Purpose             |
+| -------- | ----- | ----------- | ------------------- |
+| Normal   | 0     | Δ (3%)      | Full responsiveness |
+| Warning  | 1     | Δ (3%)      | Monitoring only     |
+| Throttle | 2     | Δ/2 (1.5%)  | Reduced volatility  |
+| Halt     | 3     | 0           | Complete suspension |
+
+***
+
+## Volatility-Adjusted Delta
+
+For dynamic adaptation to market conditions:
+
+$$
+\Delta_{\text{adaptive}} = \Delta_{\text{base}} \times \left(1 + \gamma \cdot \sigma_{\text{realized}}\right)
+$$
+
+| Parameter                  | Value    | Description               |
+| -------------------------- | -------- | ------------------------- |
+| $\Delta_{\text{base}}$     | 3%       | Base adjustment cap       |
+| $\gamma$                   | 0.5      | Volatility scaling factor |
+| $\sigma_{\text{realized}}$ | Variable | 30-day rolling volatility |
+
+***
+
+## Oracle Integration
+
+The Oracle Aggregator provides manipulation-resistant price data:
+
+| Feature              | Implementation                      |
+| -------------------- | ----------------------------------- |
+| **Multi-source**     | Chainlink, Pyth, API3 (3+ sources)  |
+| **Median filtering** | Eliminates outliers automatically   |
+| **TWAP smoothing**   | α = 0.1–0.3 exponential smoothing   |
+| **Staleness check**  | 4-day maximum (345,600 seconds)     |
+| **Deviation bounds** | σ\_max filtering for extreme values |
+
+***
+
+<Callout type="info">
+  **Next:** [System Dynamics](/docs/tokenomics/system-dynamics) — Complete mathematical model of system interconnections
+</Callout>
+
+
+# Protocol Overview
+
+
+
+# Dynamic Reflective Index Protocol
+
+<Callout type="info">
+  **Technical Whitepaper v1.0** | January 2025 | ETO Protocol Team
+</Callout>
+
+## Abstract
+
+The **Dynamic Reflective Index (DRI) Protocol** introduces a novel on-chain token indexing architecture designed to track real-world asset indices through three core mechanisms:
+
+1. **Capped Reflective Pricing** — Algorithmically bounded adjustments converging to oracle prices
+2. **Protocol-Managed Liquidity** — Concentrated bands achieving 200× capital efficiency
+3. **Graduated Intervention** — Multi-tier circuit breakers and reserve-backed stability
+
+The protocol addresses fundamental challenges in on-chain index tracking: capital inefficiency, oracle manipulation, and tracking drift.
+
+***
+
+## Key Metrics
+
+| Metric                 | Value        | Description                                  |
+| ---------------------- | ------------ | -------------------------------------------- |
+| **Capital Efficiency** | 200×         | Concentrated ±0.25% bands vs full-range AMMs |
+| **Tracking Accuracy**  | ±0.01%       | Five times tighter than leading alternatives |
+| **Circuit Breakers**   | 1% / 2% / 5% | Three-tier graduated protection system       |
+| **Max Adjustment**     | 3% per tick  | Capped Δ prevents manipulation               |
+| **Sync Interval**      | 30 seconds   | Balance of accuracy vs gas costs             |
+
+<Callout type="warn">
+  **Development Status:** This whitepaper presents architectural specifications and mathematical frameworks. Performance data will be published following testnet validation.
+</Callout>
+
+***
+
+## The Problem
+
+Traditional on-chain index tracking faces fundamental challenges:
+
+| Challenge                | Traditional Approach                    | DRI Solution                              |
+| ------------------------ | --------------------------------------- | ----------------------------------------- |
+| **Capital Inefficiency** | Full-range liquidity (1× efficiency)    | Concentrated ±0.25% bands (200×)          |
+| **Tracking Drift**       | 95-98% accuracy, compounds over time    | Reflective convergence guarantees         |
+| **Oracle Manipulation**  | Single oracle, immediate price impact   | Multi-oracle TWAP with capped adjustments |
+| **Governance Capture**   | Transferable tokens enable accumulation | Non-transferable GOV-DRI tokens           |
+
+***
+
+## Design Principles
+
+| Principle                   | Implementation                                           |
+| --------------------------- | -------------------------------------------------------- |
+| **Algorithmic Rigor**       | Provably sound models with formal convergence guarantees |
+| **Capital Efficiency**      | Concentrated liquidity maximizes utility per dollar      |
+| **Manipulation Resistance** | Capped Δ + multi-oracle aggregation                      |
+| **Automated Operation**     | Minimal human intervention with strict security bounds   |
+| **Graduated Response**      | Proportional interventions matching deviation severity   |
+
+***
+
+## Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                        DRI PROTOCOL STACK                             │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│    ┌──────────────┐          ┌──────────────────┐                    │
+│    │   ORACLES    │─────────▶│  DRI CONTROLLER  │◀─── Circuit        │
+│    │  Chainlink   │          │  Reflective Price │     Breakers      │
+│    │  Pyth, API3  │          │  Capped Updates   │                    │
+│    └──────────────┘          └────────┬─────────┘                    │
+│                                       │                               │
+│                      ┌────────────────┼────────────────┐             │
+│                      ▼                ▼                ▼             │
+│              ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │
+│              │     DMM     │  │     PSM     │  │  GOVERNANCE │       │
+│              │  ±0.25% LP  │  │  Arbitrage  │  │  GOV-DRI    │       │
+│              │  200× Eff.  │  │  Reserve    │  │  Non-Xfer   │       │
+│              └─────────────┘  └─────────────┘  └─────────────┘       │
+│                                                                       │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Core Components
+
+| Component                | Role                                             | Key Parameters              |
+| ------------------------ | ------------------------------------------------ | --------------------------- |
+| **DRI Controller**       | Reflective price mechanism, system orchestration | Δ = 3%, sync = 30s          |
+| **Dynamic Market Maker** | Concentrated liquidity, automated recentering    | ±0.25% bands, 0.30% fee     |
+| **Peg Stability Module** | Reserve-backed arbitrage intervention            | 0.50% fee, 1% cap           |
+| **Oracle Aggregator**    | Multi-source TWAP with outlier filtering         | 3+ sources, 4-day staleness |
+| **Circuit Breakers**     | Three-tier graduated protection                  | 1% / 2% / 5% thresholds     |
+| **Governance**           | Non-transferable token voting                    | 60% quorum, 67% approval    |
+
+***
+
+## Documentation Guide
+
+| Section                                                               | Contents                                       |
+| --------------------------------------------------------------------- | ---------------------------------------------- |
+| [**Mathematical Framework**](/docs/tokenomics/mathematical-framework) | Reflective price algorithm, convergence proofs |
+| [**System Dynamics**](/docs/tokenomics/system-dynamics)               | State equations, stability analysis            |
+| [**Capital Efficiency**](/docs/tokenomics/capital-efficiency)         | Concentrated liquidity math, 200× derivation   |
+| [**Economic Model**](/docs/tokenomics/economic-model)                 | Token distribution, fee structure              |
+| [**Governance**](/docs/tokenomics/governance-framework)               | Voting, circuit breakers, emergency controls   |
+| [**Deployment**](/docs/tokenomics/bootstrap-deployment)               | Bootstrap phases, production checklist         |
+| [**Risk Analysis**](/docs/tokenomics/risk-analysis)                   | Multi-dimensional risk assessment              |
+| [**Stress Testing**](/docs/tokenomics/stress-testing)                 | Backtesting methodology, validation            |
+
+
+# Risk Analysis
+
+
+
+# Risk Analysis
+
+This section provides a comprehensive assessment of technical, economic, and governance risks facing the DRI Protocol, along with mitigation strategies.
+
+***
+
+## Risk Matrix
+
+| Risk Category       | Probability | Impact | Mitigation                             |
+| ------------------- | ----------- | ------ | -------------------------------------- |
+| Smart Contract Bugs | Medium      | High   | Multi-firm audits, formal verification |
+| Oracle Manipulation | Medium      | Medium | Multi-oracle, TWAP, capped Δ           |
+| Liquidity Crises    | Low         | High   | PSM reserves, circuit breakers         |
+| Governance Capture  | Low         | High   | Non-transferable GOV-DRI               |
+
+***
+
+## Technical Risks
+
+### Smart Contract Vulnerabilities
+
+<Callout type="error">
+  **Risk:** Contract bugs leading to fund loss or system dysfunction
+</Callout>
+
+| Attribute       | Assessment |
+| --------------- | ---------- |
+| **Probability** | Medium     |
+| **Impact**      | High       |
+
+#### Mitigation Strategies
+
+| Strategy            | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| Multiple Audits     | Professional security audits from multiple firms |
+| Formal Verification | Formal verification of critical functions        |
+| Gradual Deployment  | Limited initial exposure with phased rollout     |
+| Bug Bounty          | Substantial rewards for vulnerability discovery  |
+| Emergency Pause     | Pause capabilities for critical vulnerabilities  |
+
+***
+
+### Oracle Manipulation Risks
+
+<Callout type="warn">
+  **Risk:** Oracle price manipulation affecting reflective price updates
+</Callout>
+
+| Attribute       | Assessment |
+| --------------- | ---------- |
+| **Probability** | Medium     |
+| **Impact**      | Medium     |
+
+#### Mitigation Strategies
+
+| Strategy                 | Description                                       |
+| ------------------------ | ------------------------------------------------- |
+| Multi-Source Aggregation | Median filtering across multiple oracle providers |
+| TWAP Smoothing           | Reduces impact of temporary manipulation          |
+| Deviation Bounds         | Outlier filtering rejects extreme values          |
+| Capped Adjustments       | Maximum Δ limits manipulation impact per update   |
+| Circuit Breakers         | Automatic halt for extreme price deviations       |
+
+***
+
+### PSM Reserve Depletion
+
+The probability of reserve depletion can be modeled using extreme value theory. If price deviations follow a **Generalized Extreme Value (GEV) distribution**, the probability is calculated based on the threshold, location (μ), scale (σ), and shape (ξ) parameters estimated from historical data.
+
+***
+
+### Optimal Swap Size for PSM
+
+The PSM must determine optimal swap size to restore the peg efficiently:
+
+#### Objective Function
+
+Minimize post-swap deviation subject to:
+
+* swap\_size ≤ min(utilization\_cap × S\_t, max\_single\_swap)
+* reserves\_remaining ≥ reserve\_floor × S\_t
+
+#### Price Impact Model
+
+For a constant product AMM:
+
+$$
+M_{\text{after}} = \frac{y_{\text{DMM}} - \Delta y}{x_{\text{DMM}} + \Delta x}
+$$
+
+#### Optimal Swap Size
+
+$$
+s^*_{\text{optimal}} = \sqrt{L_{\text{DMM}} \cdot |M_t - R_t|} - c_{\text{tx}}
+$$
+
+***
+
+## Economic Risks
+
+### Market Risk
+
+<Callout type="warn">
+  **Risk:** Extreme market volatility exceeding system capacity
+</Callout>
+
+| Attribute       | Assessment |
+| --------------- | ---------- |
+| **Probability** | High       |
+| **Impact**      | Medium     |
+
+#### Mitigation Strategies
+
+| Strategy                    | Description                                            |
+| --------------------------- | ------------------------------------------------------ |
+| Conservative Parameters     | Selection based on historical volatility analysis      |
+| Multiple Intervention Tiers | DMM, PSM, and circuit breakers provide layered defense |
+| Adequate Reserves           | PSM reserves sized for large deviation scenarios       |
+| Governance Flexibility      | Parameter adjustment capability during crises          |
+
+***
+
+### Liquidity Risk
+
+<Callout type="info">
+  **Risk:** Insufficient liquidity leading to poor price discovery
+</Callout>
+
+| Attribute       | Assessment |
+| --------------- | ---------- |
+| **Probability** | Low        |
+| **Impact**      | Medium     |
+
+#### Mitigation Strategies
+
+| Strategy            | Description                                         |
+| ------------------- | --------------------------------------------------- |
+| Initial Allocation  | Substantial DMM liquidity at launch (40% of supply) |
+| Fee Accumulation    | Sustainable liquidity provision through fees        |
+| PSM Backstop        | Reserve backing provides liquidity guarantee        |
+| External Incentives | Mechanisms for external liquidity provision         |
+
+***
+
+### Dynamic Reserve Management
+
+The optimal reserve allocation follows a dynamic programming approach where the value function considers immediate utility of swaps plus the expected future value of the reserve state.
+
+***
+
+## Governance Risks
+
+### Governance Capture
+
+<Callout type="error">
+  **Risk:** Malicious actors gaining control of the governance system
+</Callout>
+
+| Attribute       | Assessment |
+| --------------- | ---------- |
+| **Probability** | Low        |
+| **Impact**      | High       |
+
+#### Mitigation Strategies
+
+| Strategy                 | Value                                 | Contract Parameter            |
+| ------------------------ | ------------------------------------- | ----------------------------- |
+| Non-Transferable Tokens  | GOV-DRI cannot be transferred         | `transfer()` disabled         |
+| High Quorum Requirements | 60% (600k GOV-DRI)                    | `quorum: 600_000e18`          |
+| Supermajority Thresholds | 67% approval required                 | `approvalThreshold: 6700`     |
+| Timelock Delays          | 48-hour minimum                       | `timelockDelay: 11520` blocks |
+| Emergency Multisig       | 5-of-8 limited powers                 | External multisig             |
+| Hard-Coded Bounds        | Parameter limits enforced             | `require()` validations       |
+| Whitelisted Execution    | Targets/functions must be whitelisted | `whitelistedTargets` mapping  |
+
+***
+
+## Risk Matrix Summary
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       RISK MATRIX                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  IMPACT                                                          │
+│    ▲                                                             │
+│    │                                                             │
+│ H  │  Smart Contract Bugs            Governance Capture          │
+│ I  │  (Medium Prob, High Impact)     (Low Prob, High Impact)     │
+│ G  │                                                             │
+│ H  │                                                             │
+│    │                                                             │
+│ M  │  Oracle Manipulation            Market Volatility           │
+│ E  │  (Medium Prob, Medium Impact)   (High Prob, Medium Impact)  │
+│ D  │                                                             │
+│    │                                                             │
+│ L  │                    Liquidity Crisis                         │
+│ O  │                    (Low Prob, Medium Impact)                │
+│ W  │                                                             │
+│    │                                                             │
+│    └────────────────────────────────────────────────────────▶   │
+│         LOW            MEDIUM            HIGH                    │
+│                      PROBABILITY                                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+***
+
+## PSM Risk Management Layers
+
+### Utilization Limits
+
+| Limit               | Value          | Contract Parameter             | Purpose                       |
+| ------------------- | -------------- | ------------------------------ | ----------------------------- |
+| Per-Swap Cap        | 1% of pool TVL | `swapCap: 0.01e18`             | Allows aggressive peg defense |
+| Max USDC Draw       | 20% of reserve | `maxUsdcDraw: 0.2e18`          | Prevents single large drain   |
+| Reserve Floor       | 30% minimum    | `reserveFloor: 0.3e18`         | Ensures baseline stability    |
+| Deviation Threshold | 0.5%           | `deviationThreshold: 0.005e18` | PSM activation point          |
+| Intervention Fee    | 0.5%           | `feeRate: 0.005e18`            | Discourages excessive PSM use |
+| Emergency Brakes    | Full halt      | Circuit breaker level 3        | Extreme event protection      |
+
+<Callout type="info">
+  **Peg Stability Optimization:** The 1% swap cap (`swapCap: 0.01e18`) allows PSM to aggressively defend the peg during deviations, while the 0.5% fee discourages unnecessary PSM arbitrage in favor of normal DMM trading.
+</Callout>
+
+***
+
+## Multi-Dimensional Risk Monitoring
+
+The system monitors multiple risk factors simultaneously:
+
+$$
+\text{risk\_score} = w_1 |\varepsilon| + w_2 \cdot V_{\text{spike}} + w_3 \cdot O_{\text{disagree}} + w_4 \cdot L_{\text{drain}}
+$$
+
+Where $\sum_{i=1}^{4} w_i = 1$.
+
+### Probabilistic Circuit Breaker Activation
+
+Circuit breakers can use probabilistic activation based on risk models where the probability of activation increases exponentially with the risk score.
+
+***
+
+## Risk-Adjusted Parameter Thresholds
+
+Circuit breaker thresholds adapt to market volatility:
+
+$$
+\varepsilon_{\text{adjusted}} = \varepsilon_{\text{base}} \times \left(1 + \beta \cdot \sigma_{\text{market}}\right)
+$$
+
+Where:
+
+* $\sigma_{\text{market}}$ = realized market volatility
+* $\beta = 0.5$ = volatility multiplier
+
+***
+
+## Insurance and Coverage
+
+### Recommended Coverage Categories
+
+| Category          | Coverage Target              | Purpose                          |
+| ----------------- | ---------------------------- | -------------------------------- |
+| Smart Contract    | Full TVL                     | Protection against code exploits |
+| Oracle Failure    | 50% of intervention capacity | Coverage for oracle manipulation |
+| Economic Attack   | 30% of PSM reserves          | Buffer for economic exploits     |
+| Governance Attack | Emergency fund               | Resources for governance defense |
+
+***
+
+<Callout type="info">
+  **Next:** [Stress Testing](/docs/tokenomics/stress-testing) — Backtesting methodology and validation framework
+</Callout>
+
+
+# Stress Testing
+
+
+
+# Stress Testing
+
+This section details the validation methodology including historical backtesting against major market events, failure mode testing, and performance benchmarking.
+
+<Callout type="warn">
+  **Status:** Stress testing results will be published following comprehensive testnet validation.
+</Callout>
+
+***
+
+## Backtesting Methodology
+
+### Historical Events
+
+The protocol will be validated against these market disruptions:
+
+| Event                | Date               | Characteristics                                     |
+| -------------------- | ------------------ | --------------------------------------------------- |
+| **COVID-19 Crash**   | March 12-13, 2020  | S\&P 500 dropped 12% in 2 days                      |
+| **Flash Crash**      | May 6, 2010        | 9% drop and recovery within minutes                 |
+| **Brexit Vote**      | June 24, 2016      | Overnight volatility spike with delayed market open |
+| **Lehman Brothers**  | September 15, 2008 | Extended bearish pressure over weeks                |
+| **Meme Stock Mania** | January 2021       | Extreme retail-driven volatility                    |
+
+### Backtesting Parameters
+
+| Parameter              | Specification                                                        |
+| ---------------------- | -------------------------------------------------------------------- |
+| **Data Frequency**     | 1-minute OHLC data from Bloomberg/Refinitiv                          |
+| **Oracle Simulation**  | 3-source feeds with realistic 15-second delays and 0.1% random noise |
+| **Gas Price Modeling** | Historical Ethereum gas prices mapped to test periods                |
+| **Liquidity Depth**    | Modeled based on contemporary ETF trading volumes                    |
+
+***
+
+## Failure Mode Testing
+
+### Oracle Failure Scenarios
+
+| Scenario                     | Parameters                                              | Duration |
+| ---------------------------- | ------------------------------------------------------- | -------- |
+| Single Oracle Failure        | Random 30-minute outages with stale price feeds         | 30 min   |
+| Majority Oracle Manipulation | 2/3 oracles reporting coordinated false prices          | 5 min    |
+| Network Congestion           | Delayed oracle updates simulating 200+ gwei gas periods | Variable |
+| Chain Reorganization         | 3-block reorg scenarios affecting recent price updates  | 3 blocks |
+
+### Liquidity Crisis Simulation
+
+| Scenario         | Parameters                                         | Duration      |
+| ---------------- | -------------------------------------------------- | ------------- |
+| Bank Run         | 50% of DMM liquidity withdrawn                     | 1 hour        |
+| PSM Depletion    | Gradual reserve drawdown until hitting 20% minimum | Variable      |
+| Stablecoin Depeg | USDC trading at 0.95-1.05 range                    | Crisis period |
+
+***
+
+## Testnet Validation Plan
+
+### Phase 1: Controlled Environment (4 weeks)
+
+#### Setup
+
+| Component  | Details                                                     |
+| ---------- | ----------------------------------------------------------- |
+| Network    | Avalanche Fuji testnet with mock oracles                    |
+| Data       | Simulate S\&P 500 price feeds with historical data replay   |
+| Operations | Continuous operations with 30-second sync intervals         |
+| Testing    | Automated trading bots generating realistic volume patterns |
+
+#### Success Criteria
+
+<Callout>
+  **Phase 1 Requirements:**
+
+  * System uptime greater than 99.5% (excluding planned maintenance)
+  * Gas costs remain under budgeted thresholds
+  * No smart contract failures or stuck states
+  * Circuit breakers activate/deactivate correctly during volatility events
+</Callout>
+
+### Phase 2: Live Oracle Integration (2 weeks)
+
+#### Setup
+
+| Component  | Details                                                   |
+| ---------- | --------------------------------------------------------- |
+| Oracles    | Chainlink, Pyth, and API3 price feeds                     |
+| Network    | Avalanche mainnet with limited initial liquidity (\$100K) |
+| Access     | Community testing with faucet tokens                      |
+| Monitoring | System behavior during real market hours                  |
+
+#### Monitored Metrics
+
+| Metric                    | Target                                |
+| ------------------------- | ------------------------------------- |
+| Oracle consensus accuracy | greater than 99% agreement            |
+| Oracle staleness rates    | less than 5% stale readings           |
+| DMM recentering frequency | less than 10 per day (normal markets) |
+| PSM utilization           | less than 20% daily (normal markets)  |
+| Governance participation  | greater than 40% for test proposals   |
+
+***
+
+## Performance Benchmarking
+
+### Tracking Accuracy Measurement
+
+#### Baseline Comparison
+
+| Product                         | Historical Tracking Error                       |
+| ------------------------------- | ----------------------------------------------- |
+| SPDR S\&P 500 ETF (SPY)         | \~0.03% annually                                |
+| iShares Core S\&P 500 ETF (IVV) | \~0.05% annually                                |
+| **DRI Target**                  | less than 0.1% daily average absolute deviation |
+
+#### Measurement Framework
+
+$$
+\text{Tracking Error} = \frac{\sqrt{\mathbb{E}[(P_{\text{DRI}} - P_{\text{Index}})^2]}}{P_{\text{Index}}}
+$$
+
+$$
+\text{Daily Deviation} = \frac{|P_{\text{DRI}}^{\text{close}} - P_{\text{Index}}^{\text{close}}|}{P_{\text{Index}}^{\text{close}}}
+$$
+
+$$
+T_{\text{recovery}} = \inf\{t : |\varepsilon_t| < 0.5\%\} - t_{\text{shock}}
+$$
+
+### Capital Efficiency Validation
+
+#### Traditional ETF Capital Requirements
+
+| Method           | Capital Requirement                                 |
+| ---------------- | --------------------------------------------------- |
+| Full Replication | 100% of index value in underlying assets            |
+| Sampling Method  | 90-95% of index value plus cash buffer              |
+| **DRI Target**   | \~50% of index value through concentrated liquidity |
+
+#### Efficiency Metrics
+
+$$
+CE = \frac{L_{\text{provided}}}{K_{\text{deployed}}}
+$$
+
+$$
+U = \frac{V_{\text{active}}}{L_{\text{available}}}
+$$
+
+$$
+\text{Slippage}(s) = \frac{\Delta P(s)}{s} \quad \text{(price impact per unit size)}
+$$
+
+***
+
+## Risk Assessment and Mitigation
+
+### Maximum Drawdown Analysis
+
+#### Stress Test Scenarios
+
+| Scenario             | Parameters                               |
+| -------------------- | ---------------------------------------- |
+| Black Swan Events    | 20% index drop in 24 hours               |
+| Flash Crash          | 10% drop and recovery within 1 hour      |
+| Extended Bear Market | 6-month 40% decline with high volatility |
+| Oracle Attack        | Coordinated manipulation attempt         |
+
+#### Risk Limits
+
+| Limit                      | Maximum Allowed                                               |
+| -------------------------- | ------------------------------------------------------------- |
+| PSM reserve utilization    | 60% during any 24 hours                                       |
+| Maximum tracking deviation | 2% during extreme events (greater than 5σ moves)              |
+| Recovery requirement       | Return to less than 0.5% deviation within 24 hours post-event |
+| Gas budget overrun         | No more than 3× budgeted costs during crisis                  |
+
+***
+
+## Governance Stress Testing
+
+### Governance Attack Scenarios
+
+| Attack                 | Test Parameters                                                          |
+| ---------------------- | ------------------------------------------------------------------------ |
+| Vote Buying            | Simulate attempts to accumulate voting power through market manipulation |
+| Proposal Spam          | Test system resilience against low-quality proposal floods               |
+| Emergency Response     | Validate multisig response times during simulated emergencies            |
+| Parameter Manipulation | Test bounds on governance-adjustable parameters                          |
+
+### Governance Success Metrics
+
+| Metric                        | Target                                  |
+| ----------------------------- | --------------------------------------- |
+| Voter participation rates     | greater than 40% for critical proposals |
+| Proposal quality scores       | greater than 3.5/5 (community-rated)    |
+| Emergency response time       | less than 4 hours for critical issues   |
+| Successful governance attacks | 0 during 6-week testnet period          |
+
+***
+
+## Third-Party Validation
+
+### Security Audits
+
+#### Planned Audit Providers
+
+| Category                | Providers                                             |
+| ----------------------- | ----------------------------------------------------- |
+| Smart Contract Security | Trail of Bits, ConsenSys Diligence, or Quantstamp     |
+| Economic Modeling       | Gauntlet or Chaos Labs for risk parameter validation  |
+| Formal Verification     | Runtime Verification for critical mathematical proofs |
+
+#### Audit Scope
+
+<Callout type="warn">
+  **Audit Coverage:**
+
+  * Smart contract vulnerabilities and attack vectors
+  * Economic model soundness and parameter sensitivity
+  * Oracle manipulation resistance and circuit breaker effectiveness
+  * Governance mechanism security and voting integrity
+</Callout>
+
+### Bug Bounty Program
+
+#### Bounty Structure
+
+| Severity     | Reward Range         | Examples                                 |
+| ------------ | -------------------- | ---------------------------------------- |
+| **Critical** | \$50,000 – \$250,000 | Protocol halt, fund loss                 |
+| **High**     | \$10,000 – \$50,000  | Temporary dysfunction, governance bypass |
+| **Medium**   | \$2,000 – \$10,000   | Parameter manipulation, oracle issues    |
+| **Low**      | \$500 – \$2,000      | Gas optimization, minor bugs             |
+
+**Program Duration:** 8 weeks before mainnet launch, ongoing post-launch
+
+***
+
+## Validation Timeline
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    VALIDATION TIMELINE                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  WEEK 1-4: CONTROLLED TESTNET                                   │
+│  • Mock oracle deployment                                        │
+│  • Historical data replay testing                                │
+│  • Automated bot stress testing                                  │
+│  • Circuit breaker validation                                    │
+│                                                                  │
+│  WEEK 5-6: LIVE ORACLE INTEGRATION                              │
+│  • Chainlink/Pyth/API3 integration                               │
+│  • Real market hours testing                                     │
+│  • Community faucet testing                                      │
+│  • Governance simulation                                         │
+│                                                                  │
+│  WEEK 7-8: SECURITY AUDITS                                      │
+│  • Professional audit completion                                 │
+│  • Bug bounty program launch                                     │
+│  • Economic model review                                         │
+│  • Formal verification                                           │
+│                                                                  │
+│  WEEK 9+: MAINNET DEPLOYMENT                                    │
+│  • Phased liquidity deployment                                   │
+│  • Continuous monitoring                                         │
+│  • Ongoing bug bounty                                            │
+│  • Community governance activation                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+***
+
+## Conclusion
+
+The DRI Protocol represents a significant advancement in on-chain index tracking through:
+
+| Innovation                     | Achievement                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| **Reflective Price Mechanism** | Mathematically provable convergence to oracle prices    |
+| **Concentrated Liquidity**     | 200× capital efficiency vs full-range AMMs              |
+| **Multi-Layer Protection**     | Manipulation resistance through capped Δ + multi-oracle |
+| **Automated Operation**        | Minimal intervention with strict security bounds        |
+| **Graduated Response**         | Proportional interventions matching deviation severity  |
+
+### Development Roadmap
+
+| Phase           | Focus Areas                                              |
+| --------------- | -------------------------------------------------------- |
+| **Near-term**   | Additional oracles, analytics, mobile, cross-chain prep  |
+| **Medium-term** | Multi-asset indices, derivatives, institutional features |
+| **Long-term**   | AI governance, cross-protocol liquidity, predictive risk |
+
+***
+
+<Callout type="warn">
+  **Disclaimer:** This whitepaper presents architectural specifications. Performance claims are theoretical until validated through testing. The protocol involves experimental DeFi mechanisms with inherent risks. Conduct independent research before participation.
+</Callout>
+
+
+# System Dynamics
+
+
+
+# System Dynamics
+
+The DRI Protocol operates as a coupled dynamic system where four primary state variables interact through defined mathematical functions to maintain price stability.
+
+***
+
+## State Space
+
+| Variable         | Symbol | Description                     | Units        |
+| ---------------- | ------ | ------------------------------- | ------------ |
+| Reflective Price | $R_t$  | Algorithm-computed target price | USD (18 dec) |
+| Market Price     | $M_t$  | Actual DMM trading price        | USD (18 dec) |
+| Oracle Price     | $P_t$  | External TWAP from aggregator   | USD (18 dec) |
+| Liquidity Depth  | $L_t$  | DMM concentrated liquidity      | Tokens       |
+| PSM Reserves     | $S_t$  | Intervention reserve state      | USDC (6 dec) |
+
+***
+
+## Core System Equations
+
+The system dynamics are expressed as:
+
+$$
+\begin{aligned}
+R_{t+1} &= f_{\text{reflect}}(R_t, P_t, \Delta, CB_t) \\[0.5em]
+M_{t+1} &= f_{\text{market}}(M_t, R_t, L_t, V_t) \\[0.5em]
+L_{t+1} &= f_{\text{liquidity}}(L_t, R_t, M_t, \delta) \\[0.5em]
+S_{t+1} &= f_{\text{psm}}(S_t, M_t, R_t, \theta)
+\end{aligned}
+$$
+
+Where:
+
+* $CB_t$ = circuit breaker state
+* $V_t$ = trading volume
+* $\delta$ = band half-width
+* $\theta$ = PSM threshold
+
+***
+
+## Reflective Price Update Function
+
+$$
+f_{\text{reflect}}(R_t, P_t, \Delta, CB_t) = R_t \times \text{clamp}\left(\frac{P_t}{R_t}, 1-\Delta_{\text{eff}}, 1+\Delta_{\text{eff}}\right)
+$$
+
+***
+
+## Market Price Dynamics Function
+
+The market price evolution depends on AMM mechanics and trading activity:
+
+$$
+f_{\text{market}}(M_t, R_t, L_t, V_t) = M_t + \Delta M_{\text{trade}} + \Delta M_{\text{rebalance}}
+$$
+
+Where:
+
+$$
+\Delta M_{\text{trade}} = \frac{V_{\text{buy}} - V_{\text{sell}}}{2\sqrt{L_{\text{DRI}} \times L_{\text{USDC}}}} \quad \text{(trading impact)}
+$$
+
+$$
+\Delta M_{\text{rebalance}} = \lambda \cdot (R_t - M_t) \quad \text{(rebalancing force)}
+$$
+
+And $\lambda$ is the rebalancing coefficient that increases with accumulated fees.
+
+***
+
+## Liquidity Evolution Function
+
+The liquidity function models DMM band recentering:
+
+| Condition                                                 | Result                               |
+| --------------------------------------------------------- | ------------------------------------ |
+| $\frac{\|M_t - R_t\|}{R_t} < \delta$                      | $L_t$ (no change)                    |
+| $\frac{\|M_t - R_t\|}{R_t} \geq \delta$ AND fees adequate | $L_{\text{recentered}}(R_t, \delta)$ |
+| Otherwise                                                 | $L_t$ (no change)                    |
+
+Where $L_{\text{recentered}}$ repositions all liquidity around the new reflective price $R_t$.
+
+***
+
+## PSM Intervention Function
+
+The PSM function activates when deviations exceed DMM capacity:
+
+| Condition                            | Result                                 |
+| ------------------------------------ | -------------------------------------- |
+| $\frac{\|M_t - R_t\|}{R_t} < \theta$ | $S_t$ (no change)                      |
+| Intervention needed                  | $S_t - \Delta S_{\text{intervention}}$ |
+
+Where the intervention size is calculated as:
+
+$$
+\Delta S_{\text{intervention}} = \min\left(
+  |M_t - R_t| \times S_{\text{circ}},\;
+  S_t \times \mu_{\text{cap}},\;
+  s^*_{\text{opt}}(M_t, R_t)
+\right)
+$$
+
+***
+
+## Deviation Measurement and Response
+
+The system continuously measures price deviation:
+
+$$
+\varepsilon_t = \frac{M_t - R_t}{R_t}
+$$
+
+### DMM Recentering Trigger
+
+$$
+\text{recentering\_needed} = |\varepsilon_t| \geq \delta \;\land\; \text{fees}_{\text{acc}} \geq \varphi \cdot IL_{\text{proj}}
+$$
+
+Where $\varphi$ is the fee coverage multiplier and:
+
+$$
+IL_{\text{proj}} = \frac{\delta^2}{2} \cdot L_t
+$$
+
+### PSM Intervention Trigger
+
+$$
+\text{psm\_needed} = |\varepsilon_t| \geq \theta \;\land\; \text{reserve\_sufficient} \;\land\; \neg\text{halt}
+$$
+
+Where:
+
+* $\theta = 0.5\%$ (deviation threshold, `deviationThreshold: 0.005e18`)
+* `reserve_sufficient` = USDC reserve > 10% of initial
+* PSM swap cap = 1% of pool TVL per tick (`swapCap: 0.01e18`)
+
+### Circuit Breaker Activation
+
+$$
+CB_{t+1} = \max\left(CB_t,\; \text{CB\_level}(\max_{\tau \in [t-w, t]} |\varepsilon_\tau|)\right)
+$$
+
+| Level        | Threshold | Persistence           | Contract Parameter       |
+| ------------ | --------- | --------------------- | ------------------------ |
+| 0 (Normal)   | ε \< 1%   | —                     | —                        |
+| 1 (Warn)     | ε ≥ 1%    | 150 blocks (\~5 min)  | `warnThreshold: 100`     |
+| 2 (Throttle) | ε ≥ 2%    | 300 blocks (\~10 min) | `throttleThreshold: 200` |
+| 3 (Halt)     | ε ≥ 5%    | 450 blocks (\~15 min) | `haltThreshold: 500`     |
+
+***
+
+## Oracle Aggregation Mathematics
+
+The oracle aggregation function combines multiple price sources through a four-step process:
+
+### Step 1: Raw Price Collection
+
+$$
+\mathbf{P}_{\text{raw}} = \{p_1, p_2, \ldots, p_n\} \quad \text{where } p_i = \text{oracle}_i.\text{getPrice}()
+$$
+
+### Step 2: Outlier Filtering
+
+$$
+P_{\text{median}} = \text{median}(\mathbf{P}_{\text{raw}})
+$$
+
+$$
+\mathbf{P}_{\text{filtered}} = \left\{p \in \mathbf{P}_{\text{raw}} : \frac{|p - P_{\text{median}}|}{P_{\text{median}}} \leq \sigma_{\max}\right\}
+$$
+
+### Step 3: Weighted Aggregation
+
+$$
+P_{\text{weighted}} = \frac{\sum_{p_i \in \mathbf{P}_{\text{filtered}}} w_i \cdot p_i}{\sum_{p_i \in \mathbf{P}_{\text{filtered}}} w_i}
+$$
+
+### Step 4: TWAP Smoothing
+
+$$
+P_t = \alpha \cdot P_{\text{weighted}} + (1-\alpha) \cdot P_{t-1}
+$$
+
+Where $\alpha$ is the smoothing factor (typically 0.1–0.3).
+
+***
+
+## System Stability Analysis
+
+The system's stability can be analyzed through the Jacobian matrix of the state transition:
+
+$$
+\mathbf{J} = \begin{bmatrix}
+\frac{\partial f_i}{\partial x_j}
+\end{bmatrix}_{4 \times 4}
+$$
+
+$$
+\text{where } \mathbf{f} = [f_{\text{reflect}}, f_{\text{market}}, f_{\text{liquidity}}, f_{\text{psm}}]^T \text{ and } \mathbf{x} = [R_t, M_t, L_t, S_t]^T
+$$
+
+<Callout type="warn">
+  **Stability Requirement:** For stability, all eigenvalues of $\mathbf{J}$ must satisfy $|\lambda_i| < 1$.
+</Callout>
+
+The system is designed such that:
+
+| Component        | Stability Property                                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Reflective Price | $\frac{\partial f_{\text{reflect}}}{\partial R_t} = 1 - \Delta \cdot \text{sign}(P_t - R_t)$ has eigenvalue $\leq 1-\Delta$ |
+| Market Price     | $\frac{\partial f_{\text{market}}}{\partial M_t} = 1 - \lambda$ has eigenvalue $< 1$ when $\lambda > 0$                     |
+| Cross-coupling   | Off-diagonal terms provide stabilizing feedback                                                                             |
+
+***
+
+## Parameter Optimization
+
+The optimal parameters can be derived through constrained optimization:
+
+### Objective Function
+
+Minimize tracking error while maintaining stability:
+
+$$
+\min_{\Delta, \theta, \delta} \; \mathbb{E}[\varepsilon_t^2]
+$$
+
+Subject to:
+
+* **System stability:** $\max_i |\lambda_i(\mathbf{J})| < 1$
+* **Safety constraints:** $\Delta \leq \Delta_{\max}$, $\theta \geq \theta_{\min}$
+* **Economic viability:** $\text{fee\_revenue} \geq \text{operational\_costs}$
+
+<Callout type="info">
+  These constraints ensure parameters are optimally tuned for market conditions and risk preferences.
+</Callout>
+
+***
+
+<Callout type="info">
+  **Next:** [Capital Efficiency](/docs/tokenomics/capital-efficiency) — Concentrated liquidity mathematics and 200× efficiency derivation
+</Callout>
+
+
+# Buy
+
+
+
+# Buy
+
+Content to be written.
+
+
+# Sell
+
+
+
+# Sell
+
+Content to be written.
+
+
+# Stake
+
+
+
+# Stake
+
+Content to be written.

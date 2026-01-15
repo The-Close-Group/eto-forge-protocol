@@ -1,0 +1,3689 @@
+/* ========================================
+   RESET & BASE STYLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0a0a;
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* ========================================
+   PAGE SECTIONS
+   ======================================== */
+.page {
+    min-height: 100vh;
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.page-hero {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ========================================
+   HERO GLOBE - HORIZON EFFECT
+   ======================================== */
+.hero-globe-container {
+    position: absolute;
+    bottom: -650px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1400px;
+    height: 1400px;
+    z-index: 1;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#hero-earth-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#hero-earth-canvas:active {
+    cursor: grabbing;
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    position: relative;
+    z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 500;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+}
+
+.launch-btn {
+    background: #57FEC7;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.launch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(87, 254, 199, 0.4);
+    background: #7AFFD8;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.main-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 150px;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.hero-section {
+    text-align: center;
+    padding-top: 60px;
+    margin-bottom: 40px;
+}
+
+.hero-title {
+    font-size: 88px;
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 28px;
+    color: #FFFFFF;
+    letter-spacing: -1.5px;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 38px;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: 0.2px;
+}
+
+.explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 100px;
+    padding: 8px 8px 8px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    background: black;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.explore-btn:hover .btn-icon {
+    transform: rotate(45deg);
+}
+
+/* ========================================
+   FEATURE CARDS - ABSOLUTE POSITIONS
+   ======================================== */
+.feature-card {
+    position: absolute;
+    width: 210px;
+    height: 250px;
+    z-index: 50;
+    opacity: 0;
+}
+
+.card-left {
+    left: 120px;
+    bottom: 50px;
+}
+
+.card-right {
+    right: 120px;
+    bottom: 50px;
+}
+
+.card-content {
+    width: 100%;
+    height: 100%;
+    background: #1a1a1a;
+    border-radius: 10px;
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.feature-card:hover .card-content {
+    transform: translateY(-6px);
+}
+
+.card-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.card-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Left card text alignment */
+.card-left .card-title,
+.card-left .card-subtitle {
+    text-align: left;
+}
+
+/* Right card text alignment */
+.card-right .card-title,
+.card-right .card-subtitle {
+    text-align: right;
+}
+
+/* Card Hover Overlay */
+.card-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 30;
+}
+
+.card-hover-overlay p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    margin: 0;
+}
+
+.feature-card:hover .card-hover-overlay {
+    opacity: 1;
+}
+
+/* Left card - mask creates concave cutout on bottom-RIGHT matching globe */
+.card-left .card-content {
+    align-items: flex-start;
+    -webkit-mask: radial-gradient(
+        circle 600px at calc(100% + 480px) calc(100% + 480px),
+        transparent 599px,
+        black 600px
+    );
+    mask: radial-gradient(
+        circle 600px at calc(100% + 480px) calc(100% + 480px),
+        transparent 599px,
+        black 600px
+    );
+}
+
+/* Right card - mask creates concave cutout on bottom-LEFT matching globe */
+.card-right .card-content {
+    align-items: flex-end;
+    -webkit-mask: radial-gradient(
+        circle 600px at -480px calc(100% + 480px),
+        transparent 599px,
+        black 600px
+    );
+    mask: radial-gradient(
+        circle 600px at -480px calc(100% + 480px),
+        transparent 599px,
+        black 600px
+    );
+}
+
+/* Card title */
+.card-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #57FEC7;
+    margin: 0;
+}
+
+/* Glow orb base styles */
+.card-glow {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center,
+        rgba(90, 255, 195, 1) 0%,
+        rgba(70, 230, 175, 0.95) 15%,
+        rgba(55, 200, 155, 0.8) 30%,
+        rgba(40, 160, 125, 0.55) 50%,
+        rgba(25, 110, 85, 0.3) 70%,
+        rgba(15, 70, 55, 0.1) 85%,
+        transparent 100%
+    );
+    transition: all 0.3s ease;
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* Left card - glow at bottom-LEFT corner */
+/* Left card - glow on the LEFT (outer edge) */
+.card-left .card-glow {
+    bottom: 25px;
+    left: 25px;
+    right: auto;
+}
+
+/* Right card - glow on the RIGHT (outer edge) */
+.card-right .card-glow {
+    bottom: 25px;
+    right: 25px;
+    left: auto;
+}
+
+.feature-card:hover .card-glow {
+    transform: scale(1.06);
+    filter: brightness(1.03);
+}
+
+/* ========================================
+   PARTNER LOGOS - ON THE CURVE
+   ======================================== */
+.partners-section {
+    position: absolute;
+    bottom: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 800px;
+    height: 50px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.partners-track {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    animation: scrollCarousel 20s linear infinite;
+    width: max-content;
+}
+
+.partners-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scrollCarousel {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.partner-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.95;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.partner-logo:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+}
+
+.partner-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.partner-text {
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.partner-img {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.partner-svg {
+    height: 24px;
+    width: auto;
+    filter: none;
+}
+
+.partner-svg-wide {
+    height: 24px;
+    width: auto;
+    filter: none;
+}
+
+.partner-img-dark {
+    filter: none;
+    height: 18px;
+}
+
+.suzaku-logo {
+    height: 28px;
+    filter: none;
+}
+
+/* Specific partner styling */
+.partner-avalanche .partner-text {
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+.partner-layerzero .partner-text {
+    font-weight: 500;
+}
+
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hero-title {
+    animation: fadeInUp 0.7s ease forwards;
+}
+
+.hero-subtitle {
+    animation: fadeInUp 0.7s ease 0.12s forwards;
+    opacity: 0;
+}
+
+.explore-btn {
+    animation: fadeInUp 0.7s ease 0.24s forwards;
+    opacity: 0;
+}
+
+.card-left {
+    animation: slideInLeft 0.7s ease 0.4s forwards;
+    opacity: 0;
+}
+
+.card-right {
+    animation: slideInRight 0.7s ease 0.5s forwards;
+    opacity: 0;
+}
+
+.partners-section {
+    animation: fadeIn 0.8s ease 0.7s forwards;
+    opacity: 0;
+}
+
+.partners-track {
+    padding-left: 50px;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1400px) {
+    .card-left {
+        left: 80px;
+        bottom: 40px;
+    }
+    
+    .card-right {
+        right: 80px;
+        bottom: 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .hero-title {
+        font-size: 72px;
+    }
+    
+    .feature-card {
+        width: 180px;
+        height: 220px;
+    }
+    
+    .card-left {
+        left: 50px;
+        bottom: 35px;
+    }
+    
+    .card-right {
+        right: 50px;
+        bottom: 35px;
+    }
+    
+    .card-left .card-content {
+        align-items: flex-start;
+        -webkit-mask: radial-gradient(
+            circle 500px at calc(100% + 400px) calc(100% + 400px),
+            transparent 499px,
+            black 500px
+        );
+        mask: radial-gradient(
+            circle 500px at calc(100% + 400px) calc(100% + 400px),
+            transparent 499px,
+            black 500px
+        );
+    }
+    
+    .card-right .card-content {
+        align-items: flex-end;
+        -webkit-mask: radial-gradient(
+            circle 500px at -400px calc(100% + 400px),
+            transparent 499px,
+            black 500px
+        );
+        mask: radial-gradient(
+            circle 500px at -400px calc(100% + 400px),
+            transparent 499px,
+            black 500px
+        );
+    }
+    
+    .card-title {
+        font-size: 18px;
+    }
+    
+    .partners-section {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .feature-card {
+        width: 160px;
+        height: 200px;
+    }
+    
+    .card-left {
+        left: 30px;
+        bottom: 30px;
+    }
+    
+    .card-right {
+        right: 30px;
+        bottom: 30px;
+    }
+    
+    .card-left .card-content {
+        align-items: flex-start;
+        -webkit-mask: radial-gradient(
+            circle 400px at calc(100% + 320px) calc(100% + 320px),
+            transparent 399px,
+            black 400px
+        );
+        mask: radial-gradient(
+            circle 400px at calc(100% + 320px) calc(100% + 320px),
+            transparent 399px,
+            black 400px
+        );
+    }
+    
+    .card-right .card-content {
+        align-items: flex-end;
+        -webkit-mask: radial-gradient(
+            circle 400px at -320px calc(100% + 320px),
+            transparent 399px,
+            black 400px
+        );
+        mask: radial-gradient(
+            circle 400px at -320px calc(100% + 320px),
+            transparent 399px,
+            black 400px
+        );
+    }
+    
+    .card-title {
+        font-size: 16px;
+    }
+    
+    .card-glow {
+        width: 55px;
+        height: 55px;
+        bottom: 20px;
+    }
+    
+    .card-left .card-glow {
+        left: 20px;
+    }
+    
+    .card-right .card-glow {
+        right: 20px;
+    }
+    
+    .partners-section {
+        gap: 25px;
+    }
+    
+    .partner-text,
+    .partner-text-bold {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 16px 30px;
+    }
+    
+    .hero-title {
+        font-size: 48px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+    
+    .feature-card {
+        position: relative;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100%;
+        max-width: 260px;
+        height: 200px;
+        margin: 20px auto;
+    }
+    
+    .card-left,
+    .card-right {
+        position: relative;
+    }
+    
+    .card-left .card-content,
+    .card-right .card-content {
+        -webkit-mask: none;
+        mask: none;
+        align-items: flex-start;
+    }
+    
+    .card-left .card-title,
+    .card-left .card-subtitle,
+    .card-right .card-title,
+    .card-right .card-subtitle {
+        text-align: left;
+    }
+    
+    .card-left .card-glow,
+    .card-right .card-glow {
+        bottom: -15px;
+        left: -15px;
+        right: auto;
+        width: 65px;
+        height: 65px;
+    }
+    
+    .partners-section {
+        position: relative;
+        bottom: auto;
+        height: 40px;
+        margin-top: 40px;
+        max-width: 100%;
+    }
+    
+    .partners-track {
+        gap: 40px;
+    }
+    
+    .hero-globe-container {
+        bottom: -800px;
+        width: 1200px;
+        height: 1200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 12px 20px;
+    }
+    
+    .logo-text {
+        font-size: 18px;
+    }
+    
+    .launch-btn {
+        padding: 10px 16px;
+        font-size: 10px;
+    }
+    
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .hero-subtitle {
+        font-size: 14px;
+    }
+    
+    .explore-btn {
+        padding: 12px 12px 12px 18px;
+        font-size: 11px;
+    }
+    
+    .partner-icon {
+        display: none;
+    }
+}
+
+/* ========================================
+   SCROLL INDICATOR
+   ======================================== */
+.scroll-indicator {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 150;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+}
+
+.scroll-indicator span {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.scroll-arrow {
+    animation: bounce 2s infinite;
+}
+
+.scroll-arrow svg {
+    opacity: 0.6;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(10px);
+    }
+    60% {
+        transform: translateY(5px);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* ========================================
+   PAGE 2: FEATURES SECTION
+   ======================================== */
+.page-features {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    position: relative;
+    margin-top: 100px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.features-content {
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* New Features Grid */
+.features-grid-new {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.grid-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.grid-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.grid-card-header {
+    margin-bottom: 30px;
+}
+
+.grid-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.grid-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 250px;
+}
+
+.grid-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.grid-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.grid-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover Tooltip - Full Card Overlay */
+.grid-card-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 28px;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.grid-card-tooltip p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    text-align: center;
+    max-width: 90%;
+}
+
+.grid-card:hover .grid-card-tooltip {
+    opacity: 1;
+}
+
+.grid-card:hover .grid-card-header,
+.grid-card:hover .grid-card-graphic,
+.grid-card:hover .grid-card-arrow {
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+}
+
+.grid-card-points {
+    position: absolute;
+    bottom: -60px;
+    left: 28px;
+}
+
+.grid-card-points p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
+}
+
+/* Yield Card Graphic */
+.graphic-yield {
+    position: relative;
+}
+
+.yield-sphere {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(80, 80, 80, 0.6) 0%,
+        rgba(60, 60, 60, 0.4) 50%,
+        rgba(40, 40, 40, 0.3) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 
+        inset -20px -20px 40px rgba(0, 0, 0, 0.4),
+        inset 10px 10px 30px rgba(255, 255, 255, 0.05);
+}
+
+.yield-sphere::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50% 0 0 50%;
+}
+
+.yield-dollar {
+    font-size: 80px;
+    font-weight: 700;
+    color: #57FEC7;
+    text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* Fanned Token Stack Visual */
+.graphic-tokens-fan {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokens-fan {
+    position: relative;
+    width: 220px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fan-token {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(80, 80, 80, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fan-token svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Fanned positions - stacked with offset */
+.fan-token-1 {
+    z-index: 5;
+    transform: translateX(0) rotate(0deg);
+}
+
+.fan-token-2 {
+    z-index: 4;
+    transform: translateX(-35px) translateY(-5px) rotate(-8deg);
+}
+
+.fan-token-3 {
+    z-index: 3;
+    transform: translateX(-65px) translateY(-15px) rotate(-16deg);
+}
+
+.fan-token-4 {
+    z-index: 2;
+    transform: translateX(35px) translateY(-5px) rotate(8deg);
+}
+
+.fan-token-5 {
+    z-index: 1;
+    transform: translateX(65px) translateY(-15px) rotate(16deg);
+}
+
+/* Hover effects */
+.grid-card:hover .fan-token-1 {
+    transform: translateX(0) rotate(0deg) scale(1.05);
+}
+
+.grid-card:hover .fan-token-2 {
+    transform: translateX(-45px) translateY(-8px) rotate(-10deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-3 {
+    transform: translateX(-85px) translateY(-18px) rotate(-18deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-4 {
+    transform: translateX(45px) translateY(-8px) rotate(10deg) scale(1.02);
+}
+
+.grid-card:hover .fan-token-5 {
+    transform: translateX(85px) translateY(-18px) rotate(18deg) scale(1.02);
+}
+
+/* ERC-20 Card Graphic */
+.graphic-erc {
+    position: relative;
+}
+
+.puzzle-piece {
+    width: 160px;
+    height: 220px;
+    background: linear-gradient(180deg, 
+        #F5E6E0 0%,
+        #EED9D3 50%,
+        #E8CCC5 100%
+    );
+    border-radius: 16px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.puzzle-piece::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(90deg, 
+        #F5E6E0 0%,
+        #E8CCC5 100%
+    );
+    border-radius: 0 30px 30px 0;
+}
+
+.puzzle-glow {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.4) 30%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    filter: blur(10px);
+}
+
+/* Self-Custody Card Graphic */
+.graphic-feature3 {
+    position: relative;
+}
+
+.glass-shape {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, 
+        rgba(87, 254, 199, 0.15) 0%,
+        rgba(87, 254, 199, 0.05) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-shape::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    filter: blur(4px);
+}
+
+.glass-shape::after {
+    content: '🔐';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+}
+
+/* Yield Card Graphic */
+.graphic-yield {
+    position: relative;
+}
+
+.yield-sphere {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(80, 80, 80, 0.6) 0%,
+        rgba(60, 60, 60, 0.4) 50%,
+        rgba(40, 40, 40, 0.3) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 
+        inset -20px -20px 40px rgba(0, 0, 0, 0.4),
+        inset 10px 10px 30px rgba(255, 255, 255, 0.05);
+}
+
+.yield-sphere::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50% 0 0 50%;
+}
+
+.yield-dollar {
+    font-size: 80px;
+    font-weight: 700;
+    color: #57FEC7;
+    text-shadow: 0 0 30px rgba(87, 254, 199, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* ERC-29 Card Graphic */
+.graphic-erc {
+    position: relative;
+}
+
+.puzzle-piece {
+    width: 160px;
+    height: 220px;
+    background: linear-gradient(180deg, 
+        #F5E6E0 0%,
+        #EED9D3 50%,
+        #E8CCC5 100%
+    );
+    border-radius: 16px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.puzzle-piece::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(90deg, 
+        #F5E6E0 0%,
+        #E8CCC5 100%
+    );
+    border-radius: 0 30px 30px 0;
+}
+
+.puzzle-glow {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.4) 30%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    filter: blur(10px);
+}
+
+/* #3 Feature Card Graphic */
+.graphic-feature3 {
+    position: relative;
+}
+
+.glass-shape {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, 
+        rgba(180, 160, 200, 0.6) 0%,
+        rgba(160, 140, 180, 0.4) 50%,
+        rgba(140, 120, 160, 0.3) 100%
+    );
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    transform: rotate(-10deg);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        inset 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.glass-shape::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2) 0%,
+        transparent 50%
+    );
+    border-radius: 16px;
+}
+
+.glass-shape::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, 
+        rgba(100, 100, 120, 0.4) 0%,
+        rgba(80, 80, 100, 0.2) 100%
+    );
+    border-radius: 16px;
+    transform: rotate(15deg);
+}
+
+
+/* ========================================
+   RESPONSIVE - NEW SECTIONS
+   ======================================== */
+@media (max-width: 1100px) {
+    .features-grid-new {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .grid-card {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .grid-card:last-child {
+        grid-column: span 1;
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-features {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .features-grid-new {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .grid-card {
+        min-height: 400px;
+    }
+    
+    .grid-card:last-child {
+        grid-column: span 1;
+        max-width: 100%;
+    }
+    
+    .grid-card-title {
+        font-size: 26px;
+    }
+    
+    .scroll-indicator {
+        display: none;
+    }
+    
+    .yield-sphere {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .yield-dollar {
+        font-size: 60px;
+    }
+    
+    .tokens-fan {
+        width: 180px;
+        height: 140px;
+    }
+    
+    .fan-token {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .fan-token-2 { transform: translateX(-28px) translateY(-4px) rotate(-8deg); }
+    .fan-token-3 { transform: translateX(-52px) translateY(-12px) rotate(-16deg); }
+    .fan-token-4 { transform: translateX(28px) translateY(-4px) rotate(8deg); }
+    .fan-token-5 { transform: translateX(52px) translateY(-12px) rotate(16deg); }
+    
+    .puzzle-piece {
+        width: 130px;
+        height: 180px;
+    }
+    
+    .glass-shape {
+        width: 130px;
+        height: 130px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-features {
+        padding: 60px 20px;
+        margin-top: 40px;
+    }
+    
+    .grid-card {
+        padding: 24px;
+        min-height: 360px;
+    }
+    
+    .grid-card-title {
+        font-size: 24px;
+    }
+    
+    .grid-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .grid-card-points {
+        bottom: -50px;
+        left: 24px;
+    }
+    
+    .grid-card-points p {
+        font-size: 12px;
+    }
+}
+
+/* ========================================
+   PAGE 3: MAANG TOKEN SECTION
+   ======================================== */
+.page-maang {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 40px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 10;
+    margin-top: 100px;
+    overflow-x: hidden;
+}
+
+.maang-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 800px;
+}
+
+/* Horizontal 3D Token Carousel - Centered 5 Tokens */
+.h-carousel-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    overflow: hidden;
+    padding: 40px 0;
+    position: relative;
+}
+
+/* Fade edges */
+.h-carousel-wrapper::before,
+.h-carousel-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.h-carousel-wrapper::before {
+    left: 0;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.h-carousel-wrapper::after {
+    right: 0;
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.h-carousel-track {
+    display: flex;
+    gap: 40px;
+    animation: hCarouselScroll 15s linear infinite;
+    width: max-content;
+    padding: 20px 40px;
+}
+
+/* Removed hover pause for seamless infinite loop */
+
+@keyframes hCarouselScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.333%);
+    }
+}
+
+.h-token {
+    flex-shrink: 0;
+    width: 140px;
+    height: 140px;
+    perspective: 600px;
+    cursor: pointer;
+    /* Button reset */
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    outline: none;
+}
+
+.h-token-3d {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: tokenTilt 4s ease-in-out infinite;
+    transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+/* Non-hovered tokens dim when any token is hovered */
+.h-carousel-track:hover .h-token .h-token-3d {
+    filter: brightness(0.5);
+}
+
+/* Hovered token highlights */
+.h-carousel-track:hover .h-token:hover .h-token-3d {
+    filter: brightness(1.1);
+    transform: rotateY(0deg) rotateX(5deg) scale(1.15);
+    animation-play-state: paused;
+}
+
+@keyframes tokenTilt {
+    0%, 100% {
+        transform: rotateY(-15deg) rotateX(8deg);
+    }
+    50% {
+        transform: rotateY(15deg) rotateX(-3deg);
+    }
+}
+
+.h-token-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #505050 0%, #3a3a3a 20%, #252525 50%, #1a1a1a 80%, #151515 100%);
+    box-shadow: 
+        inset -6px -6px 20px rgba(0, 0, 0, 0.8),
+        inset 6px 6px 15px rgba(100, 100, 100, 0.15),
+        0 15px 35px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    transform: translateZ(10px);
+    border: 3px solid #4a4a4a;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-front {
+    box-shadow: 
+        inset -6px -6px 20px rgba(0, 0, 0, 0.8),
+        inset 6px 6px 15px rgba(100, 100, 100, 0.15),
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(87, 254, 199, 0.3);
+    border-color: #57FEC7;
+}
+
+.h-token-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #3a3a3a 0%, #2a2a2a 30%, #1a1a1a 60%, #252525 100%);
+    box-shadow: 
+        inset 6px 6px 20px rgba(0, 0, 0, 0.8),
+        inset -6px -6px 15px rgba(100, 100, 100, 0.1);
+    backface-visibility: hidden;
+    transform: rotateY(180deg) translateZ(10px);
+    border: 3px solid #3a3a3a;
+}
+
+.h-token-edge {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.h-token-edge::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    background: repeating-linear-gradient(90deg,
+        #3a3a3a 0px, #3a3a3a 4px,
+        #555 4px, #555 8px,
+        #3a3a3a 8px, #3a3a3a 12px,
+        #444 12px, #444 16px
+    );
+    border-radius: 10px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%) rotateX(90deg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.h-token-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0.4;
+    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
+    background-size: 7px 7px;
+    animation: hDotsMove 3s linear infinite;
+    mask-image: radial-gradient(circle, black 50%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
+}
+
+@keyframes hDotsMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 35px 35px;
+    }
+}
+
+.h-token-ring {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    border: 2px solid rgba(120, 120, 120, 0.4);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-ring {
+    border-color: rgba(87, 254, 199, 0.5);
+}
+
+.h-token-logo {
+    width: 55px;
+    height: 55px;
+    position: relative;
+    z-index: 5;
+}
+
+.h-token-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+    transition: filter 0.3s ease;
+}
+
+.h-token:hover .h-token-logo svg {
+    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
+}
+
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
+.h-token-shine {
+    position: absolute;
+    top: 8%;
+    left: 12%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    filter: blur(3px);
+    z-index: 3;
+}
+
+.maang-available {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.maang-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.maang-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* ========================================
+   PAGE 4: TOKENIZATION AS A SERVICE
+   ======================================== */
+.page-taas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 150px 60px;
+    margin-top: 350px;
+    position: relative;
+    gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.taas-content {
+    text-align: center;
+    max-width: 900px;
+    flex-shrink: 0;
+}
+
+.taas-subtitle {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.taas-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.taas-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* Dual Carousel Container */
+.dual-carousel-container {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Full width carousels for TAAS page */
+.dual-carousel-container .h-carousel-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.dual-carousel-container .h-carousel-wrapper::before,
+.dual-carousel-container .h-carousel-wrapper::after {
+    width: 100px;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.dual-carousel-container .h-carousel-wrapper::after {
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+/* Track moving right (reverse direction) */
+.track-right {
+    animation: hCarouselScrollRight 18s linear infinite;
+}
+
+/* Track moving left (original direction) */
+.track-left {
+    animation: hCarouselScroll 18s linear infinite;
+}
+
+@keyframes hCarouselScrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive - TAAS Section */
+@media (max-width: 768px) {
+    .page-taas {
+        padding: 100px 30px;
+        margin-top: 200px;
+        gap: 50px;
+    }
+    
+    .taas-title {
+        font-size: 48px;
+        letter-spacing: -1px;
+    }
+    
+    .taas-subtitle {
+        font-size: 14px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-taas {
+        padding: 60px 20px;
+        gap: 40px;
+    }
+    
+    .taas-title {
+        font-size: 36px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 40px;
+    }
+}
+
+/* Responsive - MAANG Section */
+@media (max-width: 768px) {
+    .page-maang {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 600px;
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 50px;
+    }
+    
+    .h-carousel-track {
+        gap: 30px;
+    }
+    
+    .h-token {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .h-token-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(6px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+    
+    .h-token-edge::before {
+        height: 12px;
+    }
+    
+    .maang-title {
+        font-size: 32px;
+    }
+    
+    .maang-available {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-maang {
+        padding: 60px 20px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 100%;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 30px;
+    }
+    
+    .h-carousel-track {
+        gap: 20px;
+    }
+    
+    .h-token {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .h-token-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(5px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(5px);
+    }
+    
+    .h-token-edge::before {
+        height: 10px;
+    }
+    
+    .maang-title {
+        font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
+    }
+}
+
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0.4;
+    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
+    background-size: 7px 7px;
+    animation: hDotsMove 3s linear infinite;
+    mask-image: radial-gradient(circle, black 50%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
+}
+
+@keyframes hDotsMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 35px 35px;
+    }
+}
+
+.h-token-ring {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    border: 2px solid rgba(120, 120, 120, 0.4);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-ring {
+    border-color: rgba(87, 254, 199, 0.5);
+}
+
+.h-token-logo {
+    width: 55px;
+    height: 55px;
+    position: relative;
+    z-index: 5;
+}
+
+.h-token-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+    transition: filter 0.3s ease;
+}
+
+.h-token:hover .h-token-logo svg {
+    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
+}
+
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
+.h-token-shine {
+    position: absolute;
+    top: 8%;
+    left: 12%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    filter: blur(3px);
+    z-index: 3;
+}
+
+.maang-available {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.maang-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.maang-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* ========================================
+   PAGE 4: TOKENIZATION AS A SERVICE
+   ======================================== */
+.page-taas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 150px 60px;
+    margin-top: 350px;
+    position: relative;
+    gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.taas-content {
+    text-align: center;
+    max-width: 900px;
+    flex-shrink: 0;
+}
+
+.taas-subtitle {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.taas-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.taas-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* Dual Carousel Container */
+.dual-carousel-container {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Full width carousels for TAAS page */
+.dual-carousel-container .h-carousel-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.dual-carousel-container .h-carousel-wrapper::before,
+.dual-carousel-container .h-carousel-wrapper::after {
+    width: 100px;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.dual-carousel-container .h-carousel-wrapper::after {
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+/* Track moving right (reverse direction) */
+.track-right {
+    animation: hCarouselScrollRight 18s linear infinite;
+}
+
+/* Track moving left (original direction) */
+.track-left {
+    animation: hCarouselScroll 18s linear infinite;
+}
+
+@keyframes hCarouselScrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive - TAAS Section */
+@media (max-width: 768px) {
+    .page-taas {
+        padding: 100px 30px;
+        margin-top: 200px;
+        gap: 50px;
+    }
+    
+    .taas-title {
+        font-size: 48px;
+        letter-spacing: -1px;
+    }
+    
+    .taas-subtitle {
+        font-size: 14px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-taas {
+        padding: 60px 20px;
+        gap: 40px;
+    }
+    
+    .taas-title {
+        font-size: 36px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 40px;
+    }
+}
+
+/* Responsive - MAANG Section */
+@media (max-width: 768px) {
+    .page-maang {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 600px;
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 50px;
+    }
+    
+    .h-carousel-track {
+        gap: 30px;
+    }
+    
+    .h-token {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .h-token-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(6px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+    
+    .h-token-edge::before {
+        height: 12px;
+    }
+    
+    .maang-title {
+        font-size: 32px;
+    }
+    
+    .maang-available {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-maang {
+        padding: 60px 20px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 100%;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 30px;
+    }
+    
+    .h-carousel-track {
+        gap: 20px;
+    }
+    
+    .h-token {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .h-token-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(5px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(5px);
+    }
+    
+    .h-token-edge::before {
+        height: 10px;
+    }
+    
+    .maang-title {
+        font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
+    }
+}
+
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0.4;
+    background-image: radial-gradient(circle, #777 1.5px, transparent 1.5px);
+    background-size: 7px 7px;
+    animation: hDotsMove 3s linear infinite;
+    mask-image: radial-gradient(circle, black 50%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle, black 50%, transparent 65%);
+}
+
+@keyframes hDotsMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 35px 35px;
+    }
+}
+
+.h-token-ring {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    border: 2px solid rgba(120, 120, 120, 0.4);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: border-color 0.3s ease;
+}
+
+.h-token:hover .h-token-ring {
+    border-color: rgba(87, 254, 199, 0.5);
+}
+
+.h-token-logo {
+    width: 55px;
+    height: 55px;
+    position: relative;
+    z-index: 5;
+}
+
+.h-token-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+    transition: filter 0.3s ease;
+}
+
+.h-token:hover .h-token-logo svg {
+    filter: drop-shadow(0 4px 10px rgba(87, 254, 199, 0.4));
+}
+
+.h-token-logo-full {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.h-token-logo-full svg {
+    width: 100%;
+    height: 100%;
+}
+
+.h-token-shine {
+    position: absolute;
+    top: 8%;
+    left: 12%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    filter: blur(3px);
+    z-index: 3;
+}
+
+.maang-available {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.maang-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.maang-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 32px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.maang-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* ========================================
+   PAGE 4: TOKENIZATION AS A SERVICE
+   ======================================== */
+.page-taas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 150px 60px;
+    margin-top: 350px;
+    position: relative;
+    gap: 60px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.taas-content {
+    text-align: center;
+    max-width: 900px;
+    flex-shrink: 0;
+}
+
+.taas-subtitle {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #57FEC7;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.taas-title {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.taas-btn {
+    opacity: 1;
+    animation: none;
+}
+
+/* Dual Carousel Container */
+.dual-carousel-container {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Full width carousels for TAAS page */
+.dual-carousel-container .h-carousel-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.dual-carousel-container .h-carousel-wrapper::before,
+.dual-carousel-container .h-carousel-wrapper::after {
+    width: 100px;
+    background: linear-gradient(90deg, #0a0a0a 0%, transparent 100%);
+}
+
+.dual-carousel-container .h-carousel-wrapper::after {
+    background: linear-gradient(-90deg, #0a0a0a 0%, transparent 100%);
+}
+
+/* Track moving right (reverse direction) */
+.track-right {
+    animation: hCarouselScrollRight 18s linear infinite;
+}
+
+/* Track moving left (original direction) */
+.track-left {
+    animation: hCarouselScroll 18s linear infinite;
+}
+
+@keyframes hCarouselScrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive - TAAS Section */
+@media (max-width: 768px) {
+    .page-taas {
+        padding: 100px 30px;
+        margin-top: 200px;
+        gap: 50px;
+    }
+    
+    .taas-title {
+        font-size: 48px;
+        letter-spacing: -1px;
+    }
+    
+    .taas-subtitle {
+        font-size: 14px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-taas {
+        padding: 60px 20px;
+        gap: 40px;
+    }
+    
+    .taas-title {
+        font-size: 36px;
+    }
+    
+    .dual-carousel-container {
+        gap: 5px;
+    }
+    
+    .dual-carousel-container .h-carousel-wrapper::before,
+    .dual-carousel-container .h-carousel-wrapper::after {
+        width: 40px;
+    }
+}
+
+/* Responsive - MAANG Section */
+@media (max-width: 768px) {
+    .page-maang {
+        padding: 100px 30px;
+        margin-top: 60px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 600px;
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 50px;
+    }
+    
+    .h-carousel-track {
+        gap: 30px;
+    }
+    
+    .h-token {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .h-token-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(6px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+    
+    .h-token-edge::before {
+        height: 12px;
+    }
+    
+    .maang-title {
+        font-size: 32px;
+    }
+    
+    .maang-available {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-maang {
+        padding: 60px 20px;
+    }
+    
+    .h-carousel-wrapper {
+        max-width: 100%;
+    }
+    
+    .h-carousel-wrapper::before,
+    .h-carousel-wrapper::after {
+        width: 30px;
+    }
+    
+    .h-carousel-track {
+        gap: 20px;
+    }
+    
+    .h-token {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .h-token-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .h-token-logo.h-token-logo-full {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .h-token-front {
+        transform: translateZ(5px);
+    }
+    
+    .h-token-back {
+        transform: rotateY(180deg) translateZ(5px);
+    }
+    
+    .h-token-edge::before {
+        height: 10px;
+    }
+    
+    .maang-title {
+        font-size: 26px;
+    }
+}
+
+/* ========================================
+   STAKING SECTION
+   Matches grid-card design language
+   ======================================== */
+
+.page-engine {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 150px 60px;
+    min-height: 100vh;
+    margin-top: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.engine-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.engine-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.engine-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #57FEC7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.engine-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* ═══════════════════════════════════════
+   STAKE CARD GRID - 2 columns
+   ═══════════════════════════════════════ */
+
+.stake-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.stake-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stake-card-header {
+    margin-bottom: 30px;
+}
+
+.stake-card-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.stake-card-title.title-yield {
+    color: #57FEC7;
+    text-shadow: 0 0 40px rgba(87, 254, 199, 0.3);
+}
+
+.stake-card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.stake-card-graphic {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-card-arrow {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stake-card-arrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* USDC Logo */
+.usdc-logo {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.usdc-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+}
+
+/* sMAANG Logo */
+.smaang-logo {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.smaang-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+}
+
+
+/* ═══════════════════════════════════════
+   STEPS ROW
+   ═══════════════════════════════════════ */
+
+.stake-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px 32px;
+}
+
+.stake-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+}
+
+.step-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #57FEC7;
+    letter-spacing: -0.5px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-connector {
+    width: 40px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .stake-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stake-card {
+        min-height: 320px;
+    }
+    
+    .usdc-sphere {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .usdc-symbol {
+        font-size: 56px;
+    }
+    
+    .smaang-logo {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-engine {
+        padding: 100px 24px;
+        min-height: auto;
+    }
+    
+    .engine-title {
+        font-size: 36px;
+    }
+    
+    .engine-header {
+        margin-bottom: 36px;
+    }
+    
+    .stake-card-title {
+        font-size: 28px;
+    }
+    
+    .stake-card-subtitle {
+        font-size: 13px;
+    }
+    
+    .stake-steps {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .stake-step {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .step-connector {
+        width: 1px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stake-card {
+        padding: 20px;
+        min-height: 280px;
+    }
+    
+    .stake-card-title {
+        font-size: 24px;
+    }
+    
+    .usdc-sphere {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .usdc-symbol {
+        font-size: 48px;
+    }
+    
+    .step-num {
+        font-size: 20px;
+    }
+    
+    .step-title {
+        font-size: 14px;
+    }
+    
+    .step-desc {
+        font-size: 12px;
+    }
+}
