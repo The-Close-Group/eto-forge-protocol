@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import Sparkline, { generateSparklineData } from '@/components/Sparkline';
 import { useMemo } from 'react';
 
@@ -39,61 +39,90 @@ export function AssetCard({
     [riskLevel]
   );
 
+  // Calculate mock price and change based on TVL
+  const price = (tvl / 10000).toFixed(2);
+  const changePercent = riskLevel === 'high' ? -rewardRate : rewardRate;
+  const changeValue = ((tvl / 10000) * (changePercent / 100)).toFixed(2);
+  const isPositive = changePercent >= 0;
+
   return (
     <div 
       className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''} ${className}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
     >
-      {/* Hover tooltip */}
-      <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-        <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-          <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
-        </div>
-      </div>
-      
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
+      {/* Header Row - Logo, Name/Symbol, Price + Change */}
+      <div className="flex items-start justify-between mb-4 sm:mb-5 gap-2">
+        {/* Left: Logo + Name */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          {/* Logo Container - Rounded rectangle for MAANG, circular for index */}
           <div 
-            className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5"
-            style={{ background: `${color}15` }}
+            className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0 overflow-hidden ${
+              (type === 'defi' || type === 'liquid') 
+                ? 'rounded-lg sm:rounded-xl'  // Rounded rectangle for MAANG/sMAANG
+                : 'rounded-full'  // Circular for index/stablecoin
+            }`}
           >
-            <img src={logo} alt={name} className="w-full h-full object-contain" />
+            <img 
+              src={logo} 
+              alt={name} 
+              className={
+                (type === 'index' || type === 'stablecoin')
+                  ? 'w-full h-full object-cover rounded-full'  // Fill container
+                  : 'w-6 h-6 sm:w-8 sm:h-8 object-contain'  // Responsive logo size
+              }
+            />
           </div>
-          <div>
-            <div className="text-[11px] text-muted-foreground">{type.toUpperCase()}</div>
-            <div className="text-[13px] font-medium">{name}</div>
+          <div className="min-w-0">
+            <div className="text-[13px] sm:text-[15px] font-semibold truncate">{name}</div>
+            <div className="text-[11px] sm:text-[12px] text-muted-foreground truncate">{symbol.toLowerCase()}.inc</div>
           </div>
         </div>
-        {isSelected && <Check className="w-4 h-4 text-primary" />}
-      </div>
-      
-      {/* Reward Rate */}
-      <div className="mb-3">
-        <div className="reward-rate-label">Reward Rate</div>
-        <div className="flex items-baseline gap-0.5">
-          <span className="reward-rate">{rewardRate.toFixed(2)}</span>
-          <span className="text-xl text-muted-foreground font-normal">%</span>
+
+        {/* Right: Price + Change underneath */}
+        <div className="text-right flex-shrink-0">
+          <div className="text-[16px] sm:text-[18px] font-semibold mb-1 sm:mb-1.5">${price}</div>
+          <div className="flex items-center gap-1 sm:gap-1.5 justify-end flex-wrap">
+            <div className={`flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 rounded ${isPositive ? 'bg-primary/10' : 'bg-data-negative/10'}`}>
+              {isPositive ? (
+                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
+              ) : (
+                <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-data-negative" />
+              )}
+              <span className={`text-[10px] sm:text-[11px] font-medium ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+                {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
+              </span>
+            </div>
+            <span className={`text-[10px] sm:text-[11px] font-medium hidden xs:inline ${isPositive ? 'text-primary' : 'text-data-negative'}`}>
+              {isPositive ? '+' : '-'}${Math.abs(parseFloat(changeValue)).toFixed(2)}
+            </span>
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:inline">Today</span>
+          </div>
         </div>
       </div>
       
-      {/* Risk Badge */}
-      <div className={`status-badge ${riskLevel === 'low' ? 'status-badge-positive' : riskLevel === 'high' ? 'status-badge-negative' : ''} mb-4`}>
-        <span className="w-[6px] h-[6px] rounded-full bg-current" />
-        {riskLevel} risk
-      </div>
-      
-      {/* Sparkline */}
-      <div className="relative">
+      {/* Sparkline - Full Width */}
+      <div className="relative -mx-1 sm:-mx-1">
         <Sparkline 
           data={sparkData} 
-          height={60}
-          variant={riskLevel !== 'high' ? 'positive' : 'negative'}
+          height={55}
+          variant={isPositive ? 'positive' : 'negative'}
           showArea={true}
-          showEndValue={true}
-          endValue={`$${(tvl / 1000000).toFixed(1)}M TVL`}
         />
+      </div>
+
+      {/* Trade Button - Outline style with hover effect */}
+      <div className="mt-4 pt-3 border-t border-border-subtle">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onDoubleClick?.();
+          }}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-transparent border border-[#3a3a3c] hover:border-[#5a5a5c] hover:bg-[#ffffff08] text-muted-foreground hover:text-foreground font-medium text-[13px] transition-all duration-200 group/btn"
+        >
+          <span>Trade {symbol}</span>
+          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+        </button>
       </div>
     </div>
   );

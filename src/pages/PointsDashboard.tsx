@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { TopNavBar } from "@/components/layout/TopNavBar";
 import {
   Trophy, TrendingUp, Clock, ChevronRight, ChevronDown,
   RefreshCw, Target, Award, Users, Copy, ExternalLink,
@@ -68,32 +69,16 @@ const formatAddress = (address: string, startChars = 6, endChars = 4) => {
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 };
 
-// Top 3 featured point sources (highest value)
-const featuredCategories = [
-  {
-    id: "referral",
-    type: "REFERRAL",
-    name: "Referrals",
-    points: POINT_VALUES.referral,
-    riskLevel: "high" as const,
-    description: "Both parties earn +100",
-  },
-  {
-    id: "bugReport",
-    type: "BUG REPORT",
-    name: "Bug Reports",
-    points: POINT_VALUES.bugReport,
-    riskLevel: "high" as const,
-    description: "Report valid issues",
-  },
-  {
-    id: "feedback",
-    type: "FEEDBACK",
-    name: "Design Feedback",
-    points: POINT_VALUES.feedback,
-    riskLevel: "medium" as const,
-    description: "Submit UI/UX feedback",
-  },
+// Mock points activity feed - simulates recent point earnings
+const generateMockActivityFeed = () => [
+  { id: '1', type: 'dailyLogin', action: 'Daily Login', points: POINT_VALUES.dailyLogin, timestamp: new Date(Date.now() - 1000 * 60 * 5), icon: 'calendar' },
+  { id: '2', type: 'trading', action: 'Trade Completed', points: POINT_VALUES.trading, timestamp: new Date(Date.now() - 1000 * 60 * 15), icon: 'swap' },
+  { id: '3', type: 'staking', action: 'Staked MAANG', points: POINT_VALUES.staking, timestamp: new Date(Date.now() - 1000 * 60 * 45), icon: 'coins' },
+  { id: '4', type: 'referral', action: 'Referral Bonus', points: POINT_VALUES.referral, timestamp: new Date(Date.now() - 1000 * 60 * 120), icon: 'users' },
+  { id: '5', type: 'volumeMilestone', action: '$1K Volume Milestone', points: POINT_VALUES.volumeMilestone, timestamp: new Date(Date.now() - 1000 * 60 * 180), icon: 'milestone' },
+  { id: '6', type: 'socialShare', action: 'Shared on Twitter', points: POINT_VALUES.socialShare, timestamp: new Date(Date.now() - 1000 * 60 * 240), icon: 'share' },
+  { id: '7', type: 'firstStake', action: 'First Stake Bonus', points: POINT_VALUES.firstStake, timestamp: new Date(Date.now() - 1000 * 60 * 300), icon: 'zap' },
+  { id: '8', type: 'governance', action: 'Voted on Proposal', points: POINT_VALUES.governance, timestamp: new Date(Date.now() - 1000 * 60 * 360), icon: 'vote' },
 ];
 
 // All point sources organized by category
@@ -203,7 +188,7 @@ export default function PointsDashboard() {
           <DialogHeader>
             <DialogTitle>Invite Friends</DialogTitle>
             <DialogDescription>
-              Share your referral link and earn {POINT_VALUES.referral} points for each friend who joins. They also get {POINT_VALUES.referral} bonus points!
+              Share your referral link to gift friends 20% off trading fees. You'll earn 20% too, plus {POINT_VALUES.referral} points per referral.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
@@ -235,7 +220,7 @@ export default function PointsDashboard() {
                   readOnly 
                   className="font-mono text-[12px]"
                 />
-                <Button variant="cta" onClick={handleCopyReferral}>
+                <Button variant="outline" onClick={handleCopyReferral}>
                   <Copy className="w-4 h-4 mr-1" />
                   Copy
                 </Button>
@@ -253,54 +238,12 @@ export default function PointsDashboard() {
       </Dialog>
 
       <div className="min-h-screen bg-background">
-        {/* Top Header Bar - Matching Dashboard */}
-        <header className="header-bar sticky top-0 z-50 backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Trophy className="w-4 h-4 text-primary" />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] font-medium">Season 1</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </div>
-            </button>
+        <TopNavBar />
 
-            <button className="deposit-btn ml-4" onClick={() => setReferralDialogOpen(true)}>
-              Invite Friends
-              <Users className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button className="search-input" onClick={() => toast.info("Search coming soon")}>
-              <Hash className="w-3.5 h-3.5" />
-              <span>Search wallets...</span>
-            </button>
-
-            <button 
-              className={`icon-btn ${isRefreshing ? 'animate-spin' : ''}`}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
-
-        <div className="max-w-[1440px] mx-auto p-6 space-y-6">
-          {/* Header Row */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-1.5">
-                <span>Point categories for Season 1</span>
-                <Clock className="w-3.5 h-3.5" />
-                <span className="px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium">
-                  3 Ways to Earn
-                </span>
-              </div>
-              <h1 className="text-[28px] font-semibold tracking-tight">Points Dashboard</h1>
-            </div>
+        <div className="max-w-[1440px] mx-auto p-6 pt-20 space-y-6">
+          {/* Page Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-2">
+            <h1 className="text-[28px] font-semibold tracking-tight">Points Dashboard</h1>
             
             <div className="flex items-center gap-2">
               {(['24H', '7D', '30D'] as const).map(time => (
@@ -320,76 +263,140 @@ export default function PointsDashboard() {
             </div>
           </div>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              {/* Featured Point Categories - Top 3 highest value */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {featuredCategories.map((category) => {
-                  const sparkData = generateSparklineData(30, 'up');
-                  const isSelected = selectedCategory === category.id;
-                  
-                  return (
-                    <div 
-                      key={category.id}
-                      className={`staking-asset-card cursor-pointer group relative ${isSelected ? 'ring-2 ring-primary' : ''}`}
-                      onClick={() => setSelectedCategory(category.id)}
-                      onDoubleClick={() => {
-                        if (category.id === 'referral') setReferralDialogOpen(true);
-                        else if (category.id === 'bugReport') toast.info("Bug report form coming soon");
-                        else if (category.id === 'feedback') toast.info("Feedback form coming soon");
-                      }}
-                    >
-                      {/* Hover tooltip */}
-                      <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                        <div className="px-2.5 py-1.5 rounded-md bg-background/95 backdrop-blur-sm border border-border-subtle shadow-lg">
-                          <span className="text-[10px] text-muted-foreground whitespace-nowrap">Double click to open</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center">
-                            {category.id === 'referral' && <Users className="w-4 h-4 text-muted-foreground" />}
-                            {category.id === 'bugReport' && <Bug className="w-4 h-4 text-muted-foreground" />}
-                            {category.id === 'feedback' && <MessageSquare className="w-4 h-4 text-muted-foreground" />}
-                          </div>
-                          <div>
-                            <div className="text-[11px] text-muted-foreground">{category.type}</div>
-                            <div className="text-[13px] font-medium">{category.name}</div>
-                          </div>
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      
-                      <div className="mb-3">
-                        <div className="reward-rate-label">Points per Action</div>
-                        <div className="flex items-baseline gap-0.5">
-                          <span className="reward-rate">+{category.points}</span>
-                          <span className="text-xl text-muted-foreground font-normal">pts</span>
-                        </div>
-                      </div>
-                      
-                      <div className={`status-badge ${category.riskLevel === 'high' ? 'status-badge-positive' : ''} mb-4`}>
-                        <span className="w-[6px] h-[6px] rounded-full bg-current" />
-                        {category.riskLevel === 'high' ? 'highest reward' : 'high reward'}
-                      </div>
-                      
-                      <div className="relative">
-                        <Sparkline 
-                          data={sparkData} 
-                          height={60}
-                          variant="positive"
-                          showArea={true}
-                          showEndValue={true}
-                          endValue={category.description}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+          {/* Referral Banner */}
+          <div className="cta-card mb-6">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-[14px] font-medium">ETO</span>
+                  <span className="text-[9px] align-super text-muted-foreground">®</span>
+                </div>
+                <h3 className="text-[18px] font-semibold mb-1 leading-tight">Referral Program</h3>
+                <p className="text-[13px] text-muted-foreground leading-relaxed max-w-lg">
+                  Refer friends to gift them 20% off trading fees and earn 20% yourself. Plus, earn {POINT_VALUES.referral} points per referral.
+                </p>
               </div>
+              
+              <div className="flex items-center gap-2.5">
+                <Button variant="outline" className="h-10" onClick={() => setReferralDialogOpen(true)}>
+                  Get Referral Link
+                  <Users className="w-3.5 h-3.5 ml-1.5" />
+                </Button>
+                
+                <Button variant="ctaDark" className="h-10" asChild>
+                  <Link to="/staking">
+                    Stake to Earn
+                    <Lock className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-6">
+              {/* Points Activity Table - Similar to Asset Metrics in SystemHealth */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-[15px] flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-primary" />
+                      Recent Points Activity
+                    </CardTitle>
+                    <span className="text-[11px] text-muted-foreground">{generateMockActivityFeed().length} activities</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Activity</th>
+                          <th className="text-left text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Category</th>
+                          <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Points Earned</th>
+                          <th className="text-right text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Time</th>
+                          <th className="text-center text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-4 py-3">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {generateMockActivityFeed().map((activity) => {
+                          const timeAgo = Math.floor((Date.now() - activity.timestamp.getTime()) / 1000 / 60);
+                          const timeLabel = timeAgo < 60 ? `${timeAgo}m ago` : `${Math.floor(timeAgo / 60)}h ago`;
+                          
+                          // Map type to category label
+                          const categoryMap: Record<string, string> = {
+                            dailyLogin: 'Engagement',
+                            trading: 'Trading',
+                            staking: 'Protocol',
+                            referral: 'Social',
+                            volumeMilestone: 'Trading',
+                            socialShare: 'Social',
+                            firstStake: 'Achievement',
+                            governance: 'Protocol',
+                          };
+                          
+                          return (
+                            <tr 
+                              key={activity.id}
+                              className="border-b border-border/30 hover:bg-muted/30 transition-colors"
+                            >
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    {activity.icon === 'calendar' && <Calendar className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'swap' && <ArrowDownUp className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'coins' && <Award className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'users' && <Users className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'milestone' && <Milestone className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'share' && <Share2 className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'zap' && <Zap className="w-4 h-4 text-primary" />}
+                                    {activity.icon === 'vote' && <Vote className="w-4 h-4 text-primary" />}
+                                  </div>
+                                  <span className="text-[13px] font-medium">{activity.action}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" className="text-[10px] bg-muted/50">
+                                  {categoryMap[activity.type] || 'Other'}
+                                </Badge>
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                <span className="text-[13px] font-semibold text-primary font-mono">+{activity.points}</span>
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                <span className="text-[12px] text-muted-foreground">{timeLabel}</span>
+                              </td>
+                              <td className="text-center px-4 py-3">
+                                <div className="flex items-center justify-center">
+                                  <CheckCircle2 className="w-4 h-4 text-data-positive" />
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                      <tfoot>
+                        <tr className="bg-muted/20">
+                          <td className="px-4 py-3" colSpan={2}>
+                            <span className="text-[13px] font-semibold">Total Points Earned</span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[13px] font-semibold text-primary font-mono">
+                              +{generateMockActivityFeed().reduce((sum, a) => sum + a.points, 0)}
+                            </span>
+                          </td>
+                          <td className="text-right px-4 py-3">
+                            <span className="text-[11px] text-muted-foreground">Today</span>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <span className="text-[11px] text-data-positive font-medium">All Credited</span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* All Point Sources - Organized by Category */}
               <div className="active-staking-card">
@@ -654,7 +661,7 @@ export default function PointsDashboard() {
                           <span className="text-[46px] font-medium tracking-tight leading-none tabular-nums">
                             {userPoints.total.toLocaleString()}
                           </span>
-                          <Button variant="cta" size="default" onClick={() => setReferralDialogOpen(true)}>
+                          <Button variant="outline" size="default" onClick={() => setReferralDialogOpen(true)}>
                             Invite
                           </Button>
                           <Button variant="outline" size="default" asChild>
@@ -767,179 +774,6 @@ export default function PointsDashboard() {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="space-y-5">
-              {/* Season 1 CTA Card */}
-              <div className="cta-card">
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-[14px] font-medium">ETO</span>
-                      <span className="text-[9px] align-super text-muted-foreground">®</span>
-                    </div>
-                    <span className="new-badge">Season 1</span>
-                  </div>
-                  <h3 className="text-[18px] font-semibold mb-2 leading-tight">Referral Program</h3>
-                  <p className="text-[13px] text-muted-foreground mb-6 leading-relaxed">
-                    Invite friends and both of you earn {POINT_VALUES.referral} points. The more you refer, the higher you climb.
-                  </p>
-                  
-                  <div className="space-y-2.5">
-                    <Button variant="cta" className="w-full h-11" onClick={() => setReferralDialogOpen(true)}>
-                      Get Referral Link
-                      <Users className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                    
-                    <Button variant="ctaDark" className="w-full h-11" asChild>
-                      <Link to="/staking">
-                        Stake to Earn Points
-                        <Lock className="w-3.5 h-3.5 ml-1" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Point Breakdown - All Sources */}
-              <Card className="overflow-hidden">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-[14px] font-medium">Point Values</h3>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground mb-4">All ways to earn points</p>
-                  
-                  <div className="space-y-4">
-                    {/* High Value */}
-                    <div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">High Value</div>
-                      <div className="space-y-1.5">
-                        {[
-                          { action: 'Early Adopter', points: POINT_VALUES.earlyAdopter, oneTime: true },
-                          { action: 'Referral (Both)', points: POINT_VALUES.referral },
-                          { action: 'Bug Report', points: POINT_VALUES.bugReport },
-                        ].map((item) => (
-                          <div key={item.action} className="flex items-center justify-between p-2 rounded-lg bg-primary/5 border border-primary/10">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[11px]">{item.action}</span>
-                              {item.oneTime && <Badge variant="outline" className="text-[7px] py-0 h-3">1x</Badge>}
-                            </div>
-                            <span className="text-[11px] font-semibold text-primary">+{item.points}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Medium Value */}
-                    <div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Medium Value</div>
-                      <div className="space-y-1.5">
-                        {[
-                          { action: 'First Stake', points: POINT_VALUES.firstStake, oneTime: true },
-                          { action: 'Design Feedback', points: POINT_VALUES.feedback },
-                          { action: 'Volume Milestone', points: POINT_VALUES.volumeMilestone },
-                          { action: 'First Trade', points: POINT_VALUES.firstTrade, oneTime: true },
-                        ].map((item) => (
-                          <div key={item.action} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[11px]">{item.action}</span>
-                              {item.oneTime && <Badge variant="outline" className="text-[7px] py-0 h-3">1x</Badge>}
-                            </div>
-                            <span className="text-[11px] font-semibold">+{item.points}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Base Value */}
-                    <div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Recurring</div>
-                      <div className="space-y-1.5">
-                        {[
-                          { action: 'Staking / LP', points: POINT_VALUES.staking },
-                          { action: 'Governance Vote', points: POINT_VALUES.governance },
-                          { action: 'Social Share', points: POINT_VALUES.socialShare },
-                          { action: 'Community Help', points: POINT_VALUES.communityHelp },
-                          { action: 'Buy or Sell', points: POINT_VALUES.trading },
-                          { action: 'Holding Bonus', points: POINT_VALUES.holdingBonus, suffix: '/week' },
-                          { action: 'Daily Login', points: POINT_VALUES.dailyLogin },
-                        ].map((item) => (
-                          <div key={item.action} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-                            <span className="text-[11px]">{item.action}</span>
-                            <span className="text-[11px] font-semibold">+{item.points}{item.suffix || ''}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Season Rewards */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-[14px] flex items-center justify-between">
-                    Season Rewards
-                    <button className="text-muted-foreground hover:text-foreground">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {[
-                    { tier: 'Diamond', points: '2,000+', color: '#b9f2ff' },
-                    { tier: 'Gold', points: '1,000+', color: '#ffd700' },
-                    { tier: 'Silver', points: '500+', color: '#c0c0c0' },
-                    { tier: 'Bronze', points: '0+', color: '#cd7f32' },
-                  ].map((item) => (
-                    <div key={item.tier} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-6 h-6 rounded-md flex items-center justify-center"
-                          style={{ backgroundColor: `${item.color}15` }}
-                        >
-                          <Trophy className="w-3 h-3" style={{ color: item.color }} />
-                        </div>
-                        <span className="text-[12px] font-medium">{item.tier}</span>
-                      </div>
-                      <span className="text-[11px] text-muted-foreground">{item.points} pts</span>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-[14px]">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-0.5">
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/buy-maang">
-                      <span className="text-[13px]">Start Trading</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/staking">
-                      <span className="text-[13px]">Stake Assets</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-between h-9 px-3" onClick={() => setReferralDialogOpen(true)}>
-                    <span className="text-[13px]">Invite Friends</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Button>
-                  <Button asChild variant="ghost" className="w-full justify-between h-9 px-3">
-                    <Link to="/dashboard">
-                      <span className="text-[13px]">Dashboard</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,7 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { source } from '@/lib/source';
+import { baseOptions } from '@/lib/layout.shared';
 import 'katex/dist/katex.min.css';
 import './global.css';
 import {
@@ -31,9 +34,9 @@ export const metadata: Metadata = {
   },
   description: 'Documentation for ETO - Equity Token Offering Protocol',
   icons: {
-    icon: '/eto-single.svg',
-    shortcut: '/eto-single.svg',
-    apple: '/eto-single.svg',
+    icon: '/docs/eto-single.svg',
+    shortcut: '/docs/eto-single.svg',
+    apple: '/docs/eto-single.svg',
   },
 };
 
@@ -45,7 +48,15 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider>
+          <DocsLayout
+            tree={source.pageTree}
+            sidebar={{ defaultOpenLevel: 1, collapsible: true }}
+            {...baseOptions()}
+          >
+            {children}
+          </DocsLayout>
+        </RootProvider>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import Sparkline, { generateSparklineData } from '@/components/Sparkline';
+import { useState } from 'react';
+import { ArrowUpRight, ArrowDownRight, TrendingUp, ExternalLink } from 'lucide-react';
 import maangLogo from '@/assets/maang-logo.svg';
 
 interface Holding {
@@ -12,6 +12,7 @@ interface Holding {
   value: number;
   change: number;
   type: string;
+  apy?: number;
 }
 
 interface HoldingsCardProps {
@@ -29,6 +30,7 @@ const holdings: Holding[] = [
     value: 15632.25,
     change: 2.34,
     type: 'defi',
+    apy: 1.51,
   },
   {
     id: 'smaang',
@@ -40,6 +42,7 @@ const holdings: Holding[] = [
     value: 11125.00,
     change: 1.89,
     type: 'liquid',
+    apy: 3.24,
   },
   {
     id: 'usdc',
@@ -51,29 +54,38 @@ const holdings: Holding[] = [
     value: 15054.89,
     change: 0.00,
     type: 'stablecoin',
+    apy: 0.05,
   },
 ];
 
 function HoldingItem({ holding }: { holding: Holding }) {
-  const sparkData = useMemo(() => 
-    generateSparklineData(20, holding.change >= 0 ? 'up' : 'down'),
-    [holding.change]
-  );
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="holding-item">
+    <div 
+      className="holding-item group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Quick action on hover */}
+      <div className="holding-quick-action">
+        <ExternalLink className="w-3.5 h-3.5" />
+      </div>
+
       {/* Header with logo and name */}
       <div className="holding-header">
         <div className="holding-icon-wrap">
           <div 
             className="holding-icon"
-            style={{ background: `${holding.color}15` }}
+            style={{ background: `${holding.color}15`, borderColor: `${holding.color}30` }}
           >
             <img src={holding.logo} alt={holding.name} />
           </div>
         </div>
         <div className="holding-info">
-          <span className="holding-type">{holding.type.toUpperCase()}</span>
+          <div className="holding-type-badge" style={{ background: `${holding.color}15`, color: holding.color }}>
+            {holding.type.toUpperCase()}
+          </div>
           <span className="holding-name">{holding.name}</span>
         </div>
       </div>
@@ -91,31 +103,45 @@ function HoldingItem({ holding }: { holding: Holding }) {
       <div className="holding-value-section">
         <span className="holding-usd">${holding.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
         <span className={`holding-change ${holding.change >= 0 ? 'positive' : 'negative'}`}>
+          {holding.change >= 0 ? (
+            <ArrowUpRight className="w-3 h-3" />
+          ) : (
+            <ArrowDownRight className="w-3 h-3" />
+          )}
           {holding.change >= 0 ? '+' : ''}{holding.change.toFixed(2)}%
         </span>
       </div>
 
-      {/* Mini Chart */}
-      <div className="holding-chart">
-        <Sparkline 
-          data={sparkData} 
-          height={40}
-          variant={holding.change >= 0 ? 'positive' : 'negative'}
-          showArea={true}
-        />
-      </div>
+      {/* APY Badge */}
+      {holding.apy && holding.apy > 0 && (
+        <div className="holding-apy">
+          <TrendingUp className="w-3 h-3" />
+          <span>{holding.apy.toFixed(2)}% APY</span>
+        </div>
+      )}
     </div>
   );
 }
 
 export function HoldingsCard({ className = '' }: HoldingsCardProps) {
   const totalValue = holdings.reduce((sum, h) => sum + h.value, 0);
+  const totalChange = holdings.reduce((sum, h) => sum + (h.value * h.change / 100), 0);
+  const totalChangePercent = (totalChange / totalValue) * 100;
 
   return (
     <div className={`holdings-card ${className}`}>
       <div className="holdings-header">
-        <h3 className="holdings-title">Holdings</h3>
-        <span className="holdings-total">${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+        <div className="holdings-header-left">
+          <h3 className="holdings-title">Portfolio Holdings</h3>
+          <span className="holdings-count">{holdings.length} assets</span>
+        </div>
+        <div className="holdings-header-right">
+          <span className="holdings-total">${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          <span className={`holdings-total-change ${totalChangePercent >= 0 ? 'positive' : 'negative'}`}>
+            {totalChangePercent >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {totalChangePercent >= 0 ? '+' : ''}{totalChangePercent.toFixed(2)}%
+          </span>
+        </div>
       </div>
       
       <div className="holdings-grid">

@@ -8,44 +8,44 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { UserStateProvider } from "@/contexts/UserStateContext";
 import { StakingProvider } from "@/contexts/StakingContext";
-import { DataLayerProvider } from "@/components/DataLayerProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
-import { AutoFaucet } from "@/components/AutoFaucet";
 // ThirdwebProvider is already set up in main.tsx
 
 
 // Pages
 import Pitch from "@/pages/Pitch";
 import Landing from "@/pages/Landing";
+import Docs from "@/pages/Docs";
 import { Navigate } from "react-router-dom";
+import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Trade from "@/pages/Trade";
 // import Bridge from "@/pages/Bridge"; // Temporarily removed
-import BuyMAANG from "@/pages/BuyMAANG";
 import OrderPage from "@/pages/OrderPage";
 import TransactionComplete from "@/pages/TransactionComplete";
 // Removed: AssetDetails, Portfolio, Markets, Assets pages
 import StakingPage from "@/pages/StakingPage";
-import Shortcuts from "@/pages/Shortcuts";
+// Removed: BuyMAANG, Shortcuts - moved to _scrap folder
 
 import SystemHealth from "@/pages/SystemHealth";
 import NotFound from "@/pages/NotFound";
 import Faucet from "@/pages/Faucet";
-import SidebarDemoPage from "@/pages/SidebarDemoPage";
 import Profile from "@/pages/Profile";
 import PointsDashboard from "@/pages/PointsDashboard";
+import Execution from "@/pages/Execution";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <DataLayerProvider>
+    <ThemeProvider>
+      <AuthProvider>
         <PortfolioProvider>
           <UserStateProvider>
             <StakingProvider>
@@ -56,10 +56,11 @@ const App = () => (
               {/* Global UX helpers */}
               <TopLoadingBar />
               <CommandPalette />
-              <AutoFaucet /> {/* Auto-sends gas + USDC on wallet connect */}
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/pitch" element={<Pitch />} />
+                <Route path="/docs/*" element={<Docs />} />
+                <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
                   path="/*"
@@ -69,20 +70,18 @@ const App = () => (
                         <RouteTransition>
                           <Routes>
                             <Route path="/trade" element={<Trade />} />
-                            {/* <Route path="/bridge" element={<Bridge />} /> */} {/* Temporarily removed */}
-                            <Route path="/buy-maang" element={<BuyMAANG />} />
+                            <Route path="/execute/:assetId" element={<Execution />} />
+                            {/* Removed: /bridge, /buy-maang, /shortcuts routes - moved to _scrap */}
                             <Route path="/order" element={<OrderPage />} />
                             <Route path="/transaction-complete" element={<TransactionComplete />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
                             <Route path="/staking" element={<StakingPage />} />
-                            <Route path="/shortcuts" element={<Shortcuts />} />
 
                             <Route path="/system-health" element={<SystemHealth />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/points" element={<PointsDashboard />} />
                             <Route path="/faucet" element={<Faucet />} />
-                            <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </RouteTransition>
@@ -96,8 +95,8 @@ const App = () => (
             </StakingProvider>
           </UserStateProvider>
         </PortfolioProvider>
-      </DataLayerProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
