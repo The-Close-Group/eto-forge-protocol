@@ -257,10 +257,15 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Use Thirdweb's signMessage with the hash as plain text
-      // This will add the Ethereum signed message prefix
-      const signature = await account.signMessage({
-        message: messageHash as string,
+      // Use eth_sign to sign the raw hash (contract adds prefix in verification)
+      const ethereum = (window as any).ethereum;
+      if (!ethereum) {
+        throw new Error("No Ethereum provider found");
+      }
+
+      const signature = await ethereum.request({
+        method: 'eth_sign',
+        params: [account.address, messageHash],
       });
 
       if (!signature) {
