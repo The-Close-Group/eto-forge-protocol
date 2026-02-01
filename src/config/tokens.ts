@@ -33,28 +33,28 @@ const NATIVE_TOKENS: Record<string, TokenInfo> = {
 
 // ERC20 token definitions - ETO L1 Native Assets Only
 const ERC20_TOKENS: Record<string, TokenInfo[]> = {
-  // ETO L1 Mainnet - DMMv2 Complete System (Dec 14, 2025)
+  // ETO L1 Mainnet - Option B Full Migration v2 (Jan 26, 2026)
   etoMainnet: [
     {
       symbol: "USDC",
       name: "USD Coin",
-      address: "0x27aC6E8be60d2d7bAd2171ae6789f3fbEf9689fd", // Mock USDC
+      address: "0xd6126b8EB24f1184e985cfd8FeCa4a000558b8a6", // USDC
       decimals: 6,
       coingeckoId: "usd-coin",
       logoUri: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040",
     },
     {
-      symbol: "MAANG",
-      name: "MAANG Token",
-      address: "0xdA8ac54e6a88ceC7724993Cd602168114debb510", // DRI Token
+      symbol: "INDEX",
+      name: "INDEX Token",
+      address: "0x1F50AC5eFC0b8Bc17cCAa7fD035b6D616E9312F0", // A16Z Token
       decimals: 18,
-      coingeckoId: null, // MAANG index token
+      coingeckoId: null, // INDEX token
       logoUri: "/assets/maang-logo.svg",
     },
     {
-      symbol: "sMAANG",
-      name: "Staked MAANG",
-      address: "0x22be7cc41ed9e22d5f5457be5ddc5666a7853647", // SMAANG Vault
+      symbol: "sINDEX",
+      name: "Staked INDEX",
+      address: "0x8c452efd81b77459c111365ae95f0979edba116a", // Vault
       decimals: 18,
       coingeckoId: null,
       logoUri: "/assets/maang-logo.svg",
@@ -128,16 +128,16 @@ export const DEFAULT_CHAIN = "etoMainnet"; // Default to ETO L1 mainnet for prod
 
 // Supported tokens list for UI
 export const SUPPORTED_TOKENS = {
-  MAANG: {
-    symbol: "MAANG",
-    name: "MAANG Token",
+  INDEX: {
+    symbol: "INDEX",
+    name: "INDEX Token",
     description: "Dynamic Reflective Index Token",
     logoUri: "/assets/maang-logo.svg",
   },
-  sMAANG: {
-    symbol: "sMAANG",
-    name: "Staked MAANG",
-    description: "Yield-bearing MAANG Receipt",
+  sINDEX: {
+    symbol: "sINDEX",
+    name: "Staked INDEX",
+    description: "Yield-bearing INDEX Receipt",
     logoUri: "/assets/maang-logo.svg",
   },
   USDC: {
@@ -145,5 +145,18 @@ export const SUPPORTED_TOKENS = {
     name: "USD Coin",
     description: "Stablecoin pegged to USD",
     logoUri: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040",
+  },
+  // Legacy aliases
+  MAANG: {
+    symbol: "INDEX",
+    name: "INDEX Token",
+    description: "Dynamic Reflective Index Token",
+    logoUri: "/assets/maang-logo.svg",
+  },
+  sMAANG: {
+    symbol: "sINDEX",
+    name: "Staked INDEX",
+    description: "Yield-bearing INDEX Receipt",
+    logoUri: "/assets/maang-logo.svg",
   },
 };
