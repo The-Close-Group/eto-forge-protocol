@@ -256,9 +256,14 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Use thirdweb account's signMessage
+      // Convert bytes32 to Uint8Array for signing
+      const messageBytes = new Uint8Array(
+        (messageHash as string).slice(2).match(/.{1,2}/g)!.map(byte => parseInt(byte, 16))
+      );
+
+      // Use thirdweb account's signMessage with raw bytes
       const signature = await account.signMessage({
-        message: { raw: messageHash as `0x${string}` },
+        message: { raw: messageBytes },
       });
 
       if (!signature) {
