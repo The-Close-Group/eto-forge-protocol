@@ -256,14 +256,17 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Convert bytes32 to Uint8Array for signing
-      const messageBytes = new Uint8Array(
-        (messageHash as string).slice(2).match(/.{1,2}/g)!.map(byte => parseInt(byte, 16))
-      );
+      // Sign the message hash directly using wallet's signMessage
+      // The contract expects an Ethereum signed message (with prefix)
+      const provider = await account.connector?.getProvider();
+      if (!provider) {
+        throw new Error("No provider available");
+      }
 
-      // Use thirdweb account's signMessage with raw bytes
-      const signature = await account.signMessage({
-        message: { raw: messageBytes },
+      // Use eth_sign to sign the raw hash
+      const signature = await provider.request({
+        method: 'personal_sign',
+        params: [messageHash, account.address],
       });
 
       if (!signature) {
