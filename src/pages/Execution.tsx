@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,10 +6,14 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useDeFiPrices, usePriceHistory } from "@/hooks/useDeFiPrices";
 import { TopNavBar } from "@/components/layout/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDirectSwap } from "@/hooks/useDirectSwap";
+import { useDirectSwap, SwapQuote } from "@/hooks/useDirectSwap";
 import { useBalances } from "@/hooks/useBalances";
+import { useSlippageSettings } from "@/hooks/useSlippageSettings";
 import { CONTRACTS } from "@/config/contracts";
 import { toast } from "sonner";
+import { SlippageSettings } from "@/components/swap/SlippageSettings";
+import { QuoteBreakdown, requiresPriceImpactConfirmation } from "@/components/swap/QuoteBreakdown";
+import { QuoteRefreshIndicator, useQuoteRefresh } from "@/components/swap/QuoteRefreshIndicator";
 import { 
   ArrowLeft, 
   ArrowDown, 
@@ -25,7 +29,8 @@ import {
   Wallet,
   ArrowUpDown
 } from "lucide-react";
-import { ResponsiveContainer, Area, AreaChart, XAxis, YAxis, Tooltip } from 'recharts';
+import { ProTradingChart, CandleData } from '@/components/charts/ProTradingChart';
+import { UTCTimestamp } from 'lightweight-charts';
 import {
   Dialog,
   DialogContent,
@@ -56,26 +61,26 @@ const assetConfigs: Record<string, {
   tradeable: boolean; // Whether this asset can be traded via DMM
 }> = {
   maang: {
-    name: 'MAANG',
-    symbol: 'MAANG',
+    name: 'INDEX',
+    symbol: 'INDEX',
     logo: maangLogo,
     color: '#10b981',
-    description: 'MAANG is the native utility token of the ETO Protocol, providing holders with governance rights, staking rewards, and access to premium features. The token powers the Dynamic Market Maker (DMM) and enables decentralized trading of tokenized assets.',
-    contractAddress: CONTRACTS.MAANG_TOKEN,
+    description: 'INDEX is the native utility token of the ETO Protocol, providing holders with governance rights, staking rewards, and access to premium features. The token powers the Dynamic Market Maker (DMM) and enables decentralized trading of tokenized assets.',
+    contractAddress: CONTRACTS.INDEX_TOKEN,
     underlyingAsset: 'ETO Protocol Token',
-    underlyingTicker: 'MAANG',
+    underlyingTicker: 'INDEX',
     basePrice: 328.00,
     tradeable: true,
   },
   smaang: {
-    name: 'Staked MAANG',
-    symbol: 'sMAANG',
+    name: 'Staked INDEX',
+    symbol: 'sINDEX',
     logo: maangLogo,
     color: '#8b5cf6',
-    description: 'sMAANG represents staked MAANG tokens in the ETO Protocol. Holders earn continuous staking rewards while maintaining liquidity through the liquid staking derivative. sMAANG can be traded or used as collateral across DeFi protocols.',
-    contractAddress: CONTRACTS.SMAANG_VAULT,
-    underlyingAsset: 'Staked MAANG Token',
-    underlyingTicker: 'sMAANG',
+    description: 'sINDEX represents staked INDEX tokens in the ETO Protocol. Holders earn continuous staking rewards while maintaining liquidity through the liquid staking derivative. sINDEX can be traded or used as collateral across DeFi protocols.',
+    contractAddress: CONTRACTS.VAULT_ADDRESS,
+    underlyingAsset: 'Staked INDEX Token',
+    underlyingTicker: 'sINDEX',
     basePrice: 345.00,
     tradeable: false, // Staking only
   },
@@ -133,31 +138,12 @@ const assetConfigs: Record<string, {
     logo: a16zLogo,
     color: '#5E1D23',
     description: 'The Andreessen Horowitz Index offers exposure to a16z portfolio companies tokenized on ETO Protocol. This flagship fund tracks investments across crypto, bio, fintech, and enterprise software.',
-    contractAddress: '0x0000000000000000000000000000000000000000', // Coming soon
+    contractAddress: CONTRACTS.INDEX_TOKEN, // INDEX Token
     underlyingAsset: 'a16z Portfolio Index',
     underlyingTicker: 'A16Z',
     basePrice: 312.00,
-    tradeable: false, // Coming soon
+    tradeable: true, // Now live!
   },
-};
-
-// Generate mock price data
-const generatePriceData = (days: number, basePrice: number, volatility: number = 0.02) => {
-  const data = [];
-  let price = basePrice * 0.95;
-  const now = Date.now();
-  const interval = (days * 24 * 60 * 60 * 1000) / 100;
-  
-  for (let i = 0; i < 100; i++) {
-    const change = (Math.random() - 0.45) * volatility * price;
-    price = Math.max(price + change, basePrice * 0.8);
-    data.push({
-      time: new Date(now - (100 - i) * interval).toLocaleString(),
-      timestamp: now - (100 - i) * interval,
-      price: price,
-    });
-  }
-  return data;
 };
 
 export default function Execution() {
@@ -178,8 +164,11 @@ export default function Execution() {
     isApproving
   } = useDirectSwap();
   const { blockchainBalances, getBlockchainBalance } = useBalances();
+  const { slippage, isHighSlippage } = useSlippageSettings();
 
   const [isVisible, setIsVisible] = useState(false);
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote | null>(null);
+  const [quoteRefreshTrigger, setQuoteRefreshTrigger] = useState(0);
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL'>('1D');
   const [payAmount, setPayAmount] = useState('');
@@ -192,6 +181,8 @@ export default function Execution() {
   const [orderError, setOrderError] = useState<string | null>(null);
   const [userBalances, setUserBalances] = useState<{ usdc: string; dri: string }>({ usdc: '0', dri: '0' });
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
+  const [hasAcceptedPriceImpact, setHasAcceptedPriceImpact] = useState(false);
+  const [quoteAtConfirmation, setQuoteAtConfirmation] = useState<SwapQuote | null>(null);
 
   // Real price history for charts - map timeRange to hook format
   const priceHistoryRange = useMemo((): "1h" | "24h" | "7d" | "30d" => {
@@ -243,27 +234,123 @@ export default function Execution() {
     };
   }, [assetId, priceHistoryData, currentPrice]);
 
-  // Use real price history for chart data
-  const chartData = useMemo(() => {
-    if (!priceHistoryData || priceHistoryData.length === 0) {
-      // Fallback to generated data if no history available
-      const days = timeRange === '1D' ? 1 : timeRange === '1W' ? 7 : timeRange === '1M' ? 30 : timeRange === '3M' ? 90 : timeRange === '1Y' ? 365 : 730;
-      return generatePriceData(days, currentPrice);
+  // Use real price history for chart data - converted to CandleData format for ProTradingChart
+  // When real WebSocket data is available, use it. Otherwise, generate realistic simulated history
+  // based on the REAL current DMM price.
+  const chartData = useMemo((): CandleData[] => {
+    const now = Date.now();
+    const realPrice = currentPrice || dmmPrice || 326;
+
+    // For USDC, show flat price
+    if (assetId === 'usdc') {
+      const points = 100;
+      const interval = 3600000; // 1 hour
+      return Array.from({ length: points }, (_, i) => ({
+        time: Math.floor((now - (points - i - 1) * interval) / 1000) as UTCTimestamp,
+        open: 1.00,
+        high: 1.002,
+        low: 0.998,
+        close: 1.00,
+        volume: 50000 + Math.floor(i * 100),
+      }));
     }
 
-    // Transform price history to chart format
-    return priceHistoryData.map(point => ({
-      time: new Date(point.timestamp).toLocaleString(),
-      timestamp: point.timestamp,
-      price: assetId === 'usdc' ? 1.00 : point.dmmPrice,
-    }));
-  }, [priceHistoryData, timeRange, currentPrice, assetId]);
+    // Check if we have sufficient real WebSocket data (at least 10 unique timestamps)
+    const hasRealData = priceHistoryData && priceHistoryData.length >= 10;
 
-  // Fetch real quotes from contract when pay amount changes
+    if (hasRealData && priceHistoryData) {
+      // Use REAL data from WebSocket - deduplicate and sort
+      const deduped = new Map<number, { dmmPrice: number; oraclePrice: number }>();
+      for (const point of priceHistoryData) {
+        const timeKey = Math.floor(point.timestamp / 1000);
+        deduped.set(timeKey, { dmmPrice: point.dmmPrice, oraclePrice: point.oraclePrice });
+      }
+
+      const sortedTimes = Array.from(deduped.keys()).sort((a, b) => a - b);
+
+      return sortedTimes.map((timeKey, i) => {
+        const point = deduped.get(timeKey)!;
+        const close = point.dmmPrice || point.oraclePrice;
+        const prevTimeKey = i > 0 ? sortedTimes[i - 1] : null;
+        const prevPoint = prevTimeKey ? deduped.get(prevTimeKey) : null;
+        const prevClose = prevPoint ? (prevPoint.dmmPrice || prevPoint.oraclePrice) : close;
+        const open = prevClose;
+        const high = Math.max(open, close) * 1.001;
+        const low = Math.min(open, close) * 0.999;
+
+        return {
+          time: timeKey as UTCTimestamp,
+          open,
+          high,
+          low,
+          close,
+          volume: 5000 + i * 50,
+        };
+      });
+    }
+
+    // Generate SIMULATED history that converges to the real current price
+    // This is standard practice for protocols without historical data infrastructure
+    const points = 100;
+    const timeRangeDays = timeRange === '1D' ? 1 : timeRange === '1W' ? 7 : timeRange === '1M' ? 30 : 90;
+    const interval = (timeRangeDays * 24 * 60 * 60 * 1000) / points;
+
+    // Use seeded pseudo-random for consistent chart (based on current hour)
+    const seed = Math.floor(now / 3600000);
+    const seededRandom = (i: number) => {
+      const x = Math.sin(seed + i * 9999) * 10000;
+      return x - Math.floor(x);
+    };
+
+    // Build price history with proper accumulation
+    const candles: CandleData[] = [];
+    let price = realPrice * 0.92; // Start 8% lower
+    const targetPrice = realPrice;
+    const trendPerCandle = (targetPrice - price) / points;
+
+    for (let i = 0; i < points; i++) {
+      const time = Math.floor((now - (points - i - 1) * interval) / 1000);
+
+      // Volatility based on price level (±2%)
+      const volatility = price * 0.02;
+      const randomFactor = seededRandom(i) - 0.5; // -0.5 to 0.5
+      const change = randomFactor * volatility + trendPerCandle;
+
+      const open = price;
+      price = Math.max(price + change, realPrice * 0.8);
+
+      // Last candle must close at real price
+      const close = i === points - 1 ? targetPrice : price;
+
+      // Calculate high/low with wicks
+      const wickUp = seededRandom(i + 1000) * volatility * 0.8;
+      const wickDown = seededRandom(i + 2000) * volatility * 0.8;
+      const high = Math.max(open, close) + wickUp;
+      const low = Math.min(open, close) - wickDown;
+
+      // Volume with variation
+      const baseVolume = 8000 + seededRandom(i + 3000) * 12000;
+      const volume = Math.abs(close - open) > volatility * 0.3 ? baseVolume * 1.5 : baseVolume;
+
+      candles.push({
+        time: time as UTCTimestamp,
+        open,
+        high,
+        low,
+        close,
+        volume,
+      });
+    }
+
+    return candles;
+  }, [priceHistoryData, currentPrice, dmmPrice, assetId, timeRange]);
+
+  // Fetch real quotes from contract when pay amount or slippage changes
   useEffect(() => {
     const fetchQuote = async () => {
       if (!payAmount || isNaN(parseFloat(payAmount)) || parseFloat(payAmount) <= 0) {
         setReceiveAmount('');
+        setCurrentQuote(null);
         return;
       }
 
@@ -276,22 +363,25 @@ export default function Execution() {
         } else {
           setReceiveAmount((pay * currentPrice).toFixed(2));
         }
+        setCurrentQuote(null);
         return;
       }
 
       setIsLoadingQuote(true);
       try {
         if (activeTab === 'buy') {
-          // Buy MAANG with USDC - get quote
-          const quote = await getBuyQuote(payAmount);
+          // Buy MAANG with USDC - get quote with slippage
+          const quote = await getBuyQuote(payAmount, slippage);
           if (quote) {
             setReceiveAmount(quote.outputAmount);
+            setCurrentQuote(quote);
           }
         } else {
-          // Sell MAANG for USDC - get quote
-          const quote = await getSellQuote(payAmount);
+          // Sell MAANG for USDC - get quote with slippage
+          const quote = await getSellQuote(payAmount, slippage);
           if (quote) {
             setReceiveAmount(quote.outputAmount);
+            setCurrentQuote(quote);
           }
         }
       } catch (error) {
@@ -303,6 +393,7 @@ export default function Execution() {
         } else {
           setReceiveAmount((pay * currentPrice).toFixed(2));
         }
+        setCurrentQuote(null);
       } finally {
         setIsLoadingQuote(false);
       }
@@ -311,7 +402,12 @@ export default function Execution() {
     // Debounce quote fetching
     const timeoutId = setTimeout(fetchQuote, 300);
     return () => clearTimeout(timeoutId);
-  }, [payAmount, currentPrice, activeTab, assetId, getBuyQuote, getSellQuote]);
+  }, [payAmount, currentPrice, activeTab, assetId, slippage, quoteRefreshTrigger, getBuyQuote, getSellQuote]);
+
+  // Callback to trigger quote refresh
+  const handleQuoteRefresh = useCallback(() => {
+    setQuoteRefreshTrigger(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -361,8 +457,23 @@ export default function Execution() {
 
     if (!validateOrder()) return;
 
+    // Save the current quote for comparison
+    setQuoteAtConfirmation(currentQuote);
+    setHasAcceptedPriceImpact(false);
     setShowConfirmation(true);
   };
+
+  // Check if quote has changed since opening confirmation
+  const hasPriceChanged = useMemo(() => {
+    if (!quoteAtConfirmation || !currentQuote) return false;
+    return quoteAtConfirmation.outputAmount !== currentQuote.outputAmount;
+  }, [quoteAtConfirmation, currentQuote]);
+
+  // Determine if high price impact confirmation is needed
+  const needsPriceImpactConfirmation = useMemo(() => {
+    if (!currentQuote) return false;
+    return parseFloat(currentQuote.priceImpact) > 5;
+  }, [currentQuote]);
 
   const confirmOrder = async () => {
     // Check if asset is tradeable
@@ -484,134 +595,25 @@ export default function Execution() {
                   </div>
                 </div>
 
-                {/* Time Range Selector */}
-                <div className="flex gap-1 mb-3 sm:mb-4 md:mb-6 overflow-x-auto scrollbar-hide pb-1 -mb-1">
-                  {(['1D', '1W', '1M', '3M', '1Y', 'ALL'] as const).map((range) => (
-                    <button
-                      key={range}
-                      onClick={() => setTimeRange(range)}
-                      className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-medium transition-all flex-shrink-0 ${
-                        timeRange === range
-                          ? 'bg-foreground text-background'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      {range}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Chart */}
-                <div className="h-48 sm:h-64 md:h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={asset.color} stopOpacity={0.3} />
-                          <stop offset="100%" stopColor={asset.color} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis 
-                        dataKey="time" 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                        tickFormatter={(value) => {
-                          const date = new Date(value);
-                          if (timeRange === '1D') return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                          return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                        }}
-                        interval="preserveStartEnd"
-                        minTickGap={50}
-                      />
-                      <YAxis 
-                        domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                        tickFormatter={(value) => `$${value.toFixed(0)}`}
-                        orientation="right"
-                        width={50}
-                      />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-                                <p className="text-sm font-medium">${Number(payload[0].value).toFixed(2)}</p>
-                                <p className="text-xs text-muted-foreground">{payload[0].payload.time}</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="price"
-                        stroke={asset.color}
-                        strokeWidth={2}
-                        fill="url(#priceGradient)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                {/* ProTradingChart - Full Featured Trading Chart */}
+                {/* Current price is REAL from DMM. Historical data simulated until WebSocket accumulates. */}
+                <div className="h-80 sm:h-96 md:h-[450px] -mx-3 sm:-mx-4 md:-mx-6">
+                  <ProTradingChart
+                    symbol={asset.symbol}
+                    data={chartData}
+                    height={450}
+                    showToolbar={true}
+                    showIndicators={true}
+                    showVolume={true}
+                    theme="dark"
+                  />
                 </div>
               </CardContent>
             </Card>
 
-            {/* About Section */}
-            <Card className="border-border-subtle">
-              <CardContent className="p-3 sm:p-4 md:p-6">
-                <h2 className="text-sm sm:text-base md:text-lg font-semibold mb-2 sm:mb-3">About {asset.name}</h2>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 140)}...`}
-                  <button 
-                    className="text-primary ml-1 hover:underline font-medium"
-                    onClick={() => setShowMoreDescription(!showMoreDescription)}
-                  >
-                    {showMoreDescription ? 'Show Less' : 'Show More'}
-                  </button>
-                </p>
-
-                {/* Asset Details Grid */}
-                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-border-subtle">
-                  <div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Network</div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/15 flex items-center justify-center">
-                        <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                      </div>
-                      <span className="text-xs sm:text-sm font-medium">ETO L1</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Asset Type</div>
-                    <div className="text-xs sm:text-sm font-medium truncate">{asset.underlyingAsset}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Contract</div>
-                    <button 
-                      className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium group"
-                      onClick={handleCopyAddress}
-                    >
-                      <span className="font-mono">{asset.contractAddress}</span>
-                      {copied ? (
-                        <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-data-positive flex-shrink-0" />
-                      ) : (
-                        <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                      )}
-                    </button>
-                  </div>
-                  <div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Ticker</div>
-                    <div className="text-xs sm:text-sm font-medium font-mono">{asset.underlyingTicker}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Right Column - Swap Widget */}
+          {/* Right Column - Swap Widget & About */}
           <div 
             className={`transition-all duration-700 ease-out delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -651,12 +653,15 @@ export default function Execution() {
                     </button>
                   </div>
 
-                  {/* Network Indicator */}
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/15 flex items-center justify-center">
-                      <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  {/* Network Indicator & Settings */}
+                  <div className="flex items-center gap-2">
+                    <SlippageSettings compact />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/15 flex items-center justify-center">
+                        <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      </div>
+                      <span className="text-[11px] sm:text-[12px] font-medium text-foreground">ETO L1</span>
                     </div>
-                    <span className="text-[11px] sm:text-[12px] font-medium text-foreground">ETO L1</span>
                   </div>
                 </div>
 
@@ -704,7 +709,18 @@ export default function Execution() {
 
                   {/* Receive Input */}
                   <div>
-                    <label className="text-[11px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2 block">You Receive</label>
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                      <label className="text-[11px] sm:text-xs text-muted-foreground">You Receive</label>
+                      {payAmount && parseFloat(payAmount) > 0 && (
+                        <QuoteRefreshIndicator
+                          onRefresh={handleQuoteRefresh}
+                          interval={10}
+                          isPaused={showConfirmation}
+                          isLoading={isLoadingQuote}
+                          hasQuote={!!currentQuote}
+                        />
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border-subtle">
                       {isLoadingQuote ? (
                         <div className="flex items-center gap-2 w-full">
@@ -740,23 +756,34 @@ export default function Execution() {
                   </div>
                 )}
 
-                {/* Rate Info */}
-                <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border-subtle space-y-2 sm:space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-xs text-muted-foreground">Rate</span>
-                    <span className="text-[11px] sm:text-xs font-medium font-mono">
-                      1 {asset.symbol} = ${formatPrice(currentPrice)}
-                    </span>
+                {/* Quote Breakdown with Price Impact */}
+                {currentQuote ? (
+                  <QuoteBreakdown
+                    quote={currentQuote}
+                    payAmount={payAmount}
+                    paySymbol={activeTab === 'buy' ? 'USDC' : asset.symbol}
+                    receiveSymbol={activeTab === 'buy' ? asset.symbol : 'USDC'}
+                    slippage={slippage}
+                    feePercent={0.3}
+                  />
+                ) : (
+                  <div className="mt-4 sm:mt-5 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border-subtle space-y-2 sm:space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] sm:text-xs text-muted-foreground">Rate</span>
+                      <span className="text-[11px] sm:text-xs font-medium font-mono">
+                        1 {asset.symbol} = ${formatPrice(currentPrice)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] sm:text-xs text-muted-foreground">Network Fee</span>
+                      <span className="text-[11px] sm:text-xs font-medium text-data-positive">Free</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] sm:text-xs text-muted-foreground">Platform Fee (0.3%)</span>
+                      <span className="text-[11px] sm:text-xs font-medium font-mono">${estimatedFee}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-xs text-muted-foreground">Network Fee</span>
-                    <span className="text-[11px] sm:text-xs font-medium text-data-positive">Free</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-xs text-muted-foreground">Platform Fee (0.3%)</span>
-                    <span className="text-[11px] sm:text-xs font-medium font-mono">${estimatedFee}</span>
-                  </div>
-                </div>
+                )}
 
                 {/* Action Button */}
                 <Button
@@ -816,6 +843,53 @@ export default function Execution() {
                 )}
               </CardContent>
             </Card>
+
+            {/* About Section - Below Swap Widget */}
+            <Card className="border-border-subtle mt-4 sm:mt-6">
+              <CardContent className="p-3 sm:p-4 md:p-5">
+                <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3">About {asset.name}</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  {showMoreDescription ? asset.description : `${asset.description.slice(0, 120)}...`}
+                  <button
+                    className="text-primary ml-1 hover:underline font-medium"
+                    onClick={() => setShowMoreDescription(!showMoreDescription)}
+                  >
+                    {showMoreDescription ? 'Less' : 'More'}
+                  </button>
+                </p>
+
+                {/* Asset Details */}
+                <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-border-subtle">
+                  <div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Network</div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-4 h-4 rounded-full bg-primary/15 flex items-center justify-center">
+                        <img src={etoLogo} alt="ETO" className="w-2.5 h-2.5" />
+                      </div>
+                      <span className="text-xs font-medium">ETO L1</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Type</div>
+                    <div className="text-xs font-medium truncate">{asset.underlyingAsset}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Contract</div>
+                    <button
+                      className="flex items-center gap-1.5 text-xs font-medium group font-mono"
+                      onClick={handleCopyAddress}
+                    >
+                      <span className="truncate">{asset.contractAddress.slice(0, 10)}...{asset.contractAddress.slice(-8)}</span>
+                      {copied ? (
+                        <Check className="w-3 h-3 text-data-positive flex-shrink-0" />
+                      ) : (
+                        <Copy className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -824,13 +898,24 @@ export default function Execution() {
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Confirm Order</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              Confirm {activeTab === 'buy' ? 'Buy' : 'Sell'} Order
+            </DialogTitle>
             <DialogDescription>
               Review your order details before confirming
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
+            {/* Price Updated Warning */}
+            {hasPriceChanged && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
+                <AlertCircle className="w-4 h-4 text-warning flex-shrink-0" />
+                <span className="text-xs text-warning">Price has been updated since you opened this dialog</span>
+              </div>
+            )}
+
+            {/* Trade Overview */}
             <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
               <div>
                 <div className="text-xs text-muted-foreground mb-1">You Pay</div>
@@ -842,30 +927,97 @@ export default function Execution() {
                 <div className="text-lg font-semibold">{receiveAmount} {activeTab === 'buy' ? asset.symbol : 'USDC'}</div>
               </div>
             </div>
-            
+
+            {/* Transaction Details */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Rate</span>
-                <span className="font-medium">1 {asset.symbol} = ${formatPrice(currentPrice)}</span>
+                <span className="font-medium font-mono">1 {asset.symbol} = ${currentQuote?.price || formatPrice(currentPrice)}</span>
               </div>
+              {currentQuote && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price Impact</span>
+                    <span className={`font-medium font-mono ${
+                      parseFloat(currentQuote.priceImpact) > 5 ? 'text-destructive' :
+                      parseFloat(currentQuote.priceImpact) > 2 ? 'text-warning' :
+                      'text-data-positive'
+                    }`}>
+                      -{currentQuote.priceImpact}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Slippage Tolerance</span>
+                    <span className={`font-medium font-mono ${isHighSlippage ? 'text-warning' : ''}`}>
+                      {slippage}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Min. Received</span>
+                    <span className="font-medium font-mono">
+                      {currentQuote.minimumReceived} {activeTab === 'buy' ? asset.symbol : 'USDC'}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Platform Fee</span>
-                <span className="font-medium">${estimatedFee}</span>
+                <span className="text-muted-foreground">Platform Fee (0.3%)</span>
+                <span className="font-medium font-mono">${estimatedFee}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-border-subtle">
-                <span className="font-medium">Total</span>
-                <span className="font-semibold">${(parseFloat(payAmount || '0') + parseFloat(estimatedFee)).toFixed(2)}</span>
+                <span className="font-medium">Total Cost</span>
+                <span className="font-semibold font-mono">${(parseFloat(payAmount || '0')).toFixed(2)}</span>
               </div>
             </div>
+
+            {/* High Price Impact Warning */}
+            {needsPriceImpactConfirmation && (
+              <div className="space-y-3">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-medium text-destructive">High Price Impact Warning</p>
+                    <p className="text-muted-foreground">
+                      This trade has a price impact of {currentQuote?.priceImpact}%. You may receive significantly less than the market rate.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="accept-price-impact"
+                    checked={hasAcceptedPriceImpact}
+                    onChange={(e) => setHasAcceptedPriceImpact(e.target.checked)}
+                    className="rounded border-border h-4 w-4"
+                  />
+                  <label htmlFor="accept-price-impact" className="text-xs text-muted-foreground">
+                    I understand the risks and want to proceed
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* High Slippage Warning */}
+            {isHighSlippage && !needsPriceImpactConfirmation && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
+                <AlertCircle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+                <div className="text-xs">
+                  <p className="font-medium text-warning">High Slippage Tolerance</p>
+                  <p className="text-muted-foreground">
+                    Your slippage tolerance is set to {slippage}%. Your trade may execute at a less favorable rate.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowConfirmation(false)} disabled={isProcessing}>
               Cancel
             </Button>
-            <Button 
-              onClick={confirmOrder} 
-              disabled={isProcessing}
+            <Button
+              onClick={confirmOrder}
+              disabled={isProcessing || (needsPriceImpactConfirmation && !hasAcceptedPriceImpact)}
               className={activeTab === 'buy' ? 'bg-data-positive hover:bg-data-positive/90' : 'bg-data-negative hover:bg-data-negative/90'}
             >
               {isProcessing ? (
