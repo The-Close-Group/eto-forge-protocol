@@ -257,18 +257,14 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Get provider from wallet
-      if (!wallet) {
-        throw new Error("Wallet not connected");
-      }
-
-      const provider = await wallet.getProvider();
-      if (!provider) {
-        throw new Error("No provider available");
+      // Use window.ethereum to sign the message
+      const ethereum = (window as any).ethereum;
+      if (!ethereum) {
+        throw new Error("No Ethereum provider found. Please install MetaMask.");
       }
 
       // Use personal_sign to sign the message hash
-      const signature = await provider.request({
+      const signature = await ethereum.request({
         method: 'personal_sign',
         params: [messageHash, account.address],
       });
