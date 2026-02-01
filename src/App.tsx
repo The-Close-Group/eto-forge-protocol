@@ -1,20 +1,18 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { PortfolioProvider } from "@/contexts/PortfolioContext";
-import { UserStateProvider } from "@/contexts/UserStateContext";
 import { StakingProvider } from "@/contexts/StakingContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { DataLayerProvider } from "@/components/DataLayerProvider";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { NetworkGuard } from "@/components/NetworkGuard";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import CommandPalette from "@/components/CommandPalette";
 import { RouteTransition } from "@/components/RouteTransition";
-// ThirdwebProvider is already set up in main.tsx
+// Note: QueryClientProvider, ThirdwebProvider, AuthProvider, PortfolioProvider,
+// UserStateProvider, SecurityProvider, OrderProvider are in main.tsx
 
 
 // Pages
@@ -39,45 +37,39 @@ import Faucet from "@/pages/Faucet";
 import Profile from "@/pages/Profile";
 import PointsDashboard from "@/pages/PointsDashboard";
 import Execution from "@/pages/Execution";
-
-const queryClient = new QueryClient();
+import Liquidity from "@/pages/Liquidity";
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <DataLayerProvider>
     <ThemeProvider>
-      <AuthProvider>
-        <PortfolioProvider>
-          <UserStateProvider>
-            <StakingProvider>
-              <TooltipProvider>
-              <Toaster />
-              <Sonner />
-            <BrowserRouter>
-              {/* Global UX helpers */}
-              <TopLoadingBar />
-              <CommandPalette />
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/pitch" element={<Pitch />} />
-                <Route path="/docs/*" element={<Docs />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
+      <StakingProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <TopLoadingBar />
+            <CommandPalette />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/pitch" element={<Pitch />} />
+              <Route path="/docs/*" element={<Docs />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <NetworkGuard>
                       <AppLayout>
                         <RouteTransition>
                           <Routes>
                             <Route path="/trade" element={<Trade />} />
                             <Route path="/execute/:assetId" element={<Execution />} />
-                            {/* Removed: /bridge, /buy-maang, /shortcuts routes - moved to _scrap */}
                             <Route path="/order" element={<OrderPage />} />
                             <Route path="/transaction-complete" element={<TransactionComplete />} />
                             <Route path="/dashboard" element={<Dashboard />} />
-                            {/* Removed: /asset/:symbol, /portfolio, /markets, /assets routes */}
                             <Route path="/staking" element={<StakingPage />} />
-
+                            <Route path="/liquidity" element={<Liquidity />} />
                             <Route path="/system-health" element={<SystemHealth />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/points" element={<PointsDashboard />} />
@@ -86,18 +78,16 @@ const App = () => (
                           </Routes>
                         </RouteTransition>
                       </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </BrowserRouter>
-              </TooltipProvider>
-            </StakingProvider>
-          </UserStateProvider>
-        </PortfolioProvider>
-      </AuthProvider>
+                    </NetworkGuard>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </StakingProvider>
     </ThemeProvider>
-  </QueryClientProvider>
+  </DataLayerProvider>
 );
 
 export default App;

@@ -36,38 +36,81 @@ export default function SignIn() {
     if (address) {
       // Try to add/switch to ETO L1 chain
       try {
-        // First try to add the chain (in case it's not configured)
         const provider = await wallet.getProvider?.();
-        if (provider?.request) {
-          try {
-            await provider.request({
-              method: 'wallet_addEthereumChain',
-              params: [etoMainnetParams],
-            });
-          } catch (addError: any) {
-            // Chain might already exist - that's fine
-            console.log('Chain add result:', addError?.code === 4001 ? 'rejected' : 'exists');
+
+        if (!provider?.request) {
+          toast.error('Wallet provider not available');
+          return;
+        }
+
+        // First, try to switch to the chain
+        try {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: etoMainnetParams.chainId }],
+          });
+
+          toast.success('Connected to ETO L1');
+        } catch (switchError: any) {
+          // Error 4902 means the chain hasn't been added yet
+          if (switchError.code === 4902) {
+            // Chain not found - try to add it
+            try {
+              await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [etoMainnetParams],
+              });
+
+              // Successfully added, now switch to it
+              await provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: etoMainnetParams.chainId }],
+              });
+
+              toast.success('ETO L1 network added and connected');
+            } catch (addError: any) {
+              // Handle specific add errors
+              if (addError.code === 4001) {
+                toast.error('You rejected the network addition request');
+                return;
+              } else if (addError.message?.includes('same RPC endpoint') ||
+                         addError.message?.includes('Condrieu') ||
+                         addError.code === -32002) {
+                toast.error(
+                  'RPC conflict detected. Please remove the Condrieu network from your wallet and try again.',
+                  { duration: 6000 }
+                );
+                return;
+              } else {
+                console.error('Failed to add chain:', addError);
+                toast.error('Failed to add ETO L1 network. Please add it manually.');
+                return;
+              }
+            }
+          } else if (switchError.code === 4001) {
+            toast.error('You rejected the network switch request');
+            return;
+          } else {
+            console.error('Failed to switch chain:', switchError);
+            toast.error('Failed to switch to ETO L1 network');
+            return;
           }
         }
 
-        // Now switch to the chain
-        await switchChain(etoMainnet);
-        toast.success('Connected to ETO L1');
-      } catch (switchError) {
-        console.error('Failed to switch chain:', switchError);
-        toast.error('Please switch to ETO L1 in your wallet');
-      }
+        // Only navigate if chain switch was successful
+        const isNewUser = !localStorage.getItem('eto-user-onboarded');
+        const from = (location.state as any)?.from?.pathname;
 
-      // Navigate based on user status
-      const isNewUser = !localStorage.getItem('eto-user-onboarded');
-      const from = (location.state as any)?.from?.pathname;
-
-      if (from) {
-        navigate(from, { replace: true });
-      } else if (isNewUser) {
-        navigate('/faucet');
-      } else {
-        navigate('/dashboard');
+        if (from) {
+          navigate(from, { replace: true });
+        } else if (isNewUser) {
+          navigate('/faucet');
+        } else {
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        console.error('Wallet connection error:', error);
+        toast.error('Failed to connect wallet. Please try again.');
       }
     }
   };
