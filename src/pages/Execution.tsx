@@ -483,9 +483,9 @@ export default function Execution() {
       return;
     }
 
-    // Only MAANG can be traded via DMM currently
-    if (assetId !== 'maang' && assetId !== 'usdc') {
-      toast.error(`Only MAANG trading is available. ${asset.symbol} coming soon!`);
+    // Allow trading for MAANG (INDEX), A16Z, and USDC via DMM
+    if (assetId !== 'maang' && assetId !== 'usdc' && assetId !== 'a16z') {
+      toast.error(`Only INDEX/A16Z trading is available. ${asset.symbol} coming soon!`);
       setShowConfirmation(false);
       return;
     }
