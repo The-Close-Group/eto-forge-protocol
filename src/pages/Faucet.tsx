@@ -257,16 +257,10 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Use window.ethereum to sign the message
-      const ethereum = (window as any).ethereum;
-      if (!ethereum) {
-        throw new Error("No Ethereum provider found. Please install MetaMask.");
-      }
-
-      // Use personal_sign to sign the message hash
-      const signature = await ethereum.request({
-        method: 'personal_sign',
-        params: [messageHash, account.address],
+      // Use Thirdweb's signMessage with the hash as plain text
+      // This will add the Ethereum signed message prefix
+      const signature = await account.signMessage({
+        message: messageHash as string,
       });
 
       if (!signature) {
