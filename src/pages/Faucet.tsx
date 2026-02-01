@@ -8,7 +8,7 @@ import {
   Zap, Shield, Clock, CheckCircle2, AlertCircle, Coins,
   ArrowRight, Sparkles, RefreshCw, Fuel, Pen
 } from 'lucide-react';
-import { useActiveAccount, useSendTransaction, useDisconnect, ConnectButton, useWalletBalance } from 'thirdweb/react';
+import { useActiveAccount, useActiveWallet, useSendTransaction, useDisconnect, ConnectButton, useWalletBalance } from 'thirdweb/react';
 import { prepareTransaction } from 'thirdweb';
 import { client, etoMainnet, supportedChains } from '@/lib/thirdweb';
 import { createWallet } from 'thirdweb/wallets';
@@ -48,6 +48,7 @@ const CHAIN_ID_DISPLAY = 69670;
 export default function Faucet() {
   const navigate = useNavigate();
   const account = useActiveAccount();
+  const wallet = useActiveWallet();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -256,14 +257,17 @@ export default function Faucet() {
       // Step 2: Have user sign the message (this is FREE - no gas needed)
       toast.info("Step 2/3: Sign the message in your wallet (FREE)...");
 
-      // Sign the message hash directly using wallet's signMessage
-      // The contract expects an Ethereum signed message (with prefix)
-      const provider = await account.connector?.getProvider();
+      // Get provider from wallet
+      if (!wallet) {
+        throw new Error("Wallet not connected");
+      }
+
+      const provider = await wallet.getProvider();
       if (!provider) {
         throw new Error("No provider available");
       }
 
-      // Use eth_sign to sign the raw hash
+      // Use personal_sign to sign the message hash
       const signature = await provider.request({
         method: 'personal_sign',
         params: [messageHash, account.address],
